@@ -6,7 +6,7 @@ import {
   Shield, Zap, BarChart3, ArrowRight, CheckCircle2, 
   Layout, Globe, Database, Activity, Layers, Users,
   TrendingUp, ShieldAlert, PieChart, Lock, Eye, Info,
-  Server, Scale
+  Server, Scale, Cpu
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -23,8 +23,8 @@ const Index = () => {
       <section className="relative h-[85vh] flex items-center overflow-hidden border-b border-white/5">
         <div className="absolute inset-0 -z-10">
           <img 
-            src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=2070&auto=format&fit=crop" 
-            alt="Institutional Background" 
+            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
+            alt="Global Network" 
             className="w-full h-full object-cover opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#05070A] via-[#05070A]/90 to-transparent" />
@@ -124,7 +124,70 @@ const Index = () => {
           </div>
         </section>
 
-        {/* New Section 1: Global Liquidity Access */}
+        {/* Re-integrated: Technological Dashboard Section */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
+          <div className="p-12 md:p-16 bg-[#080B12] flex flex-col justify-center">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 bg-white/5 flex items-center justify-center text-[#C5A059] border border-white/10">
+                <Layout size={16} />
+              </div>
+              <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.3em]">Proprietary Interface</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 uppercase">
+              Technological <br /><span className="text-[#C5A059]">Dashboard</span>
+            </h2>
+            <p className="text-slate-400 text-sm leading-relaxed mb-10">
+              Our dashboard is not just visual; it's a real-time data terminal. Developed to offer total transparency over every algorithm in execution.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-10">
+              {[
+                { label: "Metrics", val: "Win Rate / Drawdown" },
+                { label: "Logs", val: "Millisecond Execution" },
+                { label: "Management", val: "Dynamic Allocation" },
+                { label: "Reports", val: "Institutional Export" }
+              ].map((item, i) => (
+                <div key={i} className="border-l border-[#C5A059]/30 pl-4">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1">{item.label}</p>
+                  <p className="text-[10px] font-bold text-white uppercase tracking-wider">{item.val}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="p-12 md:p-16 bg-[#05070A] flex flex-col justify-center relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-full h-full bg-[#C5A059]/5 blur-[120px]" />
+            <div className="relative z-10 space-y-8">
+              <div className="p-8 bg-white/5 border border-white/10 backdrop-blur-sm">
+                <div className="flex justify-between items-end mb-4">
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">Weekly Performance</p>
+                    <p className="text-2xl font-black text-[#C5A059]">+4.82%</p>
+                  </div>
+                  <BarChart3 className="text-[#C5A059]" size={24} />
+                </div>
+                <div className="h-[2px] w-full bg-white/5 overflow-hidden">
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    whileInView={{ width: "75%" }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
+                    className="h-full bg-[#C5A059]" 
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-6 bg-white/5 border border-white/10">
+                  <p className="text-[8px] font-bold uppercase tracking-widest text-slate-500 mb-1">Uptime</p>
+                  <p className="text-lg font-bold text-white">99.98%</p>
+                </div>
+                <div className="p-6 bg-white/5 border border-white/10">
+                  <p className="text-[8px] font-bold uppercase tracking-widest text-slate-500 mb-1">Latency</p>
+                  <p className="text-lg font-bold text-white">1.2ms</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Section: Global Liquidity Access */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
           <div className="p-16 bg-[#05070A] flex flex-col justify-center relative">
             <div className="absolute inset-0 bg-[#C5A059]/5 blur-[120px]" />
@@ -166,7 +229,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* New Section 2: Institutional Compliance */}
+        {/* Section: Institutional Compliance */}
         <section className="border border-white/10 bg-[#080B12]">
           <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
             <div className="p-16 lg:col-span-1 flex flex-col justify-center">
@@ -190,60 +253,6 @@ const Index = () => {
                   <p className="text-slate-500 text-[10px] leading-relaxed">{item.desc}</p>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Section: Platform Features */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
-          <div className="p-16 bg-[#080B12] flex flex-col justify-center">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Infrastructure</span>
-            <h2 className="text-4xl font-black tracking-tighter mb-8 uppercase">Everything You Need <br /><span className="text-[#C5A059]">to Succeed</span></h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-              {[
-                { title: "Automated Operations", icon: <Zap size={16} />, desc: "Institutional-level automated systems." },
-                { title: "Real-Time Statistics", icon: <BarChart3 size={16} />, desc: "Analytics and equity curves." },
-                { title: "Fast Execution", icon: <Activity size={16} />, desc: "Low-latency infrastructure." },
-                { title: "Global Access", icon: <Globe size={16} />, desc: "Monitor anywhere, 24/7." }
-              ].map((f, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="flex items-center gap-2 text-[#C5A059]">
-                    {f.icon}
-                    <h4 className="text-[10px] font-bold uppercase tracking-widest text-white">{f.title}</h4>
-                  </div>
-                  <p className="text-slate-500 text-[10px] leading-relaxed">{f.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="p-16 bg-[#05070A] flex flex-col justify-center relative">
-            <div className="absolute inset-0 bg-[#C5A059]/5 blur-[120px]" />
-            <div className="relative z-10 space-y-6">
-              <div className="p-8 bg-white/5 border border-white/10 backdrop-blur-sm">
-                <div className="flex justify-between items-center mb-6">
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">System Status</span>
-                  <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[9px] font-bold uppercase tracking-widest text-green-500">Operational</span>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest">
-                    <span className="text-slate-400">Uptime</span>
-                    <span>99.98%</span>
-                  </div>
-                  <div className="h-1 w-full bg-white/5">
-                    <div className="h-full bg-[#C5A059] w-[99.9%]" />
-                  </div>
-                </div>
-              </div>
-              <div className="p-8 bg-white/5 border border-white/10 backdrop-blur-sm">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500 block mb-4">Data Security</span>
-                <div className="flex items-center gap-4">
-                  <Lock className="text-[#C5A059]" size={24} />
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">Enterprise AES-256 Encryption</p>
-                </div>
-              </div>
             </div>
           </div>
         </section>
