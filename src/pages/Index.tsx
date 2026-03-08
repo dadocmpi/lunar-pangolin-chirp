@@ -6,70 +6,94 @@ import {
   Shield, Zap, BarChart3, ArrowRight, CheckCircle2, 
   Layout, Globe, Database, Activity, Layers, Users,
   TrendingUp, ShieldAlert, PieChart, Lock, Eye, Info,
-  Server, Scale, Cpu
+  Server, Scale, Cpu, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import MarketTicker from '@/components/MarketTicker';
 import { cn } from '@/lib/utils';
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-[#05070A] font-sans text-white">
+    <div className="min-h-screen bg-[#05070A] font-sans text-white selection:bg-[#C5A059] selection:text-black">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="relative h-[85vh] flex items-center overflow-hidden border-b border-white/5">
-        <div className="absolute inset-0 -z-10">
-          <img 
-            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
-            alt="Global Network" 
-            className="w-full h-full object-cover opacity-30"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#05070A] via-[#05070A]/90 to-transparent" />
-        </div>
+      {/* Hero Section - Adapted from Readdy.ai Style */}
+      <section className="relative min-h-screen flex flex-col pt-20 overflow-hidden">
+        <MarketTicker />
+        
+        <div className="flex-grow flex items-center relative">
+          {/* Background Visuals */}
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-[#C5A059]/10 blur-[160px] rounded-full opacity-50" />
+            <img 
+              src="https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=2064&auto=format&fit=crop" 
+              alt="Abstract Tech" 
+              className="w-full h-full object-cover opacity-20 mix-blend-overlay"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#05070A]/80 to-[#05070A]" />
+          </div>
 
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-3xl">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3 mb-6"
-            >
-              <div className="h-[1px] w-10 bg-[#C5A059]" />
-              <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em]">Braxel Markets Institutional</span>
-            </motion.div>
-            
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-8xl font-black tracking-tighter mb-8 leading-[0.85] uppercase"
-            >
-              Quantitative <br />
-              <span className="text-[#C5A059]">Strategy.</span>
-            </motion.h1>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-lg text-slate-400 mb-12 leading-relaxed max-w-xl"
-            >
-              Proprietary algorithms combining proven quantitative strategies with advanced risk management for consistent, risk-adjusted returns.
-            </motion.p>
-            
-            <div className="flex flex-wrap items-center gap-8">
-              <Link to="/register">
-                <Button className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-12 h-16 text-[11px] font-bold uppercase tracking-widest transition-all border-none">
-                  Start Journey
-                </Button>
-              </Link>
-              <Link to="/pricing" className="text-white font-bold uppercase tracking-widest text-[10px] hover:text-[#C5A059] transition-colors flex items-center gap-2 group">
-                View Plans <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+          <div className="container mx-auto px-4 md:px-8 relative z-10">
+            <div className="max-w-5xl mx-auto text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm mb-8"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C5A059] opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C5A059]"></span>
+                </span>
+                <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-300">Institutional Access Now Open</span>
+              </motion.div>
+              
+              <motion.h1 
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-6xl md:text-[120px] font-black tracking-[-0.05em] mb-8 leading-[0.85] uppercase italic"
+              >
+                The Future of <br />
+                <span className="text-[#C5A059] not-italic">Quant Trading.</span>
+              </motion.h1>
+              
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="text-xl md:text-2xl text-slate-400 mb-12 leading-relaxed max-w-3xl mx-auto font-medium"
+              >
+                Proprietary algorithms engineered for the modern market. Experience institutional-grade execution with millisecond precision.
+              </motion.p>
+              
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col sm:flex-row items-center justify-center gap-6"
+              >
+                <Link to="/register">
+                  <Button className="bg-white text-black hover:bg-[#C5A059] hover:text-white rounded-full px-12 h-16 text-[12px] font-black uppercase tracking-widest transition-all border-none shadow-[0_0_40px_rgba(255,255,255,0.1)]">
+                    Get Started Now
+                  </Button>
+                </Link>
+                <Link to="/pricing">
+                  <Button variant="outline" className="border-white/10 text-white hover:bg-white/5 rounded-full px-12 h-16 text-[12px] font-black uppercase tracking-widest transition-all">
+                    View Strategies
+                  </Button>
+                </Link>
+              </motion.div>
             </div>
           </div>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+          <span className="text-[9px] font-bold uppercase tracking-[0.4em] text-slate-500">Scroll to Explore</span>
+          <div className="w-[1px] h-12 bg-gradient-to-b from-[#C5A059] to-transparent" />
         </div>
       </section>
 
@@ -124,7 +148,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Re-integrated: Technological Dashboard Section */}
+        {/* Technological Dashboard Section */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
           <div className="p-12 md:p-16 bg-[#080B12] flex flex-col justify-center">
             <div className="flex items-center gap-3 mb-6">
