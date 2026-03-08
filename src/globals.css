@@ -1,50 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    /* Fundo Escuro como Padrão */
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+:root {
+  --color-black: #000000;
+  --color-dark-blue: #0a0e27;
+  --color-white: #ffffff;
+  --color-light-gray: #e0e0e0;
+  --color-gray: #999999;
+  --color-gold: #d4af37;
+  --color-gold-dark: #c9a227;
+  --color-red: #ff4444;
+  --color-green: #44ff44;
+  --color-border: #333333;
+  
+  --font-serif: 'Playfair Display', serif;
+  --font-sans: 'Inter', sans-serif;
+  --font-tech: 'Manrope', sans-serif;
+  
+  --transition-speed: 0.3s;
+  --transition-easing: ease-in-out;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --primary: 45 65% 52%;
+  --primary-foreground: 0 0% 0%;
+}
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    /* Deep Corporate Navy */
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+html {
+  scroll-behavior: smooth;
+}
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-black);
+  color: var(--color-white);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+::-webkit-scrollbar {
+  width: 10px;
+}
 
-    /* Metallic Gold Accent */
-    --accent: 36 45% 56%;
-    --accent-foreground: 210 40% 98%;
+::-webkit-scrollbar-track {
+  background: var(--color-black);
+}
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+::-webkit-scrollbar-thumb {
+  background: var(--color-gold);
+  border-radius: 5px;
+}
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gold-dark);
+}
 
-    --radius: 0.25rem;
+@keyframes scroll-ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-  }
+@keyframes pulse-badge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+
+.animate-pulse-badge {
+  animation: pulse-badge 2s ease-in-out infinite;
+}
+
+.ticker-scroll {
+  animation: scroll-ticker 30s linear infinite;
 }
