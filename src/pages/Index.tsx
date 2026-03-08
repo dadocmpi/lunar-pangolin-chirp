@@ -2,7 +2,10 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, BarChart3, ArrowRight, CheckCircle2, Cpu, Award, Clock, Star, Layout, Globe, Database, Activity, Layers } from 'lucide-react';
+import { 
+  Shield, Zap, BarChart3, ArrowRight, CheckCircle2, 
+  Layout, Globe, Database, Activity, Layers, Users 
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -10,18 +13,22 @@ import Footer from '@/components/Footer';
 import { cn } from '@/lib/utils';
 
 const Index = () => {
-  const techFeatures = [
-    { title: "Automação Quant", desc: "Algoritmos de execução institucional.", icon: <Zap size={20} /> },
-    { title: "Baixa Latência", desc: "Infraestrutura redundante 99.9% uptime.", icon: <Activity size={20} /> },
-    { title: "Segurança AES", desc: "Protocolos de criptografia bancária.", icon: <Shield size={20} /> },
-    { title: "Big Data", desc: "Processamento de métricas em tempo real.", icon: <Database size={20} /> }
+  const fullTechGrid = [
+    { title: "Automação", desc: "Algoritmos quantitativos de alta performance.", icon: <Zap size={20} /> },
+    { title: "Gestão", desc: "Controle dinâmico de posições e risco.", icon: <Users size={20} /> },
+    { title: "Métricas", desc: "Análise profunda de P&L e drawdown.", icon: <BarChart3 size={20} /> },
+    { title: "Logs", desc: "Histórico completo e transparente.", icon: <Database size={20} /> },
+    { title: "Multi-Contas", desc: "Gestão centralizada de estratégias.", icon: <Layers size={20} /> },
+    { title: "Uptime", desc: "Infraestrutura redundante 99.9%.", icon: <Activity size={20} /> },
+    { title: "Compliance", desc: "Protocolos de segurança institucional.", icon: <Shield size={20} /> },
+    { title: "Análise", desc: "Métricas de correlação avançadas.", icon: <Globe size={20} /> }
   ];
 
   return (
     <div className="min-h-screen bg-[#05070A] font-sans text-white">
       <Navbar />
       
-      {/* Hero Section - Institutional LA Background */}
+      {/* Hero Section */}
       <section className="relative h-[80vh] flex items-center overflow-hidden border-b border-white/5">
         <div className="absolute inset-0 -z-10">
           <img 
@@ -74,29 +81,28 @@ const Index = () => {
                   Abrir Conta
                 </Button>
               </Link>
-              <Link to="/platform" className="text-white font-bold uppercase tracking-widest text-[10px] hover:text-[#C5A059] transition-colors flex items-center gap-2">
-                Tecnologia <ArrowRight size={14} />
+              <Link to="/pricing" className="text-white font-bold uppercase tracking-widest text-[10px] hover:text-[#C5A059] transition-colors flex items-center gap-2">
+                Ver Planos <ArrowRight size={14} />
               </Link>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Modular Sections - Framed Layout */}
       <div className="container mx-auto px-4 md:px-8 py-20 space-y-20">
         
-        {/* Section 1: Core Technology Grid */}
+        {/* Full Technology Grid - Moved from Platform page */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
-          {techFeatures.map((f, i) => (
-            <div key={i} className="p-12 bg-[#080B12] flex flex-col items-start hover:bg-white/5 transition-colors group">
-              <div className="text-[#C5A059] mb-8 group-hover:scale-110 transition-transform duration-300">{f.icon}</div>
-              <h3 className="text-[10px] font-bold uppercase tracking-widest mb-3">{f.title}</h3>
+          {fullTechGrid.map((f, i) => (
+            <div key={i} className="p-10 bg-[#080B12] flex flex-col items-start hover:bg-white/5 transition-colors group">
+              <div className="text-[#C5A059] mb-6 group-hover:scale-110 transition-transform duration-300">{f.icon}</div>
+              <h3 className="text-[10px] font-bold uppercase tracking-widest mb-2">{f.title}</h3>
               <p className="text-slate-500 text-[10px] leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </section>
 
-        {/* Section 2: Dashboard Technology - Integrated Style */}
+        {/* Dashboard Technology Section */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
           <div className="p-12 md:p-16 bg-[#080B12] flex flex-col justify-center">
             <div className="flex items-center gap-3 mb-6">
@@ -124,11 +130,6 @@ const Index = () => {
                 </div>
               ))}
             </div>
-            <Link to="/platform">
-              <Button variant="outline" className="rounded-none border-white/10 text-white hover:bg-white/5 text-[10px] font-bold uppercase tracking-widest h-12 px-8">
-                Explorar Tecnologia
-              </Button>
-            </Link>
           </div>
           <div className="p-12 md:p-16 bg-[#05070A] flex flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 right-0 w-full h-full bg-[#C5A059]/5 blur-[120px]" />
@@ -164,49 +165,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Section 3: Testimonials */}
-        <section className="border border-white/10 bg-[#080B12] overflow-hidden">
-          <div className="p-12 border-b border-white/10 text-center">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Feedback</span>
-            <h2 className="text-2xl font-black uppercase tracking-tighter">O que dizem nossos clientes</h2>
-          </div>
-          <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
-            {[
-              { 
-                name: "Ricardo M.", 
-                role: "Investidor Profissional", 
-                comment: "A consistência da execução automatizada da Braxel é impressionante. Finalmente uma plataforma que entrega o que promete." 
-              },
-              { 
-                name: "Sofia G.", 
-                role: "Gestora de Patrimônio", 
-                comment: "O suporte institucional e a transparência da dashboard facilitam muito o acompanhamento dos resultados semanais.",
-                highlight: true 
-              },
-              { 
-                name: "Carlos T.", 
-                role: "Trader Quantitativo", 
-                comment: "Infraestrutura de baixa latência real. A diferença na execução é notável comparada a outras soluções de varejo." 
-              }
-            ].map((item, i) => (
-              <div key={i} className={cn(
-                "p-12 flex flex-col items-start",
-                item.highlight ? "bg-white/5" : ""
-              )}>
-                <div className="flex gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => <Star key={i} size={12} className="fill-[#C5A059] text-[#C5A059]" />)}
-                </div>
-                <p className="text-slate-400 text-xs italic leading-relaxed mb-8">"{item.comment}"</p>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">{item.name}</p>
-                  <p className="text-[9px] uppercase tracking-widest text-[#C5A059]">{item.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Section 4: Final CTA */}
+        {/* Final CTA */}
         <section className="relative p-16 md:p-24 border border-white/10 bg-[#080B12] text-center overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A059]/5 blur-[100px] -z-10" />
           <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-10 uppercase">

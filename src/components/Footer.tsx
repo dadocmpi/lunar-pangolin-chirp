@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Send, Twitter, Linkedin, Facebook } from 'lucide-react';
+import { Mail, Send, Twitter, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -42,7 +42,6 @@ const Footer = () => {
           <div>
             <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Plataforma</h4>
             <ul className="space-y-4 text-[10px] font-bold uppercase tracking-widest">
-              <li><Link to="/platform" className="hover:text-[#C5A059] transition-colors">Visão Geral</Link></li>
               <li><Link to="/pricing" className="hover:text-[#C5A059] transition-colors">Preços</Link></li>
               <li><Link to="/how-it-works" className="hover:text-[#C5A059] transition-colors">Como Funciona</Link></li>
             </ul>
@@ -53,7 +52,7 @@ const Footer = () => {
             <ul className="space-y-4 text-[10px] font-bold uppercase tracking-widest">
               <li><Link to="/about" className="hover:text-[#C5A059] transition-colors">Sobre Nós</Link></li>
               <li><Link to="/contact" className="hover:text-[#C5A059] transition-colors">Contato</Link></li>
-              <li><Link to="/legal/terms" className="hover:text-[#C5A059] transition-colors">Termos</Link></li>
+              <li><Link to="/terms" className="hover:text-[#C5A059] transition-colors">Termos</Link></li>
             </ul>
           </div>
 

@@ -20,7 +20,6 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Plataforma', path: '/platform' },
     { name: 'Preços', path: '/pricing' },
     { name: 'Como Funciona', path: '/how-it-works' },
     { name: 'Sobre Nós', path: '/about' },
