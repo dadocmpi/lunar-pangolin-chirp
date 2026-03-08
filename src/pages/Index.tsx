@@ -14,192 +14,158 @@ const Index = () => {
     <div className="min-h-screen bg-[#05070A] font-sans text-white">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center pt-20 overflow-hidden">
+      {/* Hero Section - Institutional LA Background */}
+      <section className="relative h-[80vh] flex items-center overflow-hidden border-b border-white/5">
         <div className="absolute inset-0 -z-10">
           <img 
-            src="https://images.unsplash.com/photo-1611974714024-4607ad03d639?q=80&w=2070&auto=format&fit=crop" 
-            alt="Trading Professional" 
-            className="w-full h-full object-cover opacity-30"
+            src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=2070&auto=format&fit=crop" 
+            alt="Los Angeles Skyline" 
+            className="w-full h-full object-cover opacity-40"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#05070A]/70 via-[#05070A]/90 to-[#05070A]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#05070A] via-[#05070A]/80 to-transparent" />
         </div>
 
         <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-3xl">
+          <div className="max-w-2xl">
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
               className="flex items-center gap-3 mb-6"
             >
               <div className="h-[1px] w-10 bg-[#C5A059]" />
-              <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.3em]">Tecnologia Braxel Markets</span>
+              <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em]">Braxel Markets Institutional</span>
             </motion.div>
             
             <motion.h1 
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl md:text-7xl font-black tracking-tighter mb-6 leading-tight"
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-5xl md:text-7xl font-black tracking-tighter mb-6 leading-[0.9]"
             >
-              INVESTIMENTO <br />
-              <span className="text-[#C5A059]">INTELIGENTE.</span>
+              INFRAESTRUTURA <br />
+              <span className="text-[#C5A059]">DE ALTA PERFORMANCE.</span>
             </motion.h1>
             
             <motion.p 
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-lg text-slate-400 mb-10 leading-relaxed max-w-xl border-l-2 border-[#C5A059]/40 pl-6"
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-base text-slate-400 mb-10 leading-relaxed max-w-lg"
             >
-              Infraestrutura de execução automatizada para quem busca consistência. Eliminamos o erro emocional através de tecnologia proprietária de alta performance.
+              Execução automatizada com tecnologia proprietária. Foco em consistência e segurança institucional para o mercado moderno.
             </motion.p>
             
             <motion.div 
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center gap-6"
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex items-center gap-6"
             >
               <Link to="/register">
-                <Button size="lg" className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-10 h-16 text-[12px] font-bold uppercase tracking-widest transition-all border-none">
+                <Button className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-10 h-14 text-[11px] font-bold uppercase tracking-widest transition-all border-none">
                   Abrir Conta
                 </Button>
               </Link>
-              <Link to="/platform">
-                <span className="text-white font-bold uppercase tracking-widest text-[11px] cursor-pointer hover:text-[#C5A059] transition-colors flex items-center gap-2">
-                  Nossa Tecnologia <ArrowRight size={14} />
-                </span>
+              <Link to="/platform" className="text-white font-bold uppercase tracking-widest text-[10px] hover:text-[#C5A059] transition-colors flex items-center gap-2">
+                Tecnologia <ArrowRight size={14} />
               </Link>
             </motion.div>
           </div>
         </div>
-
-        {/* Market Bar - Simplified */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md border-t border-white/5 py-6">
-          <div className="container mx-auto px-4 md:px-8">
-            <div className="flex flex-wrap justify-between items-center gap-8">
-              {[
-                { label: "Uptime", value: "99.99%" },
-                { label: "Latência", value: "< 1ms" },
-                { label: "Suporte", value: "24/7" }
-              ].map((stat, i) => (
-                <div key={i} className="flex flex-col">
-                  <span className="text-[9px] text-slate-500 uppercase tracking-[0.2em] mb-1">{stat.label}</span>
-                  <span className="text-white font-bold text-base tracking-tight">{stat.value}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </section>
 
-      {/* Trust Section - More compact */}
-      <section className="py-24 bg-[#05070A] border-b border-white/5">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-            <div>
-              <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-8 leading-tight">
-                SEGURANÇA E <br />
-                <span className="text-[#C5A059]">TRANSPARÊNCIA.</span>
-              </h2>
-              <p className="text-slate-400 text-lg leading-relaxed mb-10">
-                Operamos com foco total na proteção do seu capital, utilizando protocolos de segurança de nível bancário.
-              </p>
-              <div className="space-y-6">
-                {[
-                  "Execução em servidores de alta performance",
-                  "Segurança AES-256",
-                  "Transparência total de resultados"
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-4">
-                    <div className="w-5 h-5 rounded-full bg-[#C5A059]/10 flex items-center justify-center border border-[#C5A059]/20">
-                      <CheckCircle2 className="text-[#C5A059]" size={12} />
-                    </div>
-                    <span className="text-slate-200 font-bold text-xs uppercase tracking-widest">{item}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {[
-                { icon: <Shield size={32} />, title: "Segurança", desc: "Custódia e criptografia." },
-                { icon: <Clock size={32} />, title: "24/7", desc: "Monitoramento constante." },
-                { icon: <Award size={32} />, title: "Qualidade", desc: "Infraestrutura premium." },
-                { icon: <Zap size={32} />, title: "Velocidade", desc: "Execução instantânea." }
-              ].map((card, i) => (
-                <div key={i} className="p-8 bg-white/5 border border-white/10 hover:border-[#C5A059]/30 transition-colors">
-                  <div className="text-[#C5A059] mb-6">{card.icon}</div>
-                  <h3 className="text-lg font-bold mb-2 uppercase tracking-tight">{card.title}</h3>
-                  <p className="text-slate-500 text-xs leading-relaxed">{card.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Automation Section - Simplified */}
-      <section className="py-24 bg-[#080B12]">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Automação</span>
-            <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6">
-              FOCO NO <span className="text-[#C5A059]">RESULTADO.</span>
+      {/* Modular Sections - Framed Layout */}
+      <div className="container mx-auto px-4 md:px-8 py-20 space-y-20">
+        
+        {/* Section 1: Trust & Security */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
+          <div className="p-12 md:p-16 bg-[#080B12] flex flex-col justify-center">
+            <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 uppercase">
+              Segurança <br /><span className="text-[#C5A059]">Institucional</span>
             </h2>
-            <p className="text-slate-400 text-lg leading-relaxed">
-              Nossa tecnologia gerencia as operações automaticamente, permitindo que você acompanhe tudo em tempo real.
+            <p className="text-slate-400 text-sm leading-relaxed mb-8 max-w-md">
+              Protocolos de criptografia avançada e servidores de baixa latência garantem a integridade de cada operação realizada em nossa plataforma.
             </p>
+            <div className="space-y-4">
+              {["Servidores Equinix", "Segurança AES-256", "Transparência Total"].map((item, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <CheckCircle2 className="text-[#C5A059]" size={16} />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-200">{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 border border-white/10 bg-black/20">
+          <div className="grid grid-cols-2 gap-px bg-white/10">
             {[
-              { icon: <Cpu size={24} />, title: "Algoritmos", desc: "Estratégias desenvolvidas por especialistas para diversos cenários." },
-              { icon: <BarChart3 size={24} />, title: "Dashboard", desc: "Visualize cada operação no momento em que acontece.", highlight: true },
-              { icon: <Shield size={24} />, title: "Gestão de Risco", desc: "Protocolos automáticos de proteção operando 24h." }
+              { icon: <Shield size={24} />, title: "Custódia", desc: "Proteção de capital." },
+              { icon: <Clock size={24} />, title: "24/7", desc: "Monitoramento." },
+              { icon: <Award size={24} />, title: "Elite", desc: "Padrão global." },
+              { icon: <Zap size={24} />, title: "Veloz", desc: "Execução real." }
+            ].map((card, i) => (
+              <div key={i} className="p-10 bg-[#080B12] flex flex-col items-center text-center justify-center hover:bg-white/5 transition-colors">
+                <div className="text-[#C5A059] mb-4">{card.icon}</div>
+                <h3 className="text-xs font-bold uppercase tracking-widest mb-2">{card.title}</h3>
+                <p className="text-slate-500 text-[10px] leading-tight">{card.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Section 2: Automation Grid */}
+        <section className="border border-white/10 bg-[#080B12] overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
+            {[
+              { 
+                icon: <Cpu size={24} />, 
+                title: "Algoritmos", 
+                desc: "Estratégias quantitativas desenvolvidas para consistência em diversos cenários." 
+              },
+              { 
+                icon: <BarChart3 size={24} />, 
+                title: "Dashboard", 
+                desc: "Acompanhamento em tempo real de todas as métricas e resultados operacionais.",
+                highlight: true 
+              },
+              { 
+                icon: <Shield size={24} />, 
+                title: "Gestão", 
+                desc: "Controle de risco automatizado operando ininterruptamente para sua proteção." 
+              }
             ].map((item, i) => (
               <div key={i} className={cn(
-                "p-12 border-white/10",
-                i < 2 ? "lg:border-r" : "",
+                "p-12 flex flex-col items-start",
                 item.highlight ? "bg-white/5" : ""
               )}>
-                <div className={cn(
-                  "w-12 h-12 flex items-center justify-center mb-8",
-                  item.highlight ? "bg-[#C5A059] text-white" : "bg-white/10 text-[#C5A059]"
-                )}>
+                <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059] mb-6 border border-white/10">
                   {item.icon}
                 </div>
-                <h3 className="text-lg font-bold mb-4 uppercase tracking-tight">{item.title}</h3>
+                <h3 className="text-sm font-bold uppercase tracking-widest mb-4">{item.title}</h3>
                 <p className="text-slate-500 text-xs leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA Section - More comfortable size */}
-      <section className="py-32 bg-[#05070A] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-[#C5A059]/5 blur-[120px]" />
-        <div className="container mx-auto px-4 md:px-8 text-center relative z-10">
-          <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-12">
-            PRONTO PARA <br />
-            <span className="text-[#C5A059]">COMEÇAR?</span>
+        {/* Section 3: Final CTA */}
+        <section className="relative p-16 md:p-24 border border-white/10 bg-[#080B12] text-center overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A059]/5 blur-[100px] -z-10" />
+          <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-10 uppercase">
+            Pronto para o <br /><span className="text-[#C5A059]">Próximo Nível?</span>
           </h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
             <Link to="/register">
-              <Button size="lg" className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-12 h-20 text-[13px] font-bold uppercase tracking-widest transition-all border-none">
-                Abrir Conta
+              <Button className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-12 h-16 text-[11px] font-bold uppercase tracking-widest transition-all border-none">
+                Começar Agora
               </Button>
             </Link>
-            <Link to="/contact">
-              <span className="text-white font-bold uppercase tracking-widest text-[11px] cursor-pointer hover:text-[#C5A059] transition-colors border-b border-white/20 pb-1">
-                Falar com Suporte
-              </span>
+            <Link to="/contact" className="text-slate-400 font-bold uppercase tracking-widest text-[10px] hover:text-white transition-colors border-b border-white/10 pb-1">
+              Suporte Especializado
             </Link>
           </div>
-        </div>
-      </section>
+        </section>
+
+      </div>
 
       <Footer />
     </div>
