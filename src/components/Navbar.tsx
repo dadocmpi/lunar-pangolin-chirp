@@ -20,10 +20,10 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Preços', path: '/pricing' },
-    { name: 'Como Funciona', path: '/how-it-works' },
-    { name: 'Sobre Nós', path: '/about' },
-    { name: 'Contato', path: '/contact' },
+    { name: 'Pricing', path: '/pricing' },
+    { name: 'How It Works', path: '/how-it-works' },
+    { name: 'About Us', path: '/about' },
+    { name: 'Contact', path: '/contact' },
   ];
 
   return (
@@ -73,7 +73,7 @@ const Navbar = () => {
             </Link>
             <Link to="/register">
               <Button className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-6 h-10 text-[10px] font-bold uppercase tracking-widest transition-all border-none">
-                Abrir Conta
+                Open Account
               </Button>
             </Link>
           </div>
@@ -110,7 +110,7 @@ const Navbar = () => {
             </Link>
             <Link to="/register" onClick={() => setIsOpen(false)}>
               <Button className="w-full rounded-none bg-[#C5A059] hover:bg-[#B08D48] text-white font-bold uppercase tracking-widest text-[10px] h-10">
-                Abrir Conta
+                Open Account
               </Button>
             </Link>
           </div>

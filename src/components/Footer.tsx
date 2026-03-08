@@ -24,7 +24,7 @@ const Footer = () => {
               </div>
             </Link>
             <p className="text-slate-500 text-xs leading-relaxed uppercase tracking-wider">
-              Infraestrutura de investimento de nível institucional. Tecnologia proprietária para o mercado moderno.
+              Institutional-grade investment infrastructure. Proprietary technology for the modern market.
             </p>
             <div className="flex items-center gap-4">
               <a href="https://t.me/braxelmarkets" target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#C5A059] hover:text-[#C5A059] transition-all">
@@ -40,24 +40,24 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Plataforma</h4>
+            <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Platform</h4>
             <ul className="space-y-4 text-[10px] font-bold uppercase tracking-widest">
-              <li><Link to="/pricing" className="hover:text-[#C5A059] transition-colors">Preços</Link></li>
-              <li><Link to="/how-it-works" className="hover:text-[#C5A059] transition-colors">Como Funciona</Link></li>
+              <li><Link to="/pricing" className="hover:text-[#C5A059] transition-colors">Pricing</Link></li>
+              <li><Link to="/how-it-works" className="hover:text-[#C5A059] transition-colors">How It Works</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Empresa</h4>
+            <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Company</h4>
             <ul className="space-y-4 text-[10px] font-bold uppercase tracking-widest">
-              <li><Link to="/about" className="hover:text-[#C5A059] transition-colors">Sobre Nós</Link></li>
-              <li><Link to="/contact" className="hover:text-[#C5A059] transition-colors">Contato</Link></li>
-              <li><Link to="/terms" className="hover:text-[#C5A059] transition-colors">Termos</Link></li>
+              <li><Link to="/about" className="hover:text-[#C5A059] transition-colors">About Us</Link></li>
+              <li><Link to="/contact" className="hover:text-[#C5A059] transition-colors">Contact</Link></li>
+              <li><Link to="/terms" className="hover:text-[#C5A059] transition-colors">Terms</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Suporte Digital</h4>
+            <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-8">Digital Support</h4>
             <ul className="space-y-6">
               <li className="flex items-start gap-3">
                 <Mail className="text-[#C5A059] shrink-0" size={16} />
@@ -65,7 +65,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-3">
                 <Send className="text-[#C5A059] shrink-0" size={16} />
-                <a href="https://t.me/braxelmarkets" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest hover:text-[#C5A059]">Suporte via Telegram</a>
+                <a href="https://t.me/braxelmarkets" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest hover:text-[#C5A059]">Telegram Support</a>
               </li>
             </ul>
           </div>
@@ -74,11 +74,11 @@ const Footer = () => {
         <hr className="border-white/5 mb-10" />
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-[9px] font-bold uppercase tracking-[0.2em] text-slate-600">
-          <p>© {currentYear} Braxel Markets. Todos os direitos reservados.</p>
+          <p>© {currentYear} Braxel Markets. All rights reserved.</p>
           <div className="flex gap-8">
-            <Link to="/privacy" className="hover:text-white transition-colors">Privacidade</Link>
-            <Link to="/terms" className="hover:text-white transition-colors">Termos</Link>
-            <Link to="/disclaimer" className="hover:text-white transition-colors">Aviso Financeiro</Link>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link to="/disclaimer" className="hover:text-white transition-colors">Financial Disclaimer</Link>
           </div>
         </div>
       </div>
