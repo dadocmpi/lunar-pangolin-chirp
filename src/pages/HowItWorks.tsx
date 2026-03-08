@@ -9,115 +9,59 @@ import Footer from '@/components/Footer';
 
 const HowItWorks = () => {
   const steps = [
-    {
-      title: "Registrar Sua Conta",
-      desc: "Processo de registro rápido com informações mínimas e segurança total de dados.",
-      icon: <UserPlus size={32} />
-    },
-    {
-      title: "Selecionar um Plano",
-      desc: "Escolha o plano ideal com base nos seus objetivos de investimento e alocação de saldo.",
-      icon: <Layout size={32} />
-    },
-    {
-      title: "Completar Pagamento",
-      desc: "Pagamento seguro via PayPal (saldo, crédito, débito ou Bizum), processado externamente.",
-      icon: <CreditCard size={32} />
-    },
-    {
-      title: "Receber Seu ID",
-      desc: "Ativação imediata do plano e recebimento de um ID de conta único para rastreamento.",
-      icon: <Key size={32} />
-    },
-    {
-      title: "Solicitar Saques",
-      desc: "Saques em EUR do seu saldo em USD, com limites flexíveis e processamento verificado.",
-      icon: <ArrowDownCircle size={32} />
-    },
-    {
-      title: "Resumos Semanais",
-      desc: "Receba relatórios detalhados por e-mail com saldo, ganhos, perdas e valores disponíveis.",
-      icon: <Mail size={32} />
-    }
+    { title: "Registro", desc: "Processo rápido e seguro.", icon: <UserPlus size={24} /> },
+    { title: "Plano", desc: "Escolha sua alocação ideal.", icon: <Layout size={24} /> },
+    { title: "Pagamento", desc: "Processamento via PayPal.", icon: <CreditCard size={24} /> },
+    { title: "Ativação", desc: "Receba seu ID de conta.", icon: <Key size={24} /> },
+    { title: "Saques", desc: "Solicitações em EUR.", icon: <ArrowDownCircle size={24} /> },
+    { title: "Relatórios", desc: "Resumos semanais por e-mail.", icon: <Mail size={24} /> }
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[#05070A] text-white">
       <Navbar />
       
-      <section className="pt-32 pb-20 bg-slate-50">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-6xl font-bold text-slate-900 mb-6">Como a Braxel Markets Funciona</h1>
-            <p className="text-xl text-slate-600">
-              Um processo simples e transparente em seis passos para você começar a investir com automação profissional.
+      <section className="relative h-[50vh] flex items-center overflow-hidden border-b border-white/5">
+        <div className="absolute inset-0 -z-10">
+          <img 
+            src="https://images.unsplash.com/photo-1449156001437-3a1621dfbe28?q=80&w=2070&auto=format&fit=crop" 
+            alt="Process" 
+            className="w-full h-full object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#05070A]/80 to-[#05070A]" />
+        </div>
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="max-w-3xl">
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Processo</span>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Como <br /><span className="text-[#C5A059]">Funciona</span></h1>
+            <p className="text-slate-400 text-sm max-w-xl leading-relaxed">
+              Um fluxo simples e transparente em seis etapas para você começar a investir com automação profissional.
             </p>
           </div>
         </div>
       </section>
 
-      <section className="py-24">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            {steps.map((step, i) => (
-              <div key={i} className="relative group">
-                <div className="absolute -top-4 -left-4 w-12 h-12 bg-sky-600 text-white rounded-full flex items-center justify-center font-bold text-xl z-10 shadow-lg">
-                  {i + 1}
-                </div>
-                <div className="p-10 rounded-3xl border border-slate-100 bg-white shadow-sm group-hover:shadow-xl transition-all duration-300 h-full">
-                  <div className="w-16 h-16 bg-sky-50 rounded-2xl flex items-center justify-center text-sky-600 mb-8 group-hover:bg-sky-600 group-hover:text-white transition-colors">
-                    {step.icon}
-                  </div>
-                  <h3 className="text-2xl font-bold text-slate-900 mb-4">{step.title}</h3>
-                  <p className="text-slate-600 leading-relaxed">{step.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24 bg-slate-900 text-white">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-bold mb-12 text-center">O Que Esperar Depois de Começar</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="p-8 bg-slate-800 rounded-3xl border border-slate-700">
-                <h3 className="text-xl font-bold mb-4 text-sky-400">Gerenciamento</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  Acesso total à área do cliente com detalhes do plano ativo, ID de conta e status da assinatura em tempo real.
-                </p>
-              </div>
-              
-              <div className="p-8 bg-slate-800 rounded-3xl border border-slate-700">
-                <h3 className="text-xl font-bold mb-4 text-sky-400">Rastreamento</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  Verificação de saldo em USD a qualquer momento, com estimativas automáticas de conversão para EUR.
-                </p>
-              </div>
-              
-              <div className="p-8 bg-slate-800 rounded-3xl border border-slate-700">
-                <h3 className="text-xl font-bold mb-4 text-sky-400">Saques</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">
-                  Solicitações automatizadas e verificadas dentro do horário comercial para garantir segurança e agilidade.
-                </p>
-              </div>
+      <div className="container mx-auto px-4 md:px-8 py-20">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/10 border border-white/10">
+          {steps.map((step, i) => (
+            <div key={i} className="p-12 bg-[#080B12] flex flex-col items-start hover:bg-white/5 transition-colors relative group">
+              <span className="absolute top-8 right-8 text-4xl font-black text-white/5 group-hover:text-[#C5A059]/10 transition-colors">0{i+1}</span>
+              <div className="text-[#C5A059] mb-8">{step.icon}</div>
+              <h3 className="text-[11px] font-bold uppercase tracking-widest mb-3">{step.title}</h3>
+              <p className="text-slate-500 text-[10px] leading-relaxed">{step.desc}</p>
             </div>
-          </div>
-        </div>
-      </section>
+          ))}
+        </section>
 
-      <section className="py-24">
-        <div className="container mx-auto px-4 md:px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Pronto para Começar?</h2>
+        <section className="mt-20 p-16 border border-white/10 bg-[#080B12] text-center">
+          <h2 className="text-3xl font-black uppercase tracking-tighter mb-8">Pronto para o primeiro passo?</h2>
           <Link to="/register">
-            <Button size="lg" className="bg-sky-600 hover:bg-sky-700 text-white rounded-full px-12 py-7 text-lg font-bold">
+            <Button className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-12 h-16 text-[11px] font-bold uppercase tracking-widest transition-all border-none">
               Criar Minha Conta
             </Button>
           </Link>
-        </div>
-      </section>
+        </section>
+      </div>
 
       <Footer />
     </div>

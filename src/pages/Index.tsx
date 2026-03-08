@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, BarChart3, ArrowRight, CheckCircle2, Cpu, Award, Clock } from 'lucide-react';
+import { Shield, Zap, BarChart3, ArrowRight, CheckCircle2, Cpu, Award, Clock, Star, Layout } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -112,42 +112,77 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Section 2: Automation Grid */}
+        {/* Section 2: Dashboard Preview - Real Photo Style */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/10 border border-white/10 overflow-hidden">
+          <div className="relative h-[400px] lg:h-auto overflow-hidden">
+            <img 
+              src="https://images.unsplash.com/photo-1642790106117-e829e14a795f?q=80&w=2070&auto=format&fit=crop" 
+              alt="Dashboard Interface" 
+              className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+            />
+            <div className="absolute inset-0 bg-[#C5A059]/10 mix-blend-overlay" />
+          </div>
+          <div className="p-12 md:p-16 bg-[#080B12] flex flex-col justify-center">
+            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059] mb-6 border border-white/10">
+              <Layout size={20} />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tighter mb-6 uppercase">
+              Dashboard <br /><span className="text-[#C5A059]">Proprietária</span>
+            </h2>
+            <p className="text-slate-400 text-sm leading-relaxed mb-8">
+              Acompanhe sua performance em tempo real com métricas institucionais. Nossa interface foi desenhada para clareza absoluta e controle total do seu capital.
+            </p>
+            <Link to="/platform">
+              <Button variant="outline" className="rounded-none border-white/10 text-white hover:bg-white/5 text-[10px] font-bold uppercase tracking-widest h-12 px-8">
+                Ver Detalhes
+              </Button>
+            </Link>
+          </div>
+        </section>
+
+        {/* Section 3: Testimonials / Comments */}
         <section className="border border-white/10 bg-[#080B12] overflow-hidden">
+          <div className="p-12 border-b border-white/10 text-center">
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Feedback</span>
+            <h2 className="text-2xl font-black uppercase tracking-tighter">O que dizem nossos clientes</h2>
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-white/10">
             {[
               { 
-                icon: <Cpu size={24} />, 
-                title: "Algoritmos", 
-                desc: "Estratégias quantitativas desenvolvidas para consistência em diversos cenários." 
+                name: "Ricardo M.", 
+                role: "Investidor Profissional", 
+                comment: "A consistência da execução automatizada da Braxel é impressionante. Finalmente uma plataforma que entrega o que promete." 
               },
               { 
-                icon: <BarChart3 size={24} />, 
-                title: "Dashboard", 
-                desc: "Acompanhamento em tempo real de todas as métricas e resultados operacionais.",
+                name: "Sofia G.", 
+                role: "Gestora de Patrimônio", 
+                comment: "O suporte institucional e a transparência da dashboard facilitam muito o acompanhamento dos resultados semanais.",
                 highlight: true 
               },
               { 
-                icon: <Shield size={24} />, 
-                title: "Gestão", 
-                desc: "Controle de risco automatizado operando ininterruptamente para sua proteção." 
+                name: "Carlos T.", 
+                role: "Trader Quantitativo", 
+                comment: "Infraestrutura de baixa latência real. A diferença na execução é notável comparada a outras soluções de varejo." 
               }
             ].map((item, i) => (
               <div key={i} className={cn(
                 "p-12 flex flex-col items-start",
                 item.highlight ? "bg-white/5" : ""
               )}>
-                <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059] mb-6 border border-white/10">
-                  {item.icon}
+                <div className="flex gap-1 mb-6">
+                  {[...Array(5)].map((_, i) => <Star key={i} size={12} className="fill-[#C5A059] text-[#C5A059]" />)}
                 </div>
-                <h3 className="text-sm font-bold uppercase tracking-widest mb-4">{item.title}</h3>
-                <p className="text-slate-500 text-xs leading-relaxed">{item.desc}</p>
+                <p className="text-slate-400 text-xs italic leading-relaxed mb-8">"{item.comment}"</p>
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white">{item.name}</p>
+                  <p className="text-[9px] uppercase tracking-widest text-[#C5A059]">{item.role}</p>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Section 3: Final CTA */}
+        {/* Section 4: Final CTA */}
         <section className="relative p-16 md:p-24 border border-white/10 bg-[#080B12] text-center overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A059]/5 blur-[100px] -z-10" />
           <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-10 uppercase">
