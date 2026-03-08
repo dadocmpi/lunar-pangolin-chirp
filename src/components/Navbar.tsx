@@ -2,18 +2,29 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Menu, X, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t, i18n } = useTranslation();
 
   const navLinks = [
-    { name: 'PRICING', path: '/pricing' },
-    { name: 'HOW IT WORKS', path: '/how-it-works' },
-    { name: 'ABOUT US', path: '/about' },
-    { name: 'CONTACT', path: '/contact' },
+    { name: t('nav.pricing'), path: '/pricing' },
+    { name: t('nav.howItWorks'), path: '/how-it-works' },
+    { name: t('nav.about'), path: '/about' },
+    { name: t('nav.contact'), path: '/contact' },
   ];
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
 
   return (
     <header className="fixed top-0 left-0 w-full h-20 bg-black border-b border-[#333333] z-[1000] px-8 flex items-center justify-between">
@@ -26,7 +37,6 @@ const Navbar = () => {
         </span>
       </Link>
 
-      {/* Desktop Menu */}
       <nav className="hidden lg:flex items-center gap-12">
         {navLinks.map((link) => (
           <Link
@@ -41,25 +51,34 @@ const Navbar = () => {
       </nav>
 
       <div className="hidden lg:flex items-center gap-8">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2 text-[12px] font-semibold text-white tracking-[1px] uppercase font-tech hover:text-[#D4AF37] transition-colors">
+            <Globe size={14} />
+            {i18n.language.toUpperCase()}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="bg-black border-[#333333] text-white">
+            <DropdownMenuItem onClick={() => changeLanguage('en')} className="hover:bg-[#D4AF37] hover:text-black cursor-pointer">EN</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => changeLanguage('pt')} className="hover:bg-[#D4AF37] hover:text-black cursor-pointer">PT</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
         <Link 
           to="/login" 
           className="text-[12px] font-semibold text-white tracking-[1px] uppercase font-tech hover:text-[#D4AF37] transition-colors duration-300"
         >
-          LOGIN
+          {t('nav.login')}
         </Link>
         <Link to="/register">
           <button className="bg-[#D4AF37] text-black text-[12px] font-bold tracking-[1px] uppercase font-tech px-6 py-3 rounded-[25px] hover:bg-[#C9A227] hover:-translate-y-[2px] hover:shadow-[0_8px_16px_rgba(212,175,55,0.3)] transition-all duration-300">
-            OPEN ACCOUNT
+            {t('nav.openAccount')}
           </button>
         </Link>
       </div>
 
-      {/* Mobile Toggle */}
       <button className="lg:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Mobile Menu */}
       {isOpen && (
         <div className="absolute top-20 left-0 w-full bg-black border-b border-[#333333] p-8 flex flex-col gap-6 lg:hidden animate-in fade-in slide-in-from-top-2">
           {navLinks.map((link) => (
@@ -73,12 +92,16 @@ const Navbar = () => {
             </Link>
           ))}
           <hr className="border-[#333333]" />
+          <div className="flex gap-4">
+            <button onClick={() => changeLanguage('en')} className={cn("text-[12px] font-bold", i18n.language === 'en' ? "text-[#D4AF37]" : "text-white")}>EN</button>
+            <button onClick={() => changeLanguage('pt')} className={cn("text-[12px] font-bold", i18n.language === 'pt' ? "text-[#D4AF37]" : "text-white")}>PT</button>
+          </div>
           <Link to="/login" className="text-[12px] font-semibold text-white tracking-[1px] uppercase font-tech">
-            LOGIN
+            {t('nav.login')}
           </Link>
           <Link to="/register">
             <button className="w-full bg-[#D4AF37] text-black text-[12px] font-bold tracking-[1px] uppercase font-tech px-6 py-3 rounded-[25px]">
-              OPEN ACCOUNT
+              {t('nav.openAccount')}
             </button>
           </Link>
         </div>

@@ -6,48 +6,52 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import MarketTicker from '@/components/MarketTicker';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const Pricing = () => {
+  const { t } = useTranslation();
   const plans = [
     {
       name: "Starter 2K",
       price: "€69.99",
       accountSize: "$2,000",
-      features: ["Automação", "Gestão de Conta", "Suporte E-mail", "Risco Controlado"],
+      features: ["Automation", "Account Management", "Email Support", "Controlled Risk"],
     },
     {
       name: "Pro 5K",
       price: "€159.99",
       accountSize: "$5,000",
-      features: ["Recursos Starter", "Suporte Prioritário", "Logs Detalhados"],
+      features: ["Starter Features", "Priority Support", "Detailed Logs"],
       popular: true
     },
     {
       name: "Advanced 10K",
       price: "€319.99",
       accountSize: "$10,000",
-      features: ["Recursos Pro", "Multi-Contas", "Relatórios Semanais"],
+      features: ["Pro Features", "Multi-Account", "Weekly Reports"],
     },
     {
       name: "Elite 20K",
       price: "€629.99",
       accountSize: "$20,000",
-      features: ["Recursos Advanced", "Suporte 24/7", "Gerente Dedicado"],
+      features: ["Advanced Features", "24/7 Support", "Dedicated Manager"],
     }
   ];
 
   return (
-    <div className="min-h-screen bg-[#05070A] text-white">
+    <div className="min-h-screen bg-black text-white">
       <Navbar />
+      <MarketTicker />
       
-      <section className="pt-40 pb-20 border-b border-white/5">
+      <section className="pt-40 pb-20 border-b border-[#333333]">
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-3xl">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Transparência</span>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Planos de <br /><span className="text-[#C5A059]">Investimento</span></h1>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Transparency</span>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Investment <br /><span className="text-[#C5A059]">Plans</span></h1>
             <p className="text-slate-400 text-sm max-w-xl leading-relaxed">
-              Estrutura de custos clara e sem taxas ocultas. Escolha a alocação ideal para o seu capital.
+              Clear cost structure with no hidden fees. Choose the ideal allocation for your capital.
             </p>
           </div>
         </div>
@@ -64,10 +68,10 @@ const Pricing = () => {
                 <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-8">{plan.name}</h3>
                 <div className="mb-8">
                   <span className="text-3xl font-black text-white">{plan.price}</span>
-                  <span className="text-slate-500 text-[10px] uppercase tracking-widest ml-2">/ mês</span>
+                  <span className="text-slate-500 text-[10px] uppercase tracking-widest ml-2">/ month</span>
                 </div>
                 <div className="p-5 bg-white/5 border border-white/5 mb-8">
-                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Alocação</p>
+                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-1">Allocation</p>
                   <p className="text-xl font-bold text-[#C5A059]">{plan.accountSize} USD</p>
                 </div>
                 <ul className="space-y-4 mb-10 flex-grow">
@@ -83,7 +87,7 @@ const Pricing = () => {
                     "w-full rounded-none h-14 text-[10px] font-bold uppercase tracking-widest transition-all",
                     plan.popular ? "bg-[#C5A059] text-white" : "bg-white/5 text-white hover:bg-white/10"
                   )}>
-                    Selecionar
+                    Select
                   </Button>
                 </Link>
               </div>
