@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Zap, BarChart3, Globe, ArrowRight, CheckCircle2, TrendingUp, Lock, Cpu, Award, Clock } from 'lucide-react';
+import { Shield, Zap, BarChart3, ArrowRight, CheckCircle2, Cpu, Award, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -15,80 +15,79 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+      <section className="relative min-h-[85vh] flex items-center pt-20 overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <img 
-            src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop" 
-            alt="Corporate Building" 
-            className="w-full h-full object-cover opacity-40"
+            src="https://images.unsplash.com/photo-1611974714024-4607ad03d639?q=80&w=2070&auto=format&fit=crop" 
+            alt="Trading Professional" 
+            className="w-full h-full object-cover opacity-30"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#05070A]/80 via-[#05070A]/90 to-[#05070A]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#05070A]/70 via-[#05070A]/90 to-[#05070A]" />
         </div>
 
         <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-4xl">
+          <div className="max-w-3xl">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="flex items-center gap-3 mb-8"
+              transition={{ duration: 0.5 }}
+              className="flex items-center gap-3 mb-6"
             >
-              <div className="h-[1px] w-12 bg-[#C5A059]" />
-              <span className="text-[#C5A059] text-[11px] font-bold uppercase tracking-[0.4em]">Infraestrutura Quantitativa de Elite</span>
+              <div className="h-[1px] w-10 bg-[#C5A059]" />
+              <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.3em]">Tecnologia Braxel Markets</span>
             </motion.div>
             
             <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-6xl md:text-9xl font-black tracking-tighter mb-10 leading-[0.85]"
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="text-4xl md:text-7xl font-black tracking-tighter mb-6 leading-tight"
             >
-              PRECISÃO <br />
-              <span className="text-[#C5A059]">INSTITUCIONAL.</span>
+              INVESTIMENTO <br />
+              <span className="text-[#C5A059]">INTELIGENTE.</span>
             </motion.h1>
             
             <motion.p 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-xl text-slate-400 mb-14 leading-relaxed max-w-2xl border-l border-[#C5A059]/30 pl-8"
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="text-lg text-slate-400 mb-10 leading-relaxed max-w-xl border-l-2 border-[#C5A059]/40 pl-6"
             >
-              A Braxel Markets fornece tecnologia de execução automatizada de nível empresarial. Nossa infraestrutura proprietária elimina o erro humano e otimiza cada milissegundo de execução.
+              Infraestrutura de execução automatizada para quem busca consistência. Eliminamos o erro emocional através de tecnologia proprietária de alta performance.
             </motion.p>
             
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center gap-8"
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="flex flex-col sm:flex-row items-center gap-6"
             >
               <Link to="/register">
-                <Button size="lg" className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-16 h-20 text-[13px] font-bold uppercase tracking-widest transition-all shadow-2xl shadow-[#C5A059]/20 border-none">
-                  Abrir Conta Agora
+                <Button size="lg" className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-10 h-16 text-[12px] font-bold uppercase tracking-widest transition-all border-none">
+                  Abrir Conta
                 </Button>
               </Link>
               <Link to="/platform">
-                <span className="text-white font-bold uppercase tracking-widest text-[12px] cursor-pointer hover:text-[#C5A059] transition-colors flex items-center gap-2">
-                  Explorar Tecnologia <ArrowRight size={16} />
+                <span className="text-white font-bold uppercase tracking-widest text-[11px] cursor-pointer hover:text-[#C5A059] transition-colors flex items-center gap-2">
+                  Nossa Tecnologia <ArrowRight size={14} />
                 </span>
               </Link>
             </motion.div>
           </div>
         </div>
 
-        {/* Market Bar */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-2xl border-t border-white/5 py-8">
+        {/* Market Bar - Simplified */}
+        <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md border-t border-white/5 py-6">
           <div className="container mx-auto px-4 md:px-8">
-            <div className="flex flex-wrap justify-between items-center gap-12">
+            <div className="flex flex-wrap justify-between items-center gap-8">
               {[
-                { label: "Uptime do Sistema", value: "99.99%" },
-                { label: "Latência Média", value: "< 1ms" },
-                { label: "Ativos Disponíveis", value: "150+" },
-                { label: "Suporte Global", value: "24/7" }
+                { label: "Uptime", value: "99.99%" },
+                { label: "Latência", value: "< 1ms" },
+                { label: "Suporte", value: "24/7" }
               ].map((stat, i) => (
                 <div key={i} className="flex flex-col">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-[0.2em] mb-2">{stat.label}</span>
-                  <span className="text-white font-bold text-lg tracking-tight">{stat.value}</span>
+                  <span className="text-[9px] text-slate-500 uppercase tracking-[0.2em] mb-1">{stat.label}</span>
+                  <span className="text-white font-bold text-base tracking-tight">{stat.value}</span>
                 </div>
               ))}
             </div>
@@ -96,44 +95,44 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Trust Section */}
-      <section className="py-32 bg-[#05070A] border-b border-white/5">
+      {/* Trust Section - More compact */}
+      <section className="py-24 bg-[#05070A] border-b border-white/5">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div>
-              <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-10 leading-tight">
-                TECNOLOGIA QUE <br />
-                <span className="text-[#C5A059]">REDEFINE O MERCADO.</span>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tighter mb-8 leading-tight">
+                SEGURANÇA E <br />
+                <span className="text-[#C5A059]">TRANSPARÊNCIA.</span>
               </h2>
-              <p className="text-slate-400 text-xl leading-relaxed mb-12">
-                Operamos com uma infraestrutura proprietária que garante transparência absoluta e segurança de nível bancário para cada investidor.
+              <p className="text-slate-400 text-lg leading-relaxed mb-10">
+                Operamos com foco total na proteção do seu capital, utilizando protocolos de segurança de nível bancário.
               </p>
-              <div className="space-y-8">
+              <div className="space-y-6">
                 {[
-                  "Execução direta em servidores Equinix LD4",
-                  "Protocolos de segurança AES-256",
-                  "Segregação total de capital e transparência de P&L"
+                  "Execução em servidores de alta performance",
+                  "Segurança AES-256",
+                  "Transparência total de resultados"
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-6">
-                    <div className="w-6 h-6 rounded-full bg-[#C5A059]/10 flex items-center justify-center border border-[#C5A059]/20">
-                      <CheckCircle2 className="text-[#C5A059]" size={14} />
+                  <div key={i} className="flex items-center gap-4">
+                    <div className="w-5 h-5 rounded-full bg-[#C5A059]/10 flex items-center justify-center border border-[#C5A059]/20">
+                      <CheckCircle2 className="text-[#C5A059]" size={12} />
                     </div>
-                    <span className="text-slate-200 font-bold text-sm uppercase tracking-widest">{item}</span>
+                    <span className="text-slate-200 font-bold text-xs uppercase tracking-widest">{item}</span>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-4">
               {[
-                { icon: <Award size={40} />, title: "Excelência", desc: "Melhor infraestrutura quantitativa 2025." },
-                { icon: <Shield size={40} />, title: "Segurança", desc: "Custódia institucional e criptografia." },
-                { icon: <Clock size={40} />, title: "24/7", desc: "Monitoramento ininterrupto de risco." },
-                { icon: <Globe size={40} />, title: "Global", desc: "Presença nos principais centros financeiros." }
+                { icon: <Shield size={32} />, title: "Segurança", desc: "Custódia e criptografia." },
+                { icon: <Clock size={32} />, title: "24/7", desc: "Monitoramento constante." },
+                { icon: <Award size={32} />, title: "Qualidade", desc: "Infraestrutura premium." },
+                { icon: <Zap size={32} />, title: "Velocidade", desc: "Execução instantânea." }
               ].map((card, i) => (
-                <div key={i} className="p-12 bg-white/5 border border-white/10 hover:border-[#C5A059]/30 transition-colors">
-                  <div className="text-[#C5A059] mb-8">{card.icon}</div>
-                  <h3 className="text-xl font-bold mb-3 uppercase tracking-tight">{card.title}</h3>
-                  <p className="text-slate-500 text-sm leading-relaxed">{card.desc}</p>
+                <div key={i} className="p-8 bg-white/5 border border-white/10 hover:border-[#C5A059]/30 transition-colors">
+                  <div className="text-[#C5A059] mb-6">{card.icon}</div>
+                  <h3 className="text-lg font-bold mb-2 uppercase tracking-tight">{card.title}</h3>
+                  <p className="text-slate-500 text-xs leading-relaxed">{card.desc}</p>
                 </div>
               ))}
             </div>
@@ -141,62 +140,61 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Automation Section */}
-      <section className="py-40 bg-[#080B12]">
+      {/* Automation Section - Simplified */}
+      <section className="py-24 bg-[#080B12]">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="max-w-4xl mx-auto text-center mb-24">
-            <span className="text-[#C5A059] text-[11px] font-bold uppercase tracking-[0.5em] mb-6 block">Automação de Elite</span>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-10">
-              VOCÊ MONITORA, <br />
-              <span className="text-[#C5A059]">NÓS EXECUTAMOS.</span>
+          <div className="max-w-3xl mx-auto text-center mb-16">
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Automação</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6">
+              FOCO NO <span className="text-[#C5A059]">RESULTADO.</span>
             </h2>
-            <p className="text-slate-400 text-xl leading-relaxed">
-              Nossa tecnologia é 100% automatizada. Uma vez configurada, nossos algoritmos gerenciam todas as operações, enquanto você acompanha o desempenho em tempo real.
+            <p className="text-slate-400 text-lg leading-relaxed">
+              Nossa tecnologia gerencia as operações automaticamente, permitindo que você acompanhe tudo em tempo real.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 border border-white/10 bg-black/20">
             {[
-              { icon: <Cpu size={28} />, title: "Algoritmos Proprietários", desc: "Estratégias desenvolvidas por especialistas quantitativos para qualquer condição de mercado." },
-              { icon: <BarChart3 size={28} />, title: "Dashboard em Tempo Real", desc: "Transparência absoluta. Visualize cada entrada e saída no momento em que acontecem.", highlight: true },
-              { icon: <Zap size={28} />, title: "Gestão de Risco Passiva", desc: "Protocolos automáticos de proteção de capital que operam 24 horas por dia." }
+              { icon: <Cpu size={24} />, title: "Algoritmos", desc: "Estratégias desenvolvidas por especialistas para diversos cenários." },
+              { icon: <BarChart3 size={24} />, title: "Dashboard", desc: "Visualize cada operação no momento em que acontece.", highlight: true },
+              { icon: <Shield size={24} />, title: "Gestão de Risco", desc: "Protocolos automáticos de proteção operando 24h." }
             ].map((item, i) => (
               <div key={i} className={cn(
-                "p-16 border-white/10",
+                "p-12 border-white/10",
                 i < 2 ? "lg:border-r" : "",
                 item.highlight ? "bg-white/5" : ""
               )}>
                 <div className={cn(
-                  "w-14 h-14 flex items-center justify-center mb-10",
+                  "w-12 h-12 flex items-center justify-center mb-8",
                   item.highlight ? "bg-[#C5A059] text-white" : "bg-white/10 text-[#C5A059]"
                 )}>
                   {item.icon}
                 </div>
-                <h3 className="text-xl font-bold mb-6 uppercase tracking-tight">{item.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
+                <h3 className="text-lg font-bold mb-4 uppercase tracking-tight">{item.title}</h3>
+                <p className="text-slate-500 text-xs leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-40 bg-[#05070A] relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-[#C5A059]/5 blur-[150px]" />
+      {/* CTA Section - More comfortable size */}
+      <section className="py-32 bg-[#05070A] relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-[#C5A059]/5 blur-[120px]" />
         <div className="container mx-auto px-4 md:px-8 text-center relative z-10">
-          <h2 className="text-5xl md:text-8xl font-black tracking-tighter mb-16">
-            PRONTO PARA O <br />
-            <span className="text-[#C5A059]">PRÓXIMO NÍVEL?</span>
+          <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-12">
+            PRONTO PARA <br />
+            <span className="text-[#C5A059]">COMEÇAR?</span>
           </h2>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-10">
             <Link to="/register">
-              <Button size="lg" className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-20 h-24 text-[14px] font-bold uppercase tracking-widest transition-all border-none">
-                Abrir Conta Institucional
+              <Button size="lg" className="bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none px-12 h-20 text-[13px] font-bold uppercase tracking-widest transition-all border-none">
+                Abrir Conta
               </Button>
             </Link>
             <Link to="/contact">
-              <span className="text-white font-bold uppercase tracking-widest text-[12px] cursor-pointer hover:text-[#C5A059] transition-colors border-b border-white/20 pb-1">
-                Falar com um Especialista
+              <span className="text-white font-bold uppercase tracking-widest text-[11px] cursor-pointer hover:text-[#C5A059] transition-colors border-b border-white/20 pb-1">
+                Falar com Suporte
               </span>
             </Link>
           </div>
