@@ -18,10 +18,10 @@ const Index = () => {
   const { t } = useTranslation();
   
   const stats = [
-    { value: "$2.4B+", label: t('stats.volume') },
-    { value: "12,400+", label: t('stats.traders') },
-    { value: "99.97%", label: t('stats.uptime') },
-    { value: "<1.8ms", label: t('stats.latency') },
+    { value: "$2.4B+", label: t('stats.volume') || "Trading Volume" },
+    { value: "12,400+", label: t('stats.traders') || "Active Traders" },
+    { value: "99.97%", label: t('stats.uptime') || "System Uptime" },
+    { value: "<1.8ms", label: t('stats.latency') || "Execution Latency" },
   ];
 
   return (
@@ -29,6 +29,7 @@ const Index = () => {
       <Navbar />
       <MarketTicker />
 
+      {/* Hero Section */}
       <section className="relative mt-[110px] min-h-[550px] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
         <div className="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.6),rgba(0,0,0,0),rgba(0,0,0,0))] pointer-events-none z-[1]" />
         
@@ -61,6 +62,7 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Stats Section */}
       <section className="bg-black py-[40px] px-8 border-y border-[#333333]">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, i) => (
@@ -79,6 +81,7 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Methodology Section */}
       <div className="container mx-auto px-4 md:px-8 py-16 space-y-20">
         <section>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/10 border border-white/10">
