@@ -15,26 +15,26 @@ const Pricing = () => {
   const plans = [
     {
       name: "Starter 2K",
-      price: "€69.99",
+      price: "€70.00",
       accountSize: "$2,000",
       features: ["Automation", "Account Management", "Email Support", "Controlled Risk"],
     },
     {
       name: "Pro 5K",
-      price: "€159.99",
+      price: "€160.00",
       accountSize: "$5,000",
       features: ["Starter Features", "Priority Support", "Detailed Logs"],
       popular: true
     },
     {
       name: "Advanced 10K",
-      price: "€319.99",
+      price: "€320.00",
       accountSize: "$10,000",
       features: ["Pro Features", "Multi-Account", "Weekly Reports"],
     },
     {
       name: "Elite 20K",
-      price: "€629.99",
+      price: "€630.00",
       accountSize: "$20,000",
       features: ["Advanced Features", "24/7 Support", "Dedicated Manager"],
     }
