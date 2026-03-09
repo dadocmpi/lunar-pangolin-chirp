@@ -21,7 +21,7 @@ const Terms = () => {
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-3xl">
             <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Legal</span>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Termos de <br /><span className="text-[#C5A059]">Serviço</span></h1>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Terms of <br /><span className="text-[#C5A059]">Service</span></h1>
           </div>
         </div>
       </section>
@@ -30,16 +30,16 @@ const Terms = () => {
         <section className="border border-white/10 bg-[#080B12] p-12 md:p-16">
           <div className="max-w-4xl mx-auto space-y-12 text-slate-400 text-sm leading-relaxed">
             <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">1. Aceitação dos Termos</h2>
-              <p>Ao acessar e utilizar a plataforma Braxel Markets, você concorda em cumprir e estar vinculado aos seguintes termos e condições de uso. Se você não concordar com qualquer parte destes termos, não deverá utilizar nossos serviços.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">1. Acceptance of Terms</h2>
+              <p>By accessing and using the Braxel Markets platform, you agree to comply with and be bound by the following terms and conditions of use. If you do not agree with any part of these terms, you should not use our services.</p>
             </div>
             <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">2. Natureza dos Serviços</h2>
-              <p>A Braxel Markets fornece infraestrutura tecnológica para automação de estratégias de investimento. Não somos uma corretora de valores ou consultoria financeira individualizada. O uso da plataforma implica na compreensão dos riscos inerentes ao mercado financeiro.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">2. Nature of Services</h2>
+              <p>Braxel Markets provides technological infrastructure for investment strategy automation. We are not a stockbroker or individualized financial consultancy. Use of the platform implies understanding the risks inherent in the financial market.</p>
             </div>
             <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">3. Responsabilidade do Usuário</h2>
-              <p>O usuário é inteiramente responsável pela segurança de suas credenciais de acesso e pelas decisões de alocação de capital dentro dos planos oferecidos pela plataforma.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">3. User Responsibility</h2>
+              <p>The user is entirely responsible for the security of their access credentials and for capital allocation decisions within the plans offered by the platform.</p>
             </div>
           </div>
         </section>

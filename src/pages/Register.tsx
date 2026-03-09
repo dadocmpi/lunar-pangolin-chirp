@@ -14,7 +14,7 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const navigate = useNavigate();
+  navigate = useNavigate();
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,10 +33,10 @@ const Register = () => {
 
       if (error) throw error;
 
-      showSuccess("Conta criada com sucesso! Verifique seu e-mail para confirmar.");
+      showSuccess("Account created successfully! Please check your email to confirm.");
       navigate('/login');
     } catch (error: any) {
-      showError(error.message || "Erro ao criar conta.");
+      showError(error.message || "Error creating account.");
     } finally {
       setLoading(false);
     }
@@ -61,14 +61,14 @@ const Register = () => {
         
         <div className="relative z-10">
           <h2 className="text-5xl font-black text-white mb-8 leading-tight uppercase tracking-tighter">
-            O Futuro do <br /><span className="text-[#C5A059]">Investimento</span>
+            The Future of <br /><span className="text-[#C5A059]">Investment</span>
           </h2>
           <ul className="space-y-6">
             {[
-              "Algoritmos de nível institucional",
-              "Proteção de capital avançada",
-              "Execução em milissegundos",
-              "Transparência total de operações"
+              "Institutional-grade algorithms",
+              "Advanced capital protection",
+              "Millisecond execution",
+              "Total transparency of operations"
             ].map((item, i) => (
               <li key={i} className="flex items-center gap-4 text-slate-400 text-sm font-bold uppercase tracking-widest">
                 <ShieldCheck className="text-[#C5A059]" size={20} />
@@ -95,28 +95,28 @@ const Register = () => {
           </Link>
           
           <div className="mb-10">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Acesso</span>
-            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Criar Conta</h1>
-            <p className="text-slate-500 text-xs mt-2">Inicie sua jornada no mercado institucional.</p>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Access</span>
+            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Create Account</h1>
+            <p className="text-slate-500 text-xs mt-2">Start your journey in the institutional market.</p>
           </div>
           
           <form className="space-y-5" onSubmit={handleRegister}>
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nome Completo</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
                 <Input 
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Seu nome" 
+                  placeholder="Your name" 
                   className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">E-mail</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
                 <Input 
@@ -124,14 +124,14 @@ const Register = () => {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@exemplo.com" 
+                  placeholder="email@example.com" 
                   className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Senha</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
                 <Input 
@@ -148,7 +148,7 @@ const Register = () => {
             <div className="flex items-start gap-3 py-2">
               <Checkbox id="terms" required className="mt-1 border-white/20 data-[state=checked]:bg-[#C5A059] data-[state=checked]:border-[#C5A059]" />
               <label htmlFor="terms" className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
-                Eu concordo com os <Link to="/terms" className="text-[#C5A059] hover:underline">Termos</Link> e a <Link to="/privacy" className="text-[#C5A059] hover:underline">Privacidade</Link>.
+                I agree to the <Link to="/terms" className="text-[#C5A059] hover:underline">Terms</Link> and <Link to="/privacy" className="text-[#C5A059] hover:underline">Privacy</Link>.
               </label>
             </div>
             
@@ -156,13 +156,13 @@ const Register = () => {
               disabled={loading}
               className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all border-none"
             >
-              {loading ? <Loader2 className="animate-spin" /> : "CRIAR MINHA CONTA"}
+              {loading ? <Loader2 className="animate-spin" /> : "CREATE MY ACCOUNT"}
             </Button>
           </form>
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              Já possui acesso? <Link to="/login" className="text-[#C5A059] hover:underline">Entrar</Link>
+              Already have access? <Link to="/login" className="text-[#C5A059] hover:underline">Login</Link>
             </p>
           </div>
         </div>

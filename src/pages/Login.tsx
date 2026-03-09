@@ -26,10 +26,10 @@ const Login = () => {
 
       if (error) throw error;
 
-      showSuccess("Login realizado com sucesso!");
+      showSuccess("Login successful!");
       navigate('/dashboard');
     } catch (error: any) {
-      showError(error.message || "Erro ao entrar.");
+      showError(error.message || "Error logging in.");
     } finally {
       setLoading(false);
     }
@@ -54,10 +54,10 @@ const Login = () => {
         
         <div className="relative z-10">
           <h2 className="text-5xl font-black text-white mb-8 leading-tight uppercase tracking-tighter">
-            Bem-vindo de <br /><span className="text-[#C5A059]">Volta</span>
+            Welcome <br /><span className="text-[#C5A059]">Back</span>
           </h2>
           <p className="text-slate-400 text-xs font-bold uppercase tracking-widest max-w-xs leading-relaxed">
-            Acesse sua infraestrutura de investimento e monitore sua performance em tempo real.
+            Access your investment infrastructure and monitor your performance in real-time.
           </p>
         </div>
         
@@ -78,14 +78,14 @@ const Login = () => {
           </Link>
           
           <div className="mb-10">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Segurança</span>
-            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Entrar</h1>
-            <p className="text-slate-500 text-xs mt-2">Insira suas credenciais de acesso.</p>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Security</span>
+            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Login</h1>
+            <p className="text-slate-500 text-xs mt-2">Enter your access credentials.</p>
           </div>
           
           <form className="space-y-6" onSubmit={handleLogin}>
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">E-mail</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
                 <Input 
@@ -93,7 +93,7 @@ const Login = () => {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@exemplo.com" 
+                  placeholder="email@example.com" 
                   className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
                 />
               </div>
@@ -101,8 +101,8 @@ const Login = () => {
             
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Senha</label>
-                <a href="#" className="text-[9px] text-[#C5A059] hover:underline font-bold uppercase tracking-widest">Esqueceu a senha?</a>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Password</label>
+                <a href="#" className="text-[9px] text-[#C5A059] hover:underline font-bold uppercase tracking-widest">Forgot password?</a>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
@@ -121,13 +121,13 @@ const Login = () => {
               disabled={loading}
               className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all border-none"
             >
-              {loading ? <Loader2 className="animate-spin" /> : "ACESSAR CONTA"}
+              {loading ? <Loader2 className="animate-spin" /> : "ACCESS ACCOUNT"}
             </Button>
           </form>
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              Não possui conta? <Link to="/register" className="text-[#C5A059] hover:underline">Criar conta</Link>
+              Don't have an account? <Link to="/register" className="text-[#C5A059] hover:underline">Create account</Link>
             </p>
           </div>
         </div>

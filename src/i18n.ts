@@ -82,86 +82,6 @@ const resources = {
         disclaimer: "Financial Disclaimer"
       }
     }
-  },
-  pt: {
-    translation: {
-      nav: {
-        pricing: "PREÇOS",
-        howItWorks: "COMO FUNCIONA",
-        about: "SOBRE NÓS",
-        contact: "CONTATO",
-        login: "ENTRAR",
-        openAccount: "ABRIR CONTA"
-      },
-      hero: {
-        badge: "ACESSO INSTITUCIONAL ABERTO",
-        title1: "O FUTURO DO",
-        title2: "QUANT TRADING.",
-        desc: "Algoritmos proprietários projetados para o mercado moderno. Experimente execução de nível institucional com precisão de milissegundos.",
-        getStarted: "COMEÇAR AGORA",
-        viewStrategies: "VER ESTRATÉGIAS"
-      },
-      about: {
-        badge: "INSTITUCIONAL",
-        title: "SOBRE A",
-        subtitle: "BRAXEL MARKETS",
-        desc: "Nossa missão é democratizar o acesso a estratégias de investimento de nível institucional através da tecnologia.",
-        historyTitle: "NOSSA HISTÓRIA",
-        historyDesc1: "A Braxel Markets nasceu da visão de especialistas em finanças quantitativas que perceberam a falta de acesso do investidor comum a ferramentas de automação de alta performance.",
-        historyDesc2: "Desde nossa fundação em Londres, construímos uma infraestrutura robusta e transparente que permite investir com a mesma precisão dos grandes players institucionais.",
-        stats: {
-          founded: "FUNDAÇÃO",
-          users: "USUÁRIOS",
-          uptime: "UPTIME",
-          support: "SUPORTE"
-        },
-        values: {
-          mission: "MISSÃO",
-          missionDesc: "Prover tecnologia de ponta para objetivos financeiros seguros.",
-          vision: "VISÃO",
-          visionDesc: "Ser a plataforma líder global em investimentos automatizados.",
-          values: "VALORES",
-          valuesDesc: "Integridade, transparência e inovação constante."
-        }
-      },
-      howItWorks: {
-        badge: "PROCESSO",
-        title: "COMO",
-        subtitle: "FUNCIONA",
-        desc: "Um fluxo simples e transparente em seis etapas para você começar a investir com automação profissional.",
-        steps: [
-          { title: "Registro", desc: "Processo rápido e seguro." },
-          { title: "Plano", desc: "Escolha sua alocação ideal." },
-          { title: "Pagamento", desc: "Processamento via PayPal." },
-          { title: "Ativação", desc: "Receba seu ID de conta." },
-          { title: "Saques", desc: "Solicitações em EUR." },
-          { title: "Relatórios", desc: "Resumos semanais por e-mail." }
-        ],
-        cta: "Pronto para o primeiro passo?",
-        ctaBtn: "CRIAR MINHA CONTA"
-      },
-      contact: {
-        badge: "SUPORTE",
-        title: "ENTRE EM",
-        subtitle: "CONTATO",
-        desc: "Estamos aqui para ajudar. Entre em contato conosco para qualquer dúvida ou suporte especializado.",
-        infoTitle: "INFORMAÇÕES",
-        formTitle: "ENVIE UMA MENSAGEM",
-        placeholders: {
-          name: "NOME",
-          email: "E-MAIL",
-          subject: "ASSUNTO",
-          message: "MENSAGEM"
-        },
-        sendBtn: "ENVIAR MENSAGEM"
-      },
-      footer: {
-        rights: "Todos os direitos reservados.",
-        privacy: "Privacidade",
-        terms: "Termos",
-        disclaimer: "Aviso Financeiro"
-      }
-    }
   }
 };
 
@@ -170,6 +90,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
+    lng: 'en', // Force English
     fallbackLng: 'en',
     debug: false,
     interpolation: {

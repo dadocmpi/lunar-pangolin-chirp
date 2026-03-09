@@ -20,8 +20,8 @@ const Disclaimer = () => {
         </div>
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-3xl">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Risco</span>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Aviso <br /><span className="text-[#C5A059]">Financeiro</span></h1>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Risk</span>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Financial <br /><span className="text-[#C5A059]">Disclaimer</span></h1>
           </div>
         </div>
       </section>
@@ -30,16 +30,16 @@ const Disclaimer = () => {
         <section className="border border-white/10 bg-[#080B12] p-12 md:p-16">
           <div className="max-w-4xl mx-auto space-y-12 text-slate-400 text-sm leading-relaxed">
             <div className="p-8 border-l-2 border-[#C5A059] bg-white/5">
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Aviso de Risco Importante</h2>
-              <p>O investimento em mercados financeiros envolve riscos substanciais e pode resultar na perda total do capital investido. Performance passada não é garantia de resultados futuros.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Important Risk Warning</h2>
+              <p>Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.</p>
             </div>
             <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Sem Aconselhamento</h2>
-              <p>O conteúdo deste site e os serviços prestados pela Braxel Markets não constituem aconselhamento financeiro, jurídico ou fiscal. Recomendamos que cada investidor busque orientação profissional independente antes de tomar decisões de investimento.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">No Advice</h2>
+              <p>The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.</p>
             </div>
             <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Limitação de Responsabilidade</h2>
-              <p>A Braxel Markets não se responsabiliza por perdas financeiras decorrentes do uso de nossa tecnologia de automação ou de flutuações de mercado.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Limitation of Liability</h2>
+              <p>Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.</p>
             </div>
           </div>
         </section>
