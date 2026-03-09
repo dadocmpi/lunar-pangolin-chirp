@@ -1,17 +1,21 @@
 "use client";
 
-import React from 'react';
-import { Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import { cn } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
+import { supabase } from '@/lib/supabase';
+import { generateAccountId } from '@/utils/idGenerator';
+import { showError, showSuccess } from '@/utils/toast';
 
 const Pricing = () => {
-  const { t } = useTranslation();
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const navigate = useNavigate();
+
   const plans = [
     {
       name: "Starter 2K",
@@ -39,6 +43,43 @@ const Pricing = () => {
       features: ["Advanced Features", "24/7 Support", "Dedicated Manager"],
     }
   ];
+
+  const handleSelectPlan = async (plan: any) => {
+    setLoadingPlan(plan.name);
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        showError("Você precisa estar logado para adquirir um plano.");
+        navigate('/login');
+        return;
+      }
+
+      const accountId = generateAccountId();
+
+      const { error } = await supabase
+        .from('services')
+        .insert([
+          { 
+            user_id: user.id, 
+            plan_name: plan.name, 
+            account_id: accountId,
+            status: 'Aguardando Ativação',
+            balance: plan.accountSize
+          }
+        ]);
+
+      if (error) throw error;
+
+      showSuccess(`Plano ${plan.name} selecionado! ID gerado: ${accountId}`);
+      navigate('/dashboard');
+    } catch (error: any) {
+      showError(error.message || "Erro ao processar plano.");
+    } finally {
+      setLoadingPlan(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
@@ -82,14 +123,16 @@ const Pricing = () => {
                     </li>
                   ))}
                 </ul>
-                <Link to="/register">
-                  <Button className={cn(
+                <Button 
+                  onClick={() => handleSelectPlan(plan)}
+                  disabled={loadingPlan === plan.name}
+                  className={cn(
                     "w-full rounded-none h-14 text-[10px] font-bold uppercase tracking-widest transition-all",
                     plan.popular ? "bg-[#C5A059] text-white" : "bg-white/5 text-white hover:bg-white/10"
-                  )}>
-                    Select
-                  </Button>
-                </Link>
+                  )}
+                >
+                  {loadingPlan === plan.name ? <Loader2 className="animate-spin" /> : "Select"}
+                </Button>
               </div>
             ))}
           </div>
