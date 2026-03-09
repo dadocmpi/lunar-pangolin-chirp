@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu, X, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '../lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
