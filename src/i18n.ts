@@ -60,6 +60,16 @@ const resources = {
         newyork: "New York (NY4)",
         tokyo: "Tokyo (TY3)"
       },
+      process_home: {
+        badge: "THE PROCESS",
+        title: "FROM CAPITAL TO",
+        subtitle: "PERFORMANCE",
+        step1: { title: "Select Allocation", desc: "Choose the institutional plan that fits your capital goals and complete the secure payment." },
+        step2: { title: "Instant Activation", desc: "Our proprietary infrastructure connects to your account ID in milliseconds." },
+        step3: { title: "Algorithmic Execution", desc: "High-frequency algorithms execute trades with optimized leverage and risk control." },
+        step4: { title: "Real-time Monitoring", desc: "Track every operation and performance metric through your dedicated dashboard." },
+        step5: { title: "Secure Returns", desc: "Request withdrawals of your profits directly to your bank account within 48 hours." }
+      },
       cta_home: {
         badge: "SECURE YOUR SPOT",
         title: "READY TO ELEVATE",
@@ -196,6 +206,16 @@ const resources = {
         newyork: "Nova York (NY4)",
         tokyo: "Tóquio (TY3)"
       },
+      process_home: {
+        badge: "O PROCESSO",
+        title: "DO CAPITAL À",
+        subtitle: "PERFORMANCE",
+        step1: { title: "Selecione a Alocação", desc: "Escolha o plano institucional que se adapta aos seus objetivos e complete o pagamento seguro." },
+        step2: { title: "Ativação Instantânea", desc: "Nossa infraestrutura proprietária conecta sua conta em milissegundos." },
+        step3: { title: "Execução Algorítmica", desc: "Algoritmos de alta frequência executam operações com alavancagem otimizada e controle de risco." },
+        step4: { title: "Monitoramento em Tempo Real", desc: "Acompanhe cada operação e métrica de performance através do seu dashboard dedicado." },
+        step5: { title: "Retornos Seguros", desc: "Solicite saques de seus lucros diretamente para sua conta bancária em até 48 horas." }
+      },
       cta_home: {
         badge: "GARANTA SUA VAGA",
         title: "PRONTO PARA ELEVAR",
@@ -221,7 +241,7 @@ const resources = {
         values: {
           mission: "MISSÃO",
           missionDesc: "Fornecer tecnologia de ponta para objetivos financeiros seguros.",
-          vision: "VISÃO",
+          vision: "VISION",
           visionDesc: "Ser o líder global em investimentos automatizados.",
           values: "VALORES",
           valuesDesc: "Integridade, transparência e inovação constante."

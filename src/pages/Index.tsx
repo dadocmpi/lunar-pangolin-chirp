@@ -6,7 +6,8 @@ import {
   Shield, Zap, BarChart3, ArrowRight, CheckCircle2, 
   Layout, Globe, Database, Activity, Layers, Users,
   TrendingUp, ShieldAlert, PieChart, Lock, Eye, Info,
-  Server, Scale, Cpu, ChevronRight, Network, ArrowUpRight
+  Server, Scale, Cpu, ChevronRight, Network, ArrowUpRight,
+  CreditCard, LayoutDashboard, Wallet
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -158,6 +159,40 @@ const Index = () => {
                 className="w-full h-full object-cover grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
               />
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Process Flow Section */}
+      <section className="py-24 px-8 bg-[#05070A] border-t border-white/5">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="mb-20 text-center">
+            <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('process_home.badge')}</span>
+            <h2 className="text-[32px] md:text-[48px] font-serif font-bold uppercase tracking-tighter">
+              {t('process_home.title')} <span className="text-[#D4AF37]">{t('process_home.subtitle')}</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 relative">
+            {/* Connecting Line (Desktop) */}
+            <div className="hidden md:block absolute top-12 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent -z-10" />
+            
+            {[
+              { icon: <CreditCard size={24} />, title: t('process_home.step1.title'), desc: t('process_home.step1.desc') },
+              { icon: <Zap size={24} />, title: t('process_home.step2.title'), desc: t('process_home.step2.desc') },
+              { icon: <Cpu size={24} />, title: t('process_home.step3.title'), desc: t('process_home.step3.desc') },
+              { icon: <LayoutDashboard size={24} />, title: t('process_home.step4.title'), desc: t('process_home.step4.desc') },
+              { icon: <Wallet size={24} />, title: t('process_home.step5.title'), desc: t('process_home.step5.desc') }
+            ].map((step, i) => (
+              <div key={i} className="flex flex-col items-center text-center group">
+                <div className="w-24 h-24 bg-[#080B12] border border-white/10 flex items-center justify-center text-[#D4AF37] mb-8 group-hover:border-[#D4AF37] group-hover:shadow-[0_0_30px_rgba(212,175,55,0.1)] transition-all duration-500 relative">
+                  <span className="absolute -top-3 -right-3 w-8 h-8 bg-black border border-white/10 flex items-center justify-center text-[10px] font-bold text-slate-500">0{i+1}</span>
+                  {step.icon}
+                </div>
+                <h3 className="text-[11px] font-bold uppercase tracking-[2px] mb-4 text-white">{step.title}</h3>
+                <p className="text-slate-500 text-[11px] leading-relaxed px-4">{step.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
