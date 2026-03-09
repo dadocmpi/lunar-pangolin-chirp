@@ -20,7 +20,7 @@ const Register = () => {
     e.preventDefault();
     
     if (!supabase) {
-      showError("Erro: Supabase não configurado. Adicione as chaves VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.");
+      showError("Erro: Supabase não configurado. Clique no botão 'Add Supabase' acima para configurar.");
       return;
     }
 
@@ -118,7 +118,7 @@ const Register = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="SEU NOME" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-widest text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[11px] font-bold tracking-widest text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
                 />
               </div>
             </div>
@@ -133,7 +133,7 @@ const Register = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="EMAIL@EXEMPLO.COM" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-widest text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[11px] font-bold tracking-widest text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
                 />
               </div>
             </div>
@@ -148,7 +148,7 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-widest text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[11px] font-bold tracking-widest text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
                 />
               </div>
             </div>
