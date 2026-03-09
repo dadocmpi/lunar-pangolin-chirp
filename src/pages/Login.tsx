@@ -18,7 +18,7 @@ const Login = () => {
     e.preventDefault();
     
     if (!supabase) {
-      showError("Erro: Supabase não configurado. Adicione a integração clicando no botão de integração.");
+      showError("Erro: Supabase não configurado. Clique no botão 'Add Supabase' acima.");
       return;
     }
 
@@ -87,7 +87,7 @@ const Login = () => {
           
           <div className="mb-10">
             <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Segurança</span>
-            <h1 className="text-4xl font-black text-white uppercase tracking-tighter">Entrar</h1>
+            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Entrar</h1>
             <p className="text-slate-500 text-xs mt-2">Insira suas credenciais de acesso.</p>
           </div>
           
@@ -102,7 +102,7 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@exemplo.com" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[11px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
                 />
               </div>
             </div>
@@ -120,7 +120,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[11px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
                 />
               </div>
             </div>
