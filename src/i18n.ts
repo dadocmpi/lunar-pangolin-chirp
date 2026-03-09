@@ -21,6 +21,45 @@ const resources = {
         getStarted: "GET STARTED NOW",
         viewStrategies: "VIEW STRATEGIES"
       },
+      stats: {
+        volume: "Trading Volume",
+        traders: "Active Traders",
+        uptime: "System Uptime",
+        latency: "Execution Latency"
+      },
+      methodology: {
+        badge: "METHODOLOGY",
+        title: "INSTITUTIONAL-GRADE STRATEGY",
+        momentum: {
+          title: "Momentum Strategy",
+          desc: "We identify sustained price movements across multiple asset classes using advanced statistical analysis.",
+          f1: "Multi-timeframe analysis",
+          f2: "Correlation detection",
+          f3: "Dynamic scaling"
+        },
+        volatility: {
+          title: "Volatility Protection",
+          desc: "Advanced modeling that protects capital during market turbulence by dynamically adjusting exposure.",
+          f1: "Real-time VIX integration",
+          f2: "Adaptive drawdown limits",
+          f3: "De-risking protocols"
+        },
+        risk: {
+          title: "Risk Management",
+          desc: "Rigorous controls ensuring capital preservation through systematic portfolio optimization.",
+          f1: "Kelly Criterion sizing",
+          f2: "Monte Carlo stress tests",
+          f3: "Daily VaR monitoring"
+        }
+      },
+      infrastructure: {
+        badge: "INFRASTRUCTURE",
+        title: "GLOBAL CONNECTIVITY",
+        desc: "Our servers are strategically located in the world's primary financial hubs to ensure the lowest possible latency.",
+        london: "London (LD4)",
+        newyork: "New York (NY4)",
+        tokyo: "Tokyo (TY3)"
+      },
       about: {
         badge: "INSTITUTIONAL",
         title: "ABOUT",
@@ -60,6 +99,15 @@ const resources = {
         cta: "Ready for the first step?",
         ctaBtn: "CREATE MY ACCOUNT"
       },
+      pricing: {
+        badge: "TRANSPARENCY",
+        title: "INVESTMENT",
+        subtitle: "PLANS",
+        desc: "Clear cost structure with no hidden fees. Choose the ideal allocation for your capital.",
+        select: "SELECT PLAN",
+        allocation: "ALLOCATION",
+        month: "month"
+      },
       contact: {
         badge: "SUPPORT",
         title: "GET IN",
@@ -82,6 +130,134 @@ const resources = {
         disclaimer: "Financial Disclaimer"
       }
     }
+  },
+  pt: {
+    translation: {
+      nav: {
+        pricing: "PREÇOS",
+        howItWorks: "COMO FUNCIONA",
+        about: "SOBRE NÓS",
+        contact: "CONTATO",
+        login: "LOGIN",
+        openAccount: "ABRIR CONTA"
+      },
+      hero: {
+        badge: "ACESSO INSTITUCIONAL ABERTO",
+        title1: "O FUTURO DO",
+        title2: "QUANT TRADING.",
+        desc: "Algoritmos proprietários projetados para o mercado moderno. Experimente execução de nível institucional com precisão de milissegundos.",
+        getStarted: "COMEÇAR AGORA",
+        viewStrategies: "VER ESTRATÉGIAS"
+      },
+      stats: {
+        volume: "Volume de Negociação",
+        traders: "Traders Ativos",
+        uptime: "Uptime do Sistema",
+        latency: "Latência de Execução"
+      },
+      methodology: {
+        badge: "METODOLOGIA",
+        title: "ESTRATÉGIA DE NÍVEL INSTITUCIONAL",
+        momentum: {
+          title: "Estratégia de Momentum",
+          desc: "Identificamos movimentos de preços sustentados em várias classes de ativos usando análise estatística avançada.",
+          f1: "Análise multi-timeframe",
+          f2: "Detecção de correlação",
+          f3: "Escalonamento dinâmico"
+        },
+        volatility: {
+          title: "Proteção de Volatilidade",
+          desc: "Modelagem avançada que protege o capital durante a turbulência do mercado, ajustando dinamicamente a exposição.",
+          f1: "Integração VIX em tempo real",
+          f2: "Limites de drawdown adaptativos",
+          f3: "Protocolos de de-risking"
+        },
+        risk: {
+          title: "Gestão de Risco",
+          desc: "Controles rigorosos que garantem a preservação do capital através da otimização sistemática do portfólio.",
+          f1: "Dimensionamento Kelly Criterion",
+          f2: "Testes de estresse Monte Carlo",
+          f3: "Monitoramento diário de VaR"
+        }
+      },
+      infrastructure: {
+        badge: "INFRAESTRUTURA",
+        title: "CONECTIVIDADE GLOBAL",
+        desc: "Nossos servidores estão estrategicamente localizados nos principais hubs financeiros do mundo para garantir a menor latência possível.",
+        london: "Londres (LD4)",
+        newyork: "Nova York (NY4)",
+        tokyo: "Tóquio (TY3)"
+      },
+      about: {
+        badge: "INSTITUCIONAL",
+        title: "SOBRE A",
+        subtitle: "BRAXEL MARKETS",
+        desc: "Nossa missão é democratizar o acesso a estratégias de investimento de nível institucional através da tecnologia.",
+        historyTitle: "NOSSA HISTÓRIA",
+        historyDesc1: "A Braxel Markets nasceu da visão de especialistas em finanças quantitativas que notaram a falta de acesso para investidores comuns a ferramentas de automação de alta performance.",
+        historyDesc2: "Desde nossa fundação em Londres, construímos uma infraestrutura robusta e transparente que permite investir com a mesma precisão que grandes players institucionais.",
+        stats: {
+          founded: "FUNDADA",
+          users: "USUÁRIOS",
+          uptime: "UPTIME",
+          support: "SUPORTE"
+        },
+        values: {
+          mission: "MISSÃO",
+          missionDesc: "Fornecer tecnologia de ponta para objetivos financeiros seguros.",
+          vision: "VISÃO",
+          visionDesc: "Ser o líder global em investimentos automatizados.",
+          values: "VALORES",
+          valuesDesc: "Integridade, transparência e inovação constante."
+        }
+      },
+      howItWorks: {
+        badge: "PROCESSO",
+        title: "COMO",
+        subtitle: "FUNCIONA",
+        desc: "Um fluxo simples e transparente de seis etapas para você começar a investir com automação profissional.",
+        steps: [
+          { title: "Registro", desc: "Processo rápido e seguro." },
+          { title: "Plano", desc: "Escolha sua alocação ideal." },
+          { title: "Pagamento", desc: "Processamento via PayPal." },
+          { title: "Ativação", desc: "Receba seu ID de conta." },
+          { title: "Saques", desc: "Solicitações em EUR." },
+          { title: "Relatórios", desc: "Resumos semanais por e-mail." }
+        ],
+        cta: "Pronto para o primeiro passo?",
+        ctaBtn: "CRIAR MINHA CONTA"
+      },
+      pricing: {
+        badge: "TRANSPARÊNCIA",
+        title: "PLANOS DE",
+        subtitle: "INVESTIMENTO",
+        desc: "Estrutura de custos clara, sem taxas ocultas. Escolha a alocação ideal para o seu capital.",
+        select: "SELECIONAR PLANO",
+        allocation: "ALOCAÇÃO",
+        month: "mês"
+      },
+      contact: {
+        badge: "SUPORTE",
+        title: "ENTRE EM",
+        subtitle: "CONTATO",
+        desc: "Estamos aqui para ajudar. Entre em contato para qualquer dúvida ou suporte especializado.",
+        infoTitle: "INFORMAÇÃO",
+        formTitle: "ENVIE UMA MENSAGEM",
+        placeholders: {
+          name: "NOME",
+          email: "E-MAIL",
+          subject: "ASSUNTO",
+          message: "MENSAGEM"
+        },
+        sendBtn: "ENVIAR MENSAGEM"
+      },
+      footer: {
+        rights: "Todos os direitos reservados.",
+        privacy: "Privacidade",
+        terms: "Termos",
+        disclaimer: "Aviso Financeiro"
+      }
+    }
   }
 };
 
@@ -90,7 +266,7 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en', // Force English
+    lng: 'en',
     fallbackLng: 'en',
     debug: false,
     interpolation: {
