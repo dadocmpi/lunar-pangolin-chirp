@@ -2,10 +2,10 @@
 
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Lock, Mail, Loader2, ShieldCheck } from 'lucide-react';
+import { Lock, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError } from '@/utils/toast';
 
 const Login = () => {
@@ -16,12 +16,6 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!supabase) {
-      showError("Erro: Supabase não configurado. Clique no botão 'Add Supabase' acima.");
-      return;
-    }
-
     setLoading(true);
 
     try {
@@ -43,7 +37,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#05070A]">
-      {/* Lado Esquerdo - Branding */}
       <div className="hidden md:flex md:w-1/2 bg-black p-12 flex-col justify-between relative overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-50" />
         
@@ -73,7 +66,6 @@ const Login = () => {
         </div>
       </div>
       
-      {/* Lado Direito - Formulário */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <Link to="/" className="md:hidden flex items-center gap-2 mb-12">

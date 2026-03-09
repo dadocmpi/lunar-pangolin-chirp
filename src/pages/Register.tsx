@@ -6,7 +6,7 @@ import { User, Mail, Lock, ShieldCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError } from '@/utils/toast';
 
 const Register = () => {
@@ -18,16 +18,10 @@ const Register = () => {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!supabase) {
-      showError("Erro: Supabase não configurado. Clique no botão 'Add Supabase' acima.");
-      return;
-    }
-
     setLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -50,7 +44,6 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#05070A]">
-      {/* Lado Esquerdo - Branding */}
       <div className="hidden md:flex md:w-1/2 bg-black p-12 flex-col justify-between relative overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-50" />
         
@@ -90,7 +83,6 @@ const Register = () => {
         </div>
       </div>
       
-      {/* Lado Direito - Formulário */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <Link to="/" className="md:hidden flex items-center gap-2 mb-12">
