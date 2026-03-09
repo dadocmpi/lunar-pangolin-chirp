@@ -60,6 +60,14 @@ const resources = {
         newyork: "New York (NY4)",
         tokyo: "Tokyo (TY3)"
       },
+      cta_home: {
+        badge: "SECURE YOUR SPOT",
+        title: "READY TO ELEVATE",
+        subtitle: "YOUR CAPITAL?",
+        desc: "Join thousands of institutional investors and start your journey with our proprietary quantitative strategies today. Limited slots available for the current quarter.",
+        btn: "GET STARTED NOW",
+        trust: "Institutional-grade security guaranteed."
+      },
       about: {
         badge: "INSTITUTIONAL",
         title: "ABOUT",
@@ -187,6 +195,14 @@ const resources = {
         london: "Londres (LD4)",
         newyork: "Nova York (NY4)",
         tokyo: "Tóquio (TY3)"
+      },
+      cta_home: {
+        badge: "GARANTA SUA VAGA",
+        title: "PRONTO PARA ELEVAR",
+        subtitle: "SEU CAPITAL?",
+        desc: "Junte-se a milhares de investidores institucionais e comece sua jornada com nossas estratégias quantitativas proprietárias hoje mesmo. Vagas limitadas para o trimestre atual.",
+        btn: "COMEÇAR AGORA",
+        trust: "Segurança de nível institucional garantida."
       },
       about: {
         badge: "INSTITUCIONAL",

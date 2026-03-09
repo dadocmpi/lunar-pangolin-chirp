@@ -6,7 +6,7 @@ import {
   Shield, Zap, BarChart3, ArrowRight, CheckCircle2, 
   Layout, Globe, Database, Activity, Layers, Users,
   TrendingUp, ShieldAlert, PieChart, Lock, Eye, Info,
-  Server, Scale, Cpu, ChevronRight, Network
+  Server, Scale, Cpu, ChevronRight, Network, ArrowUpRight
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
@@ -157,6 +157,31 @@ const Index = () => {
                 alt="Data Center" 
                 className="w-full h-full object-cover grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
               />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section */}
+      <section className="py-32 px-8 relative overflow-hidden border-t border-white/5">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(212,175,55,0.08)_0%,transparent_60%)] pointer-events-none" />
+        <div className="max-w-[1000px] mx-auto text-center relative z-10">
+          <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.6em] mb-6 block animate-pulse-badge">{t('cta_home.badge')}</span>
+          <h2 className="font-serif text-[42px] md:text-[64px] font-bold leading-[1] mb-8 tracking-[-2px] uppercase">
+            {t('cta_home.title')} <br />
+            <span className="text-[#D4AF37]">{t('cta_home.subtitle')}</span>
+          </h2>
+          <p className="font-sans text-[15px] md:text-[18px] text-slate-400 mb-12 leading-[1.6] max-w-[700px] mx-auto">
+            {t('cta_home.desc')}
+          </p>
+          <div className="flex flex-col items-center gap-6">
+            <Link to="/register">
+              <button className="bg-[#D4AF37] text-black px-16 py-5 rounded-[2px] font-tech text-[13px] font-black tracking-[2px] uppercase hover:bg-[#C9A227] hover:-translate-y-[2px] hover:shadow-[0_20px_40px_rgba(212,175,55,0.25)] transition-all duration-300 flex items-center gap-3">
+                {t('cta_home.btn')} <ArrowUpRight size={20} />
+              </button>
+            </Link>
+            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-slate-600">
+              <Lock size={12} /> {t('cta_home.trust')}
             </div>
           </div>
         </div>
