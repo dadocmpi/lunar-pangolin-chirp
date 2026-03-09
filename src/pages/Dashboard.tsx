@@ -147,16 +147,16 @@ const Dashboard = () => {
   const displayName = profile?.first_name || user?.user_metadata?.full_name || 'Investor';
 
   return (
-    <div className="min-h-screen bg-[#05070A] text-white">
+    <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       
-      <div className="container mx-auto px-4 md:px-8 pt-32 pb-20">
+      <div className="container mx-auto px-8 pt-[140px] pb-20">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <aside className="w-full lg:w-64 space-y-2">
             <div className="p-6 bg-[#080B12] border border-white/10 mb-6">
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Investor</p>
-              <p className="text-sm font-bold truncate">{displayName}</p>
+              <p className="text-[13px] font-bold truncate">{displayName}</p>
             </div>
             
             <nav className="space-y-1">
@@ -192,8 +192,8 @@ const Dashboard = () => {
             {activeView === 'services' && (
               <>
                 <header>
-                  <h1 className="text-3xl font-black uppercase tracking-tighter">My <span className="text-[#C5A059]">Investments</span></h1>
-                  <p className="text-slate-500 text-xs mt-2">Manage your accounts and track your operation IDs.</p>
+                  <h1 className="text-[28px] font-serif font-bold uppercase tracking-tighter">My <span className="text-[#C5A059]">Investments</span></h1>
+                  <p className="text-slate-500 text-[11px] mt-2">Manage your accounts and track your operation IDs.</p>
                 </header>
 
                 <div className="grid grid-cols-1 gap-4">
@@ -206,7 +206,7 @@ const Dashboard = () => {
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-lg">{service.plan_name}</h3>
+                              <h3 className="font-bold text-[16px]">{service.plan_name}</h3>
                               <span className={`text-[8px] px-2 py-0.5 font-bold uppercase tracking-widest ${service.status === 'Active' ? 'bg-green-500/20 text-green-500' : 'bg-yellow-500/20 text-yellow-500'}`}>
                                 {service.status}
                               </span>
@@ -220,7 +220,7 @@ const Dashboard = () => {
                         <div className="flex items-center gap-12">
                           <div className="text-right">
                             <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Current Balance</p>
-                            <p className="text-xl font-black text-[#C5A059]">{service.balance}</p>
+                            <p className="text-[20px] font-serif font-bold text-[#C5A059]">{service.balance}</p>
                           </div>
                           <Button variant="outline" className="border-white/10 hover:bg-white/5 text-[10px] font-bold uppercase tracking-widest h-10 rounded-none">
                             Details <ExternalLink size={12} className="ml-2" />
@@ -230,14 +230,14 @@ const Dashboard = () => {
                     ))
                   ) : (
                     <div className="p-12 bg-[#080B12] border border-white/10 text-center">
-                      <p className="text-slate-500 text-sm mb-2 uppercase tracking-widest font-bold">No active plans</p>
-                      <p className="text-slate-600 text-xs">You don't have any investments in your account yet.</p>
+                      <p className="text-slate-500 text-[11px] mb-2 uppercase tracking-widest font-bold">No active plans</p>
+                      <p className="text-slate-600 text-[11px]">You don't have any investments in your account yet.</p>
                     </div>
                   )}
                 </div>
 
                 <div className="p-8 border border-dashed border-white/10 text-center bg-white/[0.02]">
-                  <p className="text-slate-500 text-xs mb-4 uppercase tracking-widest font-bold">Want to expand your capital?</p>
+                  <p className="text-slate-500 text-[11px] mb-4 uppercase tracking-widest font-bold">Want to expand your capital?</p>
                   <Button 
                     onClick={() => navigate('/pricing')}
                     className="bg-white text-black hover:bg-slate-200 text-[10px] font-bold uppercase tracking-widest h-12 px-8 rounded-none transition-all"
@@ -251,8 +251,8 @@ const Dashboard = () => {
             {activeView === 'withdraw' && (
               <>
                 <header>
-                  <h1 className="text-3xl font-black uppercase tracking-tighter">Request <span className="text-[#C5A059]">Withdrawal</span></h1>
-                  <p className="text-slate-500 text-xs mt-2">Withdraw your profits quickly and securely.</p>
+                  <h1 className="text-[28px] font-serif font-bold uppercase tracking-tighter">Request <span className="text-[#C5A059]">Withdrawal</span></h1>
+                  <p className="text-slate-500 text-[11px] mt-2">Withdraw your profits quickly and securely.</p>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -266,7 +266,7 @@ const Dashboard = () => {
                           value={withdrawAmount}
                           onChange={(e) => setWithdrawAmount(e.target.value)}
                           placeholder="0.00"
-                          className="bg-white/5 border-white/10 rounded-none h-12 text-sm font-bold"
+                          className="bg-white/5 border-white/10 rounded-none h-12 text-[13px] font-bold"
                         />
                       </div>
                       <div className="space-y-2">
@@ -275,7 +275,7 @@ const Dashboard = () => {
                           value={iban}
                           onChange={(e) => setIban(e.target.value)}
                           placeholder="Enter your IBAN for receiving funds"
-                          className="bg-white/5 border-white/10 rounded-none h-12 text-sm font-bold"
+                          className="bg-white/5 border-white/10 rounded-none h-12 text-[13px] font-bold"
                         />
                       </div>
                       <Button 
@@ -302,8 +302,8 @@ const Dashboard = () => {
             {activeView === 'profile' && (
               <>
                 <header>
-                  <h1 className="text-3xl font-black uppercase tracking-tighter">My <span className="text-[#C5A059]">Profile</span></h1>
-                  <p className="text-slate-500 text-xs mt-2">Manage your personal information and security.</p>
+                  <h1 className="text-[28px] font-serif font-bold uppercase tracking-tighter">My <span className="text-[#C5A059]">Profile</span></h1>
+                  <p className="text-slate-500 text-[11px] mt-2">Manage your personal information and security.</p>
                 </header>
 
                 <div className="bg-[#080B12] border border-white/10 p-8 max-w-2xl">
@@ -314,7 +314,7 @@ const Dashboard = () => {
                         <Input 
                           value={profile?.first_name || ''}
                           onChange={(e) => setProfile({...profile, first_name: e.target.value})}
-                          className="bg-white/5 border-white/10 rounded-none h-12 text-sm font-bold"
+                          className="bg-white/5 border-white/10 rounded-none h-12 text-[13px] font-bold"
                         />
                       </div>
                       <div className="space-y-2">
@@ -322,7 +322,7 @@ const Dashboard = () => {
                         <Input 
                           value={profile?.last_name || ''}
                           onChange={(e) => setProfile({...profile, last_name: e.target.value})}
-                          className="bg-white/5 border-white/10 rounded-none h-12 text-sm font-bold"
+                          className="bg-white/5 border-white/10 rounded-none h-12 text-[13px] font-bold"
                         />
                       </div>
                     </div>
@@ -331,7 +331,7 @@ const Dashboard = () => {
                       <Input 
                         disabled
                         value={user?.email || ''}
-                        className="bg-white/5 border-white/10 rounded-none h-12 text-sm font-bold opacity-50"
+                        className="bg-white/5 border-white/10 rounded-none h-12 text-[13px] font-bold opacity-50"
                       />
                     </div>
                     <Button 
