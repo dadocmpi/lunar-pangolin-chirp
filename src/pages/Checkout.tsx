@@ -3,12 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { ShieldCheck, Lock, ArrowLeft, Loader2, CheckCircle2, CreditCard } from 'lucide-react';
+import { ShieldCheck, Lock, ArrowLeft, Loader2, CheckCircle2, CreditCard, UserPlus, LogIn } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { generateAccountId } from '@/utils/idGenerator';
 import { showError, showSuccess } from '@/utils/toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button';
 
 const Checkout = () => {
   const location = useLocation();
@@ -20,12 +21,6 @@ const Checkout = () => {
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        // Se não estiver logado, avisa e manda para o login, mas guarda o plano para voltar depois
-        showError("Please login or create an account to complete your purchase.");
-        navigate('/login', { state: { from: location.pathname, plan } });
-        return;
-      }
       setUser(user);
       setLoading(false);
     };
@@ -36,9 +31,11 @@ const Checkout = () => {
     }
 
     checkUser();
-  }, [plan, navigate, location]);
+  }, [plan, navigate]);
 
   const handlePaymentSuccess = async (details: any) => {
+    if (!user) return;
+    
     try {
       const accountId = generateAccountId();
       const { error } = await supabase
@@ -124,7 +121,7 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Método de Pagamento */}
+          {/* Método de Pagamento ou Login */}
           <div className="bg-[#080B12] border border-white/10 p-10 space-y-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -136,42 +133,69 @@ const Checkout = () => {
               </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="p-4 bg-[#C5A059]/10 border border-[#C5A059]/20 text-center">
-                <p className="text-[11px] font-bold text-[#C5A059] uppercase tracking-widest">
-                  Click below to Buy Plan
-                </p>
+            {!user ? (
+              <div className="space-y-8 py-4">
+                <div className="p-6 bg-[#C5A059]/5 border border-[#C5A059]/20 text-center">
+                  <p className="text-[11px] font-bold text-[#C5A059] uppercase tracking-widest mb-2">Authentication Required</p>
+                  <p className="text-slate-400 text-[10px] uppercase tracking-widest leading-relaxed">
+                    Please login or create an account to link this investment plan to your profile.
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <Button 
+                    onClick={() => navigate('/login', { state: { from: location.pathname, plan } })}
+                    className="bg-white text-black hover:bg-slate-200 rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
+                  >
+                    <LogIn size={16} className="mr-2" /> Login to Account
+                  </Button>
+                  <Button 
+                    onClick={() => navigate('/register', { state: { from: location.pathname, plan } })}
+                    variant="outline"
+                    className="border-white/10 hover:bg-white/5 rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
+                  >
+                    <UserPlus size={16} className="mr-2" /> Create New Account
+                  </Button>
+                </div>
               </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="p-4 bg-green-500/10 border border-green-500/20 text-center">
+                  <p className="text-[11px] font-bold text-green-500 uppercase tracking-widest">
+                    Logged in as {user.email}
+                  </p>
+                </div>
 
-              <div className="relative z-0">
-                <PayPalScriptProvider options={{ "client-id": "test" }}> 
-                  <PayPalButtons 
-                    style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
-                    createOrder={(data, actions) => {
-                      return actions.order.create({
-                        purchase_units: [
-                          {
-                            amount: {
-                              value: numericPrice,
-                              currency_code: "EUR"
+                <div className="relative z-0">
+                  <PayPalScriptProvider options={{ "client-id": "test" }}> 
+                    <PayPalButtons 
+                      style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
+                      createOrder={(data, actions) => {
+                        return actions.order.create({
+                          purchase_units: [
+                            {
+                              amount: {
+                                value: numericPrice,
+                                currency_code: "EUR"
+                              },
+                              description: `Braxel Markets - ${plan.name} Investment Plan`
                             },
-                            description: `Braxel Markets - ${plan.name} Investment Plan`
-                          },
-                        ],
-                      });
-                    }}
-                    onApprove={async (data, actions) => {
-                      const details = await actions.order?.capture();
-                      handlePaymentSuccess(details);
-                    }}
-                    onError={(err) => {
-                      showError("PayPal transaction failed. Please try again.");
-                      console.error(err);
-                    }}
-                  />
-                </PayPalScriptProvider>
+                          ],
+                        });
+                      }}
+                      onApprove={async (data, actions) => {
+                        const details = await actions.order?.capture();
+                        handlePaymentSuccess(details);
+                      }}
+                      onError={(err) => {
+                        showError("PayPal transaction failed. Please try again.");
+                        console.error(err);
+                      }}
+                    />
+                  </PayPalScriptProvider>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="pt-8 border-t border-white/5 text-center">
               <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">
