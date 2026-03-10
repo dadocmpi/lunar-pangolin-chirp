@@ -47,7 +47,7 @@ const Pricing = () => {
   ];
 
   const handleSelectPlan = (plan: any) => {
-    // Redireciona para o checkout passando os dados do plano
+    // Redireciona para o checkout passando os dados do plano via state
     navigate('/checkout', { state: { plan } });
   };
 
