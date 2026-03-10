@@ -49,12 +49,12 @@ const Index = () => {
           </p>
           
           <div className="flex flex-wrap justify-center gap-5">
-            <Link to="/register">
+            <Link to="/pricing">
               <button className="bg-[#D4AF37] text-black px-10 py-4 rounded-[2px] font-tech text-[12px] font-black tracking-[2px] uppercase hover:bg-[#C9A227] hover:-translate-y-[2px] hover:shadow-[0_15px_30px_rgba(212,175,55,0.2)] transition-all duration-300">
                 {t('hero.getStarted')}
               </button>
             </Link>
-            <Link to="/pricing">
+            <Link to="/about">
               <button className="bg-transparent text-white border border-white/20 px-10 py-4 rounded-[2px] font-tech text-[12px] font-black tracking-[2px] uppercase hover:bg-white hover:text-black hover:-translate-y-[2px] transition-all duration-300">
                 {t('hero.viewStrategies')}
               </button>
@@ -210,7 +210,7 @@ const Index = () => {
             {t('cta_home.desc')}
           </p>
           <div className="flex flex-col items-center gap-6">
-            <Link to="/register">
+            <Link to="/pricing">
               <button className="bg-[#D4AF37] text-black px-16 py-5 rounded-[2px] font-tech text-[13px] font-black tracking-[2px] uppercase hover:bg-[#C9A227] hover:-translate-y-[2px] hover:shadow-[0_20px_40px_rgba(212,175,55,0.25)] transition-all duration-300 flex items-center gap-3">
                 {t('cta_home.btn')} <ArrowUpRight size={20} />
               </button>

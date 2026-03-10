@@ -6,292 +6,156 @@ const resources = {
   en: {
     translation: {
       nav: {
-        pricing: "PRICING",
-        howItWorks: "HOW IT WORKS",
-        about: "ABOUT US",
-        contact: "CONTACT",
-        login: "LOGIN",
-        openAccount: "OPEN ACCOUNT"
+        pricing: "INVESTMENT PLANS",
+        howItWorks: "THE INFRASTRUCTURE",
+        about: "OUR LEGACY",
+        contact: "INSTITUTIONAL SUPPORT",
+        login: "CLIENT ACCESS",
+        openAccount: "JOIN BRAXEL"
       },
       hero: {
-        badge: "INSTITUTIONAL ACCESS NOW OPEN",
-        title1: "THE FUTURE OF",
-        title2: "QUANT TRADING.",
-        desc: "Proprietary algorithms engineered for the modern market. Experience institutional-grade execution with millisecond precision.",
-        getStarted: "GET STARTED NOW",
-        viewStrategies: "VIEW STRATEGIES"
+        badge: "INSTITUTIONAL LIQUIDITY NOW ACCESSIBLE",
+        title1: "ELITE ALGORITHMIC",
+        title2: "CAPITAL MANAGEMENT.",
+        desc: "Deploy institutional-grade quantitative strategies engineered for the modern market. Experience millisecond execution precision and advanced risk mitigation protocols.",
+        getStarted: "EXPLORE INVESTMENT PLANS",
+        viewStrategies: "TECHNICAL METHODOLOGY"
       },
       stats: {
-        volume: "Trading Volume",
-        traders: "Active Traders",
-        uptime: "System Uptime",
-        latency: "Execution Latency"
+        volume: "Total Managed Volume",
+        traders: "Global Active Investors",
+        uptime: "Infrastructure Uptime",
+        latency: "Execution Precision"
       },
       methodology: {
-        badge: "METHODOLOGY",
-        title: "INSTITUTIONAL-GRADE STRATEGY",
+        badge: "OUR EDGE",
+        title: "QUANTITATIVE PRECISION",
         momentum: {
-          title: "Momentum Strategy",
-          desc: "We identify sustained price movements across multiple asset classes using advanced statistical analysis.",
-          f1: "Multi-timeframe analysis",
-          f2: "Correlation detection",
-          f3: "Dynamic scaling"
+          title: "Dynamic Momentum Optimization",
+          desc: "Our algorithms identify and exploit sustained price movements across global asset classes using high-dimensional statistical analysis.",
+          f1: "Multi-timeframe validation",
+          f2: "Cross-asset correlation",
+          f3: "Adaptive position scaling"
         },
         volatility: {
-          title: "Volatility Protection",
-          desc: "Advanced modeling that protects capital during market turbulence by dynamically adjusting exposure.",
+          title: "Intelligent Volatility Shield",
+          desc: "Advanced mathematical modeling that preserves capital during turbulence by dynamically recalibrating market exposure in real-time.",
           f1: "Real-time VIX integration",
-          f2: "Adaptive drawdown limits",
-          f3: "De-risking protocols"
+          f2: "Non-linear drawdown limits",
+          f3: "Automated de-risking"
         },
         risk: {
-          title: "Risk Management",
-          desc: "Rigorous controls ensuring capital preservation through systematic portfolio optimization.",
-          f1: "Kelly Criterion sizing",
-          f2: "Monte Carlo stress tests",
-          f3: "Daily VaR monitoring"
+          title: "Systematic Risk Architecture",
+          desc: "Rigorous institutional controls ensuring capital preservation through continuous portfolio optimization and stress testing.",
+          f1: "Kelly Criterion optimization",
+          f2: "Monte Carlo simulations",
+          f3: "24/7 VaR monitoring"
         }
-      },
-      infrastructure: {
-        badge: "INFRASTRUCTURE",
-        title: "GLOBAL CONNECTIVITY",
-        desc: "Our servers are strategically located in the world's primary financial hubs to ensure the lowest possible latency.",
-        london: "London (LD4)",
-        newyork: "New York (NY4)",
-        tokyo: "Tokyo (TY3)"
       },
       process_home: {
-        badge: "THE PROCESS",
+        badge: "THE ROADMAP",
         title: "FROM CAPITAL TO",
-        subtitle: "PERFORMANCE",
-        step1: { title: "Select Allocation", desc: "Choose the institutional plan that fits your capital goals and complete the secure payment." },
-        step2: { title: "Instant Activation", desc: "Our proprietary infrastructure connects to your account ID in milliseconds." },
-        step3: { title: "Algorithmic Execution", desc: "High-frequency algorithms execute trades with optimized leverage and risk control." },
-        step4: { title: "Real-time Monitoring", desc: "Track every operation and performance metric through your dedicated dashboard." },
-        step5: { title: "Secure Returns", desc: "Request withdrawals of your profits directly to your bank account within 48 hours." }
+        subtitle: "ELITE PERFORMANCE",
+        step1: { title: "Strategic Allocation", desc: "Select the institutional-grade plan that aligns with your financial objectives and secure your slot." },
+        step2: { title: "Instant Integration", desc: "Our proprietary infrastructure synchronizes with your unique account ID in milliseconds." },
+        step3: { title: "Algorithmic Deployment", desc: "High-frequency models execute trades with optimized leverage and institutional risk parameters." },
+        step4: { title: "Performance Analytics", desc: "Monitor every execution and real-time metric through your professional-grade dashboard." },
+        step5: { title: "Capital Liquidity", desc: "Request profit withdrawals directly to your bank account with guaranteed 48-hour processing." }
       },
       cta_home: {
-        badge: "SECURE YOUR SPOT",
-        title: "READY TO ELEVATE",
-        subtitle: "YOUR CAPITAL?",
-        desc: "Join thousands of institutional investors and start your journey with our proprietary quantitative strategies today. Limited slots available for the current quarter.",
-        btn: "GET STARTED NOW",
-        trust: "Institutional-grade security guaranteed."
-      },
-      about: {
-        badge: "INSTITUTIONAL",
-        title: "ABOUT",
-        subtitle: "BRAXEL MARKETS",
-        desc: "Our mission is to democratize access to institutional-grade investment strategies through technology.",
-        historyTitle: "OUR HISTORY",
-        historyDesc1: "Braxel Markets was born from the vision of quantitative finance experts who noticed the lack of access for common investors to high-performance automation tools.",
-        historyDesc2: "Since our founding in London, we have built a robust and transparent infrastructure that allows investing with the same precision as large institutional players.",
-        stats: {
-          founded: "FOUNDED",
-          users: "USERS",
-          uptime: "UPTIME",
-          support: "SUPPORT"
-        },
-        values: {
-          mission: "MISSION",
-          missionDesc: "Provide cutting-edge technology for secure financial goals.",
-          vision: "VISION",
-          visionDesc: "To be the global leader in automated investments.",
-          values: "VALUES",
-          valuesDesc: "Integrity, transparency, and constant innovation."
-        }
-      },
-      howItWorks: {
-        badge: "PROCESS",
-        title: "HOW IT",
-        subtitle: "WORKS",
-        desc: "A simple and transparent six-step flow for you to start investing with professional automation.",
-        steps: [
-          { title: "Registration", desc: "Fast and secure process." },
-          { title: "Plan", desc: "Choose your ideal allocation." },
-          { title: "Payment", desc: "Processing via PayPal." },
-          { title: "Activation", desc: "Receive your account ID." },
-          { title: "Withdrawals", desc: "Requests in EUR." },
-          { title: "Reports", desc: "Weekly email summaries." }
-        ],
-        cta: "Ready for the first step?",
-        ctaBtn: "CREATE MY ACCOUNT"
+        badge: "LIMITED INSTITUTIONAL SLOTS",
+        title: "READY TO OPTIMIZE",
+        subtitle: "YOUR PORTFOLIO?",
+        desc: "Join an exclusive network of global investors utilizing proprietary quantitative infrastructure. Secure your allocation for the current fiscal quarter.",
+        btn: "VIEW INVESTMENT PLANS",
+        trust: "Secured by AES-256 Institutional Encryption."
       },
       pricing: {
         badge: "TRANSPARENCY",
-        title: "INVESTMENT",
-        subtitle: "PLANS",
-        desc: "Clear cost structure with no hidden fees. Choose the ideal allocation for your capital.",
-        select: "SELECT PLAN",
-        allocation: "ALLOCATION",
-        month: "month"
-      },
-      contact: {
-        badge: "SUPPORT",
-        title: "GET IN",
-        subtitle: "CONTACT",
-        desc: "We are here to help. Contact us for any questions or specialized support.",
-        infoTitle: "INFORMATION",
-        formTitle: "SEND A MESSAGE",
-        placeholders: {
-          name: "NAME",
-          email: "EMAIL",
-          subject: "SUBJECT",
-          message: "MESSAGE"
-        },
-        sendBtn: "SEND MESSAGE"
-      },
-      footer: {
-        rights: "All rights reserved.",
-        privacy: "Privacy",
-        terms: "Terms",
-        disclaimer: "Financial Disclaimer"
+        title: "CAPITAL",
+        subtitle: "ALLOCATIONS",
+        desc: "Institutional-grade infrastructure with a transparent fee structure. No hidden costs, just pure performance.",
+        select: "SECURE THIS PLAN",
+        allocation: "MANAGED CAPITAL",
+        month: "monthly fee"
       }
     }
   },
   pt: {
     translation: {
       nav: {
-        pricing: "PREÇOS",
-        howItWorks: "COMO FUNCIONA",
-        about: "SOBRE NÓS",
-        contact: "CONTATO",
-        login: "LOGIN",
-        openAccount: "ABRIR CONTA"
+        pricing: "PLANOS DE INVESTIMENTO",
+        howItWorks: "INFRAESTRUTURA",
+        about: "NOSSO LEGADO",
+        contact: "SUPORTE INSTITUCIONAL",
+        login: "ACESSO CLIENTE",
+        openAccount: "JUNTAR-SE À BRAXEL"
       },
       hero: {
-        badge: "ACESSO INSTITUCIONAL ABERTO",
-        title1: "O FUTURO DO",
-        title2: "QUANT TRADING.",
-        desc: "Algoritmos proprietários projetados para o mercado moderno. Experimente execução de nível institucional com precisão de milissegundos.",
-        getStarted: "COMEÇAR AGORA",
-        viewStrategies: "VER ESTRATÉGIAS"
+        badge: "LIQUIDEZ INSTITUCIONAL AGORA ACESSÍVEL",
+        title1: "GESTÃO DE CAPITAL",
+        title2: "ALGORÍTMICA DE ELITE.",
+        desc: "Implemente estratégias quantitativas de nível institucional projetadas para o mercado moderno. Experimente precisão de execução em milissegundos e protocolos avançados de mitigação de risco.",
+        getStarted: "EXPLORAR PLANOS DE INVESTIMENTO",
+        viewStrategies: "METODOLOGIA TÉCNICA"
       },
       stats: {
-        volume: "Volume de Negociação",
-        traders: "Traders Ativos",
-        uptime: "Uptime do Sistema",
-        latency: "Latência de Execução"
+        volume: "Volume Total Gerenciado",
+        traders: "Investidores Ativos Globais",
+        uptime: "Uptime da Infraestrutura",
+        latency: "Precisão de Execução"
       },
       methodology: {
-        badge: "METODOLOGIA",
-        title: "ESTRATÉGIA DE NÍVEL INSTITUCIONAL",
+        badge: "NOSSA VANTAGEM",
+        title: "PRECISÃO QUANTITATIVA",
         momentum: {
-          title: "Estratégia de Momentum",
-          desc: "Identificamos movimentos de preços sustentados em várias classes de ativos usando análise estatística avançada.",
-          f1: "Análise multi-timeframe",
-          f2: "Detecção de correlação",
-          f3: "Escalonamento dinâmico"
+          title: "Otimização de Momentum Dinâmico",
+          desc: "Nossos algoritmos identificam e exploram movimentos de preços sustentados em classes de ativos globais usando análise estatística de alta dimensão.",
+          f1: "Validação multi-timeframe",
+          f2: "Correlação entre ativos",
+          f3: "Escalonamento adaptativo"
         },
         volatility: {
-          title: "Proteção de Volatilidade",
-          desc: "Modelagem avançada que protege o capital durante a turbulência do mercado, ajustando dinamicamente a exposição.",
+          title: "Escudo de Volatilidade Inteligente",
+          desc: "Modelagem matemática avançada que preserva o capital durante turbulências, recalibrando dinamicamente a exposição ao mercado em tempo real.",
           f1: "Integração VIX em tempo real",
-          f2: "Limites de drawdown adaptativos",
-          f3: "Protocolos de de-risking"
+          f2: "Limites de drawdown não lineares",
+          f3: "De-risking automatizado"
         },
         risk: {
-          title: "Gestão de Risco",
-          desc: "Controles rigorosos que garantem a preservação do capital através da otimização sistemática do portfólio.",
-          f1: "Dimensionamento Kelly Criterion",
-          f2: "Testes de estresse Monte Carlo",
-          f3: "Monitoramento diário de VaR"
+          title: "Arquitetura de Risco Sistemático",
+          desc: "Controles institucionais rigorosos que garantem a preservação do capital através da otimização contínua do portfólio e testes de estresse.",
+          f1: "Otimização Kelly Criterion",
+          f2: "Simulações de Monte Carlo",
+          f3: "Monitoramento VaR 24/7"
         }
-      },
-      infrastructure: {
-        badge: "INFRAESTRUTURA",
-        title: "CONECTIVIDADE GLOBAL",
-        desc: "Nossos servidores estão estrategicamente localizados nos principais hubs financeiros do mundo para garantir a menor latência possível.",
-        london: "Londres (LD4)",
-        newyork: "Nova York (NY4)",
-        tokyo: "Tóquio (TY3)"
       },
       process_home: {
-        badge: "O PROCESSO",
+        badge: "O ROTEIRO",
         title: "DO CAPITAL À",
-        subtitle: "PERFORMANCE",
-        step1: { title: "Selecione a Alocação", desc: "Escolha o plano institucional que se adapta aos seus objetivos e complete o pagamento seguro." },
-        step2: { title: "Ativação Instantânea", desc: "Nossa infraestrutura proprietária conecta sua conta em milissegundos." },
-        step3: { title: "Execução Algorítmica", desc: "Algoritmos de alta frequência executam operações com alavancagem otimizada e controle de risco." },
-        step4: { title: "Monitoramento em Tempo Real", desc: "Acompanhe cada operação e métrica de performance através do seu dashboard dedicado." },
-        step5: { title: "Retornos Seguros", desc: "Solicite saques de seus lucros diretamente para sua conta bancária em até 48 horas." }
+        subtitle: "PERFORMANCE DE ELITE",
+        step1: { title: "Alocação Estratégica", desc: "Selecione o plano de nível institucional que se alinha aos seus objetivos financeiros e garanta sua vaga." },
+        step2: { title: "Integração Instantânea", desc: "Nossa infraestrutura proprietária sincroniza com seu ID de conta exclusivo em milissegundos." },
+        step3: { title: "Implementação Algorítmica", desc: "Modelos de alta frequência executam operações com alavancagem otimizada e parâmetros de risco institucionais." },
+        step4: { title: "Análise de Performance", desc: "Monitore cada execução e métrica em tempo real através do seu dashboard profissional." },
+        step5: { title: "Liquidez de Capital", desc: "Solicite saques de lucros diretamente para sua conta bancária com processamento garantido em 48 horas." }
       },
       cta_home: {
-        badge: "GARANTA SUA VAGA",
-        title: "PRONTO PARA ELEVAR",
-        subtitle: "SEU CAPITAL?",
-        desc: "Junte-se a milhares de investidores institucionais e comece sua jornada com nossas estratégias quantitativas proprietárias hoje mesmo. Vagas limitadas para o trimestre atual.",
-        btn: "COMEÇAR AGORA",
-        trust: "Segurança de nível institucional garantida."
-      },
-      about: {
-        badge: "INSTITUCIONAL",
-        title: "SOBRE A",
-        subtitle: "BRAXEL MARKETS",
-        desc: "Nossa missão é democratizar o acesso a estratégias de investimento de nível institucional através da tecnologia.",
-        historyTitle: "NOSSA HISTÓRIA",
-        historyDesc1: "A Braxel Markets nasceu da visão de especialistas em finanças quantitativas que notaram a falta de acesso para investidores comuns a ferramentas de automação de alta performance.",
-        historyDesc2: "Desde nossa fundação em Londres, construímos uma infraestrutura robusta e transparente que permite investir com a mesma precisão que grandes players institucionais.",
-        stats: {
-          founded: "FUNDADA",
-          users: "USUÁRIOS",
-          uptime: "UPTIME",
-          support: "SUPORTE"
-        },
-        values: {
-          mission: "MISSÃO",
-          missionDesc: "Fornecer tecnologia de ponta para objetivos financeiros seguros.",
-          vision: "VISION",
-          visionDesc: "Ser o líder global em investimentos automatizados.",
-          values: "VALORES",
-          valuesDesc: "Integridade, transparência e inovação constante."
-        }
-      },
-      howItWorks: {
-        badge: "PROCESSO",
-        title: "COMO",
-        subtitle: "FUNCIONA",
-        desc: "Um fluxo simples e transparente de seis etapas para você começar a investir com automação profissional.",
-        steps: [
-          { title: "Registro", desc: "Processo rápido e seguro." },
-          { title: "Plano", desc: "Escolha sua alocação ideal." },
-          { title: "Pagamento", desc: "Processamento via PayPal." },
-          { title: "Ativação", desc: "Receba seu ID de conta." },
-          { title: "Saques", desc: "Solicitações em EUR." },
-          { title: "Relatórios", desc: "Resumos semanais por e-mail." }
-        ],
-        cta: "Pronto para o primeiro passo?",
-        ctaBtn: "CRIAR MINHA CONTA"
+        badge: "VAGAS INSTITUCIONAIS LIMITADAS",
+        title: "PRONTO PARA OTIMIZAR",
+        subtitle: "SEU PORTFÓLIO?",
+        desc: "Junte-se a uma rede exclusiva de investidores globais utilizando infraestrutura quantitativa proprietária. Garanta sua alocação para o trimestre fiscal atual.",
+        btn: "VER PLANOS DE INVESTIMENTO",
+        trust: "Protegido por Criptografia Institucional AES-256."
       },
       pricing: {
         badge: "TRANSPARÊNCIA",
-        title: "PLANOS DE",
-        subtitle: "INVESTIMENTO",
-        desc: "Estrutura de custos clara, sem taxas ocultas. Escolha a alocação ideal para o seu capital.",
-        select: "SELECIONAR PLANO",
-        allocation: "ALOCAÇÃO",
-        month: "mês"
-      },
-      contact: {
-        badge: "SUPORTE",
-        title: "ENTRE EM",
-        subtitle: "CONTATO",
-        desc: "Estamos aqui para ajudar. Entre em contato para qualquer dúvida ou suporte especializado.",
-        infoTitle: "INFORMAÇÃO",
-        formTitle: "ENVIE UMA MENSAGEM",
-        placeholders: {
-          name: "NOME",
-          email: "E-MAIL",
-          subject: "ASSUNTO",
-          message: "MENSAGEM"
-        },
-        sendBtn: "ENVIAR MENSAGEM"
-      },
-      footer: {
-        rights: "Todos os direitos reservados.",
-        privacy: "Privacidade",
-        terms: "Termos",
-        disclaimer: "Aviso Financeiro"
+        title: "ALOCAÇÕES DE",
+        subtitle: "CAPITAL",
+        desc: "Infraestrutura de nível institucional com uma estrutura de taxas transparente. Sem custos ocultos, apenas performance pura.",
+        select: "GARANTIR ESTE PLANO",
+        allocation: "CAPITAL GERENCIADO",
+        month: "taxa mensal"
       }
     }
   }
