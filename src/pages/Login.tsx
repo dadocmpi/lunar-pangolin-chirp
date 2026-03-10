@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +13,11 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Verifica se o usuário veio do checkout
+  const from = location.state?.from || '/dashboard';
+  const plan = location.state?.plan;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +32,8 @@ const Login = () => {
       if (error) throw error;
 
       showSuccess("Login successful!");
-      navigate('/dashboard');
+      // Redireciona de volta para onde o usuário estava (ex: Checkout)
+      navigate(from, { state: { plan } });
     } catch (error: any) {
       showError(error.message || "Error logging in.");
     } finally {
@@ -127,7 +133,7 @@ const Login = () => {
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              Don't have an account? <Link to="/register" className="text-[#C5A059] hover:underline">Create account</Link>
+              Don't have an account? <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">Create account</Link>
             </p>
           </div>
         </div>
