@@ -8,14 +8,10 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
-import { generateAccountId } from '@/utils/idGenerator';
-import { showError, showSuccess } from '@/utils/toast';
 import { useTranslation } from 'react-i18next';
 
 const Pricing = () => {
   const { t } = useTranslation();
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const plans = [
@@ -50,33 +46,9 @@ const Pricing = () => {
     }
   ];
 
-  const handleSelectPlan = async (plan: any) => {
-    setLoadingPlan(plan.name);
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        showError("You must be logged in to select a plan.");
-        navigate('/login');
-        return;
-      }
-      const accountId = generateAccountId();
-      const { error } = await supabase
-        .from('services')
-        .insert([{ 
-          user_id: user.id, 
-          plan_name: plan.name, 
-          account_id: accountId,
-          status: 'Awaiting Activation',
-          balance: plan.accountSize
-        }]);
-      if (error) throw error;
-      showSuccess(`Plan ${plan.name} selected! ID: ${accountId}`);
-      navigate('/dashboard');
-    } catch (error: any) {
-      showError(error.message || "Error processing plan.");
-    } finally {
-      setLoadingPlan(null);
-    }
+  const handleSelectPlan = (plan: any) => {
+    // Redireciona para o checkout passando os dados do plano
+    navigate('/checkout', { state: { plan } });
   };
 
   return (
@@ -85,6 +57,7 @@ const Pricing = () => {
       <MarketTicker />
       
       <section className="relative pt-[160px] pb-20 border-b border-white/5 bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05)_0%,transparent_70%)] pointer-events-none" />
         <div className="container mx-auto px-8">
           <div className="max-w-3xl animate-fadeInUp">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('pricing.badge')}</span>
@@ -127,13 +100,12 @@ const Pricing = () => {
                 </ul>
                 <Button 
                   onClick={() => handleSelectPlan(plan)}
-                  disabled={loadingPlan === plan.name}
                   className={cn(
                     "w-full rounded-none h-14 text-[11px] font-black uppercase tracking-[2px] transition-all",
                     plan.popular ? "bg-[#D4AF37] text-black hover:bg-[#C9A227]" : "bg-white/5 text-white hover:bg-white/10 border border-white/10"
                   )}
                 >
-                  {loadingPlan === plan.name ? <Loader2 className="animate-spin" /> : t('pricing.select')}
+                  {t('pricing.select')}
                 </Button>
               </div>
             ))}
