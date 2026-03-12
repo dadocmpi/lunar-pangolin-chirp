@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    // 1. Strict Authentication Check
+    // 1. Extract Authorization header
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
       console.error("[withdrawal-notification] Unauthorized: Missing Authorization header")
@@ -23,13 +23,14 @@ serve(async (req) => {
       })
     }
 
+    // 2. Initialize Supabase client with the user's JWT
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    // Verify the JWT and get user data
+    // 3. Verify the JWT and get user data
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
     
     if (authError || !user) {
@@ -40,36 +41,38 @@ serve(async (req) => {
       })
     }
 
-    const { name, accountId, amount, iban, email } = await req.json()
+    // 4. Parse request body
+    const { accountId, amount, iban } = await req.json()
 
-    // 2. Data Integrity Check
-    // Ensure the email in the request matches the authenticated user's email
-    if (user.email !== email) {
-      console.warn("[withdrawal-notification] Security Alert: User email mismatch", { 
-        authEmail: user.email, 
-        reqEmail: email 
-      })
-      return new Response(JSON.stringify({ error: 'Forbidden: Identity mismatch' }), {
+    // 5. Verify account ownership in the database
+    // This ensures the user can only request withdrawals for their own accounts
+    const { data: service, error: serviceError } = await supabaseClient
+      .from('services')
+      .select('id')
+      .eq('account_id', accountId)
+      .eq('user_id', user.id)
+      .single()
+
+    if (serviceError || !service) {
+      console.warn(`[withdrawal-notification] Security Alert: User ${user.id} attempted to withdraw from unauthorized account ${accountId}`)
+      return new Response(JSON.stringify({ error: 'Forbidden: Account ownership not verified' }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       })
     }
 
-    // 3. Privacy: Mask Sensitive Data (IBAN)
-    // We only log the last 4 digits for auditing purposes
+    // 6. Log the secure request (masking sensitive IBAN)
     const maskedIban = iban ? iban.replace(/.+(.{4})$/, "************$1") : "N/A"
-
-    console.log("[withdrawal-notification] SECURE WITHDRAWAL REQUEST", {
-      investor: name,
+    console.log("[withdrawal-notification] SECURE WITHDRAWAL REQUEST VERIFIED", {
       userId: user.id,
+      userEmail: user.email,
       accountId: accountId,
       amount: amount,
       iban: maskedIban,
       timestamp: new Date().toISOString()
     });
 
-    // Here you would typically trigger an internal notification system or email service
-    
+    // Success response
     return new Response(
       JSON.stringify({ message: "Withdrawal request received and verified." }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
