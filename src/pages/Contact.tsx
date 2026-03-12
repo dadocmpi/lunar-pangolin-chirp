@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import { Mail, Send, Phone, MessageSquare, Globe, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Send, Clock, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,9 +9,52 @@ import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
+import { showSuccess, showError } from '@/utils/toast';
 
 const Contact = () => {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
+  const [cooldown, setCooldown] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+    website: '' // Honeypot field
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Honeypot check: if 'website' is filled, it's likely a bot
+    if (formData.website) {
+      console.warn("Spam detected via honeypot.");
+      return;
+    }
+
+    if (cooldown) {
+      showError("Please wait a moment before sending another message.");
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      showSuccess("Message sent successfully! Our team will contact you soon.");
+      setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+      
+      // Set cooldown for 30 seconds
+      setCooldown(true);
+      setTimeout(() => setCooldown(false), 30000);
+    } catch (error) {
+      showError("Failed to send message. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#D4AF37] selection:text-black">
@@ -63,15 +106,55 @@ const Contact = () => {
           </div>
           <div className="p-12 md:p-16 bg-[#080B12]">
             <h2 className="text-[24px] font-serif font-bold uppercase tracking-tighter mb-10">{t('contact.formTitle')}</h2>
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Input placeholder={t('contact.placeholders.name')} className="bg-white/[0.03] border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" />
-                <Input placeholder={t('contact.placeholders.email')} className="bg-white/[0.03] border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" />
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {/* Honeypot field - hidden from users */}
+              <div className="hidden">
+                <Input 
+                  type="text" 
+                  name="website" 
+                  value={formData.website} 
+                  onChange={(e) => setFormData({...formData, website: e.target.value})} 
+                  tabIndex={-1} 
+                  autoComplete="off" 
+                />
               </div>
-              <Input placeholder={t('contact.placeholders.subject')} className="bg-white/[0.03] border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" />
-              <Textarea placeholder={t('contact.placeholders.message')} className="bg-white/[0.03] border-white/10 rounded-none min-h-[160px] text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" />
-              <Button className="w-full bg-[#D4AF37] hover:bg-[#C9A227] text-black rounded-none h-16 text-[12px] font-black uppercase tracking-[2px] transition-all border-none">
-                {t('contact.sendBtn')}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Input 
+                  required
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  placeholder={t('contact.placeholders.name')} 
+                  className="bg-white/[0.03] border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" 
+                />
+                <Input 
+                  required
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  placeholder={t('contact.placeholders.email')} 
+                  className="bg-white/[0.03] border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" 
+                />
+              </div>
+              <Input 
+                required
+                value={formData.subject}
+                onChange={(e) => setFormData({...formData, subject: e.target.value})}
+                placeholder={t('contact.placeholders.subject')} 
+                className="bg-white/[0.03] border-white/10 rounded-none h-14 text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" 
+              />
+              <Textarea 
+                required
+                value={formData.message}
+                onChange={(e) => setFormData({...formData, message: e.target.value})}
+                placeholder={t('contact.placeholders.message')} 
+                className="bg-white/[0.03] border-white/10 rounded-none min-h-[160px] text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" 
+              />
+              <Button 
+                disabled={loading || cooldown}
+                className="w-full bg-[#D4AF37] hover:bg-[#C9A227] text-black rounded-none h-16 text-[12px] font-black uppercase tracking-[2px] transition-all border-none"
+              >
+                {loading ? <Loader2 className="animate-spin" /> : cooldown ? "PLEASE WAIT..." : t('contact.sendBtn')}
               </Button>
             </form>
           </div>

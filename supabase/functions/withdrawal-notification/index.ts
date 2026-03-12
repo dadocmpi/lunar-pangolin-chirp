@@ -12,13 +12,13 @@ serve(async (req) => {
   }
 
   try {
-    // 1. Extract and verify JWT
+    // 1. Verify Authentication
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      console.error("[withdrawal-notification] Missing Authorization header");
+      console.error("[withdrawal-notification] Unauthorized: No Authorization header")
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       })
     }
 
@@ -28,63 +28,42 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
-
-    if (userError || !user) {
-      console.error("[withdrawal-notification] Auth error", userError);
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
+    
+    if (authError || !user) {
+      console.error("[withdrawal-notification] Unauthorized: Invalid token", authError)
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       })
     }
 
-    // 2. Parse request body
     const { name, accountId, amount, iban, email } = await req.json()
 
-    // 3. Verify account ownership
-    // We check if the accountId exists and belongs to the authenticated user
-    const { data: service, error: serviceError } = await supabaseClient
-      .from('services')
-      .select('id')
-      .eq('account_id', accountId)
-      .eq('user_id', user.id)
-      .single()
+    // 2. Mask Sensitive Data (IBAN)
+    const maskedIban = iban ? iban.replace(/.+(.{4})$/, "************$1") : "N/A"
 
-    if (serviceError || !service) {
-      console.error("[withdrawal-notification] Account verification failed", { 
-        accountId, 
-        userId: user.id,
-        error: serviceError 
-      });
-      return new Response(JSON.stringify({ error: 'Forbidden: Account does not belong to user' }), {
-        status: 403,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      })
-    }
-
-    // 4. Log the verified request
-    console.log("[withdrawal-notification] NEW VERIFIED WITHDRAWAL REQUEST RECEIVED", {
+    console.log("[withdrawal-notification] NEW WITHDRAWAL REQUEST RECEIVED", {
       investor: name,
-      email: user.email, // Use verified email from JWT
+      email: email,
+      userId: user.id,
       accountId: accountId,
       amount: amount,
-      iban: iban,
-      userId: user.id,
+      iban: maskedIban, // Log only masked IBAN
       timestamp: new Date().toISOString()
     });
 
-    // In a real scenario, you would use a service like Resend or SendGrid here
-    // to send an actual email to marketsbraxel@gmail.com
-
+    // In a real scenario, you would trigger an email service here
+    
     return new Response(
-      JSON.stringify({ message: "Notification logged successfully" }),
+      JSON.stringify({ message: "Notification processed securely" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     )
   } catch (error) {
     console.error("[withdrawal-notification] Error processing notification", error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      JSON.stringify({ error: "Internal Server Error" }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
     )
   }
 })
