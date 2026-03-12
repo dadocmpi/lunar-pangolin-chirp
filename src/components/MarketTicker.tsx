@@ -23,25 +23,25 @@ const MarketTicker = () => {
           up: fluctuation > 0
         };
       }));
-    }, 5000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   const tickerItems = [...prices, ...prices, ...prices, ...prices];
 
   return (
-    <div className="fixed top-20 left-0 w-full h-10 bg-[#0A0C10] border-b border-white/5 z-[999] overflow-hidden flex items-center">
-      <div className="flex gap-16 px-8 whitespace-nowrap ticker-scroll">
+    <div className="fixed top-20 left-0 w-full h-[50px] bg-black border-b border-[#333333] z-[999] overflow-hidden flex items-center">
+      <div className="flex gap-12 px-8 whitespace-nowrap ticker-scroll">
         {tickerItems.map((item, i) => (
-          <div key={i} className="flex items-center gap-3 text-[10px] font-bold tracking-widest uppercase">
-            <span className="text-slate-500">{item.pair}</span>
-            <span className="text-white">
+          <div key={i} className="flex items-center gap-2 font-tech text-[12px] font-medium">
+            <span className="text-[#999999] uppercase tracking-[0.5px]">{item.pair}</span>
+            <span className="text-white font-bold">
               {item.pair.includes('BTC') || item.pair.includes('ETH') || item.pair.includes('GOLD') 
                 ? item.value.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })
                 : item.value.toFixed(4)}
             </span>
-            <span className={item.up ? "text-green-500" : "text-red-500"}>
-              {item.up ? '▲' : '▼'} {Math.abs(item.change).toFixed(2)}%
+            <span className={item.up ? "text-[#44FF44] font-semibold" : "text-[#FF4444] font-semibold"}>
+              {item.up ? '+' : ''}{item.change.toFixed(2)}%
             </span>
           </div>
         ))}
