@@ -125,44 +125,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Infrastructure Section */}
-      <section className="py-24 px-8 border-t border-white/5">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
-          <div>
-            <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('infrastructure.badge')}</span>
-            <h2 className="text-[32px] md:text-[48px] font-serif font-bold uppercase tracking-tighter mb-6">{t('infrastructure.title')}</h2>
-            <p className="text-slate-400 text-[15px] leading-relaxed mb-10 max-w-md">
-              {t('infrastructure.desc')}
-            </p>
-            <div className="space-y-6">
-              {[
-                { city: t('infrastructure.london'), latency: "0.4ms" },
-                { city: t('infrastructure.newyork'), latency: "0.6ms" },
-                { city: t('infrastructure.tokyo'), latency: "1.2ms" }
-              ].map((loc, i) => (
-                <div key={i} className="flex items-center justify-between p-4 border border-white/5 bg-white/[0.02]">
-                  <div className="flex items-center gap-4">
-                    <Network size={16} className="text-[#D4AF37]" />
-                    <span className="text-[11px] font-bold uppercase tracking-widest">{loc.city}</span>
-                  </div>
-                  <span className="text-[10px] font-mono text-[#44FF44]">{loc.latency}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="relative">
-            <div className="aspect-square bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.1)_0%,transparent_70%)] absolute inset-0 -z-10" />
-            <div className="border border-white/10 p-2 bg-black">
-              <img 
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" 
-                alt="Data Center" 
-                className="w-full h-full object-cover grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Process Flow Section */}
       <section className="py-24 px-8 bg-[#05070A] border-t border-white/5">
         <div className="max-w-[1200px] mx-auto">
@@ -174,7 +136,6 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 relative">
-            {/* Connecting Line (Desktop) */}
             <div className="hidden md:block absolute top-12 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent -z-10" />
             
             {[
