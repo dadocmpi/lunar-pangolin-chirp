@@ -35,10 +35,6 @@ const Index = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05)_0%,transparent_70%)] pointer-events-none" />
         
         <div className="relative z-[2] text-center max-w-[900px] px-8 animate-fadeInUp">
-          <div className="inline-block bg-black/50 border border-[#D4AF37]/30 text-[#D4AF37] px-4 py-[8px] rounded-[25px] font-tech text-[10px] font-bold tracking-[2px] uppercase mb-8 animate-pulse-badge">
-            ● {t('hero.badge')}
-          </div>
-          
           <h1 className="font-serif text-[42px] md:text-[72px] font-bold leading-[1] mb-6 tracking-[-2px] text-white uppercase">
             {t('hero.title1')}
             <span className="block text-[#D4AF37]">{t('hero.title2')}</span>
