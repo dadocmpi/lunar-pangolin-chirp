@@ -167,11 +167,12 @@ const Checkout = () => {
                 </div>
 
                 <div className="relative z-0">
-                  <PayPalScriptProvider options={{ "client-id": "test" }}> 
+                  <PayPalScriptProvider options={{ clientId: "test" }}> 
                     <PayPalButtons 
                       style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
                       createOrder={(data, actions) => {
                         return actions.order.create({
+                          intent: "CAPTURE",
                           purchase_units: [
                             {
                               amount: {
