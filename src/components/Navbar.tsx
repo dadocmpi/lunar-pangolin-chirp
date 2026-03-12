@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, Globe } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X, Globe, ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import {
@@ -14,7 +14,15 @@ import {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { t, i18n } = useTranslation();
+  const location = useLocation();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navLinks = [
     { name: t('nav.pricing'), path: '/pricing' },
@@ -28,80 +36,87 @@ const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full h-20 bg-black border-b border-[#333333] z-[1000] px-8 flex items-center justify-between">
-      <Link to="/" className="flex items-center gap-[10px]">
-        <div className="w-[30px] h-[30px] bg-white rounded-[2px] flex items-center justify-center text-black font-bold text-lg">
-          B
-        </div>
-        <span className="text-[18px] font-bold text-white tracking-[2px] font-sans">
-          BRAXEL MARKETS
-        </span>
-      </Link>
-
-      <nav className="hidden lg:flex items-center gap-12">
-        {navLinks.map((link) => (
-          <Link
-            key={link.path}
-            to={link.path}
-            className="relative text-[12px] font-semibold text-white tracking-[1px] uppercase font-tech group"
-          >
-            {link.name}
-            <span className="absolute bottom-[-4px] left-0 w-0 h-[1px] bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
-          </Link>
-        ))}
-      </nav>
-
-      <div className="hidden lg:flex items-center gap-8">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 text-[12px] font-semibold text-white tracking-[1px] uppercase font-tech hover:text-[#D4AF37] transition-colors">
-            <Globe size={14} />
-            {i18n.language.toUpperCase()}
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-black border-[#333333] text-white">
-            <DropdownMenuItem onClick={() => changeLanguage('en')} className="hover:bg-[#D4AF37] hover:text-black cursor-pointer">EN</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => changeLanguage('pt')} className="hover:bg-[#D4AF37] hover:text-black cursor-pointer">PT</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        <Link 
-          to="/login" 
-          className="text-[12px] font-semibold text-white tracking-[1px] uppercase font-tech hover:text-[#D4AF37] transition-colors duration-300"
-        >
-          {t('nav.login')}
+    <header className={cn(
+      "fixed top-0 left-0 w-full h-20 z-[1000] transition-all duration-500 border-b",
+      scrolled ? "bg-[#0A0C10]/95 backdrop-blur-md border-white/5" : "bg-transparent border-transparent"
+    )}>
+      <div className="container mx-auto h-full px-8 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-8 h-8 bg-white flex items-center justify-center text-black font-serif text-lg font-bold transition-transform group-hover:scale-105">
+            B
+          </div>
+          <div className="flex flex-col leading-none">
+            <span className="text-lg font-bold tracking-tight text-white">BRAXEL</span>
+            <span className="text-[8px] font-bold tracking-[0.3em] text-[#C5A059]">MARKETS</span>
+          </div>
         </Link>
-        <Link to="/register">
-          <button className="bg-[#D4AF37] text-black text-[12px] font-bold tracking-[1px] uppercase font-tech px-6 py-3 rounded-[25px] hover:bg-[#C9A227] hover:-translate-y-[2px] hover:shadow-[0_8px_16px_rgba(212,175,55,0.3)] transition-all duration-300">
-            {t('nav.openAccount')}
-          </button>
-        </Link>
-      </div>
 
-      <button className="lg:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
-
-      {isOpen && (
-        <div className="absolute top-20 left-0 w-full bg-black border-b border-[#333333] p-8 flex flex-col gap-6 lg:hidden animate-in fade-in slide-in-from-top-2">
+        <nav className="hidden lg:flex items-center gap-10">
           {navLinks.map((link) => (
             <Link
               key={link.path}
               to={link.path}
-              className="text-[12px] font-semibold text-white tracking-[1px] uppercase font-tech"
+              className={cn(
+                "text-[11px] font-bold tracking-[0.15em] uppercase transition-colors hover:text-[#C5A059]",
+                location.pathname === link.path ? "text-[#C5A059]" : "text-slate-400"
+              )}
+            >
+              {link.name}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="hidden lg:flex items-center gap-8">
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest hover:text-white transition-colors outline-none">
+              <Globe size={14} />
+              {i18n.language.toUpperCase()}
+              <ChevronDown size={10} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-[#11141A] border-white/5 text-white min-w-[80px]">
+              <DropdownMenuItem onClick={() => changeLanguage('en')} className="text-[10px] font-bold uppercase tracking-widest focus:bg-[#C5A059] focus:text-black cursor-pointer">EN</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changeLanguage('pt')} className="text-[10px] font-bold uppercase tracking-widest focus:bg-[#C5A059] focus:text-black cursor-pointer">PT</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          <Link 
+            to="/login" 
+            className="text-[11px] font-bold text-white tracking-[0.15em] uppercase hover:text-[#C5A059] transition-colors"
+          >
+            {t('nav.login')}
+          </Link>
+          
+          <Link to="/register">
+            <button className="bg-white text-black text-[11px] font-bold tracking-[0.15em] uppercase px-6 py-3 hover:bg-[#C5A059] transition-all duration-300">
+              {t('nav.openAccount')}
+            </button>
+          </Link>
+        </div>
+
+        <button className="lg:hidden text-white" onClick={() => setIsOpen(!isOpen)}>
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {isOpen && (
+        <div className="absolute top-20 left-0 w-full bg-[#0A0C10] border-b border-white/5 p-8 flex flex-col gap-6 lg:hidden animate-in fade-in slide-in-from-top-2">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className="text-[12px] font-bold text-white tracking-[0.2em] uppercase"
               onClick={() => setIsOpen(false)}
             >
               {link.name}
             </Link>
           ))}
-          <hr className="border-[#333333]" />
-          <div className="flex gap-4">
-            <button onClick={() => changeLanguage('en')} className={cn("text-[12px] font-bold", i18n.language === 'en' ? "text-[#D4AF37]" : "text-white")}>EN</button>
-            <button onClick={() => changeLanguage('pt')} className={cn("text-[12px] font-bold", i18n.language === 'pt' ? "text-[#D4AF37]" : "text-white")}>PT</button>
-          </div>
-          <Link to="/login" className="text-[12px] font-semibold text-white tracking-[1px] uppercase font-tech">
+          <div className="h-px bg-white/5 my-2" />
+          <Link to="/login" className="text-[12px] font-bold text-white tracking-[0.2em] uppercase">
             {t('nav.login')}
           </Link>
           <Link to="/register">
-            <button className="w-full bg-[#D4AF37] text-black text-[12px] font-bold tracking-[1px] uppercase font-tech px-6 py-3 rounded-[25px]">
+            <button className="w-full bg-white text-black text-[12px] font-bold tracking-[0.2em] uppercase py-4">
               {t('nav.openAccount')}
             </button>
           </Link>
