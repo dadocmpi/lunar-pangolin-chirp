@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Mail, Send, Clock, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Mail, Send, Clock, Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +15,9 @@ const Contact = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(false);
+  const [captcha, setCaptcha] = useState({ q: '', a: 0 });
+  const [userAnswer, setUserAnswer] = useState('');
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -23,15 +26,35 @@ const Contact = () => {
     website: '' // Honeypot field
   });
 
+  // Generate a simple math challenge on mount
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+
+  const generateCaptcha = () => {
+    const num1 = Math.floor(Math.random() * 10) + 1;
+    const num2 = Math.floor(Math.random() * 10) + 1;
+    setCaptcha({ q: `${num1} + ${num2}`, a: num1 + num2 });
+    setUserAnswer('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Honeypot check: if 'website' is filled, it's likely a bot
+    // 1. Honeypot check
     if (formData.website) {
       console.warn("Spam detected via honeypot.");
       return;
     }
 
+    // 2. Captcha check
+    if (parseInt(userAnswer) !== captcha.a) {
+      showError("Incorrect security answer. Please try again.");
+      generateCaptcha();
+      return;
+    }
+
+    // 3. Rate limiting check
     if (cooldown) {
       showError("Please wait a moment before sending another message.");
       return;
@@ -40,15 +63,16 @@ const Contact = () => {
     setLoading(true);
     
     try {
-      // Simulate API call
+      // Simulate API call (In production, this would call a Supabase Edge Function)
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       showSuccess("Message sent successfully! Our team will contact you soon.");
       setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+      generateCaptcha();
       
-      // Set cooldown for 30 seconds
+      // Set cooldown for 60 seconds to prevent flooding
       setCooldown(true);
-      setTimeout(() => setCooldown(false), 30000);
+      setTimeout(() => setCooldown(false), 60000);
     } catch (error) {
       showError("Failed to send message. Please try again later.");
     } finally {
@@ -150,6 +174,23 @@ const Contact = () => {
                 placeholder={t('contact.placeholders.message')} 
                 className="bg-white/[0.03] border-white/10 rounded-none min-h-[160px] text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" 
               />
+
+              {/* Simple Math Captcha */}
+              <div className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/10">
+                <ShieldCheck className="text-[#D4AF37]" size={20} />
+                <div className="flex-1">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Security Challenge: {captcha.q} = ?</p>
+                  <Input 
+                    required
+                    type="number"
+                    value={userAnswer}
+                    onChange={(e) => setUserAnswer(e.target.value)}
+                    placeholder="Answer"
+                    className="bg-black border-white/10 rounded-none h-10 text-[11px] font-bold uppercase tracking-[2px] focus:border-[#D4AF37]"
+                  />
+                </div>
+              </div>
+
               <Button 
                 disabled={loading || cooldown}
                 className="w-full bg-[#D4AF37] hover:bg-[#C9A227] text-black rounded-none h-16 text-[12px] font-black uppercase tracking-[2px] transition-all border-none"

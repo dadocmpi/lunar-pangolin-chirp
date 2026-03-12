@@ -7,15 +7,16 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    // 1. Verify Authentication
+    // 1. Strict Authentication Check
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      console.error("[withdrawal-notification] Unauthorized: No Authorization header")
+      console.error("[withdrawal-notification] Unauthorized: Missing Authorization header")
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -28,10 +29,11 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     )
 
+    // Verify the JWT and get user data
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
     
     if (authError || !user) {
-      console.error("[withdrawal-notification] Unauthorized: Invalid token", authError)
+      console.error("[withdrawal-notification] Unauthorized: Invalid or expired token", authError)
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -40,27 +42,40 @@ serve(async (req) => {
 
     const { name, accountId, amount, iban, email } = await req.json()
 
-    // 2. Mask Sensitive Data (IBAN)
+    // 2. Data Integrity Check
+    // Ensure the email in the request matches the authenticated user's email
+    if (user.email !== email) {
+      console.warn("[withdrawal-notification] Security Alert: User email mismatch", { 
+        authEmail: user.email, 
+        reqEmail: email 
+      })
+      return new Response(JSON.stringify({ error: 'Forbidden: Identity mismatch' }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      })
+    }
+
+    // 3. Privacy: Mask Sensitive Data (IBAN)
+    // We only log the last 4 digits for auditing purposes
     const maskedIban = iban ? iban.replace(/.+(.{4})$/, "************$1") : "N/A"
 
-    console.log("[withdrawal-notification] NEW WITHDRAWAL REQUEST RECEIVED", {
+    console.log("[withdrawal-notification] SECURE WITHDRAWAL REQUEST", {
       investor: name,
-      email: email,
       userId: user.id,
       accountId: accountId,
       amount: amount,
-      iban: maskedIban, // Log only masked IBAN
+      iban: maskedIban,
       timestamp: new Date().toISOString()
     });
 
-    // In a real scenario, you would trigger an email service here
+    // Here you would typically trigger an internal notification system or email service
     
     return new Response(
-      JSON.stringify({ message: "Notification processed securely" }),
+      JSON.stringify({ message: "Withdrawal request received and verified." }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     )
   } catch (error) {
-    console.error("[withdrawal-notification] Error processing notification", error)
+    console.error("[withdrawal-notification] Critical Error", error)
     return new Response(
       JSON.stringify({ error: "Internal Server Error" }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
