@@ -55,7 +55,7 @@ const Pricing = () => {
       <Navbar />
       <MarketTicker />
       
-      <section className="relative pt-[160px] pb-20 border-b border-white/5 bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
+      <section className="relative pt-[200px] pb-20 border-b border-white/5 bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05)_0%,transparent_70%)] pointer-events-none" />
         <div className="container mx-auto px-8">
           <div className="max-w-3xl animate-fadeInUp">

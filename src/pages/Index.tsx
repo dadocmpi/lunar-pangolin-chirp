@@ -30,14 +30,12 @@ const Index = () => {
       <Navbar />
       <MarketTicker />
 
-      {/* Hero Section */}
-      <section className="relative mt-[110px] min-h-[85vh] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
+      {/* Hero Section - Aumentado mt para [180px] para criar o respiro solicitado */}
+      <section className="relative mt-[180px] min-h-[80vh] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.03)_0%,transparent_70%)] pointer-events-none" />
         
         <div className="relative z-[2] text-center max-w-[1000px] px-8 animate-fadeInUp">
-          <span className="inline-block text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.6em] mb-8 border border-[#D4AF37]/20 px-6 py-2 rounded-full bg-[#D4AF37]/5">
-            {t('hero.badge')}
-          </span>
+          {/* Selo removido conforme solicitado */}
           
           <h1 className="font-serif text-[32px] md:text-[54px] font-bold leading-[1.1] mb-8 tracking-[-0.03em] text-white uppercase">
             {t('hero.title1')}
