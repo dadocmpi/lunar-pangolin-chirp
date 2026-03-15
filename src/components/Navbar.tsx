@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Globe, Shield } from 'lucide-react';
+import { Menu, X, Globe } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import {
@@ -29,10 +29,16 @@ const Navbar = () => {
 
   return (
     <header className="fixed top-0 left-0 w-full h-20 bg-black border-b border-white/10 z-[1000] px-8 flex items-center justify-between">
-      <Link to="/" className="flex items-center gap-3 group">
-        <div className="w-10 h-10 bg-[#D4AF37] flex items-center justify-center rounded-sm group-hover:scale-110 transition-transform">
-          <Shield className="text-black" size={24} fill="currentColor" />
-        </div>
+      <Link to="/" className="flex items-center gap-4 group">
+        <img 
+          src="/logo.png" 
+          alt="Braxel Markets" 
+          className="h-12 w-auto object-contain group-hover:scale-105 transition-transform"
+          onError={(e) => {
+            // Fallback caso o usuário ainda não tenha feito o upload
+            e.currentTarget.style.display = 'none';
+          }}
+        />
         <div className="flex flex-col leading-none">
           <span className="text-[18px] font-black text-white tracking-tighter font-sans">
             BRAXEL

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Send, Twitter, Linkedin, Shield } from 'lucide-react';
+import { Mail, Send, Twitter, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -12,10 +12,15 @@ const Footer = () => {
       <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-[#D4AF37] flex items-center justify-center rounded-sm">
-                <Shield className="text-black" size={24} fill="currentColor" />
-              </div>
+            <Link to="/" className="flex items-center gap-4 group">
+              <img 
+                src="/logo.png" 
+                alt="Braxel Markets" 
+                className="h-12 w-auto object-contain"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
               <div className="flex flex-col leading-none">
                 <span className="text-[18px] font-black text-white tracking-tighter font-sans">
                   BRAXEL

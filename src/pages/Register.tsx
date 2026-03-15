@@ -16,7 +16,6 @@ const Register = () => {
   const [fullName, setFullName] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
-  const logoUrl = "https://ymzdxifedtjwkxkzfwqu.supabase.co/storage/v1/object/public/media/logo_braxel.png";
 
   const from = location.state?.from || '/dashboard';
   const plan = location.state?.plan;
@@ -54,9 +53,10 @@ const Register = () => {
         
         <Link to="/" className="flex items-center gap-4 relative z-10">
           <img 
-            src={logoUrl} 
-            alt="Braxel Markets Logo" 
-            className="w-12 h-12 object-contain"
+            src="/logo.png" 
+            alt="Braxel Markets" 
+            className="h-16 w-auto object-contain"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="flex flex-col leading-none">
             <span className="text-xl font-black tracking-tighter text-white">
@@ -94,9 +94,10 @@ const Register = () => {
         <div className="w-full max-w-md">
           <Link to="/" className="md:hidden flex items-center gap-3 mb-12">
             <img 
-              src={logoUrl} 
-              alt="Braxel Markets Logo" 
-              className="w-10 h-10 object-contain"
+              src="/logo.png" 
+              alt="Braxel Markets" 
+              className="h-12 w-auto object-contain"
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
             <span className="text-lg font-black tracking-tighter text-white">
               BRAXEL <span className="text-[#C5A059]">MARKETS</span>
