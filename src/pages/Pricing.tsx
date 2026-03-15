@@ -60,11 +60,11 @@ const Pricing = () => {
         <div className="container mx-auto px-8">
           <div className="max-w-3xl animate-fadeInUp">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('pricing.badge')}</span>
-            <h1 className="font-serif text-[42px] md:text-[72px] font-bold leading-[1] mb-6 tracking-[-2px] uppercase">
+            <h1 className="font-serif text-[32px] md:text-[56px] font-bold leading-[1.1] mb-6 tracking-[-0.03em] uppercase">
               {t('pricing.title')} <br />
               <span className="text-[#D4AF37]">{t('pricing.subtitle')}</span>
             </h1>
-            <p className="font-sans text-[15px] md:text-[18px] text-slate-400 max-w-xl leading-relaxed">
+            <p className="font-sans text-[14px] md:text-[17px] text-slate-400 max-w-xl leading-relaxed">
               {t('pricing.desc')}
             </p>
           </div>
@@ -82,12 +82,12 @@ const Pricing = () => {
                 <div className="text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">{plan.icon}</div>
                 <h3 className="text-[11px] font-bold uppercase tracking-[3px] text-slate-500 mb-8">{plan.name}</h3>
                 <div className="mb-10">
-                  <span className="text-[36px] font-serif font-bold text-white">{plan.price}</span>
+                  <span className="text-[32px] font-serif font-bold text-white">{plan.price}</span>
                   <span className="text-slate-600 text-[10px] uppercase tracking-widest ml-2">/ {t('pricing.month')}</span>
                 </div>
                 <div className="p-6 bg-white/[0.03] border border-white/5 mb-10">
                   <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-2">{t('pricing.allocation')}</p>
-                  <p className="text-[24px] font-serif font-bold text-[#D4AF37]">{plan.accountSize} USD</p>
+                  <p className="text-[22px] font-serif font-bold text-[#D4AF37]">{plan.accountSize} USD</p>
                 </div>
                 <ul className="space-y-5 mb-12 flex-grow">
                   {plan.features.map((f, j) => (

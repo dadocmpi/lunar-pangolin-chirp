@@ -38,7 +38,7 @@ const Navbar = () => {
   const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
 
   return (
-    <header className="fixed top-0 left-0 w-full h-20 bg-black/80 backdrop-blur-md border-b border-white/5 z-[1000] px-6 md:px-12 flex items-center justify-between">
+    <header className="fixed top-0 left-0 w-full h-24 bg-black/80 backdrop-blur-md border-b border-white/5 z-[1000] px-6 md:px-12 flex items-center justify-between">
       <Link 
         to="/" 
         onClick={handleLogoClick}
@@ -47,7 +47,7 @@ const Navbar = () => {
         <img 
           src={logoUrl} 
           alt="Braxel Markets" 
-          className="h-10 md:h-12 w-auto object-contain transition-transform duration-500 group-hover:scale-110"
+          className="h-14 md:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
         />
       </Link>
 
@@ -94,7 +94,7 @@ const Navbar = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute top-20 left-0 w-full bg-black border-b border-white/10 p-10 flex flex-col gap-8 lg:hidden animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="absolute top-24 left-0 w-full bg-black border-b border-white/10 p-10 flex flex-col gap-8 lg:hidden animate-in fade-in slide-in-from-top-4 duration-300">
           {navLinks.map((link) => (
             <Link
               key={link.path}
