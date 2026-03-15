@@ -27,7 +27,7 @@ const HowItWorks = () => {
         <div className="container mx-auto px-8">
           <div className="max-w-3xl animate-fadeInUp">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('howItWorks.badge')}</span>
-            <h1 className="font-serif text-[32px] md:text-[56px] font-bold leading-[1.1] mb-6 tracking-[-0.03em] uppercase">
+            <h1 className="font-serif text-[28px] md:text-[48px] font-bold leading-[1.1] mb-6 tracking-[-0.03em] uppercase">
               {t('howItWorks.title')} <br />
               <span className="text-[#D4AF37]">{t('howItWorks.subtitle')}</span>
             </h1>
@@ -52,7 +52,7 @@ const HowItWorks = () => {
 
         <section className="mt-24 p-16 border border-white/5 bg-[#080B12] text-center relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05)_0%,transparent_70%)] pointer-events-none" />
-          <h2 className="text-[24px] md:text-[36px] font-serif font-bold uppercase tracking-tighter mb-10 relative z-10">{t('howItWorks.cta')}</h2>
+          <h2 className="text-[20px] md:text-[28px] font-serif font-bold uppercase tracking-tighter mb-10 relative z-10">{t('howItWorks.cta')}</h2>
           <Link to="/register" className="relative z-10">
             <Button className="bg-[#D4AF37] hover:bg-[#C9A227] text-black rounded-none px-16 h-16 text-[12px] font-black uppercase tracking-[2px] transition-all border-none">
               {t('howItWorks.ctaBtn')}

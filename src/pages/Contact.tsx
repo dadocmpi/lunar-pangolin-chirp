@@ -89,7 +89,7 @@ const Contact = () => {
         <div className="container mx-auto px-8">
           <div className="max-w-3xl animate-fadeInUp">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('contact.badge')}</span>
-            <h1 className="font-serif text-[32px] md:text-[56px] font-bold leading-[1.1] mb-6 tracking-[-0.03em] uppercase">
+            <h1 className="font-serif text-[28px] md:text-[48px] font-bold leading-[1.1] mb-6 tracking-[-0.03em] uppercase">
               {t('contact.title')} <br />
               <span className="text-[#D4AF37]">{t('contact.subtitle')}</span>
             </h1>
@@ -103,7 +103,7 @@ const Contact = () => {
       <div className="container mx-auto px-8 py-24">
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/5 border border-white/5 overflow-hidden">
           <div className="p-12 md:p-16 bg-[#080B12] flex flex-col justify-center">
-            <h2 className="text-[24px] md:text-[36px] font-serif font-bold tracking-tighter mb-12 uppercase">{t('contact.infoTitle')}</h2>
+            <h2 className="text-[20px] md:text-[28px] font-serif font-bold tracking-tighter mb-12 uppercase">{t('contact.infoTitle')}</h2>
             <div className="space-y-10">
               <div className="flex items-start gap-6 group">
                 <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Mail size={20} /></div>

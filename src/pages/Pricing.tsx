@@ -60,7 +60,7 @@ const Pricing = () => {
         <div className="container mx-auto px-8">
           <div className="max-w-3xl animate-fadeInUp">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('pricing.badge')}</span>
-            <h1 className="font-serif text-[32px] md:text-[56px] font-bold leading-[1.1] mb-6 tracking-[-0.03em] uppercase">
+            <h1 className="font-serif text-[28px] md:text-[48px] font-bold leading-[1.1] mb-6 tracking-[-0.03em] uppercase">
               {t('pricing.title')} <br />
               <span className="text-[#D4AF37]">{t('pricing.subtitle')}</span>
             </h1>

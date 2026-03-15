@@ -39,7 +39,7 @@ const Index = () => {
             {t('hero.badge')}
           </span>
           
-          <h1 className="font-serif text-[36px] md:text-[64px] font-bold leading-[1.1] mb-8 tracking-[-0.03em] text-white uppercase">
+          <h1 className="font-serif text-[32px] md:text-[54px] font-bold leading-[1.1] mb-8 tracking-[-0.03em] text-white uppercase">
             {t('hero.title1')}
             <span className="block text-[#D4AF37] mt-2">{t('hero.title2')}</span>
           </h1>
@@ -68,7 +68,7 @@ const Index = () => {
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16">
           {stats.map((stat, i) => (
             <div key={i} className="text-center group">
-              <div className="font-serif text-[36px] md:text-[48px] font-bold text-white mb-3 tracking-[-0.02em] group-hover:text-[#D4AF37] transition-colors duration-500">
+              <div className="font-serif text-[32px] md:text-[42px] font-bold text-white mb-3 tracking-[-0.02em] group-hover:text-[#D4AF37] transition-colors duration-500">
                 {stat.value}
               </div>
               <div className="font-tech text-[9px] font-bold tracking-[0.3em] uppercase text-slate-500">
@@ -84,7 +84,7 @@ const Index = () => {
         <div className="max-w-[1200px] mx-auto">
           <div className="mb-24 text-center">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-6 block">{t('methodology.badge')}</span>
-            <h2 className="text-[28px] md:text-[40px] font-serif font-bold uppercase tracking-tight leading-tight">{t('methodology.title')}</h2>
+            <h2 className="text-[24px] md:text-[32px] font-serif font-bold uppercase tracking-tight leading-tight">{t('methodology.title')}</h2>
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/5 border border-white/5">
@@ -130,7 +130,7 @@ const Index = () => {
         <div className="max-w-[1200px] mx-auto">
           <div className="mb-24 text-center">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-6 block">{t('process_home.badge')}</span>
-            <h2 className="text-[28px] md:text-[40px] font-serif font-bold uppercase tracking-tight">
+            <h2 className="text-[24px] md:text-[32px] font-serif font-bold uppercase tracking-tight">
               {t('process_home.title')} <span className="text-[#D4AF37]">{t('process_home.subtitle')}</span>
             </h2>
           </div>
@@ -163,11 +163,11 @@ const Index = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,rgba(212,175,55,0.05)_0%,transparent_60%)] pointer-events-none" />
         <div className="max-w-[1000px] mx-auto text-center relative z-10">
           <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.6em] mb-8 block animate-pulse-badge">{t('cta_home.badge')}</span>
-          <h2 className="font-serif text-[36px] md:text-[56px] font-bold leading-[1.1] mb-10 tracking-[-0.03em] uppercase">
+          <h2 className="font-serif text-[32px] md:text-[48px] font-bold leading-[1.1] mb-10 tracking-[-0.03em] uppercase">
             {t('cta_home.title')} <br />
             <span className="text-[#D4AF37]">{t('cta_home.subtitle')}</span>
           </h2>
-          <p className="font-sans text-[15px] md:text-[18px] text-slate-400 mb-16 leading-[1.7] max-w-[750px] mx-auto font-medium">
+          <p className="font-sans text-[14px] md:text-[17px] text-slate-400 mb-16 leading-[1.7] max-w-[750px] mx-auto font-medium">
             {t('cta_home.desc')}
           </p>
           <div className="flex flex-col items-center gap-8">
