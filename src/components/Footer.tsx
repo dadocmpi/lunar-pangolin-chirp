@@ -6,6 +6,7 @@ import { Mail, Send, Twitter, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
 
   return (
     <footer className="bg-black text-slate-400 pt-20 pb-10 border-t border-white/5">
@@ -14,12 +15,9 @@ const Footer = () => {
           <div className="space-y-6">
             <Link to="/" className="flex items-center gap-4 group">
               <img 
-                src="/logo.png" 
+                src={logoUrl} 
                 alt="Braxel Markets" 
                 className="h-12 w-auto object-contain"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
               />
               <div className="flex flex-col leading-none">
                 <span className="text-[18px] font-black text-white tracking-tighter font-sans">

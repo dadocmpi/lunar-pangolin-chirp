@@ -27,17 +27,15 @@ const Navbar = () => {
     i18n.changeLanguage(lng);
   };
 
+  const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
+
   return (
     <header className="fixed top-0 left-0 w-full h-20 bg-black border-b border-white/10 z-[1000] px-8 flex items-center justify-between">
       <Link to="/" className="flex items-center gap-4 group">
         <img 
-          src="/logo.png" 
+          src={logoUrl} 
           alt="Braxel Markets" 
-          className="h-12 w-auto object-contain group-hover:scale-105 transition-transform"
-          onError={(e) => {
-            // Fallback caso o usuário ainda não tenha feito o upload
-            e.currentTarget.style.display = 'none';
-          }}
+          className="h-10 w-auto object-contain group-hover:scale-105 transition-transform"
         />
         <div className="flex flex-col leading-none">
           <span className="text-[18px] font-black text-white tracking-tighter font-sans">

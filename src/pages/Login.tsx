@@ -17,6 +17,7 @@ const Login = () => {
 
   const from = location.state?.from || '/dashboard';
   const plan = location.state?.plan;
+  const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,10 +47,9 @@ const Login = () => {
         
         <Link to="/" className="flex items-center gap-4 relative z-10">
           <img 
-            src="/logo.png" 
+            src={logoUrl} 
             alt="Braxel Markets" 
             className="h-16 w-auto object-contain"
-            onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
           <div className="flex flex-col leading-none">
             <span className="text-xl font-black tracking-tighter text-white">
@@ -77,10 +77,9 @@ const Login = () => {
         <div className="w-full max-w-md">
           <Link to="/" className="md:hidden flex items-center gap-3 mb-12">
             <img 
-              src="/logo.png" 
+              src={logoUrl} 
               alt="Braxel Markets" 
               className="h-12 w-auto object-contain"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
             <span className="text-lg font-black tracking-tighter text-white">
               BRAXEL <span className="text-[#C5A059]">MARKETS</span>
