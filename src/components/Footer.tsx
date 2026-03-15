@@ -6,16 +6,19 @@ import { Mail, Send, Twitter, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const logoUrl = "https://ymzdxifedtjwkxkzfwqu.supabase.co/storage/v1/object/public/media/logo_braxel.png";
 
   return (
     <footer className="bg-black text-slate-400 pt-20 pb-10 border-t border-white/5">
       <div className="container mx-auto px-4 md:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white flex items-center justify-center text-black font-serif text-xl border border-[#C5A059]/50">
-                B
-              </div>
+            <Link to="/" className="flex items-center gap-4">
+              <img 
+                src={logoUrl} 
+                alt="Braxel Markets Logo" 
+                className="w-12 h-12 object-contain"
+              />
               <div className="flex flex-col leading-none">
                 <span className="text-xl font-black tracking-tighter text-white">
                   BRAXEL

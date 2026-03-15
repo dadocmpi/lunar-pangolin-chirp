@@ -16,6 +16,7 @@ const Register = () => {
   const [fullName, setFullName] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const logoUrl = "https://ymzdxifedtjwkxkzfwqu.supabase.co/storage/v1/object/public/media/logo_braxel.png";
 
   const from = location.state?.from || '/dashboard';
   const plan = location.state?.plan;
@@ -51,10 +52,12 @@ const Register = () => {
       <div className="hidden md:flex md:w-1/2 bg-black p-12 flex-col justify-between relative overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-50" />
         
-        <Link to="/" className="flex items-center gap-3 relative z-10">
-          <div className="w-10 h-10 bg-white flex items-center justify-center text-black font-serif text-xl border border-[#C5A059]/50">
-            B
-          </div>
+        <Link to="/" className="flex items-center gap-4 relative z-10">
+          <img 
+            src={logoUrl} 
+            alt="Braxel Markets Logo" 
+            className="w-12 h-12 object-contain"
+          />
           <div className="flex flex-col leading-none">
             <span className="text-xl font-black tracking-tighter text-white">
               BRAXEL
@@ -89,10 +92,12 @@ const Register = () => {
       
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <Link to="/" className="md:hidden flex items-center gap-2 mb-12">
-            <div className="w-8 h-8 bg-white flex items-center justify-center text-black font-bold text-lg">
-              B
-            </div>
+          <Link to="/" className="md:hidden flex items-center gap-3 mb-12">
+            <img 
+              src={logoUrl} 
+              alt="Braxel Markets Logo" 
+              className="w-10 h-10 object-contain"
+            />
             <span className="text-lg font-black tracking-tighter text-white">
               BRAXEL <span className="text-[#C5A059]">MARKETS</span>
             </span>

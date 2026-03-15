@@ -27,13 +27,18 @@ const Navbar = () => {
     i18n.changeLanguage(lng);
   };
 
+  // URL do logo enviado pelo usuário
+  const logoUrl = "https://ymzdxifedtjwkxkzfwqu.supabase.co/storage/v1/object/public/media/logo_braxel.png";
+
   return (
     <header className="fixed top-0 left-0 w-full h-20 bg-black border-b border-[#333333] z-[1000] px-8 flex items-center justify-between">
-      <Link to="/" className="flex items-center gap-[10px]">
-        <div className="w-[30px] h-[30px] bg-white rounded-[2px] flex items-center justify-center text-black font-bold text-lg">
-          B
-        </div>
-        <span className="text-[18px] font-bold text-white tracking-[2px] font-sans">
+      <Link to="/" className="flex items-center gap-[15px]">
+        <img 
+          src={logoUrl} 
+          alt="Braxel Markets Logo" 
+          className="w-10 h-10 object-contain"
+        />
+        <span className="text-[18px] font-bold text-white tracking-[2px] font-sans hidden sm:block">
           BRAXEL MARKETS
         </span>
       </Link>
