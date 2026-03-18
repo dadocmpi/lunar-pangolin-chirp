@@ -96,7 +96,7 @@ body {
 }
 
 .ticker-scroll {
-  animation: scroll-ticker 40s linear infinite;
+  animation: scroll-ticker 60s linear infinite;
 }
 
 /* Refinamentos de Tipografia */
