@@ -2,28 +2,18 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
-// Lista dos 20 idiomas mais falados (ISO codes)
 export const supportedLanguages = [
   { code: 'en', name: 'English' },
   { code: 'pt', name: 'Português' },
   { code: 'es', name: 'Español' },
   { code: 'fr', name: 'Français' },
-  { code: 'de', name: 'Deutsch' },
-  { code: 'zh', name: '中文' },
-  { code: 'hi', name: 'हिन्दी' },
-  { code: 'ar', name: 'العربية' },
-  { code: 'bn', name: 'বাংলা' },
-  { code: 'ru', name: 'Русский' },
-  { code: 'ja', name: '日本語' },
-  { code: 'pa', name: 'ਪੰਜਾਬੀ' },
-  { code: 'mr', name: 'मराठी' },
-  { code: 'te', name: 'తెలుగు' },
-  { code: 'tr', name: 'Türkçe' },
-  { code: 'ko', name: '한국어' },
-  { code: 'fr', name: 'Français' },
-  { code: 'vi', name: 'Tiếng Việt' },
   { code: 'it', name: 'Italiano' },
-  { code: 'pl', name: 'Polski' }
+  { code: 'ru', name: 'Русский' },
+  { code: 'zh', name: '中文' },
+  { code: 'he', name: 'עברית' },
+  { code: 'ar', name: 'العربية' },
+  { code: 'de', name: 'Deutsch' },
+  { code: 'ja', name: '日本語' }
 ];
 
 const resources = {
@@ -37,7 +27,6 @@ const resources = {
         login: "TERMINAL ACCESS",
         openAccount: "JOIN BRAXEL"
       },
-      // ... (mantendo o restante das traduções existentes)
       hero: {
         badge: "INSTITUTIONAL LIQUIDITY NOW ACCESSIBLE",
         title1: "ELITE ALGORITHMIC",
@@ -299,9 +288,12 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: 'en',
     fallbackLng: 'en',
     debug: false,
+    detection: {
+      order: ['localStorage', 'cookie', 'navigator'],
+      caches: ['localStorage', 'cookie'],
+    },
     interpolation: {
       escapeValue: false,
     }

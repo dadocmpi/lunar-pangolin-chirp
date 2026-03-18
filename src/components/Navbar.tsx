@@ -29,6 +29,10 @@ const Navbar = () => {
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
     setIsOpen(false);
+    // Forçamos um pequeno delay e refresh para garantir que todo o contexto (incluindo buscas e novos apartados) seja resetado com o novo idioma
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   const handleLogoClick = () => {
@@ -129,7 +133,7 @@ const Navbar = () => {
           <div className="space-y-4">
             <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase">Select Language</p>
             <div className="grid grid-cols-2 gap-4">
-              {supportedLanguages.slice(0, 10).map((lang) => (
+              {supportedLanguages.map((lang) => (
                 <button 
                   key={lang.code}
                   onClick={() => changeLanguage(lang.code)} 
