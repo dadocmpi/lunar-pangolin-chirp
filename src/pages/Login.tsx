@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError } from '@/utils/toast';
+import { useTranslation } from 'react-i18next';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,15 +48,9 @@ const Login = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-50" />
         
         <Link to="/" className="flex items-center gap-4 relative z-10">
-          <img 
-            src={logoUrl} 
-            alt="Braxel Markets" 
-            className="h-16 w-auto object-contain"
-          />
+          <img src={logoUrl} alt="Braxel Markets" className="h-16 w-auto object-contain" />
           <div className="flex flex-col leading-none">
-            <span className="text-xl font-black tracking-tighter text-white">
-              BRAXEL
-            </span>
+            <span className="text-xl font-black tracking-tighter text-white">BRAXEL</span>
             <span className="text-[#C5A059] text-[8px] font-bold tracking-[0.2em]">MARKETS</span>
           </div>
         </Link>
@@ -75,26 +71,15 @@ const Login = () => {
       
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <Link to="/" className="md:hidden flex items-center gap-3 mb-12">
-            <img 
-              src={logoUrl} 
-              alt="Braxel Markets" 
-              className="h-12 w-auto object-contain"
-            />
-            <span className="text-lg font-black tracking-tighter text-white">
-              BRAXEL <span className="text-[#C5A059]">MARKETS</span>
-            </span>
-          </Link>
-          
           <div className="mb-10">
             <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Security</span>
-            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Login</h1>
-            <p className="text-slate-500 text-xs mt-2">Enter your access credentials.</p>
+            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{t('auth.loginTitle')}</h1>
+            <p className="text-slate-500 text-xs mt-2">{t('auth.loginSubtitle')}</p>
           </div>
           
           <form className="space-y-6" onSubmit={handleLogin}>
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('auth.email')}</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
                 <Input 
@@ -103,15 +88,15 @@ const Login = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Password</label>
-                <a href="#" className="text-[9px] text-[#C5A059] hover:underline font-bold uppercase tracking-widest">Forgot password?</a>
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('auth.password')}</label>
+                <a href="#" className="text-[9px] text-[#C5A059] hover:underline font-bold uppercase tracking-widest">{t('auth.forgotPassword')}</a>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
@@ -121,7 +106,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
             </div>
@@ -130,13 +115,13 @@ const Login = () => {
               disabled={loading}
               className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all border-none"
             >
-              {loading ? <Loader2 className="animate-spin" /> : "ACCESS ACCOUNT"}
+              {loading ? <Loader2 className="animate-spin" /> : t('auth.btnAccess')}
             </Button>
           </form>
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              Don't have an account? <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">Create account</Link>
+              {t('auth.noAccount')} <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">Create account</Link>
             </p>
           </div>
         </div>
