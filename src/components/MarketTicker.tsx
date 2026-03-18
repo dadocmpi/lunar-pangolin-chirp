@@ -10,7 +10,7 @@ const MarketTicker = () => {
     { pair: "EUR/USD", value: 1.0844, change: 0.12, up: true },
     { pair: "GBP/USD", value: 1.2632, change: -0.05, up: false },
     { pair: "USD/JPY", value: 149.19, change: 0.22, up: true },
-    { pair: "GOLD", value: 2155.40, change: 0.45, up: true },
+    { pair: "GOLD", value: 0, change: 0, up: true },
   ]);
 
   const d1Data = useRef<any>({});
@@ -18,8 +18,8 @@ const MarketTicker = () => {
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
-        // Sincronização mais frequente (5s) para capturar mudanças no D1
-        const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
+        // Sincronização incluindo PAXGUSDT como referência para GOLD (XAUUSD)
+        const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT","PAXGUSDT"]');
         const cryptoJson = await cryptoRes.json();
         
         const fxRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
@@ -44,24 +44,23 @@ const MarketTicker = () => {
         let newChange = p.change;
 
         if (d1Data.current.crypto) {
-          const cryptoItem = d1Data.current.crypto.find((i: any) => 
-            i.symbol === p.pair.replace('/', '').replace('USD', 'USDT')
-          );
+          // Mapeamento especial para GOLD -> PAXGUSDT (XAUUSD)
+          const symbolToFind = p.pair === "GOLD" ? "PAXGUSDT" : p.pair.replace('/', '').replace('USD', 'USDT');
+          const cryptoItem = d1Data.current.crypto.find((i: any) => i.symbol === symbolToFind);
           
           if (cryptoItem) {
             const base = parseFloat(cryptoItem.lastPrice);
             // Oscilação de preço em tempo real (1s)
             newValue = base + (Math.random() - 0.5) * (base * 0.0001);
-            // Variação D1 dinâmica vinda diretamente da API
+            // Variação D1 dinâmica
             newChange = parseFloat(cryptoItem.priceChangePercent);
           }
         }
 
-        if (d1Data.current.fx) {
+        if (d1Data.current.fx && p.pair !== "GOLD") {
           if (p.pair === "EUR/USD") {
             const base = 1 / d1Data.current.fx.EUR;
             newValue = base + (Math.random() - 0.5) * 0.0001;
-            // Para FX, simulamos a variação D1 baseada na volatilidade do par
             newChange = p.change + (Math.random() - 0.5) * 0.001;
           } else if (p.pair === "GBP/USD") {
             const base = 1 / d1Data.current.fx.GBP;
@@ -71,9 +70,6 @@ const MarketTicker = () => {
             const base = d1Data.current.fx.JPY;
             newValue = base + (Math.random() - 0.5) * 0.01;
             newChange = p.change + (Math.random() - 0.5) * 0.001;
-          } else if (p.pair === "GOLD") {
-            newValue = (p.value || 2155) + (Math.random() - 0.5) * 0.2;
-            newChange = p.change + (Math.random() - 0.5) * 0.002;
           }
         }
 
@@ -102,7 +98,7 @@ const MarketTicker = () => {
             <span className="text-slate-500 uppercase tracking-widest">{item.pair}</span>
             <span className="text-white tabular-nums">
               {item.value === 0 ? "---" : 
-                item.pair.includes('BTC') || item.pair.includes('ETH') || item.pair.includes('GOLD') 
+                item.pair === 'GOLD' || item.pair.includes('BTC') || item.pair.includes('ETH')
                 ? item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
                 : item.value.toFixed(4)}
             </span>
