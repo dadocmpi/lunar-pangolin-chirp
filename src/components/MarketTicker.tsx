@@ -18,6 +18,7 @@ const MarketTicker = () => {
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
+        // Sincronização mais frequente (5s) para capturar mudanças no D1
         const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT"]');
         const cryptoJson = await cryptoRes.json();
         
@@ -26,7 +27,8 @@ const MarketTicker = () => {
 
         d1Data.current = {
           crypto: cryptoJson,
-          fx: fxJson.rates
+          fx: fxJson.rates,
+          timestamp: Date.now()
         };
       } catch (error) {
         console.error("Erro ao sincronizar dados D1:", error);
@@ -34,7 +36,7 @@ const MarketTicker = () => {
     };
 
     fetchMarketData();
-    const syncInterval = setInterval(fetchMarketData, 10000);
+    const syncInterval = setInterval(fetchMarketData, 5000);
 
     const tickInterval = setInterval(() => {
       setPrices(prev => prev.map(p => {
@@ -42,40 +44,36 @@ const MarketTicker = () => {
         let newChange = p.change;
 
         if (d1Data.current.crypto) {
-          if (p.pair === "BTC/USD") {
-            const btc = d1Data.current.crypto.find((i: any) => i.symbol === "BTCUSDT");
-            const base = parseFloat(btc.lastPrice);
-            newValue = base + (Math.random() - 0.5) * 5;
-            newChange = parseFloat(btc.priceChangePercent);
-          } else if (p.pair === "ETH/USD") {
-            const eth = d1Data.current.crypto.find((i: any) => i.symbol === "ETHUSDT");
-            const base = parseFloat(eth.lastPrice);
-            newValue = base + (Math.random() - 0.5) * 1;
-            newChange = parseFloat(eth.priceChangePercent);
-          } else if (p.pair === "SOL/USD") {
-            const sol = d1Data.current.crypto.find((i: any) => i.symbol === "SOLUSDT");
-            const base = parseFloat(sol.lastPrice);
-            newValue = base + (Math.random() - 0.5) * 0.1;
-            newChange = parseFloat(sol.priceChangePercent);
+          const cryptoItem = d1Data.current.crypto.find((i: any) => 
+            i.symbol === p.pair.replace('/', '').replace('USD', 'USDT')
+          );
+          
+          if (cryptoItem) {
+            const base = parseFloat(cryptoItem.lastPrice);
+            // Oscilação de preço em tempo real (1s)
+            newValue = base + (Math.random() - 0.5) * (base * 0.0001);
+            // Variação D1 dinâmica vinda diretamente da API
+            newChange = parseFloat(cryptoItem.priceChangePercent);
           }
         }
 
         if (d1Data.current.fx) {
           if (p.pair === "EUR/USD") {
             const base = 1 / d1Data.current.fx.EUR;
-            newValue = base + (Math.random() - 0.5) * 0.0002;
-            newChange = p.change + (Math.random() - 0.5) * 0.01;
+            newValue = base + (Math.random() - 0.5) * 0.0001;
+            // Para FX, simulamos a variação D1 baseada na volatilidade do par
+            newChange = p.change + (Math.random() - 0.5) * 0.001;
           } else if (p.pair === "GBP/USD") {
             const base = 1 / d1Data.current.fx.GBP;
-            newValue = base + (Math.random() - 0.5) * 0.0002;
-            newChange = p.change + (Math.random() - 0.5) * 0.01;
+            newValue = base + (Math.random() - 0.5) * 0.0001;
+            newChange = p.change + (Math.random() - 0.5) * 0.001;
           } else if (p.pair === "USD/JPY") {
             const base = d1Data.current.fx.JPY;
-            newValue = base + (Math.random() - 0.5) * 0.02;
-            newChange = p.change + (Math.random() - 0.5) * 0.01;
+            newValue = base + (Math.random() - 0.5) * 0.01;
+            newChange = p.change + (Math.random() - 0.5) * 0.001;
           } else if (p.pair === "GOLD") {
-            newValue = (p.value || 2155) + (Math.random() - 0.5) * 0.5;
-            newChange = p.change + (Math.random() - 0.5) * 0.005;
+            newValue = (p.value || 2155) + (Math.random() - 0.5) * 0.2;
+            newChange = p.change + (Math.random() - 0.5) * 0.002;
           }
         }
 
