@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import PerformanceChart from '@/components/PerformanceChart';
 import { 
   LayoutDashboard, 
   Wallet, 
@@ -14,7 +15,10 @@ import {
   ArrowUpRight,
   History,
   Save,
-  AlertCircle
+  AlertCircle,
+  Lock,
+  Smartphone,
+  FileText
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -27,13 +31,10 @@ const Dashboard = () => {
   const { t } = useTranslation();
   const [activeView, setActiveView] = useState('services');
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState(false);
   const [services, setServices] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
-
-  const [withdrawalData, setWithdrawalData] = useState({ accountId: '', amount: '', iban: '' });
 
   useEffect(() => {
     fetchData();
@@ -83,6 +84,9 @@ const Dashboard = () => {
                   <p className="text-[9px] text-slate-500 truncate">{user?.email}</p>
                 </div>
               </div>
+              <div className="flex items-center gap-2 text-[8px] font-bold text-green-500 uppercase tracking-widest">
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" /> Verified Account
+              </div>
             </div>
 
             {[
@@ -121,6 +125,28 @@ const Dashboard = () => {
                   </Button>
                 </div>
 
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                  <div className="xl:col-span-2">
+                    <PerformanceChart />
+                  </div>
+                  <div className="bg-[#080B12] border border-white/10 p-8 flex flex-col justify-center">
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total Assets Under Management</p>
+                    <p className="text-4xl font-serif font-bold text-white">
+                      ${services.reduce((acc, s) => acc + parseFloat(s.balance), 0).toLocaleString()}
+                    </p>
+                    <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
+                      <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest">
+                        <span className="text-slate-500">Active Algorithms</span>
+                        <span className="text-white">{services.length}</span>
+                      </div>
+                      <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest">
+                        <span className="text-slate-500">System Status</span>
+                        <span className="text-green-500">Operational</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {services.length === 0 ? (
                   <div className="p-20 border border-dashed border-white/10 bg-white/[0.01] text-center">
                     <AlertCircle className="mx-auto text-slate-700 mb-4" size={48} />
@@ -134,6 +160,9 @@ const Dashboard = () => {
                           <div>
                             <h3 className="text-xl font-bold uppercase tracking-tight mb-1">{service.plan_name}</h3>
                             <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">ID: {service.account_id}</p>
+                          </div>
+                          <div className="px-3 py-1 bg-green-500/10 border border-green-500/20 text-green-500 text-[8px] font-bold uppercase tracking-widest">
+                            {service.status}
                           </div>
                         </div>
                         <div className="space-y-1">
@@ -183,28 +212,69 @@ const Dashboard = () => {
             )}
 
             {activeView === 'profile' && (
-              <div className="max-w-2xl space-y-8">
-                <div>
-                  <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.settings')}</span>
-                  <h2 className="text-3xl font-black uppercase tracking-tighter">{t('dashboard.profile')}</h2>
-                </div>
-
-                <form className="bg-[#080B12] border border-white/10 p-10 space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.firstName')}</label>
-                      <Input value={profile?.first_name || ''} className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.lastName')}</label>
-                      <Input value={profile?.last_name || ''} className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
-                    </div>
+              <div className="max-w-3xl space-y-12">
+                <div className="space-y-8">
+                  <div>
+                    <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.settings')}</span>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">{t('dashboard.profile')}</h2>
                   </div>
 
-                  <Button className="w-full bg-white text-black hover:bg-slate-200 rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]">
-                    <Save size={16} className="mr-2" /> {t('dashboard.saveChanges')}
-                  </Button>
-                </form>
+                  <form className="bg-[#080B12] border border-white/10 p-10 space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.firstName')}</label>
+                        <Input value={profile?.first_name || ''} className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.lastName')}</label>
+                        <Input value={profile?.last_name || ''} className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
+                      </div>
+                    </div>
+
+                    <Button className="w-full bg-white text-black hover:bg-slate-200 rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]">
+                      <Save size={16} className="mr-2" /> {t('dashboard.saveChanges')}
+                    </Button>
+                  </form>
+                </div>
+
+                <div className="space-y-8">
+                  <div>
+                    <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Security</span>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Infrastructure Protection</h2>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-[#080B12] border border-white/10 p-8 space-y-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-white/5 flex items-center justify-center text-[#C5A059]">
+                          <Smartphone size={24} />
+                        </div>
+                        <div>
+                          <h4 className="text-[11px] font-bold uppercase tracking-widest">Two-Factor Auth</h4>
+                          <p className="text-[9px] text-slate-500 uppercase tracking-widest">Not Enabled</p>
+                        </div>
+                      </div>
+                      <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 rounded-none text-[9px] font-bold uppercase tracking-widest">
+                        Enable 2FA
+                      </Button>
+                    </div>
+
+                    <div className="bg-[#080B12] border border-white/10 p-8 space-y-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-white/5 flex items-center justify-center text-[#C5A059]">
+                          <FileText size={24} />
+                        </div>
+                        <div>
+                          <h4 className="text-[11px] font-bold uppercase tracking-widest">KYC Verification</h4>
+                          <p className="text-[9px] text-green-500 uppercase tracking-widest">Verified</p>
+                        </div>
+                      </div>
+                      <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 rounded-none text-[9px] font-bold uppercase tracking-widest">
+                        View Documents
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </main>
