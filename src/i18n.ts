@@ -109,7 +109,7 @@ const resources = {
     translation: {
       nav: { pricing: "投資プラン", howItWorks: "インフラストラクチャ", about: "私たちの遺産", contact: "機関サポート", login: "ターミナルアクセス", openAccount: "BRAXELに参加", dashboard: "ダッシュボード", logout: "ログアウト" },
       footer: { desc: "機関投資家レベルの投資インフラ。現代市場向けの独自技術。", platform: "プラットフォーム", company: "会社", support: "デジタルサポート", rights: "全著作権所有。", privacy: "プライバシー", terms: "規約", disclaimer: "免責事項" },
-      auth: { loginTitle: "ログイン", loginSubtitle: "アクセス資格情報を入力してください。", registerTitle: "アカウント作成", registerSubtitle: "機関投資家市場での旅を始めましょう。", email: "メールアドレス", password: "パスワード", fullName: "氏名", forgotPassword: "パスワードをお忘れですか？", noAccount: "アカウントをお持ちではありませんか？", hasAccount: "すでにアクセス権をお持ちですか？", btnAccess: "アカウントにアクセス", btnCreate: "アカウントを作成する", termsAgree: "規約とプライバシーに同意します。", futureTitle: "投資の", futureSubtitle: "未来", features: ["機関投資家レベルのアルゴリズム", "高度な資本保護", "ミリ秒単位の実行", "完全な透明性"] },
+      auth: { loginTitle: "ログイン", loginSubtitle: "アクセス資格情報を入力してください。", registerTitle: "アカウント作成", registerSubtitle: "機関投資家市場での旅を始めましょう。", email: "メールアドレス", password: "パワード", fullName: "氏名", forgotPassword: "パスワードをお忘れですか？", noAccount: "アカウントをお持ちではありませんか？", hasAccount: "すでにアクセス権をお持ちですか？", btnAccess: "アカウントにアクセス", btnCreate: "アカウントを作成する", termsAgree: "規約とプライバシーに同意します。", futureTitle: "投資の", futureSubtitle: "未来", features: ["機関投資家レベルのアルゴリズム", "高度な資本保護", "ミリ秒単位の実行", "完全な透明性"] },
       hero: { title1: "エリート・アルゴリズム", title2: "資本管理。", desc: "現代市場向けに設計された機関投資家レベルの計量戦略を展開します。ミリ秒単位の実行精度と高度なリスク軽減プロトコルを体験してください。", getStarted: "投資プランを探索する", viewStrategies: "技術的方法論" },
       stats: { volume: "総運用資産", traders: "グローバル・アクティブ投資家", uptime: "インフラ稼働率", latency: "実行精度" },
       pricing: { badge: "透明性", title: "資本", subtitle: "配分", desc: "透明な手数料体系を備えた機関投資家レベルのインフラ。", select: "このプランを確保する", allocation: "運用資本", month: "月額料金" },
@@ -135,7 +135,7 @@ const resources = {
       hero: { title1: "ניהול הון", title2: "אלגוריתמי עילית.", desc: "פרוס אסטרטגיות כמותיות ברמה מוסדית המיועדות לשוק המודרני. חווה דיוק ביצוע במילישניות ופרוטוקולי הפחתת סיכונים מתקדמים.", getStarted: "חקור תוכניות השקעה", viewStrategies: "מתודולוגיה טכנית" },
       stats: { volume: "סך נפח מנוהל", traders: "משקיעים פעילים גלובליים", uptime: "זמן פעילות תשתית", latency: "דיוק ביצוע" },
       pricing: { badge: "שקיפות", title: "הקצאות", subtitle: "הון", desc: "תשתית ברמה מוסדית עם מבנה עמלות שקוף.", select: "אבטח תוכנית זו", allocation: "הון מנוהל", month: "עמלה חודשית" },
-      dashboard: { portfolio: "תיק השקעות", activeServices: "שירותים פעילים", newAllocation: "הקצאה חדשה", noServices: "לא נמצאו תוכניות השקעה פעילות.", balance: "יתרה נוכחית", withdraw: "משיכה", liquidity: "נזילות", requestWithdraw: "בקש משיכה", selectAccount: "בחר חשבון", amount: "סכום (USD)", iban: "IBAN / פרטי בנק", btnWithdraw: "שלח בקשת משיכה", profile: "ניהול פרופיל", settings: "הגדרות", firstName: "שם פרטי", lastName: "שם משפחה", saveChanges: "שמור שינויים" }
+      dashboard: { portfolio: "תיק השקעות", activeServices: "שירותים פעילים", newAllocation: "הקצאה חדשה", noServices: "לא נמצאו תוכניות השקעה פעילות.", balance: "יתרה נוכחית", withdraw: "משיכה", liquidity: "נזילות", requestWithdraw: "בקש משיכה", selectAccount: "בחר חשבון", amount: "סכום (USD)", iban: "IBAN / פרטי בנק", btnWithdraw: "שלח בקשת משיכה", profile: "ניהol פרופיל", settings: "הגדרות", firstName: "שם פרטי", lastName: "שם משפחה", saveChanges: "שמור שינויים" }
     }
   }
 };
