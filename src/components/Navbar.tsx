@@ -29,7 +29,6 @@ const Navbar = () => {
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
     setIsOpen(false);
-    // Refresh total para garantir 100% de aplicação nativa
     window.location.reload();
   };
 
@@ -76,7 +75,7 @@ const Navbar = () => {
             {i18n.language.toUpperCase()}
             <ChevronDown size={10} className="opacity-50" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[180px] p-0">
+          <DropdownMenuContent className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[180px] p-0 z-[1100]">
             <ScrollArea className="h-[300px]">
               <div className="p-1">
                 {supportedLanguages.map((lang) => (

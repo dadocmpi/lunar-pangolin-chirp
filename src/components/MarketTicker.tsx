@@ -18,7 +18,6 @@ const MarketTicker = () => {
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
-        // Sincronização incluindo PAXGUSDT como referência para GOLD (XAUUSD)
         const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT","PAXGUSDT"]');
         const cryptoJson = await cryptoRes.json();
         
@@ -44,15 +43,12 @@ const MarketTicker = () => {
         let newChange = p.change;
 
         if (d1Data.current.crypto) {
-          // Mapeamento especial para GOLD -> PAXGUSDT (XAUUSD)
           const symbolToFind = p.pair === "GOLD" ? "PAXGUSDT" : p.pair.replace('/', '').replace('USD', 'USDT');
           const cryptoItem = d1Data.current.crypto.find((i: any) => i.symbol === symbolToFind);
           
           if (cryptoItem) {
             const base = parseFloat(cryptoItem.lastPrice);
-            // Oscilação de preço em tempo real (1s)
             newValue = base + (Math.random() - 0.5) * (base * 0.0001);
-            // Variação D1 dinâmica
             newChange = parseFloat(cryptoItem.priceChangePercent);
           }
         }
@@ -91,7 +87,7 @@ const MarketTicker = () => {
   const tickerItems = [...prices, ...prices, ...prices, ...prices];
 
   return (
-    <div className="fixed top-24 left-0 w-full h-[50px] bg-black/80 backdrop-blur-md border-b border-white/5 z-[999] overflow-hidden flex items-center">
+    <div className="fixed top-24 left-0 w-full h-[50px] bg-black/80 backdrop-blur-md border-b border-white/5 z-[900] overflow-hidden flex items-center">
       <div className="flex gap-16 px-8 whitespace-nowrap ticker-scroll">
         {tickerItems.map((item, i) => (
           <div key={i} className="flex items-center gap-3 font-tech text-[11px] font-bold transition-all duration-500">
