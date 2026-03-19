@@ -29,10 +29,8 @@ const Navbar = () => {
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
     setIsOpen(false);
-    // Forçamos um pequeno delay e refresh para garantir que todo o contexto (incluindo buscas e novos apartados) seja resetado com o novo idioma
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
+    // Forçamos um refresh completo para garantir 100% de aplicação do idioma
+    window.location.reload();
   };
 
   const handleLogoClick = () => {

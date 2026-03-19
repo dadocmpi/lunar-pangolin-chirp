@@ -5,9 +5,9 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 export const supportedLanguages = [
   { code: 'en', name: 'English' },
   { code: 'pt', name: 'Português' },
+  { code: 'it', name: 'Italiano' },
   { code: 'es', name: 'Español' },
   { code: 'fr', name: 'Français' },
-  { code: 'it', name: 'Italiano' },
   { code: 'ru', name: 'Русский' },
   { code: 'zh', name: '中文' },
   { code: 'he', name: 'עברית' },
@@ -168,6 +168,82 @@ const resources = {
       howItWorks: { badge: "INFRAESTRUTURA", title: "COMO O", subtitle: "MOTOR FUNCIONA", desc: "Nosso ecossistema é projetado para velocidade, segurança e transparência absoluta.", steps: [ { title: "Criação de Conta", desc: "Registre seu perfil institucional." }, { title: "Seleção de Plano", desc: "Escolha um nível de alocação." }, { title: "Pagamento Seguro", desc: "Conclua sua assinatura." }, { title: "Integração de API", desc: "Nosso sistema gera uma subconta exclusiva." }, { title: "Execução ao Vivo", desc: "As estratégias começam a ser executadas imediatamente." }, { title: "Relatórios Semanais", desc: "Receba auditorias de desempenho detalhadas." } ], cta: "PRONTO PARA COMEÇAR?", ctaBtn: "INICIAR ALOCAÇÃO AGORA" },
       contact: { badge: "SUPORTE", title: "CONCIERGE", subtitle: "INSTITUCIONAL", desc: "Nossa equipe de suporte dedicada está disponível 24/7.", infoTitle: "CANAIS DIRETOS", formTitle: "ENVIE UMA MENSAGEM", placeholders: { name: "NOME COMPLETO", email: "ENDEREÇO DE E-MAIL", subject: "ASSUNTO", message: "SUA MENSAGEM" }, sendBtn: "ENVIAR MENSAGEM" }
     }
+  },
+  it: {
+    translation: {
+      nav: {
+        pricing: "PIANI DI INVESTIMENTO",
+        howItWorks: "INFRASTRUTTURA",
+        about: "LA NOSTRA EREDITÀ",
+        contact: "SUPPORTO ISTITUZIONALE",
+        login: "ACCESSO TERMINALE",
+        openAccount: "UNISCITI A BRAXEL",
+        dashboard: "DASHBOARD",
+        logout: "DISCONNETTI"
+      },
+      auth: {
+        loginTitle: "Accesso",
+        loginSubtitle: "Inserisci le tue credenziali di accesso.",
+        registerTitle: "Crea Account",
+        registerSubtitle: "Inizia il tuo viaggio nel mercato istituzionale.",
+        email: "Indirizzo Email",
+        password: "Password",
+        fullName: "Nome Completo",
+        forgotPassword: "Password dimenticata?",
+        noAccount: "Non hai un account?",
+        hasAccount: "Hai già l'accesso?",
+        btnAccess: "ACCEDI ALL'ACCOUNT",
+        btnCreate: "CREA IL MIO ACCOUNT",
+        termsAgree: "Accetto i Termini e la Privacy."
+      },
+      dashboard: {
+        portfolio: "Portafoglio",
+        activeServices: "Servizi Attivi",
+        newAllocation: "Nuova Allocazione",
+        noServices: "Nessun piano di investimento attivo trovato.",
+        balance: "Saldo Attuale",
+        withdraw: "Prelievo",
+        liquidity: "Liquidità",
+        requestWithdraw: "Richiedi Prelievo",
+        selectAccount: "Seleziona Account",
+        amount: "Importo (USD)",
+        iban: "IBAN / Dati Bancari",
+        btnWithdraw: "INVIA RICHIESTA DI PRELIEVO",
+        profile: "Gestione Profilo",
+        settings: "Impostazioni",
+        firstName: "Nome",
+        lastName: "Cognome",
+        saveChanges: "SALVA MODIFICHE"
+      },
+      checkout: {
+        summary: "Riepilogo Ordine",
+        finalize: "Finalizza la tua Allocazione",
+        managedCapital: "Capitale Gestito",
+        total: "Importo Totale",
+        secure: "Checkout Sicuro",
+        authRequired: "Autenticazione Richiesta",
+        authDesc: "Accedi o crea un account per collegare questo piano al tuo profilo.",
+        btnLogin: "Accedi all'Account",
+        btnRegister: "Crea Nuovo Account",
+        loggedInAs: "Connesso come",
+        btnPay: "Paga con PayPal"
+      },
+      hero: {
+        title1: "GESTIONE CAPITALE",
+        title2: "ALGORITMICA D'ELITE.",
+        desc: "Implementa strategie quantitative di livello istituzionale progettate per il mercato moderno. Sperimenta la precisione di esecuzione in millisecondi.",
+        getStarted: "ESPLORA I PIANI DI INVESTIMENTO",
+        viewStrategies: "METODOLOGIA TECNICA"
+      },
+      stats: { volume: "Volume Totale Gestito", traders: "Investitori Attivi", uptime: "Uptime Infrastruttura", latency: "Precisione Esecuzione" },
+      methodology: { badge: "IL NOSTRO VANTAGGIO", title: "PRECISIONE QUANTITATIVA", momentum: { title: "Ottimizzazione Momentum Dinamico", desc: "I nostri algoritmi identificano e sfruttano i movimenti dei prezzi.", f1: "Validazione multi-timeframe", f2: "Correlazione cross-asset", f3: "Scaling adattivo" }, volatility: { title: "Scudo Volatilità Intelligente", desc: "Modellazione matematica avanzada che preserva il capitale.", f1: "Integrazione VIX in tempo reale", f2: "Limiti drawdown non lineari", f3: "De-risking automatizzato" }, risk: { title: "Architettura Rischio Sistematico", desc: "Rigorosi controlli istituzionali per la preservazione del capitale.", f1: "Ottimizzazione Criterio di Kelly", f2: "Simulazioni Monte Carlo", f3: "Monitoraggio VaR 24/7" } },
+      process_home: { badge: "LA ROADMAP", title: "DAL CAPITALE ALLA", subtitle: "PERFORMANCE D'ELITE", step1: { title: "Allocazione Strategica", desc: "Seleziona il piano istituzionale." }, step2: { title: "Integrazione Istantanea", desc: "La nostra infrastruttura si sincronizza in millisecondi." }, step3: { title: "Distribuzione Algoritmica", desc: "Modelli ad alta frequenza eseguono operazioni." }, step4: { title: "Analisi Performance", desc: "Monitora ogni esecuzione in tempo reale." }, step5: { title: "Liquidità Capitale", desc: "Richiedi prelievi di profitto direttamente." } },
+      cta_home: { badge: "POSTI ISTITUZIONALI LIMITATI", title: "PRONTO A OTTIMIZZARE", subtitle: "IL TUO PORTAFOGLIO?", desc: "Unisciti a una rete esclusiva di investitori globali.", btn: "VEDI PIANI DI INVESTIMENTO", trust: "Protetto da Crittografia Istituzionale AES-256." },
+      pricing: { badge: "TRASPARENZA", title: "ALLOCAZIONI DI", subtitle: "CAPITALE", desc: "Infrastruttura istituzionale con una struttura commissionale trasparente.", select: "ASSICURA QUESTO PIANO", allocation: "CAPITALE GESTITO", month: "canone mensile" },
+      about: { badge: "LA NOSTRA EREDITÀ", title: "PIONIERI NELLA", subtitle: "FRONTIERA QUANTITATIVA", desc: "Braxel Markets è stata fondata sul principio dell'accessibilità.", historyTitle: "IL NOSTRO VIAGGIO", historyDesc1: "Dal 2026, siamo all'avanguardia nel trading algoritmico.", historyDesc2: "Il nostro team lavora instancabilmente per mantenere l'infrastruttura più robusta.", stats: { founded: "Fondato", users: "Utenti Attivi", uptime: "Uptime Sistema", support: "Portata Globale" }, values: { mission: "MISSIONE", missionDesc: "Democratizzare l'accesso al trading ad alta frequenza.", vision: "VISIONE", visionDesc: "Diventare lo standard globale per gli investimenti automatizzati.", values: "VALORI", valuesDesc: "Trasparenza, rigore matematico e impegno." } },
+      howItWorks: { badge: "INFRASTRUTTURA", title: "COME FUNZIONA", subtitle: "IL MOTORE", desc: "Il nostro ecosistema è progettato per velocità, sicurezza e trasparenza assoluta.", steps: [ { title: "Creazione Account", desc: "Registra il tuo profilo istituzionale." }, { title: "Selezione Piano", desc: "Scegli un livello di allocação." }, { title: "Pagamento Sicuro", desc: "Completa l'abbonamento." }, { title: "Integrazione API", desc: "Il sistema genera un sub-account unico." }, { title: "Esecuzione Live", desc: "Le strategie iniziano immediatamente." }, { title: "Report Settimanali", desc: "Ricevi audit dettagliati sulle performance." } ], cta: "PRONTO A PARTIRE?", ctaBtn: "INIZIA ALLOCAZIONE ORA" },
+      contact: { badge: "SUPPORTO", title: "CONCIERGE", subtitle: "ISTITUZIONALE", desc: "Il nostro team di supporto dedicato è disponibile 24/7.", infoTitle: "CANALI DIRETTI", formTitle: "INVIA UN MESSAGGIO", placeholders: { name: "NOME COMPLETO", email: "INDIRIZZO EMAIL", subject: "OGGETTO", message: "IL TUO MESSAGGIO" }, sendBtn: "INVIA MESSAGGIO" }
+    }
   }
 };
 
@@ -179,7 +255,6 @@ i18n
     fallbackLng: 'en',
     debug: false,
     detection: {
-      // Prioridade máxima para localStorage (escolha do cliente)
       order: ['localStorage', 'cookie', 'sessionStorage', 'navigator'],
       caches: ['localStorage', 'cookie'],
     },
