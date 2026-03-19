@@ -83,7 +83,6 @@ const resources = {
         getStarted: "EXPLORE INVESTMENT PLANS",
         viewStrategies: "TECHNICAL METHODOLOGY"
       },
-      // ... (mantendo as outras traduções existentes)
       stats: { volume: "Total Managed Volume", traders: "Global Active Investors", uptime: "Infrastructure Uptime", latency: "Execution Precision" },
       methodology: { badge: "OUR EDGE", title: "QUANTITATIVE PRECISION", momentum: { title: "Dynamic Momentum Optimization", desc: "Our algorithms identify and exploit sustained price movements.", f1: "Multi-timeframe validation", f2: "Cross-asset correlation", f3: "Adaptive position scaling" }, volatility: { title: "Intelligent Volatility Shield", desc: "Advanced mathematical modeling that preserves capital.", f1: "Real-time VIX integration", f2: "Non-linear drawdown limits", f3: "Automated de-risking" }, risk: { title: "Systematic Risk Architecture", desc: "Rigorous institutional controls ensuring capital preservation.", f1: "Kelly Criterion optimization", f2: "Monte Carlo simulations", f3: "24/7 VaR monitoring" } },
       process_home: { badge: "THE ROADMAP", title: "FROM CAPITAL TO", subtitle: "ELITE PERFORMANCE", step1: { title: "Strategic Allocation", desc: "Select the institutional-grade plan." }, step2: { title: "Instant Integration", desc: "Our infrastructure syncs in milliseconds." }, step3: { title: "Algorithmic Deployment", desc: "High-frequency models execute trades." }, step4: { title: "Performance Analysis", desc: "Monitor every execution in real-time." }, step5: { title: "Capital Liquidity", desc: "Request profit withdrawals directly." } },
@@ -160,7 +159,6 @@ const resources = {
         getStarted: "EXPLORAR PLANOS DE INVESTIMENTO",
         viewStrategies: "METODOLOGIA TÉCNICA"
       },
-      // ... (mantendo as outras traduções existentes)
       stats: { volume: "Volume Total Gerenciado", traders: "Investidores Ativos", uptime: "Uptime da Infraestrutura", latency: "Precisão de Execução" },
       methodology: { badge: "NOSSA VANTAGEM", title: "PRECISÃO QUANTITATIVA", momentum: { title: "Otimização de Momentum Dinâmico", desc: "Nossos algoritmos identificam e exploram movimentos de preços.", f1: "Validação multi-timeframe", f2: "Correlação entre ativos", f3: "Escalonamento adaptativo" }, volatility: { title: "Escudo de Volatilidade Inteligente", desc: "Modelagem matemática avançada que preserva o capital.", f1: "Integração VIX em tempo real", f2: "Limites de drawdown não lineares", f3: "Redução de risco automatizada" }, risk: { title: "Arquitetura de Risco Sistemático", desc: "Rigorosos controles institucionais garantindo a preservação do capital.", f1: "Otimização do Critério de Kelly", f2: "Simulações de Monte Carlo", f3: "Monitoramento VaR 24/7" } },
       process_home: { badge: "O ROTEIRO", title: "DO CAPITAL À", subtitle: "PERFORMANCE DE ELITE", step1: { title: "Alocação Estratégica", desc: "Selecione o plano de nível institucional." }, step2: { title: "Integração Instantânea", desc: "Nossa infraestrutura sincroniza em milissegundos." }, step3: { title: "Implementação Algorítmica", desc: "Modelos de alta frequência executam operações." }, step4: { title: "Análise de Performance", desc: "Monitore cada execução em tempo real." }, step5: { title: "Liquidez de Capital", desc: "Solicite saques de lucros diretamente." } },
@@ -181,7 +179,8 @@ i18n
     fallbackLng: 'en',
     debug: false,
     detection: {
-      order: ['localStorage', 'cookie', 'navigator'],
+      // Prioridade máxima para localStorage (escolha do cliente)
+      order: ['localStorage', 'cookie', 'sessionStorage', 'navigator'],
       caches: ['localStorage', 'cookie'],
     },
     interpolation: {
