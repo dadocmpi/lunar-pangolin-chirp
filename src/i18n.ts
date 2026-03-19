@@ -55,7 +55,7 @@ const resources = {
       nav: { pricing: "INVESTITIONSPLÄNE", howItWorks: "INFRASTRUKTUR", about: "UNSER ERBE", contact: "INSTITUTIONELLER SUPPORT", login: "TERMINAL-ZUGANG", openAccount: "BRAXEL BEITRETEN", dashboard: "DASHBOARD", logout: "ABMELDEN" },
       footer: { desc: "Institutionelle Investment-Infrastruktur. Proprietäre Technologie für den modernen Markt.", platform: "Plattform", company: "Unternehmen", support: "Digitaler Support", rights: "Alle Rechte vorbehalten.", privacy: "Datenschutz", terms: "Bedingungen", disclaimer: "Haftungsausschluss" },
       auth: { loginTitle: "Anmelden", loginSubtitle: "Geben Sie Ihre Zugangsdaten ein.", registerTitle: "Konto erstellen", registerSubtitle: "Beginnen Sie Ihre Reise am institutionellen Markt.", email: "E-Mail-Adresse", password: "Passwort", fullName: "Vollständiger Name", forgotPassword: "Passwort vergessen?", noAccount: "Kein Konto?", hasAccount: "Bereits Zugang?", btnAccess: "ZUGANG ZUM KONTO", btnCreate: "MEIN KONTO ERSTELLEN", termsAgree: "Ich stimme den Bedingungen und dem Datenschutz zu.", futureTitle: "Die Zukunft der", futureSubtitle: "Investition", features: ["Institutionelle Algorithmen", "Erweiterter Kapitalschutz", "Millisekunden-Ausführung", "Volle Transparenz"] },
-      hero: { title1: "ELITE ALGORITHMISCHES", title2: "KAPITALMANAGEMENT.", desc: "Nutzen Sie institutionelle quantitative Strategien für den modernen Markt. Erleben Sie Millisekunden-Präzision und fortschrittliche Risikominderung.", getStarted: "INVESTITIONSPLÄNE ERKUNDEN", viewStrategies: "TECHNISCHE METHODIK" },
+      hero: { title1: "ELITE ALGORITHMISCHES", title2: "KAPITALMANAGEMENT.", desc: "Nutzen Sie institutionelle quantitative Strategien für den modernen Markt. Erleben Sie Millisekunden-Präzision und fortsrittliche Risikominderung.", getStarted: "INVESTITIONSPLÄNE ERKUNDEN", viewStrategies: "TECHNISCHE METHODIK" },
       stats: { volume: "Verwaltetes Gesamtvolumen", traders: "Aktive Investoren", uptime: "Infrastruktur-Uptime", latency: "Ausführungspräzision" },
       pricing: { badge: "TRANSPARENZ", title: "KAPITAL", subtitle: "ALLOKATIONEN", desc: "Institutionelle Infrastruktur mit transparenter Gebührenstruktur.", select: "DIESEN PLAN SICHERN", allocation: "VERWALTETES KAPITAL", month: "monatliche Gebühr" },
       dashboard: { portfolio: "Portfolio", activeServices: "Aktive Dienste", newAllocation: "Neue Allokation", noServices: "Keine aktiven Investitionspläne gefunden.", balance: "Aktueller Kontostand", withdraw: "Auszahlung", liquidity: "Liquidität", requestWithdraw: "Auszahlung anfordern", selectAccount: "Konto auswählen", amount: "Betrag (USD)", iban: "IBAN / Bankdaten", btnWithdraw: "AUSZAHLUNGSANTRAG SENDEN", profile: "Profilverwaltung", settings: "Einstellungen", firstName: "Vorname", lastName: "Nachname", saveChanges: "ÄNDERUNGEN SPEICHERN" }
@@ -81,6 +81,61 @@ const resources = {
       stats: { volume: "Volume total géré", traders: "Investisseurs actifs", uptime: "Disponibilité infrastructure", latency: "Précision d'exécution" },
       pricing: { badge: "TRANSPARENCE", title: "ALLOCATIONS DE", subtitle: "CAPITAL", desc: "Infrastructure institutionnelle avec une structure de frais transparente.", select: "SÉCURISER CE PLAN", allocation: "CAPITAL GÉRÉ", month: "frais mensuels" },
       dashboard: { portfolio: "Portefeuille", activeServices: "Services actifs", newAllocation: "Nouvelle allocation", noServices: "Aucun plan d'investissement actif trouvé.", balance: "Solde actuel", withdraw: "Retrait", liquidity: "Liquidité", requestWithdraw: "Demander un retrait", selectAccount: "Choisir un compte", amount: "Montant (USD)", iban: "IBAN / Coordonnées bancaires", btnWithdraw: "ENVOYER LA DEMANDE", profile: "Gestion du profil", settings: "Paramètres", firstName: "Prénom", lastName: "Nom", saveChanges: "ENREGISTRER" }
+    }
+  },
+  ru: {
+    translation: {
+      nav: { pricing: "ИНВЕСТИЦИОННЫЕ ПЛАНЫ", howItWorks: "ИНФРАСТРУКТУРА", about: "НАШЕ НАСЛЕДИЕ", contact: "ИНСТИТУЦИОНАЛЬНАЯ ПОДДЕРЖКА", login: "ДОСТУП К ТЕРМИНАЛУ", openAccount: "ПРИСОЕДИНИТЬСЯ К BRAXEL", dashboard: "ПАНЕЛЬ УПРАВЛЕНИЯ", logout: "ВЫЙТИ" },
+      footer: { desc: "Инвестиционная инфраструктура институционального уровня. Собственные технологии для современного рынка.", platform: "Платформа", company: "Компания", support: "Цифровая поддержка", rights: "Все права защищены.", privacy: "Конфиденциальность", terms: "Условия", disclaimer: "Отказ от ответственности" },
+      auth: { loginTitle: "Вход", loginSubtitle: "Введите свои учетные данные.", registerTitle: "Создать аккаунт", registerSubtitle: "Начните свой путь на институциональном рынке.", email: "Электронная почта", password: "Пароль", fullName: "Полное имя", forgotPassword: "Забыли пароль?", noAccount: "Нет аккаунта?", hasAccount: "Уже есть доступ?", btnAccess: "ВОЙТИ В АККАУНТ", btnCreate: "СОЗДАТЬ МОЙ АККАУНТ", termsAgree: "Я согласен с Условиями и Конфиденциальностью.", futureTitle: "Будущее", futureSubtitle: "инвестиций", features: ["Алгоритмы институционального уровня", "Продвинутая защита капитала", "Исполнение за миллисекунды", "Полная прозрачность"] },
+      hero: { title1: "ЭЛИТНОЕ АЛГОРИТМИЧЕСКОЕ", title2: "УПРАВЛЕНИЕ КАПИТАЛОМ.", desc: "Используйте количественные стратегии институционального уровня, разработанные для современного рынка. Ощутите точность исполнения за миллисекунды.", getStarted: "ИЗУЧИТЬ ИНВЕСТИЦИОННЫЕ ПЛАНЫ", viewStrategies: "ТЕХНИЧЕСКАЯ МЕТОДОЛОГИЯ" },
+      stats: { volume: "Общий объем управления", traders: "Активные инвесторы", uptime: "Время работы системы", latency: "Точность исполнения" },
+      pricing: { badge: "ПРОЗРАЧНОСТЬ", title: "РАСПРЕДЕЛЕНИЕ", subtitle: "КАПИТАЛА", desc: "Инфраструктура институционального уровня с прозрачной структурой комиссий.", select: "ВЫБРАТЬ ЭТОТ ПЛАН", allocation: "УПРАВЛЯЕМЫЙ КАПИТАЛ", month: "ежемесячный взнос" },
+      dashboard: { portfolio: "Портфель", activeServices: "Активные услуги", newAllocation: "Новое распределение", noServices: "Активные инвестиционные планы не найдены.", balance: "Текущий баланс", withdraw: "Вывод средств", liquidity: "Ликвидность", requestWithdraw: "Запросить вывод", selectAccount: "Выбрать счет", amount: "Сумма (USD)", iban: "IBAN / Банковские реквизиты", btnWithdraw: "ОТПРАВИТЬ ЗАПРОС НА ВЫВОД", profile: "Управление профилем", settings: "Настройки", firstName: "Имя", lastName: "Фамилия", saveChanges: "СОХРАНИТЬ ИЗМЕНЕНИЯ" }
+    }
+  },
+  zh: {
+    translation: {
+      nav: { pricing: "投资计划", howItWorks: "基础设施", about: "我们的传承", contact: "机构支持", login: "终端访问", openAccount: "加入 BRAXEL", dashboard: "仪表板", logout: "登出" },
+      footer: { desc: "机构级投资基础设施。现代市场的专有技术。", platform: "平台", company: "公司", support: "数字支持", rights: "版权所有。", privacy: "隐私", terms: "条款", disclaimer: "免责声明" },
+      auth: { loginTitle: "登录", loginSubtitle: "输入您的访问凭据。", registerTitle: "创建账户", registerSubtitle: "开始您的机构市场之旅。", email: "电子邮件地址", password: "密码", fullName: "全名", forgotPassword: "忘记密码？", noAccount: "没有账户？", hasAccount: "已有访问权限？", btnAccess: "访问账户", btnCreate: "创建我的账户", termsAgree: "我同意条款和隐私政策。", futureTitle: "投资的", futureSubtitle: "未来", features: ["机构级算法", "先进的资本保护", "毫秒级执行", "完全透明"] },
+      hero: { title1: "精英算法", title2: "资本管理。", desc: "部署为现代市场设计的机构级量化策略。体验毫秒级的执行精度和先进的风险缓解协议。", getStarted: "探索投资计划", viewStrategies: "技术方法论" },
+      stats: { volume: "总管理量", traders: "全球活跃投资者", uptime: "基础设施运行时间", latency: "执行精度" },
+      pricing: { badge: "透明度", title: "资本", subtitle: "分配", desc: "具有透明费用结构的机构级基础设施。", select: "确保此计划", allocation: "管理资本", month: "月费" },
+      dashboard: { portfolio: "投资组合", activeServices: "活跃服务", newAllocation: "新分配", noServices: "未发现活跃的投资计划。", balance: "当前余额", withdraw: "提款", liquidity: "流动性", requestWithdraw: "申请提款", selectAccount: "选择账户", amount: "金额 (USD)", iban: "IBAN / 银行详情", btnWithdraw: "提交提款申请", profile: "个人资料管理", settings: "设置", firstName: "名字", lastName: "姓氏", saveChanges: "保存更改" }
+    }
+  },
+  ja: {
+    translation: {
+      nav: { pricing: "投資プラン", howItWorks: "インフラストラクチャ", about: "私たちの遺産", contact: "機関サポート", login: "ターミナルアクセス", openAccount: "BRAXELに参加", dashboard: "ダッシュボード", logout: "ログアウト" },
+      footer: { desc: "機関投資家レベルの投資インフラ。現代市場向けの独自技術。", platform: "プラットフォーム", company: "会社", support: "デジタルサポート", rights: "全著作権所有。", privacy: "プライバシー", terms: "規約", disclaimer: "免責事項" },
+      auth: { loginTitle: "ログイン", loginSubtitle: "アクセス資格情報を入力してください。", registerTitle: "アカウント作成", registerSubtitle: "機関投資家市場での旅を始めましょう。", email: "メールアドレス", password: "パスワード", fullName: "氏名", forgotPassword: "パスワードをお忘れですか？", noAccount: "アカウントをお持ちではありませんか？", hasAccount: "すでにアクセス権をお持ちですか？", btnAccess: "アカウントにアクセス", btnCreate: "アカウントを作成する", termsAgree: "規約とプライバシーに同意します。", futureTitle: "投資の", futureSubtitle: "未来", features: ["機関投資家レベルのアルゴリズム", "高度な資本保護", "ミリ秒単位の実行", "完全な透明性"] },
+      hero: { title1: "エリート・アルゴリズム", title2: "資本管理。", desc: "現代市場向けに設計された機関投資家レベルの計量戦略を展開します。ミリ秒単位の実行精度と高度なリスク軽減プロトコルを体験してください。", getStarted: "投資プランを探索する", viewStrategies: "技術的方法論" },
+      stats: { volume: "総運用資産", traders: "グローバル・アクティブ投資家", uptime: "インフラ稼働率", latency: "実行精度" },
+      pricing: { badge: "透明性", title: "資本", subtitle: "配分", desc: "透明な手数料体系を備えた機関投資家レベルのインフラ。", select: "このプランを確保する", allocation: "運用資本", month: "月額料金" },
+      dashboard: { portfolio: "ポートフォリオ", activeServices: "アクティブなサービス", newAllocation: "新規配分", noServices: "アクティブな投資プランが見つかりません。", balance: "現在の残高", withdraw: "出金", liquidity: "流動性", requestWithdraw: "出金をリクエストする", selectAccount: "アカウントを選択", amount: "金額 (USD)", iban: "IBAN / 銀行詳細", btnWithdraw: "出金リクエストを送信", profile: "プロフィール管理", settings: "設定", firstName: "名", lastName: "姓", saveChanges: "変更を保存" }
+    }
+  },
+  ar: {
+    translation: {
+      nav: { pricing: "خطط الاستثمار", howItWorks: "البنية التحتية", about: "إرثنا", contact: "الدعم المؤسسي", login: "الوصول إلى المحطة", openAccount: "انضم إلى BRAXEL", dashboard: "لوحة القيادة", logout: "تسجيل الخروج" },
+      footer: { desc: "بنية تحتية استثمارية مؤسسية. تكنولوجيا خاصة للسوق الحديث.", platform: "المنصة", company: "الشركة", support: "الدعم الرقمي", rights: "جميع الحقوق محفوظة.", privacy: "الخصوصية", terms: "الشروط", disclaimer: "إخلاء المسؤولية المالية" },
+      auth: { loginTitle: "تسجيل الدخول", loginSubtitle: "أدخل بيانات الاعتماد الخاصة بك.", registerTitle: "إنشاء حساب", registerSubtitle: "ابدأ رحلتك في السوق المؤسسي.", email: "البريد الإلكتروني", password: "كلمة المرور", fullName: "الاسم الكامل", forgotPassword: "هل نسيت كلمة المرور؟", noAccount: "ليس لديك حساب؟", hasAccount: "لديك وصول بالفعل؟", btnAccess: "الوصول إلى الحساب", btnCreate: "إنشاء حسابي", termsAgree: "أوافق على الشروط والخصوصية.", futureTitle: "مستقبل", futureSubtitle: "الاستثمار", features: ["خوارزميات مؤسسية", "حماية متقدمة لرأس المال", "تنفيذ في أجزاء من الثانية", "شفافية كاملة"] },
+      hero: { title1: "إدارة رأس المال", title2: "الخوارزمية النخبوية.", desc: "نشر استراتيجيات كمية مؤسسية مصممة للسوق الحديث. جرب دقة التنفيذ في أجزاء من الثانية وبروتوكولات تخفيف المخاطر المتقدمة.", getStarted: "استكشاف خطط الاستثمار", viewStrategies: "المنهجية التقنية" },
+      stats: { volume: "إجمالي حجم الإدارة", traders: "المستثمرون النشطون عالمياً", uptime: "وقت تشغيل البنية التحتية", latency: "دقة التنفيذ" },
+      pricing: { badge: "الشفافية", title: "تخصيص", subtitle: "رأس المال", desc: "بنية تحتية مؤسسية مع هيكل رسوم شفاف.", select: "تأمين هذه الخطة", allocation: "رأس المال المدار", month: "رسوم شهرية" },
+      dashboard: { portfolio: "المحفظة", activeServices: "الخدمات النشطة", newAllocation: "تخصيص جديد", noServices: "لم يتم العثور على خطط استثمار نشطة.", balance: "الرصيد الحالي", withdraw: "سحب الأموال", liquidity: "السيولة", requestWithdraw: "طلب سحب", selectAccount: "اختر الحساب", amount: "المبلغ (USD)", iban: "IBAN / تفاصيل البنك", btnWithdraw: "إرسال طلب السحب", profile: "إدارة الملف الشخصي", settings: "الإعدادات", firstName: "الاسم الأول", lastName: "اسم العائلة", saveChanges: "حفظ التغييرات" }
+    }
+  },
+  he: {
+    translation: {
+      nav: { pricing: "תוכניות השקעה", howItWorks: "התשתית", about: "המורשת שלנו", contact: "תמיכה מוסדית", login: "גישה למסוף", openAccount: "הצטרף ל-BRAXEL", dashboard: "לוח בקרה", logout: "התנתק" },
+      footer: { desc: "תשתית השקעות ברמה מוסדית. טכנולוגיה קניינית לשוק המודרני.", platform: "פלטפורמה", company: "חברה", support: "תמיכה דיגיטלית", rights: "כל הזכויות שמורות.", privacy: "פרטיות", terms: "תנאים", disclaimer: "הצהרת סיכון פיננסי" },
+      auth: { loginTitle: "התחברות", loginSubtitle: "הזן את פרטי הגישה שלך.", registerTitle: "יצירת חשבון", registerSubtitle: "התחל את המסע שלך בשוק המוסדי.", email: "כתובת אימייל", password: "סיסמה", fullName: "שם מלא", forgotPassword: "שכחת סיסמה?", noAccount: "אין לך חשבון?", hasAccount: "כבר יש לך גישה?", btnAccess: "גישה לחשבון", btnCreate: "צור את החשבון שלי", termsAgree: "אני מסכים לתנאים ולפרטיות.", futureTitle: "העתיד של", futureSubtitle: "ההשקעות", features: ["אלגוריתמים ברמה מוסדית", "הגנת הון מתקדמת", "ביצוע במילישניות", "שקיפות מלאה"] },
+      hero: { title1: "ניהול הון", title2: "אלגוריתמי עילית.", desc: "פרוס אסטרטגיות כמותיות ברמה מוסדית המיועדות לשוק המודרני. חווה דיוק ביצוע במילישניות ופרוטוקולי הפחתת סיכונים מתקדמים.", getStarted: "חקור תוכניות השקעה", viewStrategies: "מתודולוגיה טכנית" },
+      stats: { volume: "סך נפח מנוהל", traders: "משקיעים פעילים גלובליים", uptime: "זמן פעילות תשתית", latency: "דיוק ביצוע" },
+      pricing: { badge: "שקיפות", title: "הקצאות", subtitle: "הון", desc: "תשתית ברמה מוסדית עם מבנה עמלות שקוף.", select: "אבטח תוכנית זו", allocation: "הון מנוהל", month: "עמלה חודשית" },
+      dashboard: { portfolio: "תיק השקעות", activeServices: "שירותים פעילים", newAllocation: "הקצאה חדשה", noServices: "לא נמצאו תוכניות השקעה פעילות.", balance: "יתרה נוכחית", withdraw: "משיכה", liquidity: "נזילות", requestWithdraw: "בקש משיכה", selectAccount: "בחר חשבון", amount: "סכום (USD)", iban: "IBAN / פרטי בנק", btnWithdraw: "שלח בקשת משיכה", profile: "ניהול פרופיל", settings: "הגדרות", firstName: "שם פרטי", lastName: "שם משפחה", saveChanges: "שמור שינויים" }
     }
   }
 };
