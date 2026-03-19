@@ -8,12 +8,7 @@ export const supportedLanguages = [
   { code: 'it', name: 'Italiano' },
   { code: 'es', name: 'Español' },
   { code: 'fr', name: 'Français' },
-  { code: 'ru', name: 'Русский' },
-  { code: 'zh', name: '中文' },
-  { code: 'he', name: 'עברית' },
-  { code: 'ar', name: 'العربية' },
-  { code: 'de', name: 'Deutsch' },
-  { code: 'ja', name: '日本語' }
+  { code: 'de', name: 'Deutsch' }
 ];
 
 const resources = {
@@ -29,6 +24,16 @@ const resources = {
         dashboard: "DASHBOARD",
         logout: "SIGN OUT"
       },
+      footer: {
+        desc: "Institutional-grade investment infrastructure. Proprietary technology for the modern market.",
+        platform: "Platform",
+        company: "Company",
+        support: "Digital Support",
+        rights: "All rights reserved.",
+        privacy: "Privacy",
+        terms: "Terms",
+        disclaimer: "Financial Disclaimer"
+      },
       auth: {
         loginTitle: "Login",
         loginSubtitle: "Enter your access credentials.",
@@ -42,26 +47,10 @@ const resources = {
         hasAccount: "Already have access?",
         btnAccess: "ACCESS ACCOUNT",
         btnCreate: "CREATE MY ACCOUNT",
-        termsAgree: "I agree to the Terms and Privacy."
-      },
-      dashboard: {
-        portfolio: "Portfolio",
-        activeServices: "Active Services",
-        newAllocation: "New Allocation",
-        noServices: "No active investment plans found.",
-        balance: "Current Balance",
-        withdraw: "Withdrawal",
-        liquidity: "Liquidity",
-        requestWithdraw: "Request Withdrawal",
-        selectAccount: "Select Account",
-        amount: "Amount (USD)",
-        iban: "IBAN / Bank Details",
-        btnWithdraw: "SUBMIT WITHDRAWAL REQUEST",
-        profile: "Profile Management",
-        settings: "Settings",
-        firstName: "First Name",
-        lastName: "Last Name",
-        saveChanges: "SAVE CHANGES"
+        termsAgree: "I agree to the Terms and Privacy.",
+        futureTitle: "The Future of",
+        futureSubtitle: "Investment",
+        features: ["Institutional-grade algorithms", "Advanced capital protection", "Millisecond execution", "Total transparency"]
       },
       checkout: {
         summary: "Order Summary",
@@ -74,7 +63,16 @@ const resources = {
         btnLogin: "Login to Account",
         btnRegister: "Create New Account",
         loggedInAs: "Logged in as",
-        btnPay: "Pay with PayPal"
+        securityDesc: "Institutional-grade security. Your payment is processed through encrypted channels.",
+        footerNote: "By completing this purchase, you authorize Braxel Markets to deploy algorithmic strategies."
+      },
+      legal: {
+        termsTitle: "Terms of Service",
+        privacyTitle: "Privacy Policy",
+        disclaimerTitle: "Financial Disclaimer",
+        badgeLegal: "Legal",
+        badgePrivacy: "Privacy",
+        badgeRisk: "Risk"
       },
       hero: {
         title1: "ELITE ALGORITHMIC",
@@ -84,13 +82,8 @@ const resources = {
         viewStrategies: "TECHNICAL METHODOLOGY"
       },
       stats: { volume: "Total Managed Volume", traders: "Global Active Investors", uptime: "Infrastructure Uptime", latency: "Execution Precision" },
-      methodology: { badge: "OUR EDGE", title: "QUANTITATIVE PRECISION", momentum: { title: "Dynamic Momentum Optimization", desc: "Our algorithms identify and exploit sustained price movements.", f1: "Multi-timeframe validation", f2: "Cross-asset correlation", f3: "Adaptive position scaling" }, volatility: { title: "Intelligent Volatility Shield", desc: "Advanced mathematical modeling that preserves capital.", f1: "Real-time VIX integration", f2: "Non-linear drawdown limits", f3: "Automated de-risking" }, risk: { title: "Systematic Risk Architecture", desc: "Rigorous institutional controls ensuring capital preservation.", f1: "Kelly Criterion optimization", f2: "Monte Carlo simulations", f3: "24/7 VaR monitoring" } },
-      process_home: { badge: "THE ROADMAP", title: "FROM CAPITAL TO", subtitle: "ELITE PERFORMANCE", step1: { title: "Strategic Allocation", desc: "Select the institutional-grade plan." }, step2: { title: "Instant Integration", desc: "Our infrastructure syncs in milliseconds." }, step3: { title: "Algorithmic Deployment", desc: "High-frequency models execute trades." }, step4: { title: "Performance Analysis", desc: "Monitor every execution in real-time." }, step5: { title: "Capital Liquidity", desc: "Request profit withdrawals directly." } },
-      cta_home: { badge: "LIMITED INSTITUTIONAL SLOTS", title: "READY TO OPTIMIZE", subtitle: "YOUR PORTFOLIO?", desc: "Join an exclusive network of global investors.", btn: "VIEW INVESTMENT PLANS", trust: "Protected by AES-256 Institutional Encryption." },
       pricing: { badge: "TRANSPARENCY", title: "CAPITAL", subtitle: "ALLOCATIONS", desc: "Institutional-grade infrastructure with a transparent fee structure.", select: "SECURE THIS PLAN", allocation: "MANAGED CAPITAL", month: "monthly fee" },
-      about: { badge: "OUR LEGACY", title: "PIONEERING THE", subtitle: "QUANTITATIVE FRONTIER", desc: "Braxel Markets was founded on the principle of accessibility.", historyTitle: "OUR JOURNEY", historyDesc1: "Since 2026, we have been at the forefront of algorithmic trading.", historyDesc2: "Our team works tirelessly to maintain the most robust infrastructure.", stats: { founded: "Founded", users: "Active Users", uptime: "System Uptime", support: "Global Reach" }, values: { mission: "MISSION", missionDesc: "To democratize access to high-frequency trading.", vision: "VISION", visionDesc: "To become the global standard for automated investment.", values: "VALUES", valuesDesc: "Transparency, mathematical rigor, and commitment." } },
-      howItWorks: { badge: "INFRASTRUCTURE", title: "HOW THE", subtitle: "ENGINE WORKS", desc: "Our ecosystem is designed for speed, security, and absolute transparency.", steps: [ { title: "Account Creation", desc: "Register your institutional profile." }, { title: "Plan Selection", desc: "Choose an allocation level." }, { title: "Secure Payment", desc: "Complete your subscription." }, { title: "API Integration", desc: "Our system generates a unique sub-account." }, { title: "Live Execution", desc: "Strategies begin executing immediately." }, { title: "Weekly Reporting", desc: "Receive detailed performance audits." } ], cta: "READY TO DEPLOY?", ctaBtn: "START ALLOCATION NOW" },
-      contact: { badge: "SUPPORT", title: "INSTITUTIONAL", subtitle: "CONCIERGE", desc: "Our dedicated support team is available 24/7.", infoTitle: "DIRECT CHANNELS", formTitle: "SEND a MESSAGE", placeholders: { name: "FULL NAME", email: "EMAIL ADDRESS", subject: "SUBJECT", message: "YOUR MESSAGE" }, sendBtn: "SEND MESSAGE" }
+      dashboard: { portfolio: "Portfolio", activeServices: "Active Services", newAllocation: "New Allocation", noServices: "No active investment plans found.", balance: "Current Balance", withdraw: "Withdrawal", liquidity: "Liquidity", requestWithdraw: "Request Withdrawal", selectAccount: "Select Account", amount: "Amount (USD)", iban: "IBAN / Bank Details", btnWithdraw: "SUBMIT WITHDRAWAL REQUEST", profile: "Profile Management", settings: "Settings", firstName: "First Name", lastName: "Last Name", saveChanges: "SAVE CHANGES" }
     }
   },
   pt: {
@@ -105,6 +98,16 @@ const resources = {
         dashboard: "PAINEL",
         logout: "SAIR"
       },
+      footer: {
+        desc: "Infraestrutura de investimento de nível institucional. Tecnologia proprietária para o mercado moderno.",
+        platform: "Plataforma",
+        company: "Empresa",
+        support: "Suporte Digital",
+        rights: "Todos os direitos reservados.",
+        privacy: "Privacidade",
+        terms: "Termos",
+        disclaimer: "Aviso Legal"
+      },
       auth: {
         loginTitle: "Login",
         loginSubtitle: "Insira suas credenciais de acesso.",
@@ -118,26 +121,10 @@ const resources = {
         hasAccount: "Já possui acesso?",
         btnAccess: "ACESSAR CONTA",
         btnCreate: "CRIAR MINHA CONTA",
-        termsAgree: "Eu concordo com os Termos e Privacidade."
-      },
-      dashboard: {
-        portfolio: "Portfólio",
-        activeServices: "Serviços Ativos",
-        newAllocation: "Nova Alocação",
-        noServices: "Nenhum plano de investimento ativo encontrado.",
-        balance: "Saldo Atual",
-        withdraw: "Saque",
-        liquidity: "Liquidez",
-        requestWithdraw: "Solicitar Saque",
-        selectAccount: "Selecionar Conta",
-        amount: "Valor (USD)",
-        iban: "IBAN / Dados Bancários",
-        btnWithdraw: "ENVIAR SOLICITAÇÃO DE SAQUE",
-        profile: "Gestão de Perfil",
-        settings: "Configurações",
-        firstName: "Nome",
-        lastName: "Sobrenome",
-        saveChanges: "SALVAR ALTERAÇÕES"
+        termsAgree: "Eu concordo com os Termos e Privacidade.",
+        futureTitle: "O Futuro do",
+        futureSubtitle: "Investimento",
+        features: ["Algoritmos institucionais", "Proteção de capital avançada", "Execução em milissegundos", "Transparência total"]
       },
       checkout: {
         summary: "Resumo do Pedido",
@@ -150,7 +137,16 @@ const resources = {
         btnLogin: "Fazer Login",
         btnRegister: "Criar Nova Conta",
         loggedInAs: "Logado como",
-        btnPay: "Pagar com PayPal"
+        securityDesc: "Segurança de nível institucional. Seu pagamento é processado por canais criptografados.",
+        footerNote: "Ao concluir esta compra, você autoriza a Braxel Markets a implementar estratégias algorítmicas."
+      },
+      legal: {
+        termsTitle: "Termos de Serviço",
+        privacyTitle: "Política de Privacidade",
+        disclaimerTitle: "Aviso Legal Financeiro",
+        badgeLegal: "Legal",
+        badgePrivacy: "Privacidade",
+        badgeRisk: "Risco"
       },
       hero: {
         title1: "GESTÃO DE CAPITAL",
@@ -160,13 +156,8 @@ const resources = {
         viewStrategies: "METODOLOGIA TÉCNICA"
       },
       stats: { volume: "Volume Total Gerenciado", traders: "Investidores Ativos", uptime: "Uptime da Infraestrutura", latency: "Precisão de Execução" },
-      methodology: { badge: "NOSSA VANTAGEM", title: "PRECISÃO QUANTITATIVA", momentum: { title: "Otimização de Momentum Dinâmico", desc: "Nossos algoritmos identificam e exploram movimentos de preços.", f1: "Validação multi-timeframe", f2: "Correlação entre ativos", f3: "Escalonamento adaptativo" }, volatility: { title: "Escudo de Volatilidade Inteligente", desc: "Modelagem matemática avançada que preserva o capital.", f1: "Integração VIX em tempo real", f2: "Limites de drawdown não lineares", f3: "Redução de risco automatizada" }, risk: { title: "Arquitetura de Risco Sistemático", desc: "Rigorosos controles institucionais garantindo a preservação do capital.", f1: "Otimização do Critério de Kelly", f2: "Simulações de Monte Carlo", f3: "Monitoramento VaR 24/7" } },
-      process_home: { badge: "O ROTEIRO", title: "DO CAPITAL À", subtitle: "PERFORMANCE DE ELITE", step1: { title: "Alocação Estratégica", desc: "Selecione o plano de nível institucional." }, step2: { title: "Integração Instantânea", desc: "Nossa infraestrutura sincroniza em milissegundos." }, step3: { title: "Implementação Algorítmica", desc: "Modelos de alta frequência executam operações." }, step4: { title: "Análise de Performance", desc: "Monitore cada execução em tempo real." }, step5: { title: "Liquidez de Capital", desc: "Solicite saques de lucros diretamente." } },
-      cta_home: { badge: "VAGAS INSTITUCIONAIS LIMITADAS", title: "PRONTO PARA OTIMIZAR", subtitle: "SEU PORTFÓLIO?", desc: "Junte-se a uma rede exclusiva de investidores globais.", btn: "VER PLANOS DE INVESTIMENTO", trust: "Protegido por Criptografia Institucional AES-256." },
-      pricing: { badge: "TRANSPARÊNCIA", title: "ALOCAÇÕES DE", subtitle: "CAPITAL", desc: "Infraestrutura de nível institucional com uma estrutura de taxas transparente.", select: "GARANTIR ESTE PLANO", allocation: "CAPITAL GERENCIADO", month: "taxa mensal" },
-      about: { badge: "NOSSO LEGADO", title: "PIONEIRISMO NA", subtitle: "FRONTEIRA QUANTITATIVA", desc: "A Braxel Markets foi fundada no princípio da acessibilidade.", historyTitle: "NOSSA JORNADA", historyDesc1: "Desde 2026, estamos na vanguarda do trading algorítmico.", historyDesc2: "Nossa equipe trabalha incansavelmente para manter a infraestrutura mais robusta.", stats: { founded: "Fundada", users: "Usuários Ativos", uptime: "Uptime do Sistema", support: "Alcance Global" }, values: { mission: "MISSÃO", missionDesc: "Democratizar o acesso à infraestrutura de trading de alta frequência.", vision: "VISION", visionDesc: "Tornar-se o padrão global para tecnologia de investimento automatizada.", values: "VALORES", valuesDesc: "Transparência, rigor matemático e compromisso." } },
-      howItWorks: { badge: "INFRAESTRUTURA", title: "COMO O", subtitle: "MOTOR FUNCIONA", desc: "Nosso ecossistema é projetado para velocidade, segurança e transparência absoluta.", steps: [ { title: "Criação de Conta", desc: "Registre seu perfil institucional." }, { title: "Seleção de Plano", desc: "Escolha um nível de alocação." }, { title: "Pagamento Seguro", desc: "Conclua sua assinatura." }, { title: "Integração de API", desc: "Nosso sistema gera uma subconta exclusiva." }, { title: "Execução ao Vivo", desc: "As estratégias começam a ser executadas imediatamente." }, { title: "Relatórios Semanais", desc: "Receba auditorias de desempenho detalhadas." } ], cta: "PRONTO PARA COMEÇAR?", ctaBtn: "INICIAR ALOCAÇÃO AGORA" },
-      contact: { badge: "SUPORTE", title: "CONCIERGE", subtitle: "INSTITUCIONAL", desc: "Nossa equipe de suporte dedicada está disponível 24/7.", infoTitle: "CANAIS DIRETOS", formTitle: "ENVIE UMA MENSAGEM", placeholders: { name: "NOME COMPLETO", email: "ENDEREÇO DE E-MAIL", subject: "ASSUNTO", message: "SUA MENSAGEM" }, sendBtn: "ENVIAR MENSAGEM" }
+      pricing: { badge: "TRANSPARENCY", title: "ALOCAÇÕES DE", subtitle: "CAPITAL", desc: "Infraestrutura de nível institucional com uma estrutura de taxas transparente.", select: "GARANTIR ESTE PLANO", allocation: "CAPITAL GERENCIADO", month: "taxa mensal" },
+      dashboard: { portfolio: "Portfólio", activeServices: "Serviços Ativos", newAllocation: "Nova Alocação", noServices: "Nenhum plano de investimento ativo encontrado.", balance: "Saldo Atual", withdraw: "Saque", liquidity: "Liquidez", requestWithdraw: "Solicitar Saque", selectAccount: "Selecionar Conta", amount: "Valor (USD)", iban: "IBAN / Dados Bancários", btnWithdraw: "ENVIAR SOLICITAÇÃO DE SAQUE", profile: "Gestão de Perfil", settings: "Configurações", firstName: "Nome", lastName: "Sobrenome", saveChanges: "SALVAR ALTERAÇÕES" }
     }
   },
   it: {
@@ -181,6 +172,16 @@ const resources = {
         dashboard: "DASHBOARD",
         logout: "DISCONNETTI"
       },
+      footer: {
+        desc: "Infrastruttura di investimento di livello istituzionale. Tecnologia proprietaria per il mercato moderno.",
+        platform: "Piattaforma",
+        company: "Azienda",
+        support: "Supporto Digitale",
+        rights: "Tutti i diritti riservati.",
+        privacy: "Privacy",
+        terms: "Termini",
+        disclaimer: "Dichiarazione di non responsabilità"
+      },
       auth: {
         loginTitle: "Accesso",
         loginSubtitle: "Inserisci le tue credenziali di accesso.",
@@ -194,26 +195,10 @@ const resources = {
         hasAccount: "Hai già l'accesso?",
         btnAccess: "ACCEDI ALL'ACCOUNT",
         btnCreate: "CREA IL MIO ACCOUNT",
-        termsAgree: "Accetto i Termini e la Privacy."
-      },
-      dashboard: {
-        portfolio: "Portafoglio",
-        activeServices: "Servizi Attivi",
-        newAllocation: "Nuova Allocazione",
-        noServices: "Nessun piano di investimento attivo trovato.",
-        balance: "Saldo Attuale",
-        withdraw: "Prelievo",
-        liquidity: "Liquidità",
-        requestWithdraw: "Richiedi Prelievo",
-        selectAccount: "Seleziona Account",
-        amount: "Importo (USD)",
-        iban: "IBAN / Dati Bancari",
-        btnWithdraw: "INVIA RICHIESTA DI PRELIEVO",
-        profile: "Gestione Profilo",
-        settings: "Impostazioni",
-        firstName: "Nome",
-        lastName: "Cognome",
-        saveChanges: "SALVA MODIFICHE"
+        termsAgree: "Accetto i Termini e la Privacy.",
+        futureTitle: "Il Futuro dell'",
+        futureSubtitle: "Investimento",
+        features: ["Algoritmi istituzionali", "Protezione avanzata del capitale", "Esecuzione in millisecondi", "Trasparenza totale"]
       },
       checkout: {
         summary: "Riepilogo Ordine",
@@ -226,7 +211,16 @@ const resources = {
         btnLogin: "Accedi all'Account",
         btnRegister: "Crea Nuovo Account",
         loggedInAs: "Connesso come",
-        btnPay: "Paga con PayPal"
+        securityDesc: "Sicurezza di livello istituzionale. Il tuo pagamento è elaborato tramite canali crittografati.",
+        footerNote: "Completando questo acquisto, autorizzi Braxel Markets a implementare strategie algoritmiche."
+      },
+      legal: {
+        termsTitle: "Termini di Servizio",
+        privacyTitle: "Informativa sulla Privacy",
+        disclaimerTitle: "Dichiarazione di non responsabilità finanziaria",
+        badgeLegal: "Legale",
+        badgePrivacy: "Privacy",
+        badgeRisk: "Rischio"
       },
       hero: {
         title1: "GESTIONE CAPITALE",
@@ -236,13 +230,8 @@ const resources = {
         viewStrategies: "METODOLOGIA TECNICA"
       },
       stats: { volume: "Volume Totale Gestito", traders: "Investitori Attivi", uptime: "Uptime Infrastruttura", latency: "Precisione Esecuzione" },
-      methodology: { badge: "IL NOSTRO VANTAGGIO", title: "PRECISIONE QUANTITATIVA", momentum: { title: "Ottimizzazione Momentum Dinamico", desc: "I nostri algoritmi identificano e sfruttano i movimenti dei prezzi.", f1: "Validazione multi-timeframe", f2: "Correlazione cross-asset", f3: "Scaling adattivo" }, volatility: { title: "Scudo Volatilità Intelligente", desc: "Modellazione matematica avanzada che preserva il capitale.", f1: "Integrazione VIX in tempo reale", f2: "Limiti drawdown non lineari", f3: "De-risking automatizzato" }, risk: { title: "Architettura Rischio Sistematico", desc: "Rigorosi controlli istituzionali per la preservazione del capitale.", f1: "Ottimizzazione Criterio di Kelly", f2: "Simulazioni Monte Carlo", f3: "Monitoraggio VaR 24/7" } },
-      process_home: { badge: "LA ROADMAP", title: "DAL CAPITALE ALLA", subtitle: "PERFORMANCE D'ELITE", step1: { title: "Allocazione Strategica", desc: "Seleziona il piano istituzionale." }, step2: { title: "Integrazione Istantanea", desc: "La nostra infrastruttura si sincronizza in millisecondi." }, step3: { title: "Distribuzione Algoritmica", desc: "Modelli ad alta frequenza eseguono operazioni." }, step4: { title: "Analisi Performance", desc: "Monitora ogni esecuzione in tempo reale." }, step5: { title: "Liquidità Capitale", desc: "Richiedi prelievi di profitto direttamente." } },
-      cta_home: { badge: "POSTI ISTITUZIONALI LIMITATI", title: "PRONTO A OTTIMIZZARE", subtitle: "IL TUO PORTAFOGLIO?", desc: "Unisciti a una rete esclusiva di investitori globali.", btn: "VEDI PIANI DI INVESTIMENTO", trust: "Protetto da Crittografia Istituzionale AES-256." },
       pricing: { badge: "TRASPARENZA", title: "ALLOCAZIONI DI", subtitle: "CAPITALE", desc: "Infrastruttura istituzionale con una struttura commissionale trasparente.", select: "ASSICURA QUESTO PIANO", allocation: "CAPITALE GESTITO", month: "canone mensile" },
-      about: { badge: "LA NOSTRA EREDITÀ", title: "PIONIERI NELLA", subtitle: "FRONTIERA QUANTITATIVA", desc: "Braxel Markets è stata fondata sul principio dell'accessibilità.", historyTitle: "IL NOSTRO VIAGGIO", historyDesc1: "Dal 2026, siamo all'avanguardia nel trading algoritmico.", historyDesc2: "Il nostro team lavora instancabilmente per mantenere l'infrastruttura più robusta.", stats: { founded: "Fondato", users: "Utenti Attivi", uptime: "Uptime Sistema", support: "Portata Globale" }, values: { mission: "MISSIONE", missionDesc: "Democratizzare l'accesso al trading ad alta frequenza.", vision: "VISIONE", visionDesc: "Diventare lo standard globale per gli investimenti automatizzati.", values: "VALORI", valuesDesc: "Trasparenza, rigore matematico e impegno." } },
-      howItWorks: { badge: "INFRASTRUTTURA", title: "COME FUNZIONA", subtitle: "IL MOTORE", desc: "Il nostro ecosistema è progettato per velocità, sicurezza e trasparenza assoluta.", steps: [ { title: "Creazione Account", desc: "Registra il tuo profilo istituzionale." }, { title: "Selezione Piano", desc: "Scegli un livello di allocação." }, { title: "Pagamento Sicuro", desc: "Completa l'abbonamento." }, { title: "Integrazione API", desc: "Il sistema genera un sub-account unico." }, { title: "Esecuzione Live", desc: "Le strategie iniziano immediatamente." }, { title: "Report Settimanali", desc: "Ricevi audit dettagliati sulle performance." } ], cta: "PRONTO A PARTIRE?", ctaBtn: "INIZIA ALLOCAZIONE ORA" },
-      contact: { badge: "SUPPORTO", title: "CONCIERGE", subtitle: "ISTITUZIONALE", desc: "Il nostro team di supporto dedicato è disponibile 24/7.", infoTitle: "CANALI DIRETTI", formTitle: "INVIA UN MESSAGGIO", placeholders: { name: "NOME COMPLETO", email: "INDIRIZZO EMAIL", subject: "OGGETTO", message: "IL TUO MESSAGGIO" }, sendBtn: "INVIA MESSAGGIO" }
+      dashboard: { portfolio: "Portafoglio", activeServices: "Servizi Attivi", newAllocation: "Nuova Allocazione", noServices: "Nessun piano di investimento attivo trovato.", balance: "Saldo Attuale", withdraw: "Prelievo", liquidity: "Liquidità", requestWithdraw: "Richiedi Prelievo", selectAccount: "Seleziona Account", amount: "Importo (USD)", iban: "IBAN / Dati Bancari", btnWithdraw: "INVIA RICHIESTA DI PRELIEVO", profile: "Gestione Profilo", settings: "Impostazioni", firstName: "Nome", lastName: "Cognome", saveChanges: "SALVA MODIFICHE" }
     }
   }
 };

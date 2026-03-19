@@ -10,8 +10,10 @@ import { showError, showSuccess } from '@/utils/toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 const Checkout = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -53,8 +55,7 @@ const Checkout = () => {
       showSuccess(`Success! Your ${plan.name} plan is now active.`);
       navigate('/dashboard');
     } catch (error: any) {
-      showError("Payment confirmed, but we couldn't update your dashboard. Contact support.");
-      console.error(error);
+      showError("Payment confirmed, but we couldn't update your dashboard.");
     }
   };
 
@@ -74,15 +75,14 @@ const Checkout = () => {
       
       <div className="container mx-auto px-8 pt-[140px] pb-20">
         <Link to="/pricing" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-[#C5A059] mb-12 transition-colors">
-          <ArrowLeft size={14} /> Back to Investment Plans
+          <ArrowLeft size={14} /> {t('nav.pricing')}
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
-          {/* Resumo do Pedido */}
           <div className="space-y-8">
             <div>
-              <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Order Summary</span>
-              <h1 className="text-4xl font-black uppercase tracking-tighter">Finalize your <br /><span className="text-[#C5A059]">Allocation</span></h1>
+              <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('checkout.summary')}</span>
+              <h1 className="text-4xl font-black uppercase tracking-tighter">{t('checkout.finalize')}</h1>
             </div>
 
             <div className="bg-[#080B12] border border-white/10 p-8 space-y-6 relative overflow-hidden">
@@ -93,7 +93,7 @@ const Checkout = () => {
               <div className="flex justify-between items-center pb-6 border-b border-white/5">
                 <div>
                   <h3 className="font-bold text-xl uppercase tracking-tight">{plan.name}</h3>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Managed Capital: {plan.accountSize} USD</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">{t('checkout.managedCapital')}: {plan.accountSize} USD</p>
                 </div>
                 <span className="text-2xl font-serif font-bold text-[#C5A059]">{plan.price}</span>
               </div>
@@ -108,7 +108,7 @@ const Checkout = () => {
               </div>
 
               <div className="pt-6 border-t border-white/5 flex justify-between items-center">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-white">Total Amount</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-white">{t('checkout.total')}</span>
                 <span className="text-3xl font-serif font-bold text-white">{plan.price}</span>
               </div>
             </div>
@@ -116,17 +116,16 @@ const Checkout = () => {
             <div className="flex items-center gap-4 p-6 bg-white/[0.02] border border-dashed border-white/10">
               <ShieldCheck className="text-[#C5A059] shrink-0" size={24} />
               <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">
-                Institutional-grade security. Your payment is processed through encrypted channels and your capital is protected by our risk protocols.
+                {t('checkout.securityDesc')}
               </p>
             </div>
           </div>
 
-          {/* Método de Pagamento ou Login */}
           <div className="bg-[#080B12] border border-white/10 p-10 space-y-8">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <CreditCard className="text-[#C5A059]" size={20} />
-                <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">Secure Checkout</h2>
+                <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.secure')}</h2>
               </div>
               <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                 <Lock size={12} /> SSL Encrypted
@@ -136,9 +135,9 @@ const Checkout = () => {
             {!user ? (
               <div className="space-y-8 py-4">
                 <div className="p-6 bg-[#C5A059]/5 border border-[#C5A059]/20 text-center">
-                  <p className="text-[11px] font-bold text-[#C5A059] uppercase tracking-widest mb-2">Authentication Required</p>
+                  <p className="text-[11px] font-bold text-[#C5A059] uppercase tracking-widest mb-2">{t('checkout.authRequired')}</p>
                   <p className="text-slate-400 text-[10px] uppercase tracking-widest leading-relaxed">
-                    Please login or create an account to link this investment plan to your profile.
+                    {t('checkout.authDesc')}
                   </p>
                 </div>
                 
@@ -147,14 +146,14 @@ const Checkout = () => {
                     onClick={() => navigate('/login', { state: { from: location.pathname, plan } })}
                     className="bg-white text-black hover:bg-slate-200 rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
                   >
-                    <LogIn size={16} className="mr-2" /> Login to Account
+                    <LogIn size={16} className="mr-2" /> {t('checkout.btnLogin')}
                   </Button>
                   <Button 
                     onClick={() => navigate('/register', { state: { from: location.pathname, plan } })}
                     variant="outline"
                     className="border-white/10 hover:bg-white/5 rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
                   >
-                    <UserPlus size={16} className="mr-2" /> Create New Account
+                    <UserPlus size={16} className="mr-2" /> {t('checkout.btnRegister')}
                   </Button>
                 </div>
               </div>
@@ -162,7 +161,7 @@ const Checkout = () => {
               <div className="space-y-6">
                 <div className="p-4 bg-green-500/10 border border-green-500/20 text-center">
                   <p className="text-[11px] font-bold text-green-500 uppercase tracking-widest">
-                    Logged in as {user.email}
+                    {t('checkout.loggedInAs')} {user.email}
                   </p>
                 </div>
 
@@ -188,10 +187,6 @@ const Checkout = () => {
                         const details = await actions.order?.capture();
                         handlePaymentSuccess(details);
                       }}
-                      onError={(err) => {
-                        showError("PayPal transaction failed. Please try again.");
-                        console.error(err);
-                      }}
                     />
                   </PayPalScriptProvider>
                 </div>
@@ -200,7 +195,7 @@ const Checkout = () => {
 
             <div className="pt-8 border-t border-white/5 text-center">
               <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">
-                By completing this purchase, you authorize Braxel Markets to deploy algorithmic strategies on your behalf. All investments carry risk.
+                {t('checkout.footerNote')}
               </p>
             </div>
           </div>

@@ -3,8 +3,10 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { useTranslation } from 'react-i18next';
 
 const Terms = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-[#05070A] text-white">
       <Navbar />
@@ -20,8 +22,8 @@ const Terms = () => {
         </div>
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-3xl">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Legal</span>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Terms of <br /><span className="text-[#C5A059]">Service</span></h1>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">{t('legal.badgeLegal')}</span>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">{t('legal.termsTitle')}</h1>
           </div>
         </div>
       </section>
@@ -29,18 +31,7 @@ const Terms = () => {
       <div className="container mx-auto px-4 md:px-8 py-20">
         <section className="border border-white/10 bg-[#080B12] p-12 md:p-16">
           <div className="max-w-4xl mx-auto space-y-12 text-slate-400 text-sm leading-relaxed">
-            <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">1. Acceptance of Terms</h2>
-              <p>By accessing and using the Braxel Markets platform, you agree to comply with and be bound by the following terms and conditions of use. If you do not agree with any part of these terms, you should not use our services.</p>
-            </div>
-            <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">2. Nature of Services</h2>
-              <p>Braxel Markets provides technological infrastructure for investment strategy automation. We are not a stockbroker or individualized financial consultancy. Use of the platform implies understanding the risks inherent in the financial market.</p>
-            </div>
-            <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">3. User Responsibility</h2>
-              <p>The user is entirely responsible for the security of their access credentials and for capital allocation decisions within the plans offered by the platform.</p>
-            </div>
+            <p>Legal content for {t('legal.termsTitle')}...</p>
           </div>
         </section>
       </div>

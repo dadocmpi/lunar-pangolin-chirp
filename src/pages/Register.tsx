@@ -8,8 +8,10 @@ import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError } from '@/utils/toast';
+import { useTranslation } from 'react-i18next';
 
 const Register = () => {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +40,7 @@ const Register = () => {
 
       if (error) throw error;
 
-      showSuccess("Account created! Please check your email to confirm, then login to complete your purchase.");
+      showSuccess("Account created! Please check your email to confirm.");
       navigate('/login', { state: { from, plan } });
     } catch (error: any) {
       showError(error.message || "Error creating account.");
@@ -68,15 +70,10 @@ const Register = () => {
         
         <div className="relative z-10">
           <h2 className="text-5xl font-black text-white mb-8 leading-tight uppercase tracking-tighter">
-            The Future of <br /><span className="text-[#C5A059]">Investment</span>
+            {t('auth.futureTitle')} <br /><span className="text-[#C5A059]">{t('auth.futureSubtitle')}</span>
           </h2>
           <ul className="space-y-6">
-            {[
-              "Institutional-grade algorithms",
-              "Advanced capital protection",
-              "Millisecond execution",
-              "Total transparency of operations"
-            ].map((item, i) => (
+            {(t('auth.features', { returnObjects: true }) as string[]).map((item, i) => (
               <li key={i} className="flex items-center gap-4 text-slate-400 text-sm font-bold uppercase tracking-widest">
                 <ShieldCheck className="text-[#C5A059]" size={20} />
                 <span>{item}</span>
@@ -92,26 +89,15 @@ const Register = () => {
       
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <Link to="/" className="md:hidden flex items-center gap-3 mb-12">
-            <img 
-              src={logoUrl} 
-              alt="Braxel Markets" 
-              className="h-12 w-auto object-contain"
-            />
-            <span className="text-lg font-black tracking-tighter text-white">
-              BRAXEL <span className="text-[#C5A059]">MARKETS</span>
-            </span>
-          </Link>
-          
           <div className="mb-10">
             <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Access</span>
-            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">Create Account</h1>
-            <p className="text-slate-500 text-xs mt-2">Start your journey in the institutional market.</p>
+            <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{t('auth.registerTitle')}</h1>
+            <p className="text-slate-500 text-xs mt-2">{t('auth.registerSubtitle')}</p>
           </div>
           
           <form className="space-y-5" onSubmit={handleRegister}>
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Full Name</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('auth.fullName')}</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
                 <Input 
@@ -119,13 +105,13 @@ const Register = () => {
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Your name" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Email</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('auth.email')}</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
                 <Input 
@@ -134,13 +120,13 @@ const Register = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
             </div>
             
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Password</label>
+              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('auth.password')}</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />
                 <Input 
@@ -149,7 +135,7 @@ const Register = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••" 
-                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059] transition-colors" 
+                  className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
             </div>
@@ -157,7 +143,7 @@ const Register = () => {
             <div className="flex items-start gap-3 py-2">
               <Checkbox id="terms" required className="mt-1 border-white/20 data-[state=checked]:bg-[#C5A059] data-[state=checked]:border-[#C5A059]" />
               <label htmlFor="terms" className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
-                I agree to the <Link to="/terms" className="text-[#C5A059] hover:underline">Terms</Link> and <Link to="/privacy" className="text-[#C5A059] hover:underline">Privacy</Link>.
+                {t('auth.termsAgree')}
               </label>
             </div>
             
@@ -165,13 +151,13 @@ const Register = () => {
               disabled={loading}
               className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all border-none"
             >
-              {loading ? <Loader2 className="animate-spin" /> : "CREATE MY ACCOUNT"}
+              {loading ? <Loader2 className="animate-spin" /> : t('auth.btnCreate')}
             </Button>
           </form>
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              Already have access? <Link to="/login" state={{ from, plan }} className="text-[#C5A059] hover:underline">Login</Link>
+              {t('auth.hasAccount')} <Link to="/login" state={{ from, plan }} className="text-[#C5A059] hover:underline">Login</Link>
             </p>
           </div>
         </div>
