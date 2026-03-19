@@ -29,7 +29,7 @@ const Navbar = () => {
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
     setIsOpen(false);
-    // Forçamos um refresh completo para garantir 100% de aplicação do idioma
+    // Refresh total para garantir 100% de aplicação nativa
     window.location.reload();
   };
 
