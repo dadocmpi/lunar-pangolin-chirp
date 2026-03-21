@@ -17,7 +17,9 @@ import {
   Zap,
   Server,
   Activity,
-  CreditCard
+  CreditCard,
+  QrCode,
+  Smartphone
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
@@ -242,12 +244,36 @@ const Checkout = () => {
                   </div>
 
                   {!showPayPal ? (
-                    <div className="space-y-6 animate-fadeInUp">
+                    <div className="space-y-8 animate-fadeInUp">
                       <div className="space-y-4">
                         <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.confirmDeployment')}</h2>
                         <p className="text-slate-500 text-[10px] uppercase tracking-widest leading-relaxed">
                           {t('checkout.deploymentDesc', { plan: plan.name })}
                         </p>
+                      </div>
+
+                      <div className="p-6 bg-white/[0.02] border border-white/10 space-y-6">
+                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 text-center">Accepted Payment Methods</p>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
+                              <QrCode size={18} />
+                            </div>
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">QR Code</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
+                              <CreditCard size={18} />
+                            </div>
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">Card</span>
+                          </div>
+                          <div className="flex flex-col items-center gap-2">
+                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
+                              <Smartphone size={18} />
+                            </div>
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">Mobile</span>
+                          </div>
+                        </div>
                       </div>
 
                       <Button 
@@ -284,7 +310,7 @@ const Checkout = () => {
                           locale: getPayPalLocale(i18n.language),
                           currency: "EUR",
                           components: "buttons",
-                          "disable-funding": "credit,card" // Removido para permitir cartões
+                          "disable-funding": "credit,card" 
                         }}> 
                           <PayPalButtons 
                             style={{ 
@@ -319,7 +345,7 @@ const Checkout = () => {
 
                       <div className="p-4 bg-white/[0.02] border border-white/5 space-y-3">
                         <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                          <CreditCard size={12} /> {t('checkout.secureTransaction')}
+                          <Smartphone size={12} /> Scan QR Code in the next step
                         </div>
                         <p className="text-[8px] text-slate-600 leading-relaxed uppercase tracking-tighter">
                           {t('checkout.paypalNote')}
