@@ -16,7 +16,8 @@ import {
   Globe,
   Zap,
   Server,
-  Activity
+  Activity,
+  CreditCard
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
@@ -281,10 +282,18 @@ const Checkout = () => {
                         <PayPalScriptProvider options={{ 
                           clientId: "AVu8P_UbVKDXdzWpP65YV2ZCSSzG4SexNA4ZacE-pNiRgwM2iLwUEzCJi6CNaZlHzk3FfLq-DhBrjVZz",
                           locale: getPayPalLocale(i18n.language),
-                          currency: "EUR"
+                          currency: "EUR",
+                          components: "buttons",
+                          "disable-funding": "credit,card" // Removido para permitir cartões
                         }}> 
                           <PayPalButtons 
-                            style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
+                            style={{ 
+                              layout: "vertical", 
+                              color: "gold", 
+                              shape: "rect", 
+                              label: "pay",
+                              height: 50
+                            }}
                             createOrder={(data, actions) => {
                               return actions.order.create({
                                 intent: "CAPTURE",
@@ -310,7 +319,7 @@ const Checkout = () => {
 
                       <div className="p-4 bg-white/[0.02] border border-white/5 space-y-3">
                         <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                          <Lock size={12} /> {t('checkout.secureTransaction')}
+                          <CreditCard size={12} /> {t('checkout.secureTransaction')}
                         </div>
                         <p className="text-[8px] text-slate-600 leading-relaxed uppercase tracking-tighter">
                           {t('checkout.paypalNote')}
