@@ -128,7 +128,7 @@ const Checkout = () => {
               <div className="flex justify-between items-center pb-8 border-b border-white/5">
                 <div>
                   <h3 className="font-bold text-2xl uppercase tracking-tight">{plan.name}</h3>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Algorithmic Infrastructure Tier</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">{t('checkout.tierLabel')}</p>
                 </div>
                 <div className="text-right">
                   <span className="text-3xl font-serif font-bold text-[#C5A059]">{plan.price}</span>
@@ -264,7 +264,7 @@ const Checkout = () => {
                           <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" />
                           <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-5" />
                         </div>
-                        <p className="text-[8px] text-center text-slate-600 uppercase tracking-widest">Encrypted by AES-256 Institutional Standards</p>
+                        <p className="text-[8px] text-center text-slate-600 uppercase tracking-widest">{t('checkout.encryptionNote')}</p>
                       </div>
                     </div>
                   ) : (
@@ -310,10 +310,10 @@ const Checkout = () => {
 
                       <div className="p-4 bg-white/[0.02] border border-white/5 space-y-3">
                         <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                          <Lock size={12} /> Secure Transaction
+                          <Lock size={12} /> {t('checkout.secureTransaction')}
                         </div>
                         <p className="text-[8px] text-slate-600 leading-relaxed uppercase tracking-tighter">
-                          Your payment information is processed securely by PayPal. Braxel Markets does not store your credit card details.
+                          {t('checkout.paypalNote')}
                         </p>
                       </div>
                     </div>
