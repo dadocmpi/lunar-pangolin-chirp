@@ -85,7 +85,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2 text-[8px] font-bold text-green-500 uppercase tracking-widest">
-                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" /> Verified Account
+                <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" /> {t('dashboard.verifiedAccount')}
               </div>
             </div>
 
@@ -130,18 +130,18 @@ const Dashboard = () => {
                     <PerformanceChart />
                   </div>
                   <div className="bg-[#080B12] border border-white/10 p-8 flex flex-col justify-center">
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total Assets Under Management</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.totalAUM')}</p>
                     <p className="text-4xl font-serif font-bold text-white">
                       ${services.reduce((acc, s) => acc + parseFloat(s.balance), 0).toLocaleString()}
                     </p>
                     <div className="mt-6 pt-6 border-t border-white/5 space-y-4">
                       <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest">
-                        <span className="text-slate-500">Active Algorithms</span>
+                        <span className="text-slate-500">{t('dashboard.activeAlgos')}</span>
                         <span className="text-white">{services.length}</span>
                       </div>
                       <div className="flex justify-between text-[9px] font-bold uppercase tracking-widest">
-                        <span className="text-slate-500">System Status</span>
-                        <span className="text-green-500">Operational</span>
+                        <span className="text-slate-500">{t('dashboard.systemStatus')}</span>
+                        <span className="text-green-500">{t('dashboard.operational')}</span>
                       </div>
                     </div>
                   </div>
@@ -187,7 +187,7 @@ const Dashboard = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.selectAccount')}</label>
                     <select className="w-full bg-white/5 border-white/10 rounded-none h-14 px-4 text-[12px] font-bold uppercase tracking-widest text-white outline-none appearance-none">
-                      <option value="" className="bg-black">Choose an account</option>
+                      <option value="" className="bg-black">{t('dashboard.selectAccount')}</option>
                       {services.map(s => (
                         <option key={s.id} value={s.account_id} className="bg-black">{s.plan_name}</option>
                       ))}
@@ -201,7 +201,7 @@ const Dashboard = () => {
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.iban')}</label>
-                    <Input placeholder="Enter your IBAN" className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
+                    <Input placeholder={t('dashboard.iban')} className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
                   </div>
 
                   <Button className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]">
@@ -239,8 +239,8 @@ const Dashboard = () => {
 
                 <div className="space-y-8">
                   <div>
-                    <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Security</span>
-                    <h2 className="text-3xl font-black uppercase tracking-tighter">Infrastructure Protection</h2>
+                    <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.infraProtection')}</span>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">{t('dashboard.infraProtection')}</h2>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -250,12 +250,12 @@ const Dashboard = () => {
                           <Smartphone size={24} />
                         </div>
                         <div>
-                          <h4 className="text-[11px] font-bold uppercase tracking-widest">Two-Factor Auth</h4>
-                          <p className="text-[9px] text-slate-500 uppercase tracking-widest">Not Enabled</p>
+                          <h4 className="text-[11px] font-bold uppercase tracking-widest">{t('dashboard.twoFactor')}</h4>
+                          <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('dashboard.notEnabled')}</p>
                         </div>
                       </div>
                       <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 rounded-none text-[9px] font-bold uppercase tracking-widest">
-                        Enable 2FA
+                        {t('dashboard.enable2FA')}
                       </Button>
                     </div>
 
@@ -265,12 +265,12 @@ const Dashboard = () => {
                           <FileText size={24} />
                         </div>
                         <div>
-                          <h4 className="text-[11px] font-bold uppercase tracking-widest">KYC Verification</h4>
-                          <p className="text-[9px] text-green-500 uppercase tracking-widest">Verified</p>
+                          <h4 className="text-[11px] font-bold uppercase tracking-widest">{t('dashboard.kycStatus')}</h4>
+                          <p className="text-[9px] text-green-500 uppercase tracking-widest">{t('dashboard.verified')}</p>
                         </div>
                       </div>
                       <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 rounded-none text-[9px] font-bold uppercase tracking-widest">
-                        View Documents
+                        {t('dashboard.viewDocs')}
                       </Button>
                     </div>
                   </div>

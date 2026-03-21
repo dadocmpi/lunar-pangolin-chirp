@@ -95,7 +95,7 @@ const Checkout = () => {
       <div className="min-h-screen bg-[#05070A] flex flex-col items-center justify-center gap-6">
         <Loader2 className="animate-spin text-[#C5A059]" size={48} />
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">
-          {processing ? "Verifying Institutional Transaction..." : "Loading Terminal..."}
+          {processing ? t('checkout.verifying') : t('checkout.loading')}
         </p>
       </div>
     );
@@ -238,25 +238,25 @@ const Checkout = () => {
                       </div>
 
                       <div className="p-6 bg-white/[0.02] border border-white/10 space-y-6">
-                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 text-center">Global Payment Infrastructure</p>
+                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 text-center">{t('checkout.globalInfra')}</p>
                         <div className="grid grid-cols-3 gap-4">
                           <div className="flex flex-col items-center gap-2">
                             <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
                               <QrCode size={18} />
                             </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">QR Code</span>
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.qrCode')}</span>
                           </div>
                           <div className="flex flex-col items-center gap-2">
                             <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
                               <CreditCard size={18} />
                             </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">All Cards</span>
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.allCards')}</span>
                           </div>
                           <div className="flex flex-col items-center gap-2">
                             <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
                               <Smartphone size={18} />
                             </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">Local Pay</span>
+                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.localPay')}</span>
                           </div>
                         </div>
                       </div>
