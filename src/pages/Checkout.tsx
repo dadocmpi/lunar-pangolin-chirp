@@ -3,7 +3,18 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { ShieldCheck, Lock, ArrowLeft, Loader2, CheckCircle2, CreditCard, UserPlus, LogIn } from 'lucide-react';
+import { 
+  ShieldCheck, 
+  Lock, 
+  ArrowLeft, 
+  Loader2, 
+  CheckCircle2, 
+  CreditCard, 
+  UserPlus, 
+  LogIn,
+  ChevronRight,
+  ShieldAlert
+} from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { generateAccountId } from '@/utils/idGenerator';
 import { showError, showSuccess } from '@/utils/toast';
@@ -18,6 +29,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [showPayPal, setShowPayPal] = useState(false);
   const plan = location.state?.plan;
 
   useEffect(() => {
@@ -47,7 +59,7 @@ const Checkout = () => {
           plan_name: plan.name, 
           account_id: accountId,
           status: 'Active',
-          balance: plan.accountSize
+          balance: parseFloat(plan.accountSize.replace(/[^0-9.]/g, ''))
         }]);
 
       if (error) throw error;
@@ -55,7 +67,7 @@ const Checkout = () => {
       showSuccess(`Success! Your ${plan.name} plan is now active.`);
       navigate('/dashboard');
     } catch (error: any) {
-      showError("Payment confirmed, but we couldn't update your dashboard.");
+      showError("Payment confirmed, but we couldn't update your dashboard. Please contact support.");
     }
   };
 
@@ -79,10 +91,11 @@ const Checkout = () => {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+          {/* Coluna da Esquerda: Resumo do Plano */}
           <div className="space-y-8">
             <div>
               <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('checkout.summary')}</span>
-              <h1 className="text-4xl font-black uppercase tracking-tighter">{t('checkout.finalize')}</h1>
+              <h1 className="text-4xl font-black uppercase tracking-tighter">Order <span className="text-[#C5A059]">Review</span></h1>
             </div>
 
             <div className="bg-[#080B12] border border-white/10 p-8 space-y-6 relative overflow-hidden">
@@ -93,50 +106,50 @@ const Checkout = () => {
               <div className="flex justify-between items-center pb-6 border-b border-white/5">
                 <div>
                   <h3 className="font-bold text-xl uppercase tracking-tight">{plan.name}</h3>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">{t('checkout.managedCapital')}: {plan.accountSize} USD</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">Institutional Infrastructure</p>
                 </div>
                 <span className="text-2xl font-serif font-bold text-[#C5A059]">{plan.price}</span>
               </div>
 
               <div className="space-y-4">
-                {plan.features.map((feature: string, i: number) => (
-                  <div key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                    <CheckCircle2 size={14} className="text-[#C5A059]" />
-                    {feature}
-                  </div>
-                ))}
+                <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
+                  <span className="text-slate-500">Managed Capital</span>
+                  <span className="text-white">{plan.accountSize} USD</span>
+                </div>
+                <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
+                  <span className="text-slate-500">Setup Fee</span>
+                  <span className="text-green-500">WAIVED</span>
+                </div>
+                <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
+                  <span className="text-slate-500">Billing Cycle</span>
+                  <span className="text-white">Monthly</span>
+                </div>
               </div>
 
               <div className="pt-6 border-t border-white/5 flex justify-between items-center">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-white">{t('checkout.total')}</span>
+                <span className="text-[11px] font-bold uppercase tracking-widest text-white">Total Due Today</span>
                 <span className="text-3xl font-serif font-bold text-white">{plan.price}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-4 p-6 bg-white/[0.02] border border-dashed border-white/10">
-              <ShieldCheck className="text-[#C5A059] shrink-0" size={24} />
-              <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">
-                {t('checkout.securityDesc')}
+            <div className="p-6 bg-white/[0.02] border border-dashed border-white/10 flex gap-4">
+              <ShieldAlert className="text-[#C5A059] shrink-0" size={20} />
+              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">
+                By proceeding, you acknowledge that algorithmic trading involves risk. Braxel Markets provides the infrastructure; market results may vary.
               </p>
             </div>
           </div>
 
+          {/* Coluna da Direita: Ações de Pagamento */}
           <div className="bg-[#080B12] border border-white/10 p-10 space-y-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <CreditCard className="text-[#C5A059]" size={20} />
-                <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.secure')}</h2>
-              </div>
-              <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                <Lock size={12} /> SSL Encrypted
-              </div>
-            </div>
-
             {!user ? (
-              <div className="space-y-8 py-4">
-                <div className="p-6 bg-[#C5A059]/5 border border-[#C5A059]/20 text-center">
-                  <p className="text-[11px] font-bold text-[#C5A059] uppercase tracking-widest mb-2">{t('checkout.authRequired')}</p>
-                  <p className="text-slate-400 text-[10px] uppercase tracking-widest leading-relaxed">
+              <div className="space-y-8">
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto text-[#C5A059]">
+                    <Lock size={24} />
+                  </div>
+                  <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.authRequired')}</h2>
+                  <p className="text-slate-500 text-[10px] uppercase tracking-widest leading-relaxed max-w-xs mx-auto">
                     {t('checkout.authDesc')}
                   </p>
                 </div>
@@ -158,44 +171,86 @@ const Checkout = () => {
                 </div>
               </div>
             ) : (
-              <div className="space-y-6">
-                <div className="p-4 bg-green-500/10 border border-green-500/20 text-center">
-                  <p className="text-[11px] font-bold text-green-500 uppercase tracking-widest">
-                    {t('checkout.loggedInAs')} {user.email}
-                  </p>
+              <div className="space-y-8">
+                <div className="flex items-center justify-between pb-6 border-b border-white/5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Authenticated as {user.email}</span>
+                  </div>
                 </div>
 
-                <div className="relative z-0">
-                  <PayPalScriptProvider options={{ clientId: "test" }}> 
-                    <PayPalButtons 
-                      style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
-                      createOrder={(data, actions) => {
-                        return actions.order.create({
-                          intent: "CAPTURE",
-                          purchase_units: [
-                            {
-                              amount: {
-                                value: numericPrice,
-                                currency_code: "EUR"
-                              },
-                              description: `Braxel Markets - ${plan.name} Investment Plan`
-                            },
-                          ],
-                        });
-                      }}
-                      onApprove={async (data, actions) => {
-                        const details = await actions.order?.capture();
-                        handlePaymentSuccess(details);
-                      }}
-                    />
-                  </PayPalScriptProvider>
-                </div>
+                {!showPayPal ? (
+                  <div className="space-y-6 animate-fadeInUp">
+                    <div className="space-y-4">
+                      <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">Confirm Your <span className="text-[#C5A059]">Allocation</span></h2>
+                      <p className="text-slate-500 text-[10px] uppercase tracking-widest leading-relaxed">
+                        Click the button below to confirm your selection and proceed to the secure PayPal payment gateway.
+                      </p>
+                    </div>
+
+                    <Button 
+                      onClick={() => setShowPayPal(true)}
+                      className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-16 font-black text-[12px] uppercase tracking-[0.3em] transition-all group"
+                    >
+                      CONFIRM & PROCEED TO PAYMENT <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+
+                    <div className="flex items-center justify-center gap-6 opacity-40 grayscale">
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" />
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" />
+                      <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-5" />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6 animate-fadeInUp">
+                    <div className="flex items-center justify-between">
+                      <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">Secure Payment</h2>
+                      <button 
+                        onClick={() => setShowPayPal(false)}
+                        className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
+                      >
+                        Change Plan
+                      </button>
+                    </div>
+
+                    <div className="relative z-0">
+                      <PayPalScriptProvider options={{ clientId: "test" }}> 
+                        <PayPalButtons 
+                          style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
+                          createOrder={(data, actions) => {
+                            return actions.order.create({
+                              intent: "CAPTURE",
+                              purchase_units: [
+                                {
+                                  amount: {
+                                    value: numericPrice,
+                                    currency_code: "EUR"
+                                  },
+                                  description: `Braxel Markets - ${plan.name} Investment Plan`
+                                },
+                              ],
+                            });
+                          }}
+                          onApprove={async (data, actions) => {
+                            const details = await actions.order?.capture();
+                            handlePaymentSuccess(details);
+                          }}
+                        />
+                      </PayPalScriptProvider>
+                    </div>
+
+                    <div className="flex items-center justify-center gap-2 text-[9px] font-bold text-slate-600 uppercase tracking-widest">
+                      <Lock size={12} /> 256-bit SSL Secure Connection
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
             <div className="pt-8 border-t border-white/5 text-center">
               <p className="text-[9px] font-bold text-slate-600 uppercase tracking-widest leading-relaxed">
-                {t('checkout.footerNote')}
+                Institutional Grade Security Infrastructure. <br />
+                © 2026 Braxel Markets. All rights reserved.
               </p>
             </div>
           </div>
