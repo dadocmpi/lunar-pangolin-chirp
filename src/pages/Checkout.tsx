@@ -27,13 +27,31 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
 const Checkout = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [showPayPal, setShowPayPal] = useState(false);
   const plan = location.state?.plan;
+
+  // Mapeamento de idiomas para o formato do PayPal (xx_YY)
+  const getPayPalLocale = (lng: string) => {
+    const map: Record<string, string> = {
+      'en': 'en_US',
+      'pt': 'pt_BR',
+      'es': 'es_ES',
+      'it': 'it_IT',
+      'fr': 'fr_FR',
+      'de': 'de_DE',
+      'ru': 'ru_RU',
+      'zh': 'zh_CN',
+      'ja': 'ja_JP',
+      'ar': 'ar_EG',
+      'he': 'he_IL'
+    };
+    return map[lng] || 'en_US';
+  };
 
   useEffect(() => {
     const checkUser = async () => {
@@ -97,7 +115,9 @@ const Checkout = () => {
           <div className="lg:col-span-7 space-y-8">
             <div className="animate-fadeInUp">
               <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('checkout.summary')}</span>
-              <h1 className="text-4xl font-black uppercase tracking-tighter">Institutional <span className="text-[#C5A059]">Allocation</span></h1>
+              <h1 className="text-4xl font-black uppercase tracking-tighter">
+                {t('checkout.allocationTitle')} <span className="text-[#C5A059]">{t('checkout.allocationSubtitle')}</span>
+              </h1>
             </div>
 
             <div className="bg-[#080B12] border border-white/10 p-8 space-y-8 relative overflow-hidden">
@@ -112,31 +132,31 @@ const Checkout = () => {
                 </div>
                 <div className="text-right">
                   <span className="text-3xl font-serif font-bold text-[#C5A059]">{plan.price}</span>
-                  <p className="text-[9px] text-slate-600 uppercase tracking-widest">Billed Monthly</p>
+                  <p className="text-[9px] text-slate-600 uppercase tracking-widest">{t('checkout.billedMonthly')}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white border-l-2 border-[#C5A059] pl-3">Allocation Details</h4>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white border-l-2 border-[#C5A059] pl-3">{t('checkout.detailsTitle')}</h4>
                   <div className="space-y-3">
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span className="text-slate-500">Managed Capital</span>
+                      <span className="text-slate-500">{t('checkout.managedCapital')}</span>
                       <span className="text-white">{plan.accountSize} USD</span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span className="text-slate-500">Setup Fee</span>
-                      <span className="text-green-500">WAIVED</span>
+                      <span className="text-slate-500">{t('checkout.setupFee')}</span>
+                      <span className="text-green-500">{t('checkout.waived')}</span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span className="text-slate-500">Execution Latency</span>
+                      <span className="text-slate-500">{t('checkout.latency')}</span>
                       <span className="text-white">{"< 1.8ms"}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white border-l-2 border-[#C5A059] pl-3">Included Infrastructure</h4>
+                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white border-l-2 border-[#C5A059] pl-3">{t('checkout.infrastructureTitle')}</h4>
                   <ul className="space-y-2">
                     {plan.features.map((f: string, i: number) => (
                       <li key={i} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
@@ -153,12 +173,12 @@ const Checkout = () => {
                     <Activity size={18} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white">Real-time Monitoring</p>
-                    <p className="text-[9px] text-slate-500 uppercase tracking-widest">Active upon deployment</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white">{t('checkout.realTimeMonitoring')}</p>
+                    <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.activeUponDeployment')}</p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Total Due</span>
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">{t('checkout.totalDue')}</span>
                   <p className="text-4xl font-serif font-bold text-white">{plan.price}</p>
                 </div>
               </div>
@@ -167,20 +187,19 @@ const Checkout = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="p-6 bg-[#080B12] border border-white/10 text-center space-y-3">
                 <Server size={20} className="mx-auto text-[#C5A059]" />
-                <p className="text-[9px] font-bold uppercase tracking-widest text-white">Dedicated Node</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-white">{t('checkout.dedicatedNode')}</p>
               </div>
               <div className="p-6 bg-[#080B12] border border-white/10 text-center space-y-3">
                 <Globe size={20} className="mx-auto text-[#C5A059]" />
-                <p className="text-[9px] font-bold uppercase tracking-widest text-white">Global Markets</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-white">{t('checkout.globalMarkets')}</p>
               </div>
               <div className="p-6 bg-[#080B12] border border-white/10 text-center space-y-3">
                 <Zap size={20} className="mx-auto text-[#C5A059]" />
-                <p className="text-[9px] font-bold uppercase tracking-widest text-white">Instant Setup</p>
+                <p className="text-[9px] font-bold uppercase tracking-widest text-white">{t('checkout.instantSetup')}</p>
               </div>
             </div>
           </div>
 
-          {/* Coluna da Direita com padding-top aumentado para alinhar com a caixa da esquerda */}
           <div className="lg:col-span-5 space-y-6 lg:pt-[92px]">
             <div className="bg-[#080B12] border border-white/10 p-10 space-y-8">
               {!user ? (
@@ -226,9 +245,9 @@ const Checkout = () => {
                   {!showPayPal ? (
                     <div className="space-y-6 animate-fadeInUp">
                       <div className="space-y-4">
-                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">Confirm <span className="text-[#C5A059]">Deployment</span></h2>
+                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.confirmDeployment')}</h2>
                         <p className="text-slate-500 text-[10px] uppercase tracking-widest leading-relaxed">
-                          By confirming, you authorize the deployment of the algorithmic infrastructure associated with the {plan.name} plan.
+                          {t('checkout.deploymentDesc', { plan: plan.name })}
                         </p>
                       </div>
 
@@ -236,7 +255,7 @@ const Checkout = () => {
                         onClick={() => setShowPayPal(true)}
                         className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-16 font-black text-[12px] uppercase tracking-[0.3em] transition-all group"
                       >
-                        PROCEED TO SECURE PAYMENT <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                        {t('checkout.proceedPayment')} <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
 
                       <div className="flex flex-col gap-4">
@@ -251,17 +270,20 @@ const Checkout = () => {
                   ) : (
                     <div className="space-y-6 animate-fadeInUp">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">Secure Gateway</h2>
+                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">{t('checkout.secureGateway')}</h2>
                         <button 
                           onClick={() => setShowPayPal(false)}
                           className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
                         >
-                          Back
+                          {t('checkout.back')}
                         </button>
                       </div>
 
                       <div className="relative z-0">
-                        <PayPalScriptProvider options={{ clientId: "test" }}> 
+                        <PayPalScriptProvider options={{ 
+                          clientId: "test",
+                          locale: getPayPalLocale(i18n.language)
+                        }}> 
                           <PayPalButtons 
                             style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
                             createOrder={(data, actions) => {
@@ -303,7 +325,7 @@ const Checkout = () => {
             <div className="p-6 bg-white/[0.02] border border-dashed border-white/10 flex gap-4">
               <ShieldAlert className="text-[#C5A059] shrink-0" size={20} />
               <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">
-                Risk Disclosure: Algorithmic trading involves substantial risk of loss. Past performance is not indicative of future results.
+                {t('checkout.riskDisclosure')}
               </p>
             </div>
           </div>
