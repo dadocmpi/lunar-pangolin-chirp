@@ -184,21 +184,6 @@ const Checkout = () => {
                 </div>
               </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-6 bg-[#080B12] border border-white/10 text-center space-y-3">
-                <Server size={20} className="mx-auto text-[#C5A059]" />
-                <p className="text-[9px] font-bold uppercase tracking-widest text-white">{t('checkout.dedicatedNode')}</p>
-              </div>
-              <div className="p-6 bg-[#080B12] border border-white/10 text-center space-y-3">
-                <Globe size={20} className="mx-auto text-[#C5A059]" />
-                <p className="text-[9px] font-bold uppercase tracking-widest text-white">{t('checkout.globalMarkets')}</p>
-              </div>
-              <div className="p-6 bg-[#080B12] border border-white/10 text-center space-y-3">
-                <Zap size={20} className="mx-auto text-[#C5A059]" />
-                <p className="text-[9px] font-bold uppercase tracking-widest text-white">{t('checkout.instantSetup')}</p>
-              </div>
-            </div>
           </div>
 
           <div className="lg:col-span-5 space-y-6 lg:pt-[92px]">
@@ -253,25 +238,13 @@ const Checkout = () => {
                       </div>
 
                       <div className="p-6 bg-white/[0.02] border border-white/10 space-y-6">
-                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 text-center">Global Payment Infrastructure</p>
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
-                              <QrCode size={18} />
-                            </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">QR Code</span>
+                        <div className="flex flex-col items-center gap-4">
+                          <div className="w-16 h-16 bg-white/5 flex items-center justify-center text-[#C5A059] rounded-full">
+                            <QrCode size={32} />
                           </div>
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
-                              <CreditCard size={18} />
-                            </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">All Cards</span>
-                          </div>
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
-                              <Smartphone size={18} />
-                            </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">Local Pay</span>
+                          <div className="text-center">
+                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">Instant QR Payment</p>
+                            <p className="text-[8px] text-slate-500 uppercase tracking-widest mt-1">No PayPal account required</p>
                           </div>
                         </div>
                       </div>
@@ -288,7 +261,6 @@ const Checkout = () => {
                           <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" />
                           <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" />
                           <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-5" />
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" alt="Apple Pay" className="h-4" />
                         </div>
                         <p className="text-[8px] text-center text-slate-600 uppercase tracking-widest">{t('checkout.encryptionNote')}</p>
                       </div>
@@ -296,7 +268,7 @@ const Checkout = () => {
                   ) : (
                     <div className="space-y-6 animate-fadeInUp">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">{t('checkout.secureGateway')}</h2>
+                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">Secure Payment</h2>
                         <button 
                           onClick={() => setShowPayPal(false)}
                           className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
@@ -311,8 +283,8 @@ const Checkout = () => {
                           locale: getPayPalLocale(i18n.language),
                           currency: "EUR",
                           components: "buttons",
-                          "enable-funding": "venmo,paylater,card",
-                          "data-sdk-integration-source": "button-factory"
+                          "disable-funding": "credit,paylater",
+                          "enable-funding": "card"
                         }}> 
                           <PayPalButtons 
                             style={{ 
@@ -334,6 +306,10 @@ const Checkout = () => {
                                     description: `Braxel Markets - ${plan.name} Investment Plan`
                                   },
                                 ],
+                                application_context: {
+                                  shipping_preference: "NO_SHIPPING",
+                                  user_action: "PAY_NOW"
+                                }
                               });
                             }}
                             onApprove={async (data, actions) => {
@@ -347,10 +323,10 @@ const Checkout = () => {
 
                       <div className="p-4 bg-white/[0.02] border border-white/5 space-y-3">
                         <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                          <Globe size={12} /> International Cards & Local Methods Accepted
+                          <Smartphone size={12} /> Scan QR or Pay with Card
                         </div>
                         <p className="text-[8px] text-slate-600 leading-relaxed uppercase tracking-tighter">
-                          {t('checkout.paypalNote')}
+                          Select "Pay with Debit or Credit Card" to skip PayPal login.
                         </p>
                       </div>
                     </div>
