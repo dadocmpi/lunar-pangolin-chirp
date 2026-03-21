@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Check, Loader2, ShieldCheck, Zap, Award, Crown } from 'lucide-react';
+import React from 'react';
+import { Check, Zap, Award, ShieldCheck, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -16,6 +16,7 @@ const Pricing = () => {
 
   const plans = [
     {
+      id: "starter",
       name: "Starter 2K",
       price: "€70.00",
       accountSize: "$2,000",
@@ -23,6 +24,7 @@ const Pricing = () => {
       features: ["Automation", "Account Management", "Email Support", "Controlled Risk"],
     },
     {
+      id: "pro",
       name: "Pro 5K",
       price: "€160.00",
       accountSize: "$5,000",
@@ -31,6 +33,7 @@ const Pricing = () => {
       popular: true
     },
     {
+      id: "advanced",
       name: "Advanced 10K",
       price: "€320.00",
       accountSize: "$10,000",
@@ -38,6 +41,7 @@ const Pricing = () => {
       features: ["Pro Features", "Multi-Account", "Weekly Reports"],
     },
     {
+      id: "elite",
       name: "Elite 20K",
       price: "€630.00",
       accountSize: "$20,000",
@@ -47,7 +51,9 @@ const Pricing = () => {
   ];
 
   const handleSelectPlan = (plan: any) => {
-    navigate('/checkout', { state: { plan } });
+    // Removemos o ícone antes de navegar para evitar o erro de pushState (objetos não serializáveis)
+    const { icon, ...planData } = plan;
+    navigate('/checkout', { state: { plan: planData } });
   };
 
   return (
