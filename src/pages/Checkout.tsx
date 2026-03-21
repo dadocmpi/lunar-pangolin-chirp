@@ -180,7 +180,8 @@ const Checkout = () => {
             </div>
           </div>
 
-          <div className="lg:col-span-5 space-y-6">
+          {/* Coluna da Direita com padding-top para alinhar com a caixa da esquerda */}
+          <div className="lg:col-span-5 space-y-6 lg:pt-[72px]">
             <div className="bg-[#080B12] border border-white/10 p-10 space-y-8">
               {!user ? (
                 <div className="space-y-8">
