@@ -279,7 +279,7 @@ const Checkout = () => {
 
                       <div className="relative z-0">
                         <PayPalScriptProvider options={{ 
-                          clientId: "test", // Substitua pelo seu Client ID real quando tiver
+                          clientId: "AVu8P_UbVKDXdzWpP65YV2ZCSSzG4SexNA4ZacE-pNiRgwM2iLwUEzCJi6CNaZlHzk3FfLq-DhBrjVZz",
                           locale: getPayPalLocale(i18n.language),
                           currency: "EUR"
                         }}> 
