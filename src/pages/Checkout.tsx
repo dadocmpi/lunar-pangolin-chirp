@@ -19,7 +19,6 @@ import {
   Activity
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { generateAccountId } from '@/utils/idGenerator';
 import { showError, showSuccess } from '@/utils/toast';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -33,22 +32,14 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [showPayPal, setShowPayPal] = useState(false);
+  const [processing, setProcessing] = useState(false);
   const plan = location.state?.plan;
 
-  // Mapeamento de idiomas para o formato do PayPal (xx_YY)
   const getPayPalLocale = (lng: string) => {
     const map: Record<string, string> = {
-      'en': 'en_US',
-      'pt': 'pt_BR',
-      'es': 'es_ES',
-      'it': 'it_IT',
-      'fr': 'fr_FR',
-      'de': 'de_DE',
-      'ru': 'ru_RU',
-      'zh': 'zh_CN',
-      'ja': 'ja_JP',
-      'ar': 'ar_EG',
-      'he': 'he_IL'
+      'en': 'en_US', 'pt': 'pt_BR', 'es': 'es_ES', 'it': 'it_IT',
+      'fr': 'fr_FR', 'de': 'de_DE', 'ru': 'ru_RU', 'zh': 'zh_CN',
+      'ja': 'ja_JP', 'ar': 'ar_EG', 'he': 'he_IL'
     };
     return map[lng] || 'en_US';
   };
@@ -59,43 +50,50 @@ const Checkout = () => {
       setUser(authUser);
       setLoading(false);
     };
-
-    if (!plan) {
-      navigate('/pricing');
-      return;
-    }
-
+    if (!plan) { navigate('/pricing'); return; }
     checkUser();
   }, [plan, navigate]);
 
-  const handlePaymentSuccess = async (details: any) => {
-    if (!user) return;
-    
+  const handlePaymentCapture = async (orderId: string) => {
+    setProcessing(true);
     try {
-      const accountId = generateAccountId();
-      const { error } = await supabase
-        .from('services')
-        .insert([{ 
-          user_id: user.id, 
-          plan_name: plan.name, 
-          account_id: accountId,
-          status: 'Active',
-          balance: parseFloat(plan.accountSize.replace(/[^0-9.]/g, ''))
-        }]);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/paypal-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: JSON.stringify({
+          orderId,
+          planName: plan.name,
+          accountSize: plan.accountSize
+        })
+      });
 
-      if (error) throw error;
+      const result = await response.json();
 
-      showSuccess(`Success! Your ${plan.name} plan is now active.`);
-      navigate('/dashboard');
+      if (result.status === 'success') {
+        showSuccess(t('checkout.successMessage') || "Payment verified! Your infrastructure is being deployed.");
+        navigate('/dashboard');
+      } else {
+        throw new Error(result.error || "Verification failed");
+      }
     } catch (error: any) {
-      showError("Payment confirmed, but we couldn't update your dashboard. Please contact support.");
+      showError(error.message || "Error verifying payment. Please contact support.");
+    } finally {
+      setProcessing(false);
     }
   };
 
-  if (loading) {
+  if (loading || processing) {
     return (
-      <div className="min-h-screen bg-[#05070A] flex items-center justify-center">
+      <div className="min-h-screen bg-[#05070A] flex flex-col items-center justify-center gap-6">
         <Loader2 className="animate-spin text-[#C5A059]" size={48} />
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">
+          {processing ? "Verifying Institutional Transaction..." : "Loading Terminal..."}
+        </p>
       </div>
     );
   }
@@ -281,8 +279,9 @@ const Checkout = () => {
 
                       <div className="relative z-0">
                         <PayPalScriptProvider options={{ 
-                          clientId: "test",
-                          locale: getPayPalLocale(i18n.language)
+                          clientId: "test", // Substitua pelo seu Client ID real quando tiver
+                          locale: getPayPalLocale(i18n.language),
+                          currency: "EUR"
                         }}> 
                           <PayPalButtons 
                             style={{ layout: "vertical", color: "gold", shape: "rect", label: "pay" }}
@@ -301,8 +300,9 @@ const Checkout = () => {
                               });
                             }}
                             onApprove={async (data, actions) => {
-                              const details = await actions.order?.capture();
-                              handlePaymentSuccess(details);
+                              if (data.orderID) {
+                                await handlePaymentCapture(data.orderID);
+                              }
                             }}
                           />
                         </PayPalScriptProvider>
