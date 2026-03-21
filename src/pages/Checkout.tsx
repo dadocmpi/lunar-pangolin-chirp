@@ -9,7 +9,6 @@ import {
   ArrowLeft, 
   Loader2, 
   CheckCircle2, 
-  CreditCard, 
   UserPlus, 
   LogIn,
   ChevronRight,
@@ -38,8 +37,8 @@ const Checkout = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      setUser(authUser);
       setLoading(false);
     };
 
@@ -95,7 +94,6 @@ const Checkout = () => {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Coluna da Esquerda: Resumo e Detalhes Técnicos (7 colunas) */}
           <div className="lg:col-span-7 space-y-8">
             <div className="animate-fadeInUp">
               <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('checkout.summary')}</span>
@@ -132,7 +130,7 @@ const Checkout = () => {
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">Execution Latency</span>
-                      <span className="text-white">< 1.8ms</span>
+                      <span className="text-white">{"< 1.8ms"}</span>
                     </div>
                   </div>
                 </div>
@@ -182,7 +180,6 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Coluna da Direita: Pagamento e Segurança (5 colunas) */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-[#080B12] border border-white/10 p-10 space-y-8">
               {!user ? (
