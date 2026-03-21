@@ -19,7 +19,8 @@ import {
   Activity,
   CreditCard,
   QrCode,
-  Smartphone
+  Smartphone,
+  Scan
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
@@ -230,22 +231,20 @@ const Checkout = () => {
 
                   {!showPayPal ? (
                     <div className="space-y-8 animate-fadeInUp">
-                      <div className="space-y-4">
-                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.confirmDeployment')}</h2>
-                        <p className="text-slate-500 text-[10px] uppercase tracking-widest leading-relaxed">
-                          {t('checkout.deploymentDesc', { plan: plan.name })}
-                        </p>
-                      </div>
-
-                      <div className="p-6 bg-white/[0.02] border border-white/10 space-y-6">
-                        <div className="flex flex-col items-center gap-4">
-                          <div className="w-16 h-16 bg-white/5 flex items-center justify-center text-[#C5A059] rounded-full">
-                            <QrCode size={32} />
+                      <div className="text-center space-y-6">
+                        <div className="relative inline-block">
+                          <div className="w-32 h-32 bg-white/5 border border-[#C5A059]/30 flex items-center justify-center mx-auto">
+                            <QrCode size={64} className="text-[#C5A059] opacity-50" />
+                            <div className="absolute inset-0 border-2 border-[#C5A059] animate-pulse opacity-20" />
+                            <Scan className="absolute -top-2 -left-2 text-[#C5A059]" size={20} />
+                            <Scan className="absolute -bottom-2 -right-2 text-[#C5A059] rotate-180" size={20} />
                           </div>
-                          <div className="text-center">
-                            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">Instant QR Payment</p>
-                            <p className="text-[8px] text-slate-500 uppercase tracking-widest mt-1">No PayPal account required</p>
-                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-white">Institutional Terminal</h2>
+                          <p className="text-slate-500 text-[9px] uppercase tracking-widest leading-relaxed">
+                            Scan the QR Code in the next window to complete the allocation instantly.
+                          </p>
                         </div>
                       </div>
 
@@ -253,7 +252,7 @@ const Checkout = () => {
                         onClick={() => setShowPayPal(true)}
                         className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-16 font-black text-[12px] uppercase tracking-[0.3em] transition-all group"
                       >
-                        {t('checkout.proceedPayment')} <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                        GENERATE SECURE QR <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
 
                       <div className="flex flex-col gap-4">
@@ -268,7 +267,7 @@ const Checkout = () => {
                   ) : (
                     <div className="space-y-6 animate-fadeInUp">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">Secure Payment</h2>
+                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">Secure QR Gateway</h2>
                         <button 
                           onClick={() => setShowPayPal(false)}
                           className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
@@ -283,7 +282,7 @@ const Checkout = () => {
                           locale: getPayPalLocale(i18n.language),
                           currency: "EUR",
                           components: "buttons",
-                          "disable-funding": "credit,paylater",
+                          "disable-funding": "credit,paylater,venmo",
                           "enable-funding": "card"
                         }}> 
                           <PayPalButtons 
@@ -308,7 +307,8 @@ const Checkout = () => {
                                 ],
                                 application_context: {
                                   shipping_preference: "NO_SHIPPING",
-                                  user_action: "PAY_NOW"
+                                  user_action: "PAY_NOW",
+                                  brand_name: "BRAXEL MARKETS"
                                 }
                               });
                             }}
@@ -323,10 +323,10 @@ const Checkout = () => {
 
                       <div className="p-4 bg-white/[0.02] border border-white/5 space-y-3">
                         <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                          <Smartphone size={12} /> Scan QR or Pay with Card
+                          <Scan size={12} className="text-[#C5A059]" /> Scan QR or Pay with Card
                         </div>
                         <p className="text-[8px] text-slate-600 leading-relaxed uppercase tracking-tighter">
-                          Select "Pay with Debit or Credit Card" to skip PayPal login.
+                          The QR Code will appear automatically in the secure window. No login required.
                         </p>
                       </div>
                     </div>
