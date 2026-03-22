@@ -9,16 +9,14 @@ import {
   LayoutDashboard, 
   Wallet, 
   User, 
-  ShieldCheck, 
   Loader2, 
   LogOut,
   ArrowUpRight,
-  History,
-  Save,
   AlertCircle,
-  Lock,
+  Save,
   Smartphone,
-  FileText
+  FileText,
+  Activity
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,10 +36,39 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
+    
+    // Setup Realtime Subscription
+    const setupRealtime = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const channel = supabase
+        .channel('schema-db-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*', // Listen to INSERT, UPDATE, and DELETE
+            schema: 'public',
+            table: 'services',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log('Realtime update received:', payload);
+            // Refresh data when a change occurs
+            fetchData();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    };
+
+    setupRealtime();
   }, []);
 
   const fetchData = async () => {
-    setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -50,13 +77,23 @@ const Dashboard = () => {
       }
       setUser(user);
 
-      const { data: servicesData } = await supabase.from('services').select('*').eq('user_id', user.id);
+      const { data: servicesData } = await supabase
+        .from('services')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+        
       setServices(servicesData || []);
 
-      const { data: profileData } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+        
       setProfile(profileData || { first_name: user.user_metadata?.full_name || '', last_name: '' });
     } catch (error: any) {
-      showError(error.message);
+      console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -66,6 +103,14 @@ const Dashboard = () => {
     await supabase.auth.signOut();
     navigate('/login');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#05070A] flex items-center justify-center">
+        <Loader2 className="animate-spin text-[#C5A059]" size={40} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#C5A059] selection:text-black">

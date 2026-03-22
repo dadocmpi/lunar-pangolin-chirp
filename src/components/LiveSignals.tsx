@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { Activity, TrendingUp, TrendingDown, Clock, ShieldCheck } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Activity, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
@@ -12,47 +12,73 @@ interface Signal {
   entry: string;
   profit: string;
   status: 'ACTIVE' | 'COMPLETED';
-  timestamp: string;
 }
 
 const LiveSignals = () => {
   const { t } = useTranslation();
   const [signals, setSignals] = useState<Signal[]>([]);
+  const [marketPrices, setMarketPrices] = useState<Record<string, string>>({});
+  const assets = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "EURUSDT", "GBPUSDT", "PAXGUSDT"];
 
-  const assets = ["BTC/USD", "ETH/USD", "SOL/USD", "EUR/USD", "GBP/USD", "GOLD", "XAU/USD"];
-
+  // Fetch real prices from Binance
   useEffect(() => {
-    // Initial signals
-    const initialSignals: Signal[] = Array.from({ length: 5 }).map((_, i) => generateSignal(i.toString()));
-    setSignals(initialSignals);
+    const fetchPrices = async () => {
+      try {
+        const res = await fetch('https://api.binance.com/api/v3/ticker/price');
+        const data = await res.json();
+        const prices: Record<string, string> = {};
+        data.forEach((item: any) => {
+          if (assets.includes(item.symbol)) {
+            prices[item.symbol] = item.price;
+          }
+        });
+        setMarketPrices(prices);
+      } catch (e) {
+        console.error("Error fetching live prices", e);
+      }
+    };
 
-    const interval = setInterval(() => {
-      setSignals(prev => {
-        const newSignal = generateSignal(Date.now().toString());
-        return [newSignal, ...prev.slice(0, 5)];
-      });
-    }, 4000);
-
+    fetchPrices();
+    const interval = setInterval(fetchPrices, 3000);
     return () => clearInterval(interval);
   }, []);
 
-  const generateSignal = (id: string): Signal => {
-    const asset = assets[Math.floor(Math.random() * assets.length)];
-    const type = Math.random() > 0.5 ? 'BUY' : 'SELL';
-    const entry = (Math.random() * 50000).toFixed(2);
-    const profit = (Math.random() * 2.5).toFixed(2);
-    const status = Math.random() > 0.3 ? 'COMPLETED' : 'ACTIVE';
-    
-    return {
-      id,
-      asset,
-      type,
-      entry,
-      profit: status === 'COMPLETED' ? `+${profit}%` : '---',
-      status,
-      timestamp: new Date().toLocaleTimeString()
+  // Generate signals based on real prices
+  useEffect(() => {
+    const generateInitial = () => {
+      const initial = assets.slice(0, 5).map((symbol, i) => ({
+        id: i.toString(),
+        asset: symbol.replace('USDT', '/USD').replace('PAXG', 'GOLD'),
+        type: Math.random() > 0.5 ? 'BUY' : 'SELL' as 'BUY' | 'SELL',
+        entry: marketPrices[symbol] || "---",
+        profit: `+${(Math.random() * 1.5).toFixed(2)}%`,
+        status: 'COMPLETED' as 'COMPLETED'
+      }));
+      setSignals(initial);
     };
-  };
+
+    if (Object.keys(marketPrices).length > 0 && signals.length === 0) {
+      generateInitial();
+    }
+
+    const interval = setInterval(() => {
+      if (Object.keys(marketPrices).length === 0) return;
+      
+      const randomAsset = assets[Math.floor(Math.random() * assets.length)];
+      const newSignal: Signal = {
+        id: Date.now().toString(),
+        asset: randomAsset.replace('USDT', '/USD').replace('PAXG', 'GOLD'),
+        type: Math.random() > 0.5 ? 'BUY' : 'SELL',
+        entry: marketPrices[randomAsset] || "---",
+        profit: Math.random() > 0.3 ? `+${(Math.random() * 0.8).toFixed(2)}%` : '---',
+        status: Math.random() > 0.3 ? 'COMPLETED' : 'ACTIVE'
+      };
+
+      setSignals(prev => [newSignal, ...prev.slice(0, 4)]);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [marketPrices]);
 
   return (
     <section className="py-32 px-8 bg-black border-t border-white/5">
@@ -73,7 +99,7 @@ const LiveSignals = () => {
               </div>
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-widest text-white">Institutional Verification</p>
-                <p className="text-[9px] text-slate-500 uppercase tracking-widest">All signals are verified by our risk engine.</p>
+                <p className="text-[9px] text-slate-500 uppercase tracking-widest">Real-time data feed from global liquidity pools.</p>
               </div>
             </div>
           </div>
@@ -84,11 +110,11 @@ const LiveSignals = () => {
               <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
                 <div className="flex items-center gap-3">
                   <Activity size={16} className="text-[#D4AF37] animate-pulse" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">LIVE FEED</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">LIVE TERMINAL</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-green-500">OPERATIONAL</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-green-500">CONNECTED</span>
                 </div>
               </div>
 
@@ -115,17 +141,17 @@ const LiveSignals = () => {
                             {signal.type}
                           </span>
                         </td>
-                        <td className="p-6 text-[11px] font-tech text-slate-400">{signal.entry}</td>
+                        <td className="p-6 text-[11px] font-tech text-slate-400">
+                          {parseFloat(signal.entry).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                        </td>
                         <td className="p-6 text-[11px] font-bold text-[#D4AF37]">{signal.profit}</td>
                         <td className="p-6">
-                          <div className="flex items-center gap-2">
-                            <span className={cn(
-                              "text-[8px] font-bold uppercase tracking-widest",
-                              signal.status === 'ACTIVE' ? "text-blue-400" : "text-slate-500"
-                            )}>
-                              {signal.status === 'ACTIVE' ? t('signals.active') : t('signals.completed')}
-                            </span>
-                          </div>
+                          <span className={cn(
+                            "text-[8px] font-bold uppercase tracking-widest",
+                            signal.status === 'ACTIVE' ? "text-blue-400" : "text-slate-500"
+                          )}>
+                            {signal.status === 'ACTIVE' ? t('signals.active') : t('signals.completed')}
+                          </span>
                         </td>
                       </tr>
                     ))}
