@@ -30,13 +30,11 @@ const Index = () => {
       <Navbar />
       <MarketTicker />
 
-      {/* Hero Section - Aumentado mt para [180px] para criar o respiro solicitado */}
+      {/* Hero Section */}
       <section className="relative mt-[180px] min-h-[80vh] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.03)_0%,transparent_70%)] pointer-events-none" />
         
         <div className="relative z-[2] text-center max-w-[1000px] px-8 animate-fadeInUp">
-          {/* Selo removido conforme solicitado */}
-          
           <h1 className="font-serif text-[32px] md:text-[54px] font-bold leading-[1.1] mb-8 tracking-[-0.03em] text-white uppercase">
             {t('hero.title1')}
             <span className="block text-[#D4AF37] mt-2">{t('hero.title2')}</span>
@@ -129,7 +127,7 @@ const Index = () => {
           <div className="mb-24 text-center">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-6 block">{t('process_home.badge')}</span>
             <h2 className="text-[24px] md:text-[32px] font-serif font-bold uppercase tracking-tight">
-              {t('process_home.title')} <span className="text-[#D4AF37]">{t('process_home.subtitle')}</span>
+              {t('process_home.title')} <span className="text-white">{t('process_home.subtitle')}</span>
             </h2>
           </div>
 
