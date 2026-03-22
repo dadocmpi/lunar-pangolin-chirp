@@ -20,7 +20,7 @@ const Pricing = () => {
       name: "Starter 2K",
       price: "€70.00",
       accountSize: "$2,000",
-      icon: <Zap size={20} />,
+      icon: <Zap size={28} />,
       features: ["Automation", "Account Management", "Email Support", "Controlled Risk"],
     },
     {
@@ -28,7 +28,7 @@ const Pricing = () => {
       name: "Pro 5K",
       price: "€160.00",
       accountSize: "$5,000",
-      icon: <Award size={20} />,
+      icon: <Award size={28} />,
       features: ["Starter Features", "Priority Support", "Detailed Logs"],
       popular: true
     },
@@ -37,7 +37,7 @@ const Pricing = () => {
       name: "Advanced 10K",
       price: "€320.00",
       accountSize: "$10,000",
-      icon: <ShieldCheck size={20} />,
+      icon: <ShieldCheck size={28} />,
       features: ["Pro Features", "Multi-Account", "Weekly Reports"],
     },
     {
@@ -45,7 +45,7 @@ const Pricing = () => {
       name: "Elite 20K",
       price: "€630.00",
       accountSize: "$20,000",
-      icon: <Crown size={20} />,
+      icon: <Crown size={28} />,
       features: ["Advanced Features", "24/7 Support", "Dedicated Manager"],
     }
   ];

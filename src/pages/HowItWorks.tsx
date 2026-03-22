@@ -11,7 +11,7 @@ import MarketTicker from '@/components/MarketTicker';
 
 const HowItWorks = () => {
   const { t } = useTranslation();
-  const icons = [<UserPlus size={24} />, <Layout size={24} />, <CreditCard size={24} />, <Key size={24} />, <ArrowDownCircle size={24} />, <Mail size={24} />];
+  const icons = [<UserPlus size={32} />, <Layout size={32} />, <CreditCard size={32} />, <Key size={32} />, <ArrowDownCircle size={32} />, <Mail size={32} />];
   
   const steps = (t('howItWorks.steps', { returnObjects: true }) as any[]).map((step, i) => ({
     ...step,

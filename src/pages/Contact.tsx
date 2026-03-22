@@ -106,21 +106,21 @@ const Contact = () => {
             <h2 className="text-[20px] md:text-[28px] font-serif font-bold tracking-tighter mb-12 uppercase">{t('contact.infoTitle')}</h2>
             <div className="space-y-10">
               <div className="flex items-start gap-6 group">
-                <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Mail size={20} /></div>
+                <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Mail size={28} /></div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">E-mail</p>
                   <p className="text-slate-400 text-[14px]">marketsbraxel@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-6 group">
-                <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Send size={20} /></div>
+                <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Send size={28} /></div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">Telegram</p>
                   <a href="https://t.me/braxelmarkets" target="_blank" rel="noopener noreferrer" className="text-slate-400 text-[14px] hover:text-[#D4AF37] transition-colors">@braxelmarkets</a>
                 </div>
               </div>
               <div className="flex items-start gap-6 group">
-                <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Clock size={20} /></div>
+                <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Clock size={28} /></div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">Support Hours</p>
                   <p className="text-slate-400 text-[14px]">24/7 Institutional Support</p>
