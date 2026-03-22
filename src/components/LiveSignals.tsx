@@ -54,11 +54,21 @@ const LiveSignals = () => {
   }, []);
 
   useEffect(() => {
+    // Função de formatação estrita: Máximo 4 casas decimais, sem zeros extras
     const formatPrice = (val: number, asset: string) => {
+      if (!val || isNaN(val)) return "---";
+      
+      // Para ativos de alto valor (BTC, ETH, GOLD), usamos 2 casas decimais
       if (asset === "GOLD" || asset.includes("BTC") || asset.includes("ETH")) {
-        return val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return val.toLocaleString('en-US', { 
+          minimumFractionDigits: 2, 
+          maximumFractionDigits: 2,
+          useGrouping: false 
+        });
       }
-      return val.toFixed(4);
+      
+      // Para Forex e outros, limitamos a no máximo 4 casas decimais
+      return Number(val.toFixed(4)).toString();
     };
 
     const formatAssetName = (symbol: string) => {
