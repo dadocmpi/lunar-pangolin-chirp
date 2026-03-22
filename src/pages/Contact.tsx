@@ -91,7 +91,7 @@ const Contact = () => {
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('contact.badge')}</span>
             <h1 className="font-serif text-[28px] md:text-[48px] font-bold leading-[1.1] mb-6 tracking-[-0.03em] uppercase">
               {t('contact.title')} <br />
-              <span className="text-[#D4AF37]">{t('contact.subtitle')}</span>
+              <span className="text-white">{t('contact.subtitle')}</span>
             </h1>
             <p className="font-sans text-[14px] md:text-[17px] text-slate-400 max-w-xl leading-relaxed">
               {t('contact.desc')}
