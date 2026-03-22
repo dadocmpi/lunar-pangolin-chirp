@@ -80,7 +80,7 @@ const Dashboard = () => {
                   {profile?.first_name?.[0] || user?.email?.[0].toUpperCase()}
                 </div>
                 <div className="overflow-hidden">
-                  <p className="text-[11px] font-bold uppercase tracking-widest truncate">{profile?.first_name || 'Investor'}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest truncate">{profile?.first_name || t('dashboard.investor')}</p>
                   <p className="text-[9px] text-slate-500 truncate">{user?.email}</p>
                 </div>
               </div>

@@ -60,7 +60,8 @@ const resources = {
         enable2FA: "Enable 2FA",
         kycStatus: "KYC Verification",
         verified: "Verified",
-        viewDocs: "View Documents"
+        viewDocs: "View Documents",
+        investor: "Investor"
       },
       checkout: { 
         summary: "SUMMARY", 
@@ -146,7 +147,8 @@ const resources = {
         enable2FA: "Ativar 2FA",
         kycStatus: "Verificação KYC",
         verified: "Verificado",
-        viewDocs: "Ver Documentos"
+        viewDocs: "Ver Documentos",
+        investor: "Investidor"
       },
       checkout: { 
         summary: "RESUMO", 
