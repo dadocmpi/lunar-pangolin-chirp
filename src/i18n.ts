@@ -58,11 +58,18 @@ const resources = {
         t4: "Professional Grade",
         d4: "Direct connection to global liquidity pools with ultra-low latency."
       },
-      transparency: {
-        title: "TRANSPARENCY & RISK",
-        badge: "SECURITY",
-        desc: "We operate with total transparency. It is important to understand that past performance does not guarantee future results. Our approach is strictly probabilistic, focused on long-term capital preservation and risk-adjusted growth.",
-        warning: "RISK WARNING: Trading involves significant risk. Never allocate capital you cannot afford to lose."
+      signals: {
+        title: "LIVE ALGORITHMIC",
+        subtitle: "EXECUTION",
+        badge: "REAL-TIME TERMINAL",
+        desc: "Monitor our proprietary infrastructure in real-time. Every signal is processed by our neural networks with millisecond precision.",
+        asset: "ASSET",
+        type: "TYPE",
+        entry: "ENTRY",
+        profit: "PROFIT",
+        status: "STATUS",
+        active: "ACTIVE",
+        completed: "COMPLETED"
       }
     }
   },
@@ -74,9 +81,9 @@ const resources = {
       hero: { title1: "GESTÃO DE CAPITAL", title2: "ALGORÍTMICA DE ELITE.", desc: "Implemente estratégias quantitativas de nível institucional projetadas para o mercado moderno. Experimente precisão de execução em milissegundos.", getStarted: "EXPLORAR PLANOS DE INVESTIMENTO", viewStrategies: "METODOLOGIA TÉCNICA" },
       stats: { volume: "Volume Total Gerenciado", traders: "Investidores Ativos", uptime: "Uptime da Infraestrutura", latency: "Precisão de Execução" },
       methodology: { badge: "METODOLOGIA", title: "ESTRATÉGIAS QUANTITATIVAS", momentum: { title: "ANÁLISE DE MOMENTUM", desc: "Identificação de tendências de alta probabilidade usando redes neurais proprietárias.", f1: "Detecção de Tendência", f2: "Análise de Volume", f3: "Reconhecimento de Padrões" }, volatility: { title: "ADAPTÇÃO DE VOLATILIDADE", desc: "Ajuste dinâmico de exposição baseado em condições de mercado em tempo real.", f1: "Hedging Dinâmico", f2: "Stops Adaptativos", f3: "Monitoramento de Liquidez" }, risk: { title: "MITIGAÇÃO DE RIESGO", desc: "Protocolos de proteção em múltiplas camadas para garantir a preservação do capital.", f1: "Controle de Drawdown", f2: "Correlação de Ativos", f3: "Testes de Estresse" } },
-      process_home: { badge: "PROCESSO", title: "FLUXO", subtitle: "INSTITUCIONAL", step1: { title: "REGISTRO", desc: "Onboarding seguro e verificação de identidade." }, step2: { title: "ALOCAÇÃO", desc: "Seleção do nível de capital gerenciado." }, step3: { title: "INTEGRAÇÃO", desc: "Implementação da infraestrutura algorítmica." }, step4: { title: "MONITORAMENTO", desc: "Acompanhamento em tempo real via terminal." }, step5: { title: "LIQUIDITÀ", desc: "Protocolos de saque de lucros simplificados." } },
+      process_home: { badge: "PROCESSO", title: "FLUXO", subtitle: "INSTITUCIONAL", step1: { title: "REGISTRO", desc: "Onboarding seguro e verificação de identidade." }, step2: { title: "ALOCAÇÃO", desc: "Seleção do nível de capital gerenciado." }, step3: { title: "INTEGRAÇÃO", desc: "Implementação da infraestrutura algorítmica." }, step4: { title: "MONITORAMENTO", desc: "Acompanhamento em tempo real via terminal." }, step5: { title: "LIQUIDEZ", desc: "Protocolos de saque de lucros simplificados." } },
       cta_home: { badge: "OPPORTUNITY", title: "ESCALE SEU", subtitle: "CAPITAL", desc: "Junte-se ao grupo de elite de investidores que utilizam a infraestrutura proprietária da Braxel.", btn: "INICIAR ALOCAÇÃO", trust: "Segurança de Nível Institucional" },
-      pricing: { badge: "TRANSPARÊNCIA", title: "ALOCAÇÕES DE", subtitle: "CAPITAL", desc: "Infraestrutura de nível institucional com uma estrutura de taxas transparente.", select: "GARANTIR ESTE PLANO", allocation: "CAPITAL GERENCIADO", month: "taxa mensal" },
+      pricing: { badge: "TRANSPARENÊNCIA", title: "ALOCAÇÕES DE", subtitle: "CAPITAL", desc: "Infraestrutura de nível institucional com uma estrutura de taxas transparente.", select: "GARANTIR ESTE PLANO", allocation: "CAPITAL GERENCIADO", month: "taxa mensal" },
       howItWorks: { badge: "INFRAESTRUTURA", title: "ARQUITETURA", subtitle: "TÉCNICA", desc: "Nosso ecossistema proprietário é construído para velocidade, segurança e desempenho consistente.", steps: [{ title: "REGISTRO", desc: "Crie seu perfil institucional." }, { title: "PAINEL", desc: "Acesse seu terminal privado de gestão." }, { title: "SELEÇÃO DE PLANO", desc: "Escolha seu nível de alocação de capital." }, { title: "IMPLEMENTAÇÃO API", desc: "Conexão automatizada aos mercados globais." }, { title: "EXECUÇÃO", desc: "Processamento de ordens em milissegundos." }, { title: "RELATÓRIOS", desc: "Análise detalhada de desempenho semanal." }], cta: "PRONTO PARA COMEÇAR?", ctaBtn: "ENTRAR NA REDE" },
       about: { badge: "SOBRE NÓS", title: "EXCELÊNCIA", subtitle: "INSTITUCIONAL", desc: "A Braxel Markets representa o ápice da gestão algorítmica de capital.", historyTitle: "NOSSA HISTÓRIA", historyDesc1: "Fundada por uma equipe de analistas quantitativos e engenheiros de software, a Braxel foi criada para unir o capital individual à tecnologia institucional.", historyDesc2: "Hoje, gerenciamos bilhões em volume com foco em retornos ajustados ao risco e estabilidade de infraestrutura.", stats: { founded: "Fundada", users: "Usuários Ativos", uptime: "Uptime", support: "Suporte" }, values: { mission: "MISSÃO", missionDesc: "Fornecer infraestrutura algorítmica de elite para o capital global.", vision: "VISÃO", visionDesc: "Definir o futuro da gestão quantitativa automatizada.", values: "VALORES", valuesDesc: "Transparencia, precisão e segurança inabalável." } },
       contact: { badge: "SUPORTE", title: "CANAIS", subtitle: "INSTITUCIONAIS", desc: "Nossa equipe de suporte dedicada está disponível 24/7 para consultas institucionais.", infoTitle: "CONTATO", formTitle: "CONSULTA DIRETA", placeholders: { name: "NOME COMPLETO", email: "ENDEREÇO DE E-MAIL", subject: "ASSUNTO", message: "MENSAGEM" }, sendBtn: "ENVIAR CONSULTA" },
@@ -107,11 +114,18 @@ const resources = {
         t4: "Acesso Profissional",
         d4: "Conexão direta a pools de liquidez globais com ultra-baixa latência."
       },
-      transparency: {
-        title: "TRANSPARÊNCIA E RISCO",
-        badge: "SEGURANÇA",
-        desc: "Operamos com transparência total. É importante entender que retornos passados não garantem resultados futuros. Nossa abordagem é estritamente probabilística, focada na preservação de capital e crescimento ajustado ao risco.",
-        warning: "AVISO DE RISCO: O trading envolve risco significativo. Nunca aloque capital que você não possa perder."
+      signals: {
+        title: "EXECUÇÃO",
+        subtitle: "ALGORÍTMICA",
+        badge: "TERMINAL EM TEMPO REAL",
+        desc: "Monitore nossa infraestrutura proprietária em tempo real. Cada sinal é processado por nossas redes neurais com precisão de milissegundos.",
+        asset: "ATIVO",
+        type: "TIPO",
+        entry: "ENTRADA",
+        profit: "LUCRO",
+        status: "STATUS",
+        active: "ATIVO",
+        completed: "CONCLUÍDO"
       }
     }
   }

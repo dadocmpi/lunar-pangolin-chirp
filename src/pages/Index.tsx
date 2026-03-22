@@ -16,7 +16,7 @@ import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import Differentiators from '@/components/Differentiators';
 import FAQ from '@/components/FAQ';
-import RiskTransparency from '@/components/RiskTransparency';
+import LiveSignals from '@/components/LiveSignals';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -127,8 +127,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Risk & Transparency Section */}
-      <RiskTransparency />
+      {/* Live Signals Section */}
+      <LiveSignals />
 
       {/* Process Flow Section */}
       <section className="py-32 px-8 bg-[#05070A] border-t border-white/5">
