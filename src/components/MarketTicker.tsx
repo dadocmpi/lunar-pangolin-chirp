@@ -6,10 +6,10 @@ const MarketTicker = () => {
   const [prices, setPrices] = useState([
     { pair: "BTC/USD", value: 0, change: 0, up: true },
     { pair: "ETH/USD", value: 0, change: 0, up: true },
-    { pair: "SOL/USD", value: 0, change: 0, up: true },
     { pair: "EUR/USD", value: 1.0844, change: 0.12, up: true },
     { pair: "GBP/USD", value: 1.2632, change: -0.05, up: false },
-    { pair: "USD/JPY", value: 149.19, change: 0.22, up: true },
+    { pair: "GBP/JPY", value: 190.45, change: 0.15, up: true },
+    { pair: "USD/CAD", value: 1.3520, change: -0.08, up: false },
     { pair: "GOLD", value: 0, change: 0, up: true },
   ]);
 
@@ -18,7 +18,7 @@ const MarketTicker = () => {
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
-        const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","SOLUSDT","PAXGUSDT"]');
+        const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","PAXGUSDT"]');
         const cryptoJson = await cryptoRes.json();
         
         const fxRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
@@ -53,18 +53,23 @@ const MarketTicker = () => {
           }
         }
 
-        if (d1Data.current.fx && p.pair !== "GOLD") {
+        if (d1Data.current.fx) {
           if (p.pair === "EUR/USD") {
             const base = 1 / d1Data.current.fx.EUR;
             newValue = base + (Math.random() - 0.5) * 0.0001;
-            newChange = p.change + (Math.random() - 0.5) * 0.001;
           } else if (p.pair === "GBP/USD") {
             const base = 1 / d1Data.current.fx.GBP;
             newValue = base + (Math.random() - 0.5) * 0.0001;
-            newChange = p.change + (Math.random() - 0.5) * 0.001;
-          } else if (p.pair === "USD/JPY") {
-            const base = d1Data.current.fx.JPY;
+          } else if (p.pair === "GBP/JPY") {
+            const base = d1Data.current.fx.JPY / d1Data.current.fx.GBP;
             newValue = base + (Math.random() - 0.5) * 0.01;
+          } else if (p.pair === "USD/CAD") {
+            const base = d1Data.current.fx.CAD;
+            newValue = base + (Math.random() - 0.5) * 0.0001;
+          }
+          
+          // Simular variação de mudança para FX
+          if (p.pair.includes('/') && !p.pair.includes('BTC') && !p.pair.includes('ETH')) {
             newChange = p.change + (Math.random() - 0.5) * 0.001;
           }
         }
