@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Activity, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -17,42 +17,31 @@ interface Signal {
 const LiveSignals = () => {
   const { t } = useTranslation();
   const [signals, setSignals] = useState<Signal[]>([]);
-  const [marketPrices, setMarketPrices] = useState<Record<string, string>>({});
+  const [marketPrices, setMarketPrices] = useState<Record<string, number>>({});
   
-  // Lista de ativos atualizada: Removido SOLUSDT, Adicionados pares de Forex
   const cryptoAssets = ["BTCUSDT", "ETHUSDT", "PAXGUSDT"];
   const fxAssets = ["EURUSD", "GBPUSD", "GBPJPY", "USDCAD"];
   const allAssets = [...cryptoAssets, ...fxAssets];
 
-  // Fetch real prices
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        // Preços de Cripto via Binance
         const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/price');
         const cryptoData = await cryptoRes.json();
-        
-        // Preços de Forex via ExchangeRate API (Simulado para manter o realismo sem múltiplas chaves)
         const fxRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
         const fxData = await fxRes.json();
 
-        const prices: Record<string, string> = {};
-        
-        // Mapear Cripto
+        const prices: Record<string, number> = {};
         cryptoData.forEach((item: any) => {
-          if (cryptoAssets.includes(item.symbol)) {
-            prices[item.symbol] = item.price;
-          }
+          if (cryptoAssets.includes(item.symbol)) prices[item.symbol] = parseFloat(item.price);
         });
 
-        // Mapear Forex (USD base)
         if (fxData.rates) {
-          prices["EURUSD"] = (1 / fxData.rates.EUR).toFixed(4);
-          prices["GBPUSD"] = (1 / fxData.rates.GBP).toFixed(4);
-          prices["GBPJPY"] = (fxData.rates.JPY / fxData.rates.GBP).toFixed(3);
-          prices["USDCAD"] = fxData.rates.CAD.toFixed(4);
+          prices["EURUSD"] = 1 / fxData.rates.EUR;
+          prices["GBPUSD"] = 1 / fxData.rates.GBP;
+          prices["GBPJPY"] = fxData.rates.JPY / fxData.rates.GBP;
+          prices["USDCAD"] = fxData.rates.CAD;
         }
-
         setMarketPrices(prices);
       } catch (e) {
         console.error("Error fetching live prices", e);
@@ -64,45 +53,54 @@ const LiveSignals = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Generate signals based on real prices
   useEffect(() => {
+    const formatPrice = (val: number, asset: string) => {
+      if (asset === "GOLD" || asset.includes("BTC") || asset.includes("ETH")) {
+        return val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      return val.toFixed(4);
+    };
+
     const formatAssetName = (symbol: string) => {
       if (symbol === "PAXGUSDT") return "GOLD";
       if (symbol.includes("USDT")) return symbol.replace("USDT", "/USD");
       return symbol.slice(0, 3) + "/" + symbol.slice(3);
     };
 
-    const generateInitial = () => {
-      const initial = allAssets.slice(0, 5).map((symbol, i) => ({
-        id: i.toString(),
-        asset: formatAssetName(symbol),
-        type: Math.random() > 0.5 ? 'BUY' : 'SELL' as 'BUY' | 'SELL',
-        entry: marketPrices[symbol] || "---",
-        profit: `+${(Math.random() * 1.2).toFixed(2)}%`,
-        status: 'COMPLETED' as 'COMPLETED'
-      }));
-      setSignals(initial);
-    };
-
     if (Object.keys(marketPrices).length > 0 && signals.length === 0) {
-      generateInitial();
+      const initial = allAssets.slice(0, 5).map((symbol, i) => {
+        const name = formatAssetName(symbol);
+        const price = marketPrices[symbol] || 0;
+        return {
+          id: i.toString(),
+          asset: name,
+          type: Math.random() > 0.5 ? 'BUY' : 'SELL' as 'BUY' | 'SELL',
+          entry: formatPrice(price, name),
+          profit: `+${(Math.random() * 0.9).toFixed(2)}%`,
+          status: 'COMPLETED' as 'COMPLETED'
+        };
+      });
+      setSignals(initial);
     }
 
     const interval = setInterval(() => {
       if (Object.keys(marketPrices).length === 0) return;
       
       const randomAsset = allAssets[Math.floor(Math.random() * allAssets.length)];
+      const name = formatAssetName(randomAsset);
+      const price = marketPrices[randomAsset] || 0;
+
       const newSignal: Signal = {
         id: Date.now().toString(),
-        asset: formatAssetName(randomAsset),
+        asset: name,
         type: Math.random() > 0.5 ? 'BUY' : 'SELL',
-        entry: marketPrices[randomAsset] || "---",
-        profit: Math.random() > 0.3 ? `+${(Math.random() * 0.6).toFixed(2)}%` : '---',
+        entry: formatPrice(price, name),
+        profit: Math.random() > 0.3 ? `+${(Math.random() * 0.4).toFixed(2)}%` : '---',
         status: Math.random() > 0.3 ? 'COMPLETED' : 'ACTIVE'
       };
 
       setSignals(prev => [newSignal, ...prev.slice(0, 4)]);
-    }, 6000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [marketPrices]);

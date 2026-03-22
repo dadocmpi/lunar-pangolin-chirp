@@ -18,9 +18,11 @@ const MarketTicker = () => {
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
+        // Cripto e Ouro (PAXG) via Binance - 24/7
         const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","PAXGUSDT"]');
         const cryptoJson = await cryptoRes.json();
         
+        // Forex via ExchangeRate (Dados de fechamento ou tempo real)
         const fxRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
         const fxJson = await fxRes.json();
 
@@ -30,47 +32,42 @@ const MarketTicker = () => {
           timestamp: Date.now()
         };
       } catch (error) {
-        console.error("Erro ao sincronizar dados D1:", error);
+        console.error("Erro ao sincronizar dados:", error);
       }
     };
 
     fetchMarketData();
-    const syncInterval = setInterval(fetchMarketData, 5000);
+    const syncInterval = setInterval(fetchMarketData, 10000);
 
     const tickInterval = setInterval(() => {
       setPrices(prev => prev.map(p => {
         let newValue = p.value;
         let newChange = p.change;
 
+        // Lógica para Cripto (Sempre Real)
         if (d1Data.current.crypto) {
           const symbolToFind = p.pair === "GOLD" ? "PAXGUSDT" : p.pair.replace('/', '').replace('USD', 'USDT');
           const cryptoItem = d1Data.current.crypto.find((i: any) => i.symbol === symbolToFind);
           
           if (cryptoItem) {
             const base = parseFloat(cryptoItem.lastPrice);
-            newValue = base + (Math.random() - 0.5) * (base * 0.0001);
+            // Adiciona micro-oscilação de 0.01% para parecer vivo entre updates da API
+            newValue = base + (Math.random() - 0.5) * (base * 0.0002);
             newChange = parseFloat(cryptoItem.priceChangePercent);
           }
         }
 
+        // Lógica para Forex (Real + Jitter no final de semana)
         if (d1Data.current.fx) {
-          if (p.pair === "EUR/USD") {
-            const base = 1 / d1Data.current.fx.EUR;
-            newValue = base + (Math.random() - 0.5) * 0.0001;
-          } else if (p.pair === "GBP/USD") {
-            const base = 1 / d1Data.current.fx.GBP;
-            newValue = base + (Math.random() - 0.5) * 0.0001;
-          } else if (p.pair === "GBP/JPY") {
-            const base = d1Data.current.fx.JPY / d1Data.current.fx.GBP;
-            newValue = base + (Math.random() - 0.5) * 0.01;
-          } else if (p.pair === "USD/CAD") {
-            const base = d1Data.current.fx.CAD;
-            newValue = base + (Math.random() - 0.5) * 0.0001;
-          }
-          
-          // Simular variação de mudança para FX
-          if (p.pair.includes('/') && !p.pair.includes('BTC') && !p.pair.includes('ETH')) {
-            newChange = p.change + (Math.random() - 0.5) * 0.001;
+          let baseFx = 0;
+          if (p.pair === "EUR/USD") baseFx = 1 / d1Data.current.fx.EUR;
+          else if (p.pair === "GBP/USD") baseFx = 1 / d1Data.current.fx.GBP;
+          else if (p.pair === "GBP/JPY") baseFx = d1Data.current.fx.JPY / d1Data.current.fx.GBP;
+          else if (p.pair === "USD/CAD") baseFx = d1Data.current.fx.CAD;
+
+          if (baseFx > 0) {
+            // Micro-oscilação para Forex (0.005%)
+            newValue = baseFx + (Math.random() - 0.5) * (baseFx * 0.0001);
           }
         }
 
@@ -89,13 +86,13 @@ const MarketTicker = () => {
     };
   }, []);
 
-  const tickerItems = [...prices, ...prices, ...prices, ...prices];
+  const tickerItems = [...prices, ...prices, ...prices];
 
   return (
     <div className="fixed top-24 left-0 w-full h-[50px] bg-black/80 backdrop-blur-md border-b border-white/5 z-[900] overflow-hidden flex items-center">
       <div className="flex gap-16 px-8 whitespace-nowrap ticker-scroll">
         {tickerItems.map((item, i) => (
-          <div key={i} className="flex items-center gap-3 font-tech text-[11px] font-bold transition-all duration-500">
+          <div key={i} className="flex items-center gap-3 font-tech text-[11px] font-bold">
             <span className="text-slate-500 uppercase tracking-widest">{item.pair}</span>
             <span className="text-white tabular-nums">
               {item.value === 0 ? "---" : 
