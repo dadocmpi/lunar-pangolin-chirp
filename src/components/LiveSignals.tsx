@@ -18,20 +18,41 @@ const LiveSignals = () => {
   const { t } = useTranslation();
   const [signals, setSignals] = useState<Signal[]>([]);
   const [marketPrices, setMarketPrices] = useState<Record<string, string>>({});
-  const assets = ["BTCUSDT", "ETHUSDT", "SOLUSDT", "EURUSDT", "GBPUSDT", "PAXGUSDT"];
+  
+  // Lista de ativos atualizada: Removido SOLUSDT, Adicionados pares de Forex
+  const cryptoAssets = ["BTCUSDT", "ETHUSDT", "PAXGUSDT"];
+  const fxAssets = ["EURUSD", "GBPUSD", "GBPJPY", "USDCAD"];
+  const allAssets = [...cryptoAssets, ...fxAssets];
 
-  // Fetch real prices from Binance
+  // Fetch real prices
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const res = await fetch('https://api.binance.com/api/v3/ticker/price');
-        const data = await res.json();
+        // Preços de Cripto via Binance
+        const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/price');
+        const cryptoData = await cryptoRes.json();
+        
+        // Preços de Forex via ExchangeRate API (Simulado para manter o realismo sem múltiplas chaves)
+        const fxRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+        const fxData = await fxRes.json();
+
         const prices: Record<string, string> = {};
-        data.forEach((item: any) => {
-          if (assets.includes(item.symbol)) {
+        
+        // Mapear Cripto
+        cryptoData.forEach((item: any) => {
+          if (cryptoAssets.includes(item.symbol)) {
             prices[item.symbol] = item.price;
           }
         });
+
+        // Mapear Forex (USD base)
+        if (fxData.rates) {
+          prices["EURUSD"] = (1 / fxData.rates.EUR).toFixed(4);
+          prices["GBPUSD"] = (1 / fxData.rates.GBP).toFixed(4);
+          prices["GBPJPY"] = (fxData.rates.JPY / fxData.rates.GBP).toFixed(3);
+          prices["USDCAD"] = fxData.rates.CAD.toFixed(4);
+        }
+
         setMarketPrices(prices);
       } catch (e) {
         console.error("Error fetching live prices", e);
@@ -39,19 +60,25 @@ const LiveSignals = () => {
     };
 
     fetchPrices();
-    const interval = setInterval(fetchPrices, 3000);
+    const interval = setInterval(fetchPrices, 5000);
     return () => clearInterval(interval);
   }, []);
 
   // Generate signals based on real prices
   useEffect(() => {
+    const formatAssetName = (symbol: string) => {
+      if (symbol === "PAXGUSDT") return "GOLD";
+      if (symbol.includes("USDT")) return symbol.replace("USDT", "/USD");
+      return symbol.slice(0, 3) + "/" + symbol.slice(3);
+    };
+
     const generateInitial = () => {
-      const initial = assets.slice(0, 5).map((symbol, i) => ({
+      const initial = allAssets.slice(0, 5).map((symbol, i) => ({
         id: i.toString(),
-        asset: symbol.replace('USDT', '/USD').replace('PAXG', 'GOLD'),
+        asset: formatAssetName(symbol),
         type: Math.random() > 0.5 ? 'BUY' : 'SELL' as 'BUY' | 'SELL',
         entry: marketPrices[symbol] || "---",
-        profit: `+${(Math.random() * 1.5).toFixed(2)}%`,
+        profit: `+${(Math.random() * 1.2).toFixed(2)}%`,
         status: 'COMPLETED' as 'COMPLETED'
       }));
       setSignals(initial);
@@ -64,18 +91,18 @@ const LiveSignals = () => {
     const interval = setInterval(() => {
       if (Object.keys(marketPrices).length === 0) return;
       
-      const randomAsset = assets[Math.floor(Math.random() * assets.length)];
+      const randomAsset = allAssets[Math.floor(Math.random() * allAssets.length)];
       const newSignal: Signal = {
         id: Date.now().toString(),
-        asset: randomAsset.replace('USDT', '/USD').replace('PAXG', 'GOLD'),
+        asset: formatAssetName(randomAsset),
         type: Math.random() > 0.5 ? 'BUY' : 'SELL',
         entry: marketPrices[randomAsset] || "---",
-        profit: Math.random() > 0.3 ? `+${(Math.random() * 0.8).toFixed(2)}%` : '---',
+        profit: Math.random() > 0.3 ? `+${(Math.random() * 0.6).toFixed(2)}%` : '---',
         status: Math.random() > 0.3 ? 'COMPLETED' : 'ACTIVE'
       };
 
       setSignals(prev => [newSignal, ...prev.slice(0, 4)]);
-    }, 5000);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, [marketPrices]);
@@ -142,7 +169,7 @@ const LiveSignals = () => {
                           </span>
                         </td>
                         <td className="p-6 text-[11px] font-tech text-slate-400">
-                          {parseFloat(signal.entry).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 4 })}
+                          {signal.entry}
                         </td>
                         <td className="p-6 text-[11px] font-bold text-[#D4AF37]">{signal.profit}</td>
                         <td className="p-6">
