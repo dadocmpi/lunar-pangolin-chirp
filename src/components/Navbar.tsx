@@ -21,10 +21,9 @@ const Navbar = () => {
 
   const navLinks = [
     { name: t('nav.pricing'), path: '/pricing' },
-    { name: t('nav.results'), path: '/#results' },
-    { name: t('nav.howItWorks'), path: '/#how-it-works' },
-    { name: t('nav.faq'), path: '/#faq' },
+    { name: t('nav.howItWorks'), path: '/how-it-works' },
     { name: t('nav.about'), path: '/about' },
+    { name: t('nav.contact'), path: '/contact' },
   ];
 
   const changeLanguage = (lng: string) => {
@@ -58,25 +57,14 @@ const Navbar = () => {
 
       <nav className="hidden lg:flex items-center gap-10">
         {navLinks.map((link) => (
-          link.path.startsWith('/#') ? (
-            <a
-              key={link.path}
-              href={link.path}
-              className="relative text-[10px] font-bold text-slate-400 tracking-[0.25em] uppercase font-tech group hover:text-white transition-colors"
-            >
-              {link.name}
-              <span className="absolute bottom-[-6px] left-0 w-0 h-[1px] bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
-            </a>
-          ) : (
-            <Link
-              key={link.path}
-              to={link.path}
-              className="relative text-[10px] font-bold text-slate-400 tracking-[0.25em] uppercase font-tech group hover:text-white transition-colors"
-            >
-              {link.name}
-              <span className="absolute bottom-[-6px] left-0 w-0 h-[1px] bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
-            </Link>
-          )
+          <Link
+            key={link.path}
+            to={link.path}
+            className="relative text-[10px] font-bold text-slate-400 tracking-[0.25em] uppercase font-tech group hover:text-white transition-colors"
+          >
+            {link.name}
+            <span className="absolute bottom-[-6px] left-0 w-0 h-[1px] bg-[#D4AF37] transition-all duration-300 group-hover:w-full" />
+          </Link>
         ))}
       </nav>
 
@@ -128,25 +116,14 @@ const Navbar = () => {
       {isOpen && (
         <div className="absolute top-24 left-0 w-full h-[calc(100vh-96px)] bg-black border-b border-white/10 p-10 flex flex-col gap-8 lg:hidden animate-in fade-in slide-in-from-top-4 duration-300 overflow-y-auto">
           {navLinks.map((link) => (
-            link.path.startsWith('/#') ? (
-              <a
-                key={link.path}
-                href={link.path}
-                className="text-[11px] font-bold text-white tracking-[0.3em] uppercase font-tech"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.name}
-              </a>
-            ) : (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="text-[11px] font-bold text-white tracking-[0.3em] uppercase font-tech"
-                onClick={() => setIsOpen(false)}
-              >
-                {link.name}
-              </Link>
-            )
+            <Link
+              key={link.path}
+              to={link.path}
+              className="text-[11px] font-bold text-white tracking-[0.3em] uppercase font-tech"
+              onClick={() => setIsOpen(false)}
+            >
+              {link.name}
+            </Link>
           ))}
           <div className="h-px bg-white/5 w-full" />
           

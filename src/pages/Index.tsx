@@ -7,15 +7,13 @@ import {
   Layout, Globe, Database, Activity, Layers, Users,
   TrendingUp, ShieldAlert, PieChart, Lock, Eye, Info,
   Server, Scale, Cpu, ChevronRight, Network, ArrowUpRight,
-  CreditCard, LayoutDashboard, Wallet, Target
+  CreditCard, LayoutDashboard, Wallet
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
-import ResultsSection from '@/components/ResultsSection';
-import FAQSection from '@/components/FAQSection';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -52,11 +50,11 @@ const Index = () => {
                 {t('hero.getStarted')}
               </button>
             </Link>
-            <a href="#results">
+            <Link to="/about">
               <button className="bg-transparent text-white border border-white/10 px-12 py-5 rounded-none font-tech text-[11px] font-black tracking-[0.25em] uppercase hover:bg-white/5 hover:-translate-y-[2px] transition-all duration-500">
                 {t('hero.viewStrategies')}
               </button>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
@@ -77,42 +75,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Results Section */}
-      <ResultsSection />
-
-      {/* Process Flow Section - Simplified to 3 Steps */}
-      <section id="how-it-works" className="py-32 px-8 bg-[#05070A]">
-        <div className="max-w-[1200px] mx-auto">
-          <div className="mb-24 text-center">
-            <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-6 block">{t('process_home.badge')}</span>
-            <h2 className="text-[24px] md:text-[32px] font-serif font-bold uppercase tracking-tight">
-              {t('process_home.title')} <span className="text-white">{t('process_home.subtitle')}</span>
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
-            <div className="hidden md:block absolute top-16 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#D4AF37]/20 to-transparent -z-10" />
-            
-            {[
-              { icon: <Network size={32} />, title: t('process_home.step1.title'), desc: t('process_home.step1.desc') },
-              { icon: <Zap size={32} />, title: t('process_home.step2.title'), desc: t('process_home.step2.desc') },
-              { icon: <Cpu size={32} />, title: t('process_home.step3.title'), desc: t('process_home.step3.desc') }
-            ].map((step, i) => (
-              <div key={i} className="flex flex-col items-center text-center group">
-                <div className="w-28 h-28 bg-[#080B12] border border-white/5 flex items-center justify-center text-[#D4AF37] mb-10 group-hover:border-[#D4AF37]/40 group-hover:shadow-[0_0_40px_rgba(212,175,55,0.05)] transition-all duration-700 relative">
-                  <span className="absolute -top-4 -right-4 w-10 h-10 bg-black border border-white/10 flex items-center justify-center text-[10px] font-bold text-slate-600">0{i+1}</span>
-                  {step.icon}
-                </div>
-                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-5 text-white">{step.title}</h3>
-                <p className="text-slate-500 text-[11px] leading-relaxed px-6 font-medium">{step.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Methodology Section */}
-      <section className="py-32 px-8 bg-[#05070A] border-t border-white/5">
+      <section className="py-32 px-8 bg-[#05070A]">
         <div className="max-w-[1200px] mx-auto">
           <div className="mb-24 text-center">
             <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-6 block">{t('methodology.badge')}</span>
@@ -123,19 +87,19 @@ const Index = () => {
             {[
               {
                 title: t('methodology.momentum.title'),
-                icon: <TrendingUp size={32} />,
+                icon: <TrendingUp size={28} />,
                 features: [t('methodology.momentum.f1'), t('methodology.momentum.f2'), t('methodology.momentum.f3')],
                 desc: t('methodology.momentum.desc')
               },
               {
                 title: t('methodology.volatility.title'),
-                icon: <ShieldAlert size={32} />,
+                icon: <ShieldAlert size={28} />,
                 features: [t('methodology.volatility.f1'), t('methodology.volatility.f2'), t('methodology.volatility.f3')],
                 desc: t('methodology.volatility.desc')
               },
               {
                 title: t('methodology.risk.title'),
-                icon: <PieChart size={32} />,
+                icon: <PieChart size={28} />,
                 features: [t('methodology.risk.f1'), t('methodology.risk.f2'), t('methodology.risk.f3')],
                 desc: t('methodology.risk.desc')
               }
@@ -157,8 +121,38 @@ const Index = () => {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <FAQSection />
+      {/* Process Flow Section */}
+      <section className="py-32 px-8 bg-[#05070A] border-t border-white/5">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="mb-24 text-center">
+            <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-6 block">{t('process_home.badge')}</span>
+            <h2 className="text-[24px] md:text-[32px] font-serif font-bold uppercase tracking-tight">
+              {t('process_home.title')} <span className="text-white">{t('process_home.subtitle')}</span>
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-12 relative">
+            <div className="hidden md:block absolute top-16 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#D4AF37]/20 to-transparent -z-10" />
+            
+            {[
+              { icon: <CreditCard size={24} />, title: t('process_home.step1.title'), desc: t('process_home.step1.desc') },
+              { icon: <Zap size={24} />, title: t('process_home.step2.title'), desc: t('process_home.step2.desc') },
+              { icon: <Cpu size={24} />, title: t('process_home.step3.title'), desc: t('process_home.step3.desc') },
+              { icon: <LayoutDashboard size={24} />, title: t('process_home.step4.title'), desc: t('process_home.step4.desc') },
+              { icon: <Wallet size={24} />, title: t('process_home.step5.title'), desc: t('process_home.step5.desc') }
+            ].map((step, i) => (
+              <div key={i} className="flex flex-col items-center text-center group">
+                <div className="w-28 h-28 bg-[#080B12] border border-white/5 flex items-center justify-center text-[#D4AF37] mb-10 group-hover:border-[#D4AF37]/40 group-hover:shadow-[0_0_40px_rgba(212,175,55,0.05)] transition-all duration-700 relative">
+                  <span className="absolute -top-4 -right-4 w-10 h-10 bg-black border border-white/10 flex items-center justify-center text-[10px] font-bold text-slate-600">0{i+1}</span>
+                  {step.icon}
+                </div>
+                <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-5 text-white">{step.title}</h3>
+                <p className="text-slate-500 text-[11px] leading-relaxed px-2 font-medium">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Final CTA Section */}
       <section className="py-40 px-8 relative overflow-hidden border-t border-white/5">
@@ -178,13 +172,8 @@ const Index = () => {
                 {t('cta_home.btn')} <ArrowUpRight size={20} />
               </button>
             </Link>
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
-                <Lock size={12} /> {t('cta_home.trust')}
-              </div>
-              <p className="text-[9px] text-slate-700 uppercase tracking-widest max-w-md leading-relaxed">
-                {t('legal.riskWarning')}
-              </p>
+            <div className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
+              <Lock size={12} /> {t('cta_home.trust')}
             </div>
           </div>
         </div>
