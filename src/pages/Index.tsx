@@ -14,6 +14,9 @@ import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
+import Differentiators from '@/components/Differentiators';
+import FAQ from '@/components/FAQ';
+import RiskTransparency from '@/components/RiskTransparency';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -75,6 +78,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Differentiators Section */}
+      <Differentiators />
+
       {/* Methodology Section */}
       <section className="py-32 px-8 bg-[#05070A]">
         <div className="max-w-[1200px] mx-auto">
@@ -121,6 +127,9 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Risk & Transparency Section */}
+      <RiskTransparency />
+
       {/* Process Flow Section */}
       <section className="py-32 px-8 bg-[#05070A] border-t border-white/5">
         <div className="max-w-[1200px] mx-auto">
@@ -153,6 +162,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQ />
 
       {/* Final CTA Section */}
       <section className="py-40 px-8 relative overflow-hidden border-t border-white/5">
