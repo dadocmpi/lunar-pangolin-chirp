@@ -68,12 +68,28 @@ const Index = () => {
       {/* Trust Logos Section */}
       <section className="py-12 border-b border-white/5 bg-black/50">
         <div className="container mx-auto px-8">
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale hover:opacity-60 transition-opacity duration-500">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/MetaQuotes_Logo.svg" alt="MetaTrader" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Binance_Logo.svg" alt="Binance" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
-            <div className="flex items-center gap-2 text-[10px] font-black tracking-widest text-white">
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-40 grayscale brightness-0 invert hover:opacity-80 transition-opacity duration-500">
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/4/4b/MetaQuotes_Logo.svg" 
+              alt="MetaTrader" 
+              className="h-8 md:h-10 object-contain" 
+            />
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Binance_Logo.svg" 
+              alt="Binance" 
+              className="h-7 md:h-9 object-contain" 
+            />
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" 
+              alt="PayPal" 
+              className="h-6 md:h-8 object-contain" 
+            />
+            <img 
+              src="https://upload.wikimedia.org/wikipedia/commons/d/d6/Visa_2021.svg" 
+              alt="Visa" 
+              className="h-5 md:h-7 object-contain" 
+            />
+            <div className="flex items-center gap-2 text-[10px] font-black tracking-widest text-white border-l border-white/20 pl-8">
               <Lock size={14} /> AES-256 SECURE
             </div>
           </div>
