@@ -17,6 +17,8 @@ import MarketTicker from '@/components/MarketTicker';
 import Differentiators from '@/components/Differentiators';
 import FAQ from '@/components/FAQ';
 import LiveSignals from '@/components/LiveSignals';
+import ProfitCalculator from '@/components/ProfitCalculator';
+import FloatingSupport from '@/components/FloatingSupport';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -32,6 +34,7 @@ const Index = () => {
     <div className="min-h-screen bg-black font-sans text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       <MarketTicker />
+      <FloatingSupport />
 
       {/* Hero Section */}
       <section className="relative mt-[180px] min-h-[80vh] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
@@ -62,8 +65,23 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Trust Logos Section */}
+      <section className="py-12 border-b border-white/5 bg-black/50">
+        <div className="container mx-auto px-8">
+          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale hover:opacity-60 transition-opacity duration-500">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/MetaQuotes_Logo.svg" alt="MetaTrader" className="h-6" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Binance_Logo.svg" alt="Binance" className="h-6" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5" />
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
+            <div className="flex items-center gap-2 text-[10px] font-black tracking-widest text-white">
+              <Lock size={14} /> AES-256 SECURE
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Section */}
-      <section className="bg-black py-24 px-8 border-y border-white/5">
+      <section className="bg-black py-24 px-8 border-b border-white/5">
         <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16">
           {stats.map((stat, i) => (
             <div key={i} className="text-center group">
@@ -80,6 +98,9 @@ const Index = () => {
 
       {/* Differentiators Section */}
       <Differentiators />
+
+      {/* Profit Calculator Section */}
+      <ProfitCalculator />
 
       {/* Methodology Section */}
       <section className="py-32 px-8 bg-[#05070A]">
