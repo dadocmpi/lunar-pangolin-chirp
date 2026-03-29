@@ -20,7 +20,7 @@ const Pricing = () => {
       name: "Starter 2K",
       price: "€70.00",
       accountSize: "$2,000",
-      icon: <Zap size={28} />,
+      iconType: "zap",
       features: ["Automation", "Account Management", "Email Support", "Controlled Risk"],
     },
     {
@@ -28,7 +28,7 @@ const Pricing = () => {
       name: "Pro 5K",
       price: "€160.00",
       accountSize: "$5,000",
-      icon: <Award size={28} />,
+      iconType: "award",
       features: ["Starter Features", "Priority Support", "Detailed Logs"],
       popular: true
     },
@@ -37,7 +37,7 @@ const Pricing = () => {
       name: "Advanced 10K",
       price: "€320.00",
       accountSize: "$10,000",
-      icon: <ShieldCheck size={28} />,
+      iconType: "shield",
       features: ["Pro Features", "Multi-Account", "Weekly Reports"],
     },
     {
@@ -45,15 +45,23 @@ const Pricing = () => {
       name: "Elite 20K",
       price: "€630.00",
       accountSize: "$20,000",
-      icon: <Crown size={28} />,
+      iconType: "crown",
       features: ["Advanced Features", "24/7 Support", "Dedicated Manager"],
     }
   ];
 
+  const renderIcon = (type: string) => {
+    switch (type) {
+      case 'zap': return <Zap size={28} />;
+      case 'award': return <Award size={28} />;
+      case 'shield': return <ShieldCheck size={28} />;
+      case 'crown': return <Crown size={28} />;
+      default: return <Zap size={28} />;
+    }
+  };
+
   const handleSelectPlan = (plan: any) => {
-    // Removemos o ícone antes de navegar para evitar o erro de pushState (objetos não serializáveis)
-    const { icon, ...planData } = plan;
-    navigate('/checkout', { state: { plan: planData } });
+    navigate('/checkout', { state: { plan } });
   };
 
   return (
@@ -85,7 +93,9 @@ const Pricing = () => {
                 {plan.popular && (
                   <div className="absolute top-0 left-0 right-0 h-[3px] bg-[#D4AF37]" />
                 )}
-                <div className="text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">{plan.icon}</div>
+                <div className="text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">
+                  {renderIcon(plan.iconType)}
+                </div>
                 <h3 className="text-[11px] font-bold uppercase tracking-[3px] text-slate-500 mb-8">{plan.name}</h3>
                 <div className="mb-10">
                   <span className="text-[32px] font-serif font-bold text-white">{plan.price}</span>

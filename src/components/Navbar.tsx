@@ -27,9 +27,11 @@ const Navbar = () => {
   ];
 
   const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-    setIsOpen(false);
-    window.location.reload();
+    i18n.changeLanguage(lng).then(() => {
+      setIsOpen(false);
+      // Force a reload to ensure all components re-render with the new language
+      window.location.reload();
+    });
   };
 
   const handleLogoClick = () => {
