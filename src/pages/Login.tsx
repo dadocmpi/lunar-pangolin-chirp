@@ -33,10 +33,10 @@ const Login = () => {
 
       if (error) throw error;
 
-      showSuccess("Login successful!");
+      showSuccess(t('auth.loginSuccessMessage'));
       navigate(from, { state: { plan } });
     } catch (error: any) {
-      showError(error.message || "Error logging in.");
+      showError(error.message || t('auth.loginErrorMessage'));
     } finally {
       setLoading(false);
     }
@@ -57,22 +57,22 @@ const Login = () => {
         
         <div className="relative z-10">
           <h2 className="text-5xl font-black text-white mb-8 leading-tight uppercase tracking-tighter">
-            Welcome <br /><span className="text-[#C5A059]">Back</span>
+            {t('auth.welcomeBackTitle')} <br /><span className="text-[#C5A059]">{t('auth.welcomeBackHighlight')}</span>
           </h2>
           <p className="text-slate-400 text-xs font-bold uppercase tracking-widest max-w-xs leading-relaxed">
-            Access your investment infrastructure and monitor your performance in real-time.
+            {t('auth.loginSideDescription')}
           </p>
         </div>
         
         <div className="relative z-10 text-slate-600 text-[10px] font-bold uppercase tracking-widest">
-          © 2026 Braxel Markets. Secure Access.
+          © 2026 Braxel Markets. {t('auth.loginSideFooter')}
         </div>
       </div>
       
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="mb-10">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Security</span>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('auth.securityBadge')}</span>
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{t('auth.loginTitle')}</h1>
             <p className="text-slate-500 text-xs mt-2">{t('auth.loginSubtitle')}</p>
           </div>
@@ -87,7 +87,7 @@ const Login = () => {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com" 
+                  placeholder={t('auth.emailPlaceholder')} 
                   className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
@@ -121,7 +121,7 @@ const Login = () => {
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              {t('auth.noAccount')} <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">Create account</Link>
+              {t('auth.noAccount')} <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">{t('auth.createAccountLink')}</Link>
             </p>
           </div>
         </div>
