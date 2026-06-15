@@ -37,24 +37,29 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // Configure session persistence based on remember me
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          persistSession: true,
-          // If remember me is checked, the session will persist longer
-          // Supabase handles automatic token refresh
-        }
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check if it's a "Invalid login credentials" error
+        if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
+          showError("Account not found. Please create an account first.");
+          navigate('/register', { state: { from, plan } });
+          return;
+        }
+        throw error;
+      }
 
       // Handle remember me
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
+        // Keep session for 30 days
+        localStorage.setItem('sessionExpiry', (Date.now() + 30 * 24 * 60 * 60 * 1000).toString());
       } else {
         localStorage.removeItem('rememberedEmail');
+        localStorage.removeItem('sessionExpiry');
       }
 
       showSuccess("Login successful!");
@@ -65,6 +70,15 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  // Check if session is still valid
+  useEffect(() => {
+    const sessionExpiry = localStorage.getItem('sessionExpiry');
+    if (sessionExpiry && parseInt(sessionExpiry) < Date.now()) {
+      localStorage.removeItem('rememberedEmail');
+      localStorage.removeItem('sessionExpiry');
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#05070A]">
