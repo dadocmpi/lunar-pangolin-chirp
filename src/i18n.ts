@@ -80,7 +80,7 @@ const ptTranslation = {
   auth: { loginTitle: "Login", loginSubtitle: "Insira suas credenciais de acesso.", registerTitle: "Criar Conta", registerSubtitle: "Comece sua jornada no mercado institucional.", email: "Endereço de E-mail", password: "Senha", fullName: "Nome Completo", forgotPassword: "Esqueceu a senha?", noAccount: "Não tem uma conta?", hasAccount: "Já possui acesso?", btnAccess: "ACESSAR CONTA", btnCreate: "CRIAR MINHA CONTA", termsAgree: "Eu concordo com os Termos e Privacidade.", futureTitle: "O Futuro do", futureSubtitle: "Investimento", features: ["Algoritmos institucionais", "Proteção de capital avançada", "Execução em milissegundos", "Transparência total"] },
   hero: { title1: "GESTÃO DE CAPITAL", title2: "ALGORÍTMICA DE ELITE.", desc: "Implemente estratégias quantitativas de nível institucional projetadas para o mercado moderno. Experimente precisão de execução em milissegundos.", getStarted: "EXPLORAR PLANOS DE INVESTIMENTO", viewStrategies: "METODOLOGIA TÉCNICA" },
   stats: { volume: "Gestão Estratégica de Capital", traders: "Contas Ativas", uptime: "Uptime da Infraestrutura", latency: "Precisão de Execução" },
-  methodology: { badge: "METODOLOGIA", title: "MODELOS QUANTITATIVOS", statArb: { title: "ARBITRAGEM ESTATÍSTICA", desc: "Exploração de ineficiências temporárias de preço entre ativos correlacionados utilizando modelos de cointegração e pair trading.", f1: "Análise de Cointegração", f2: "Algoritmos de Seleção de Pares", f3: "Limiar Z-Score" }, meanRev: { title: "MEAN REVERSION", desc: "Identificação de desvios de preço em relação às médias históricas, com regras sistemáticas de entrada e saída.", f1: "Sinais de Bollinger Band", f2: "Detecção de Divergência RSI", f3: "Modelos Ornstein-Uhlenbeck" }, hft: { title: "HIGH-FREQUENCY TRADING", desc: "Estratégias de execução em ultra-baixa latência utilizando infraestrutura co-localizada para ordens em microssegundos.", f1: "Microestrutura de Mercado", f2: "Análise de Fluxo de Ordens", f3: "Arbitragem de Latência" } },
+  methodology: { badge: "METODOLOGIA", title: "MODELOS QUANTITATIVOS", statArb: { title: "ARBITRAGEM ESTATÍSTICA", desc: "Exploração de ineficiências temporárias de preço entre ativos correlacionados utilizando modelos de cointegração e pair trading.", f1: "Análise de Cointegração", f2: "Algoritmos de Seleção de Pares", f3: "Limiar Z-Score" }, meanRev: { title: "REVERSÃO À MÉDIA", desc: "Identificação de desvios de preço em relação às médias históricas, com regras sistemáticas de entrada e saída.", f1: "Sinais de Bandas de Bollinger", f2: "Detecção de Divergência RSI", f3: "Modelos Ornstein-Uhlenbeck" }, hft: { title: "TRADING DE ALTA FREQUÊNCIA", desc: "Estratégias de execução em ultra-baixa latência utilizando infraestrutura co-localizada para ordens em microssegundos.", f1: "Microestrutura de Mercado", f2: "Análise de Fluxo de Ordens", f3: "Arbitragem de Latência" } },
   transparency: { badge: "INFRAESTRUTURA", title: "TECNOLOGIA TRANSPARENTE", desc: "Nossa infraestrutura é construída sobre bases enterprise, garantindo confiabilidade, velocidade e segurança.", connectivity: { title: "CONECTIVIDADE", desc: "Acesso direto ao mercado via data centers Equinix (NY5, LD4, TY3) com conectividade sub-milissegundo às principais exchanges." }, cloud: { title: "EXECUÇÃO EM NUVEM", desc: "Engines de execução redundantes em AWS (us-east-1, eu-west-1) e Azure para resiliência de failover." }, security: { title: "SEGURANÇA", desc: "Criptografia ponta-a-ponta, conformidade SOC 2 Tipo II e autenticação multi-camada para todas as operações." } },
   process_home: { badge: "PROCESSO", title: "FLUXO", subtitle: "INSTITUCIONAL", step1: { title: "REGISTRO", desc: "Onboarding seguro e verificação de identidade." }, step2: { title: "ALOCAÇÃO", desc: "Seleção do nível de capital gerenciado." }, step3: { title: "INTEGRAÇÃO", desc: "Implementação da infraestrutura algorítmica." }, step4: { title: "MONITORAMENTO", desc: "Acompanhamento em tempo real via terminal." }, step5: { title: "LIQUIDEZ", desc: "Protocolos de saque de lucros simplificados." } },
   cta_home: { badge: "OPORTUNIDADE", title: "ESCALE SEU", subtitle: "CAPITAL", desc: "Junte-se ao grupo de elite de investidores que utilizam a infraestrutura proprietária da Braxel.", btn: "INICIAR ALOCAÇÃO", trust: "Segurança de Nível Institucional" },
@@ -89,7 +89,7 @@ const ptTranslation = {
   about: { badge: "SOBRE NÓS", title: "EXCELÊNCIA", subtitle: "INSTITUCIONAL", desc: "A Braxel Markets representa o ápice da gestão algorítmica de capital.", historyTitle: "NOSSA HISTÓRIA", historyDesc1: "Fundada por uma equipe de analistas quantitativos e engenheiros de software, a Braxel foi criada para unir o capital individual à tecnologia institucional.", historyDesc2: "Hoje, focamos em retornos ajustados ao risco e estabilidade de infraestrutura, fornecendo estratégias algorítmicas de ponta para o investidor moderno.", stats: { founded: "Fundada", users: "Usuários Ativos", uptime: "Uptime", support: "Suporte" }, values: { mission: "MISSÃO", missionDesc: "Fornecer infraestrutura algorítmica de elite para o capital global.", vision: "VISÃO", visionDesc: "Definir o futuro da gestão quantitativa automatizada.", values: "VALORES", valuesDesc: "Transparência, precisão e segurança inabalável." }, teamTitle: "EQUIPE DE LIDERANÇA", teamDesc: "Conheça os fundadores e gestores por trás da Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Fundador & CEO", bio: "Estrategista quantitativo e empreendedor liderando a visão da Braxel Markets para infraestrutura algorítmica de nível institucional.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Nome do Co-Fundador]", role: "Co-Fundador & CTO", bio: "Engenheiro de software especializado em sistemas de alta frequência e computação distribuída.", linkedin: "#", photo: "" }, { name: "[Nome do Gestor]", role: "Head de Gestão de Risco", bio: "Ex-analista de risco institucional com expertise em otimização de portfólio.", linkedin: "#", photo: "" }] },
   contact: { badge: "SUPORTE", title: "CANAIS", subtitle: "INSTITUCIONAIS", desc: "Nossa equipe de suporte dedicada está disponível 24/7 para consultas institucionais.", infoTitle: "CONTATO", formTitle: "CONSULTA DIRETA", placeholders: { name: "NOME COMPLETO", email: "ENDEREÇO DE E-MAIL", subject: "ASSUNTO", message: "MENSAGEM" }, sendBtn: "ENVIAR CONSULTA" },
   dashboard: { portfolio: "Portfólio", activeServices: "Serviços Ativos", newAllocation: "Nova Alocação", noServices: "Nenhum plano de investimento ativo encontrado.", balance: "Saldo Atual", withdraw: "Saque", liquidity: "Liquidez", requestWithdraw: "Solicitar Saque", selectAccount: "Selecionar Conta", amount: "Valor (USD)", iban: "IBAN / Dados Bancários", btnWithdraw: "ENVIAR SOLICITAÇÃO DE SAQUE", profile: "Gestão de Perfil", settings: "Configurações", firstName: "Nome", lastName: "Sobrenome", saveChanges: "SALVAR ALTERAÇÕES", verifiedAccount: "Conta Verificada", totalAUM: "Total de Ativos sob Gestão", activeAlgos: "Algoritmos Ativos", systemStatus: "Status do Sistema", operational: "Operacional", infraProtection: "Proteção de Infraestrutura", twoFactor: "Autenticação de Dois Fatores", notEnabled: "Não Ativado", enable2FA: "Ativar 2FA", kycStatus: "Verificação KYC", verified: "Verificado", viewDocs: "Ver Documentos", investor: "Investidor" },
-  checkout: { summary: "RESUMO", allocationTitle: "Alocação", allocationSubtitle: "Institucional", tierLabel: "Nível de Infraestrutura Algorítmica", billedMonthly: "Faturado Mensualmente", detailsTitle: "Detalhes da Alocação", managedCapital: "Capital Gerenciado", setupFee: "Taxa de Configuração", waived: "ISENTA", latency: "Latência de Execução", infrastructureTitle: "Infraestrutura Incluída", realTimeMonitoring: "Monitoramento em Tempo Real", activeUponDeployment: "Ativo após implementação", totalDue: "Total Devido", dedicatedNode: "Nó Dedicado", globalMarkets: "Mercados Globais", instantSetup: "Configuração Instantânea", authRequired: "AUTENTICAÇÃO NECESSÁRIA", authDesc: "Por favor, faça login ou crie uma conta para prosseguir com a alocação.", btnLogin: "LOGIN PARA PROSSEGUIR", btnRegister: "CRIAR CONTA", confirmDeployment: "Confirmar Implementação", deploymentDesc: "Ao confirmar, você autoriza a implementação da infraestrutura algorítmica associada ao plano {{plan}}.", proceedPayment: "PROSSEGUIR PARA PAGAMENTO SEGURO", secureGateway: "Gateway Seguro", back: "Voltar", riskDisclosure: "Divulgação de Risco: O trading algorítmico envolve risco substancial de perda. O desempenho passado não é indicativo de resultados futuros.", secureTransaction: "Transação Segura", paypalNote: "Suas informações de pagamento são processadas com segurança pelo PayPal. A Braxel Markets não armazena os dados do seu cartão.", encryptionNote: "Criptografado por Padrões Institucionais AES-256", verifying: "Verificando Transação Institucional...", loading: "Carregando Terminal...", globalInfra: "Infraestrutura Global de Pagamento", qrCode: "QR Code", allCards: "Todos os Cartões", localPay: "Pagamento Local" },
+  checkout: { summary: "RESUMO", allocationTitle: "Alocação", allocationSubtitle: "Institucional", tierLabel: "Nível de Infraestrutura Algorítmica", billedMonthly: "Faturado Mensalmente", detailsTitle: "Detalhes da Alocação", managedCapital: "Capital Gerenciado", setupFee: "Taxa de Configuração", waived: "ISENTA", latency: "Latência de Execução", infrastructureTitle: "Infraestrutura Incluída", realTimeMonitoring: "Monitoramento em Tempo Real", activeUponDeployment: "Ativo após implementação", totalDue: "Total Devido", dedicatedNode: "Nó Dedicado", globalMarkets: "Mercados Globais", instantSetup: "Configuração Instantânea", authRequired: "AUTENTICAÇÃO NECESSÁRIA", authDesc: "Por favor, faça login ou crie uma conta para prosseguir com a alocação.", btnLogin: "LOGIN PARA PROSSEGUIR", btnRegister: "CRIAR CONTA", confirmDeployment: "Confirmar Implementação", deploymentDesc: "Ao confirmar, você autoriza a implementação da infraestrutura algorítmica associada ao plano {{plan}}.", proceedPayment: "PROSSEGUIR PARA PAGAMENTO SEGURO", secureGateway: "Gateway Seguro", back: "Voltar", riskDisclosure: "Divulgação de Risco: O trading algorítmico envolve risco substancial de perda. O desempenho passado não é indicativo de resultados futuros.", secureTransaction: "Transação Segura", paypalNote: "Suas informações de pagamento são processadas com segurança pelo PayPal. A Braxel Markets não armazena os dados do seu cartão.", encryptionNote: "Criptografado por Padrões Institucionais AES-256", verifying: "Verificando Transação Institucional...", loading: "Carregando Terminal...", globalInfra: "Infraestrutura Global de Pagamento", qrCode: "QR Code", allCards: "Todos os Cartões", localPay: "Pagamento Local" },
   legal: { badgeLegal: "LEGAL", termsTitle: "TERMOS DE SERVIÇO" },
   faq: {
     title: "PERGUNTAS FREQUENTES",
@@ -130,18 +130,531 @@ const ptTranslation = {
   }
 };
 
+// Italian translations
+const itTranslation = {
+  nav: { pricing: "PIANI DI INVESTIMENTO", howItWorks: "INFRASTRUTTURA", about: "CHI SIAMO", contact: "SUPPORTO ISTITUZIONALE", login: "ACCESSO TERMINALE", openAccount: "CREA ACCOUNT", dashboard: "PANNELLO", logout: "ESCI" },
+  footer: { desc: "Infrastruttura di investimento di livello istituzionale. Tecnologia proprietaria per il mercato moderno.", platform: "Piattaforma", company: "Azienda", support: "Supporto Digitale", rights: "Tutti i diritti riservati.", privacy: "Privacy", terms: "Termini", disclaimer: "Avviso Finanziario", address: "Indirizzo Commerciale", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, Brasile", riskTitle: "AVVISO DI RISCHIO", riskText: "Il trading nei mercati finanziari comporta un rischio sostanziale di perdita e non è adatto a tutti gli investitori. Le performance passate non sono indicative dei risultati futuri. Il valore degli investimenti può diminuire o aumentare. Non investire denaro che non puoi permetterti di perdere. Braxel Markets non garantisce rendimenti specifici." },
+  auth: { loginTitle: "Accesso", loginSubtitle: "Inserisci le tue credenziali di accesso.", registerTitle: "Crea Account", registerSubtitle: "Inizia il tuo percorso nel mercato istituzionale.", email: "Indirizzo E-mail", password: "Password", fullName: "Nome Completo", forgotPassword: "Password dimenticata?", noAccount: "Non hai un account?", hasAccount: "Hai già accesso?", btnAccess: "ACCEDI ALL'ACCOUNT", btnCreate: "CREA IL MIO ACCOUNT", termsAgree: "Accetto i Termini e la Privacy.", futureTitle: "Il Futuro degli", futureSubtitle: "Investimenti", features: ["Algoritmi di livello istituzionale", "Protezione avanzata del capitale", "Esecuzione in millisecondi", "Trasparenza totale"] },
+  hero: { title1: "GESTIONE ALGORITMICA", title2: "DEL CAPITALE D'ÉLITE.", desc: "Implementa strategie quantitative di livello istituzionale progettate per il mercato moderno. Sperimenta precisione di esecuzione in millisecondi e protocolli avanzati di mitigazione del rischio.", getStarted: "ESPLORA I PIANI DI INVESTIMENTO", viewStrategies: "METODOLOGIA TECNICA" },
+  stats: { volume: "Gestione Strategica del Capitale", traders: "Conti Attivi", uptime: "Uptime Infrastruttura", latency: "Precisione di Esecuzione" },
+  methodology: { badge: "METODOLOGIA", title: "MODELLI QUANTITATIVI", statArb: { title: "ARBITRAGGIO STATISTICO", desc: "Sfruttamento delle inefficienze temporanee di prezzo tra asset correlati utilizzando modelli di cointegrazione e pair trading.", f1: "Analisi di Cointegrazione", f2: "Algoritmi di Selezione dei Pair", f3: "Soglia Z-Score" }, meanRev: { title: "MEAN REVERSION", desc: "Identificazione delle deviazioni di prezzo rispetto alle medie storiche, con regole sistematiche di ingresso e uscita.", f1: "Segnali Bande di Bollinger", f2: "Rilevamento Divergenza RSI", f3: "Modelli Ornstein-Uhlenbeck" }, hft: { title: "TRADING AD ALTA FREQUENZA", desc: "Strategie di esecuzione a latenza ultra-bassa con infrastruttura co-localizzata per ordini a livello di microsecondi.", f1: "Microstruttura di Mercato", f2: "Analisi del Flusso Ordini", f3: "Arbitraggio di Latenza" } },
+  transparency: { badge: "INFRASTRUTTURA", title: "TECNOLOGIA TRASPARENTE", desc: "La nostra infrastruttura è costruita su basi enterprise, garantendo affidabilità, velocità e sicurezza.", connectivity: { title: "CONNETTIVITÀ", desc: "Accesso diretto al mercato tramite data center Equinix (NY5, LD4, TY3) con connettività sub-millisecondo alle principali borse." }, cloud: { title: "ESECUZIONE CLOUD", desc: "Motori di esecuzione ridondanti su AWS (us-east-1, eu-west-1) e Azure per resilienza di failover." }, security: { title: "SICUREZZA", desc: "Crittografia end-to-end, conformità SOC 2 Tipo II e autenticazione multi-livello per tutte le operazioni." } },
+  process_home: { badge: "PROCESSO", title: "FLUSSO", subtitle: "ISTITUZIONALE", step1: { title: "REGISTRAZIONE", desc: "Onboarding sicuro e verifica dell'identità." }, step2: { title: "ALLOCAZIONE", desc: "Selezione del livello di capitale gestito." }, step3: { title: "INTEGRAZIONE", desc: "Implementazione dell'infrastruttura algoritmica." }, step4: { title: "MONITORAGGIO", desc: "Tracciamento delle performance in tempo reale." }, step5: { title: "LIQUIDITÀ", desc: "Protocolli di prelievo dei profitti semplificati." } },
+  cta_home: { badge: "OPPORTUNITÀ", title: "SCALA IL TUO", subtitle: "CAPITALE", desc: "Unisciti al gruppo d'élite di investitori che utilizzano l'infrastruttura proprietaria di Braxel.", btn: "INIZIA L'ALLOCAZIONE", trust: "Sicurezza di Livello Istituzionale" },
+  pricing: { badge: "TRASPARENZA", title: "ALLOCAZIONI DI", subtitle: "CAPITALE", desc: "Infrastruttura di livello istituzionale con una struttura tariffaria trasparente.", select: "GARANTISCI QUESTO PIANO", allocation: "CAPITALE GESTITO", month: "tariffa mensile" },
+  howItWorks: { badge: "INFRASTRUTTURA", title: "ARCHITETTURA", subtitle: "TECNICA", desc: "Il nostro ecosistema proprietario è costruito per velocità, sicurezza e performance costanti.", steps: [{ title: "REGISTRAZIONE", desc: "Crea il tuo profilo istituzionale." }, { title: "PANNELLO", desc: "Accedi al tuo terminale privato di gestione." }, { title: "SELEZIONE PIANO", desc: "Scegli il tuo livello di allocazione del capitale." }, { title: "IMPLEMENTAZIONE API", desc: "Connessione automatizzata ai mercati globali." }, { title: "ESECUZIONE", desc: "Elaborazione ordini in millisecondi." }, { title: "REPORTISTICA", desc: "Analisi dettagliata delle performance settimanali." }], cta: "PRONTO PER INIZIARE?", ctaBtn: "UNISCITI ALLA RETE" },
+  about: { badge: "CHI SIAMO", title: "ECCELLENZA", subtitle: "ISTITUZIONALE", desc: "Braxel Markets rappresenta l'apice della gestione algoritmica del capitale.", historyTitle: "LA NOSTRA STORIA", historyDesc1: "Fondata da un team di analisti quantitativi e ingegneri del software, Braxel è stata creata per colmare il divario tra capitale retail e tecnologia istituzionale.", historyDesc2: "Oggi ci concentriamo su rendimenti aggiustati per il rischio e stabilità infrastrutturale, fornendo strategie algoritmiche all'avanguardia per l'investitore moderno.", stats: { founded: "Fondata", users: "Utenti Attivi", uptime: "Uptime", support: "Supporto" }, values: { mission: "MISSIONE", missionDesc: "Fornire infrastruttura algoritmica d'élite per il capitale globale.", vision: "VISIONE", visionDesc: "Definire il futuro della gestione quantitativa automatizzata.", values: "VALORI", valuesDesc: "Trasparenza, precisione e sicurezza incrollabile." }, teamTitle: "TEAM DI LEADERSHIP", teamDesc: "Incontra i fondatori e i gestori dietro Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Fondatore & CEO", bio: "Stratega quantitativo e imprenditore che guida la visione di Braxel Markets per l'infrastruttura algoritmica istituzionale.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Nome Co-Fondatore]", role: "Co-Fondatore & CTO", bio: "Ingegnere del software specializzato in sistemi ad alta frequenza e calcolo distribuito.", linkedin: "#", photo: "" }, { name: "[Nome Gestore]", role: "Head of Risk Management", bio: "Ex analista di rischio istituzionale con expertise in ottimizzazione del portafoglio.", linkedin: "#", photo: "" }] },
+  contact: { badge: "SUPPORTO", title: "CANALI", subtitle: "ISTITUZIONALI", desc: "Il nostro team di supporto dedicato è disponibile 24/7 per richieste istituzionali.", infoTitle: "CONTATTI", formTitle: "RICHIESTA DIRETTA", placeholders: { name: "NOME COMPLETO", email: "INDIRIZZO E-MAIL", subject: "OGGETTO", message: "MESSAGGIO" }, sendBtn: "INVIA RICHIESTA" },
+  dashboard: { portfolio: "Portafoglio", activeServices: "Servizi Attivi", newAllocation: "Nuova Allocazione", noServices: "Nessun piano di investimento attivo trovato.", balance: "Saldo Attuale", withdraw: "Prelievo", liquidity: "Liquidità", requestWithdraw: "Richiedi Prelievo", selectAccount: "Seleziona Conto", amount: "Importo (USD)", iban: "IBAN / Dati Bancari", btnWithdraw: "INVIA RICHIESTA DI PRELIEVO", profile: "Gestione Profilo", settings: "Impostazioni", firstName: "Nome", lastName: "Cognome", saveChanges: "SALVA MODIFICHE", verifiedAccount: "Account Verificato", totalAUM: "Totale Asset in Gestione", activeAlgos: "Algoritmi Attivi", systemStatus: "Stato del Sistema", operational: "Operativo", infraProtection: "Protezione Infrastruttura", twoFactor: "Autenticazione a Due Fattori", notEnabled: "Non Attivata", enable2FA: "Attiva 2FA", kycStatus: "Verifica KYC", verified: "Verificato", viewDocs: "Vedi Documenti", investor: "Investitore" },
+  checkout: { summary: "RIEPILOGO", allocationTitle: "Allocazione", allocationSubtitle: "Istituzionale", tierLabel: "Livello Infrastruttura Algoritmica", billedMonthly: "Fatturato Mensilmente", detailsTitle: "Dettagli Allocazione", managedCapital: "Capitale Gestito", setupFee: "Costo di Configurazione", waived: "ESENTE", latency: "Latenza di Esecuzione", infrastructureTitle: "Infrastruttura Inclusa", realTimeMonitoring: "Monitoraggio in Tempo Reale", activeUponDeployment: "Attivo dopo l'implementazione", totalDue: "Totale Dovuto", dedicatedNode: "Nodo Dedicato", globalMarkets: "Mercati Globali", instantSetup: "Configurazione Istantanea", authRequired: "AUTENTICAZIONE RICHIESTA", authDesc: "Effettua il login o crea un account per procedere con l'allocazione.", btnLogin: "ACCEDI PER PROCEDERE", btnRegister: "CREA ACCOUNT", confirmDeployment: "Conferma Implementazione", deploymentDesc: "Confermando, autorizzi l'implementazione dell'infrastruttura algoritmica associata al piano {{plan}}.", proceedPayment: "PROCEDI AL PAGAMENTO SICURO", secureGateway: "Gateway Sicuro", back: "Indietro", riskDisclosure: "Divulgazione del Rischio: Il trading algoritmico comporta un rischio sostanziale di perdita. Le performance passate non sono indicative dei risultati futuri.", secureTransaction: "Transazione Sicura", paypalNote: "Le informazioni di pagamento sono elaborate in sicurezza da PayPal. Braxel Markets non archivia i dati della carta.", encryptionNote: "Crittografato con Standard Istituzionali AES-256", verifying: "Verifica della Transazione Istituzionale...", loading: "Caricamento Terminale...", globalInfra: "Infrastruttura di Pagamento Globale", qrCode: "Codice QR", allCards: "Tutte le Carte", localPay: "Pagamento Locale" },
+  legal: { badgeLegal: "LEGALE", termsTitle: "TERMINI DI SERVIZIO" },
+  faq: {
+    title: "DOMANDE FREQUENTI",
+    badge: "FAQ",
+    q1: "È necessaria esperienza pregressa?",
+    a1: "No. La nostra infrastruttura è completamente automatizzata. Devi solo selezionare il livello di allocazione e monitorare le performance tramite il terminale.",
+    q2: "Quali sono i rischi coinvolti?",
+    a2: "Come in qualsiasi mercato finanziario, esistono rischi di perdita di capitale dovuti alla volatilità. Utilizziamo protocolli avanzati di mitigazione per proteggere il capitale.",
+    q3: "Come funziona il sistema?",
+    a3: "I nostri algoritmi proprietari eseguono strategie quantitative ad alta frequenza sui mercati globali con precisione di millisecondi.",
+    q4: "Posso cancellare il mio piano?",
+    a4: "Sì. Puoi richiedere la cancellazione e il prelievo del capitale in qualsiasi momento tramite i protocolli del pannello."
+  },
+  diffs: {
+    title: "PERCHÉ BRAXEL MARKETS?",
+    badge: "DIFFERENZIALI",
+    t1: "Tecnologia Proprietaria",
+    d1: "Reti neurali progettate per esecuzione di livello istituzionale.",
+    t2: "Automazione Totale",
+    d2: "Gestione algoritmica 24/7 senza bias emotivo umano.",
+    t3: "Accesso Semplificato",
+    d3: "Infrastruttura istituzionale accessibile tramite terminale intuitivo.",
+    t4: "Livello Professionale",
+    d4: "Connessione diretta a pool di liquidità globali con latenza ultra-bassa."
+  },
+  signals: {
+    title: "ESECUZIONE",
+    subtitle: "ALGORITMICA",
+    badge: "TERMINALE IN TEMPO REALE",
+    desc: "Monitora la nostra infrastruttura proprietaria in tempo reale. Ogni segnale è elaborato dalle nostre reti neurali con precisione di millisecondi.",
+    asset: "ASSET",
+    type: "TIPO",
+    entry: "INGRESSO",
+    profit: "PROFITTO",
+    status: "STATO",
+    active: "ATTIVO",
+    completed: "COMPLETATO"
+  }
+};
+
+// Spanish translations
+const esTranslation = {
+  nav: { pricing: "PLANES DE INVERSIÓN", howItWorks: "INFRAESTRUCTURA", about: "SOBRE NOSOTROS", contact: "SOPORTE INSTITUCIONAL", login: "ACCESO AL TERMINAL", openAccount: "CREAR CUENTA", dashboard: "PANEL", logout: "CERRAR SESIÓN" },
+  footer: { desc: "Infraestructura de inversión de nivel institucional. Tecnología propietaria para el mercado moderno.", platform: "Plataforma", company: "Empresa", support: "Soporte Digital", rights: "Todos los derechos reservados.", privacy: "Privacidad", terms: "Términos", disclaimer: "Aviso Financiero", address: "Dirección Comercial", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, Brasil", riskTitle: "AVISO DE RIESGO", riskText: "El trading en mercados financieros implica un riesgo sustancial de pérdida y no es apto para todos los inversores. El rendimiento pasado no es indicativo de resultados futuros. El valor de las inversiones puede disminuir o aumentar. No invierta dinero que no pueda permitirse perder. Braxel Markets no garantiza rendimientos específicos." },
+  auth: { loginTitle: "Iniciar Sesión", loginSubtitle: "Ingrese sus credenciales de acceso.", registerTitle: "Crear Cuenta", registerSubtitle: "Comience su camino en el mercado institucional.", email: "Correo Electrónico", password: "Contraseña", fullName: "Nombre Completo", forgotPassword: "¿Olvidó su contraseña?", noAccount: "¿No tiene una cuenta?", hasAccount: "¿Ya tiene acceso?", btnAccess: "ACCEDER A LA CUENTA", btnCreate: "CREAR MI CUENTA", termsAgree: "Acepto los Términos y la Privacidad.", futureTitle: "El Futuro de la", futureSubtitle: "Inversión", features: ["Algoritmos de nivel institucional", "Protección avanzada del capital", "Ejecución en milisegundos", "Transparencia total"] },
+  hero: { title1: "GESTIÓN ALGORÍTMICA", title2: "DE CAPITAL DE ÉLITE.", desc: "Implemente estrategias cuantitativas de nivel institucional diseñadas para el mercado moderno. Experimente precisión de ejecución en milisegundos y protocolos avanzados de mitigación de riesgo.", getStarted: "EXPLORAR PLANES DE INVERSIÓN", viewStrategies: "METODOLOGÍA TÉCNICA" },
+  stats: { volume: "Gestión Estratégica de Capital", traders: "Cuentas Activas", uptime: "Uptime de Infraestructura", latency: "Precisión de Ejecución" },
+  methodology: { badge: "METODOLOGÍA", title: "MODELOS CUANTITATIVOS", statArb: { title: "ARBITRAJE ESTADÍSTICO", desc: "Explotación de ineficiencias temporales de precio entre activos correlacionados utilizando modelos de cointegración y pair trading.", f1: "Análisis de Cointegración", f2: "Algoritmos de Selección de Pares", f3: "Umbral Z-Score" }, meanRev: { title: "REVERSIÓN A LA MEDIA", desc: "Identificación de desviaciones de precio respecto a promedios históricos, con reglas sistemáticas de entrada y salida.", f1: "Señales de Bandas de Bollinger", f2: "Detección de Divergencia RSI", f3: "Modelos Ornstein-Uhlenbeck" }, hft: { title: "TRADING DE ALTA FRECUENCIA", desc: "Estrategias de ejecución de latencia ultra-baja con infraestructura co-localizada para órdenes a nivel de microsegundos.", f1: "Microestructura de Mercado", f2: "Análisis de Flujo de Órdenes", f3: "Arbitraje de Latencia" } },
+  transparency: { badge: "INFRAESTRUCTURA", title: "TECNOLOGÍA TRANSPARENTE", desc: "Nuestra infraestructura está construida sobre bases enterprise, garantizando confiabilidad, velocidad y seguridad.", connectivity: { title: "CONECTIVIDAD", desc: "Acceso directo al mercado vía centros de datos Equinix (NY5, LD4, TY3) con conectividad sub-milisegundo a las principales bolsas." }, cloud: { title: "EJECUCIÓN EN LA NUBE", desc: "Motores de ejecución redundantes en AWS (us-east-1, eu-west-1) y Azure para resiliencia de failover." }, security: { title: "SEGURIDAD", desc: "Cifrado de extremo a extremo, conformidad SOC 2 Tipo II y autenticación multicapa para todas las operaciones." } },
+  process_home: { badge: "PROCESO", title: "FLUJO", subtitle: "INSTITUCIONAL", step1: { title: "REGISTRO", desc: "Onboarding seguro y verificación de identidad." }, step2: { title: "ASIGNACIÓN", desc: "Selección del nivel de capital gestionado." }, step3: { title: "INTEGRACIÓN", desc: "Implementación de la infraestructura algorítmica." }, step4: { title: "MONITOREO", desc: "Seguimiento del rendimiento en tiempo real." }, step5: { title: "LIQUIDEZ", desc: "Protocolos simplificados de retiro de ganancias." } },
+  cta_home: { badge: "OPORTUNIDAD", title: "ESCALA TU", subtitle: "CAPITAL", desc: "Únete al grupo de élite de inversores que utilizan la infraestructura propietaria de Braxel.", btn: "INICIAR ASIGNACIÓN", trust: "Seguridad de Nivel Institucional" },
+  pricing: { badge: "TRANSPARENCIA", title: "ASIGNACIONES DE", subtitle: "CAPITAL", desc: "Infraestructura de nivel institucional con una estructura de tarifas transparente.", select: "ASEGURAR ESTE PLAN", allocation: "CAPITAL GESTIONADO", month: "tarifa mensual" },
+  howItWorks: { badge: "INFRAESTRUCTURA", title: "ARQUITECTURA", subtitle: "TÉCNICA", desc: "Nuestro ecosistema propietario está construido para velocidad, seguridad y rendimiento constante.", steps: [{ title: "REGISTRO", desc: "Cree su perfil institucional." }, { title: "PANEL", desc: "Acceda a su terminal privado de gestión." }, { title: "SELECCIÓN DE PLAN", desc: "Elija su nivel de asignación de capital." }, { title: "IMPLEMENTACIÓN API", desc: "Conexión automatizada a mercados globales." }, { title: "EJECUCIÓN", desc: "Procesamiento de órdenes en milisegundos." }, { title: "REPORTES", desc: "Análisis detallado de rendimiento semanal." }], cta: "¿LISTO PARA COMENZAR?", ctaBtn: "UNIRSE A LA RED" },
+  about: { badge: "SOBRE NOSOTROS", title: "EXCELENCIA", subtitle: "INSTITUCIONAL", desc: "Braxel Markets representa la cúspide de la gestión algorítmica de capital.", historyTitle: "NUESTRA HISTORIA", historyDesc1: "Fundada por un equipo de analistas cuantitativos e ingenieros de software, Braxel fue creada para cerrar la brecha entre el capital retail y la tecnología institucional.", historyDesc2: "Hoy nos enfocamos en rendimientos ajustados al riesgo y estabilidad de infraestructura, proporcionando estrategias algorítmicas de vanguardia para el inversor moderno.", stats: { founded: "Fundada", users: "Usuarios Activos", uptime: "Uptime", support: "Soporte" }, values: { mission: "MISIÓN", missionDesc: "Proporcionar infraestructura algorítmica de élite para el capital global.", vision: "VISIÓN", visionDesc: "Definir el futuro de la gestión cuantitativa automatizada.", values: "VALORES", valuesDesc: "Transparencia, precisión y seguridad inquebrantable." }, teamTitle: "EQUIPO DE LIDERAZGO", teamDesc: "Conozca a los fundadores y gestores detrás de Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Fundador & CEO", bio: "Estratega cuantitativo y emprendedor liderando la visión de Braxel Markets para infraestructura algorítmica institucional.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Nombre del Co-Fundador]", role: "Co-Fundador & CTO", bio: "Ingeniero de software especializado en sistemas de alta frecuencia y computación distribuida.", linkedin: "#", photo: "" }, { name: "[Nombre del Gestor]", role: "Head de Gestión de Riesgo", bio: "Ex analista de riesgo institucional con expertise en optimización de portafolio.", linkedin: "#", photo: "" }] },
+  contact: { badge: "SOPORTE", title: "CANALES", subtitle: "INSTITUCIONALES", desc: "Nuestro equipo de soporte dedicado está disponible 24/7 para consultas institucionales.", infoTitle: "CONTACTO", formTitle: "CONSULTA DIRECTA", placeholders: { name: "NOMBRE COMPLETO", email: "CORREO ELECTRÓNICO", subject: "ASUNTO", message: "MENSAJE" }, sendBtn: "ENVIAR CONSULTA" },
+  dashboard: { portfolio: "Portafolio", activeServices: "Servicios Activos", newAllocation: "Nueva Asignación", noServices: "No se encontraron planes de inversión activos.", balance: "Saldo Actual", withdraw: "Retiro", liquidity: "Liquidez", requestWithdraw: "Solicitar Retiro", selectAccount: "Seleccionar Cuenta", amount: "Monto (USD)", iban: "IBAN / Datos Bancarios", btnWithdraw: "ENVIAR SOLICITUD DE RETIRO", profile: "Gestión de Perfil", settings: "Configuración", firstName: "Nombre", lastName: "Apellido", saveChanges: "GUARDAR CAMBIOS", verifiedAccount: "Cuenta Verificada", totalAUM: "Total de Activos en Gestión", activeAlgos: "Algoritmos Activos", systemStatus: "Estado del Sistema", operational: "Operativo", infraProtection: "Protección de Infraestructura", twoFactor: "Autenticación de Dos Factores", notEnabled: "No Activada", enable2FA: "Activar 2FA", kycStatus: "Verificación KYC", verified: "Verificado", viewDocs: "Ver Documentos", investor: "Inversor" },
+  checkout: { summary: "RESUMEN", allocationTitle: "Asignación", allocationSubtitle: "Institucional", tierLabel: "Nivel de Infraestructura Algorítmica", billedMonthly: "Facturado Mensualmente", detailsTitle: "Detalles de Asignación", managedCapital: "Capital Gestionado", setupFee: "Tarifa de Configuración", waived: "EXENTA", latency: "Latencia de Ejecución", infrastructureTitle: "Infraestructura Incluida", realTimeMonitoring: "Monitoreo en Tiempo Real", activeUponDeployment: "Activo tras la implementación", totalDue: "Total Adeudado", dedicatedNode: "Nodo Dedicado", globalMarkets: "Mercados Globales", instantSetup: "Configuración Instantánea", authRequired: "AUTENTICACIÓN REQUERIDA", authDesc: "Inicie sesión o cree una cuenta para proceder con la asignación.", btnLogin: "INICIAR SESIÓN PARA PROCEDER", btnRegister: "CREAR CUENTA", confirmDeployment: "Confirmar Implementación", deploymentDesc: "Al confirmar, autoriza la implementación de la infraestructura algorítmica asociada al plan {{plan}}.", proceedPayment: "PROCEDER AL PAGO SEGURO", secureGateway: "Gateway Seguro", back: "Volver", riskDisclosure: "Divulgación de Riesgo: El trading algorítmico implica riesgo sustancial de pérdida. El rendimiento pasado no es indicativo de resultados futuros.", secureTransaction: "Transacción Segura", paypalNote: "Su información de pago es procesada de forma segura por PayPal. Braxel Markets no almacena los datos de su tarjeta.", encryptionNote: "Cifrado con Estándares Institucionales AES-256", verifying: "Verificando Transacción Institucional...", loading: "Cargando Terminal...", globalInfra: "Infraestructura Global de Pagos", qrCode: "Código QR", allCards: "Todas las Tarjetas", localPay: "Pago Local" },
+  legal: { badgeLegal: "LEGAL", termsTitle: "TÉRMINOS DE SERVICIO" },
+  faq: {
+    title: "PREGUNTAS FRECUENTES",
+    badge: "FAQ",
+    q1: "¿Es necesaria experiencia previa?",
+    a1: "No. Nuestra infraestructura está completamente automatizada. Solo necesita seleccionar su nivel de asignación y monitorear el rendimiento a través de su terminal.",
+    q2: "¿Cuáles son los riesgos involucrados?",
+    a2: "Como en cualquier mercado financiero, existen riesgos de pérdida de capital debido a la volatilidad. Utilizamos protocolos avanzados de mitigación para proteger el capital.",
+    q3: "¿Cómo funciona el sistema?",
+    a3: "Nuestros algoritmos propietarios ejecutan estrategias cuantitativas de alta frecuencia en mercados globales con precisión de milisegundos.",
+    q4: "¿Puedo cancelar mi plan?",
+    a4: "Sí. Puede solicitar la cancelación y el retiro del capital en cualquier momento a través de los protocolos de su panel."
+  },
+  diffs: {
+    title: "¿POR QUÉ BRAXEL MARKETS?",
+    badge: "DIFERENCIALES",
+    t1: "Tecnología Propietaria",
+    d1: "Redes neuronales diseñadas para ejecución de nivel institucional.",
+    t2: "Automatización Total",
+    d2: "Gestión algorítmica 24/7 sin sesgo emocional humano.",
+    t3: "Acceso Simplificado",
+    d3: "Infraestructura institucional accesible a través de un terminal intuitivo.",
+    t4: "Nivel Profesional",
+    d4: "Conexión directa a pools de liquidez globales con latencia ultra-baja."
+  },
+  signals: {
+    title: "EJECUCIÓN",
+    subtitle: "ALGORÍTMICA",
+    badge: "TERMINAL EN TIEMPO REAL",
+    desc: "Monitoree nuestra infraestructura propietaria en tiempo real. Cada señal es procesada por nuestras redes neuronales con precisión de milisegundos.",
+    asset: "ACTIVO",
+    type: "TIPO",
+    entry: "ENTRADA",
+    profit: "GANANCIA",
+    status: "ESTADO",
+    active: "ACTIVO",
+    completed: "COMPLETADO"
+  }
+};
+
+// French translations
+const frTranslation = {
+  nav: { pricing: "PLANS D'INVESTISSEMENT", howItWorks: "INFRASTRUCTURE", about: "À PROPOS", contact: "SUPPORT INSTITUTIONNEL", login: "ACCÈS TERMINAL", openAccount: "CRÉER UN COMPTE", dashboard: "TABLEAU DE BORD", logout: "DÉCONNEXION" },
+  footer: { desc: "Infrastructure d'investissement de niveau institutionnel. Technologie propriétaire pour le marché moderne.", platform: "Plateforme", company: "Entreprise", support: "Support Digital", rights: "Tous droits réservés.", privacy: "Confidentialité", terms: "Conditions", disclaimer: "Avertissement Financier", address: "Adresse Commerciale", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, Brésil", riskTitle: "AVERTISSEMENT SUR LES RISQUES", riskText: "Le trading sur les marchés financiers comporte un risque substantiel de perte et ne convient pas à tous les investisseurs. Les performances passées ne préjugent pas des résultats futurs. La valeur des investissements peut baisser ou augmenter. N'investissez pas d'argent que vous ne pouvez pas vous permettre de perdre. Braxel Markets ne garantit aucun rendement spécifique." },
+  auth: { loginTitle: "Connexion", loginSubtitle: "Entrez vos identifiants d'accès.", registerTitle: "Créer un Compte", registerSubtitle: "Commencez votre parcours sur le marché institutionnel.", email: "Adresse E-mail", password: "Mot de Passe", fullName: "Nom Complet", forgotPassword: "Mot de passe oublié ?", noAccount: "Vous n'avez pas de compte ?", hasAccount: "Vous avez déjà accès ?", btnAccess: "ACCÉDER AU COMPTE", btnCreate: "CRÉER MON COMPTE", termsAgree: "J'accepte les Conditions et la Confidentialité.", futureTitle: "L'Avenir de", futureSubtitle: "l'Investissement", features: ["Algorithmes de niveau institutionnel", "Protection avancée du capital", "Exécution en millisecondes", "Transparence totale"] },
+  hero: { title1: "GESTION ALGORITHMIQUE", title2: "DU CAPITAL D'ÉLITE.", desc: "Déployez des stratégies quantitatives de niveau institutionnel conçues pour le marché moderne. Profitez d'une précision d'exécution en millisecondes et de protocoles avancés de mitigation des risques.", getStarted: "EXPLORER LES PLANS D'INVESTISSEMENT", viewStrategies: "MÉTHODOLOGIE TECHNIQUE" },
+  stats: { volume: "Gestion Stratégique du Capital", traders: "Comptes Actifs", uptime: "Uptime Infrastructure", latency: "Précision d'Exécution" },
+  methodology: { badge: "MÉTHODOLOGIE", title: "MODÈLES QUANTITATIFS", statArb: { title: "ARBITRAGE STATISTIQUE", desc: "Exploitation des inefficiences temporaires de prix entre actifs corrélés à l'aide de modèles de cointégration et de pair trading.", f1: "Analyse de Cointégration", f2: "Algorithmes de Sélection de Paires", f3: "Seuil Z-Score" }, meanRev: { title: "RETOUR À LA MOYENNE", desc: "Identification des écarts de prix par rapport aux moyennes historiques, avec des règles systématiques d'entrée et de sortie.", f1: "Signaux Bandes de Bollinger", f2: "Détection de Divergence RSI", f3: "Modèles Ornstein-Uhlenbeck" }, hft: { title: "TRADING HAUTE FRÉQUENCE", desc: "Stratégies d'exécution à latence ultra-faible avec infrastructure co-localisée pour des ordres au niveau de la microseconde.", f1: "Microstructure de Marché", f2: "Analyse du Flux d'Ordres", f3: "Arbitrage de Latence" } },
+  transparency: { badge: "INFRASTRUCTURE", title: "TECHNOLOGIE TRANSPARENTE", desc: "Notre infrastructure est construite sur des bases enterprise, garantissant fiabilité, vitesse et sécurité.", connectivity: { title: "CONNECTIVITÉ", desc: "Accès direct au marché via les centres de données Equinix (NY5, LD4, TY3) avec connectivité sub-milliseconde aux principales bourses." }, cloud: { title: "EXÉCUTION CLOUD", desc: "Moteurs d'exécution redondants sur AWS (us-east-1, eu-west-1) et Azure pour la résilience de basculement." }, security: { title: "SÉCURITÉ", desc: "Chiffrement de bout en bout, conformité SOC 2 Type II et authentification multicouche pour toutes les opérations." } },
+  process_home: { badge: "PROCESSUS", title: "FLUX", subtitle: "INSTITUTIONNEL", step1: { title: "INSCRIPTION", desc: "Intégration sécurisée et vérification d'identité." }, step2: { title: "ALLOCATION", desc: "Sélection du niveau de capital géré." }, step3: { title: "INTÉGRATION", desc: "Déploiement de l'infrastructure algorithmique." }, step4: { title: "SURVEILLANCE", desc: "Suivi des performances en temps réel." }, step5: { title: "LIQUIDITÉ", desc: "Protocoles simplifiés de retrait des bénéfices." } },
+  cta_home: { badge: "OPPORTUNITÉ", title: "DÉVELOPPEZ VOTRE", subtitle: "CAPITAL", desc: "Rejoignez le groupe d'élite d'investisseurs utilisant l'infrastructure propriétaire de Braxel.", btn: "DÉMARRER L'ALLOCATION", trust: "Sécurité de Niveau Institutionnel" },
+  pricing: { badge: "TRANSPARENCE", title: "ALLOCATIONS DE", subtitle: "CAPITAL", desc: "Infrastructure de niveau institutionnel avec une structure tarifaire transparente.", select: "SÉCURISER CE PLAN", allocation: "CAPITAL GÉRÉ", month: "frais mensuels" },
+  howItWorks: { badge: "INFRASTRUCTURE", title: "ARCHITECTURE", subtitle: "TECHNIQUE", desc: "Notre écosystème propriétaire est conçu pour la vitesse, la sécurité et des performances constantes.", steps: [{ title: "INSCRIPTION", desc: "Créez votre profil institutionnel." }, { title: "TABLEAU DE BORD", desc: "Accédez à votre terminal privé de gestion." }, { title: "SÉLECTION DU PLAN", desc: "Choisissez votre niveau d'allocation de capital." }, { title: "DÉPLOIEMENT API", desc: "Connexion automatisée aux marchés mondiaux." }, { title: "EXÉCUTION", desc: "Traitement des ordres en millisecondes." }, { title: "REPORTING", desc: "Analyse détaillée des performances hebdomadaires." }], cta: "PRÊT À COMMENCER ?", ctaBtn: "REJOINDRE LE RÉSEAU" },
+  about: { badge: "À PROPOS", title: "EXCELLENCE", subtitle: "INSTITUTIONNELLE", desc: "Braxel Markets représente le sommet de la gestion algorithmique du capital.", historyTitle: "NOTRE HISTOIRE", historyDesc1: "Fondée par une équipe d'analystes quantitatifs et d'ingénieurs logiciels, Braxel a été créée pour combler le fossé entre le capital retail et la technologie institutionnelle.", historyDesc2: "Aujourd'hui, nous nous concentrons sur les rendements ajustés au risque et la stabilité de l'infrastructure, offrant des stratégies algorithmiques de pointe pour l'investisseur moderne.", stats: { founded: "Fondée", users: "Utilisateurs Actifs", uptime: "Uptime", support: "Support" }, values: { mission: "MISSION", missionDesc: "Fournir une infrastructure algorithmique d'élite pour le capital mondial.", vision: "VISION", visionDesc: "Définir l'avenir de la gestion quantitative automatisée.", values: "VALEURS", valuesDesc: "Transparence, précision et sécurité inébranlable." }, teamTitle: "ÉQUIPE DE DIRECTION", teamDesc: "Découvrez les fondateurs et gestionnaires derrière Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Fondateur & CEO", bio: "Stratège quantitatif et entrepreneur dirigeant la vision de Braxel Markets pour l'infrastructure algorithmique institutionnelle.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Nom du Co-Fondateur]", role: "Co-Fondateur & CTO", bio: "Ingénieur logiciel spécialisé dans les systèmes haute fréquence et le calcul distribué.", linkedin: "#", photo: "" }, { name: "[Nom du Gestionnaire]", role: "Directeur de la Gestion des Risques", bio: "Ancien analyste de risque institutionnel avec une expertise en optimisation de portefeuille.", linkedin: "#", photo: "" }] },
+  contact: { badge: "SUPPORT", title: "CANAUX", subtitle: "INSTITUTIONNELS", desc: "Notre équipe de support dédiée est disponible 24/7 pour les demandes institutionnelles.", infoTitle: "CONTACT", formTitle: "DEMANDE DIRECTE", placeholders: { name: "NOM COMPLET", email: "ADRESSE E-MAIL", subject: "OBJET", message: "MESSAGE" }, sendBtn: "ENVOYER LA DEMANDE" },
+  dashboard: { portfolio: "Portefeuille", activeServices: "Services Actifs", newAllocation: "Nouvelle Allocation", noServices: "Aucun plan d'investissement actif trouvé.", balance: "Solde Actuel", withdraw: "Retrait", liquidity: "Liquidité", requestWithdraw: "Demander un Retrait", selectAccount: "Sélectionner le Compte", amount: "Montant (USD)", iban: "IBAN / Coordonnées Bancaires", btnWithdraw: "SOUMETTRE LA DEMANDE DE RETRAIT", profile: "Gestion du Profil", settings: "Paramètres", firstName: "Prénom", lastName: "Nom", saveChanges: "ENREGISTRER LES MODIFICATIONS", verifiedAccount: "Compte Vérifié", totalAUM: "Total des Actifs sous Gestion", activeAlgos: "Algorithmes Actifs", systemStatus: "État du Système", operational: "Opérationnel", infraProtection: "Protection d'Infrastructure", twoFactor: "Authentification à Deux Facteurs", notEnabled: "Non Activée", enable2FA: "Activer 2FA", kycStatus: "Vérification KYC", verified: "Vérifié", viewDocs: "Voir les Documents", investor: "Investisseur" },
+  checkout: { summary: "RÉCAPITULATIF", allocationTitle: "Allocation", allocationSubtitle: "Institutionnelle", tierLabel: "Niveau d'Infrastructure Algorithmique", billedMonthly: "Facturé Mensuellement", detailsTitle: "Détails de l'Allocation", managedCapital: "Capital Géré", setupFee: "Frais de Configuration", waived: "EXONÉRÉS", latency: "Latence d'Exécution", infrastructureTitle: "Infrastructure Incluse", realTimeMonitoring: "Surveillance en Temps Réel", activeUponDeployment: "Actif après déploiement", totalDue: "Total Dû", dedicatedNode: "Nœud Dédié", globalMarkets: "Marchés Mondiaux", instantSetup: "Configuration Instantanée", authRequired: "AUTHENTIFICATION REQUISE", authDesc: "Veuillez vous connecter ou créer un compte pour procéder à l'allocation.", btnLogin: "SE CONNECTER POUR PROCÉDER", btnRegister: "CRÉER UN COMPTE", confirmDeployment: "Confirmer le Déploiement", deploymentDesc: "En confirmant, vous autorisez le déploiement de l'infrastructure algorithmique associée au plan {{plan}}.", proceedPayment: "PROCÉDER AU PAIEMENT SÉCURISÉ", secureGateway: "Passerelle Sécurisée", back: "Retour", riskDisclosure: "Divulgation des Risques : Le trading algorithmique comporte un risque substantiel de perte. Les performances passées ne préjugent pas des résultats futurs.", secureTransaction: "Transaction Sécurisée", paypalNote: "Vos informations de paiement sont traitées en toute sécurité par PayPal. Braxel Markets ne stocke pas les données de votre carte.", encryptionNote: "Chiffré par Standards Institutionnels AES-256", verifying: "Vérification de la Transaction Institutionnelle...", loading: "Chargement du Terminal...", globalInfra: "Infrastructure de Paiement Mondiale", qrCode: "Code QR", allCards: "Toutes les Cartes", localPay: "Paiement Local" },
+  legal: { badgeLegal: "JURIDIQUE", termsTitle: "CONDITIONS D'UTILISATION" },
+  faq: {
+    title: "QUESTIONS FRÉQUENTES",
+    badge: "FAQ",
+    q1: "Une expérience préalable est-elle nécessaire ?",
+    a1: "Non. Notre infrastructure est entièrement automatisée. Il vous suffit de sélectionner votre niveau d'allocation et de suivre les performances via votre terminal.",
+    q2: "Quels sont les risques impliqués ?",
+    a2: "Comme sur tout marché financier, il existe des risques de perte en capital dus à la volatilité. Nous utilisons des protocoles avancés de mitigation pour protéger le capital.",
+    q3: "Comment fonctionne le système ?",
+    a3: "Nos algorithmes propriétaires exécutent des stratégies quantitatives à haute fréquence sur les marchés mondiaux avec une précision de l'ordre de la milliseconde.",
+    q4: "Puis-je annuler mon plan ?",
+    a4: "Oui. Vous pouvez demander l'annulation et le retrait du capital à tout moment via les protocoles de votre tableau de bord."
+  },
+  diffs: {
+    title: "POURQUOI BRAXEL MARKETS ?",
+    badge: "DIFFÉRENTIELS",
+    t1: "Technologie Propriétaire",
+    d1: "Réseaux neuronaux conçus pour une exécution de niveau institutionnel.",
+    t2: "Automatisation Totale",
+    d2: "Gestion algorithmique 24/7 sans biais émotionnel humain.",
+    t3: "Accès Simplifié",
+    d3: "Infrastructure institutionnelle accessible via un terminal intuitif.",
+    t4: "Niveau Professionnel",
+    d4: "Connexion directe aux pools de liquidité mondiaux avec latence ultra-faible."
+  },
+  signals: {
+    title: "EXÉCUTION",
+    subtitle: "ALGORITHMIQUE",
+    badge: "TERMINAL EN TEMPS RÉEL",
+    desc: "Surveillez notre infrastructure propriétaire en temps réel. Chaque signal est traité par nos réseaux neuronaux avec une précision de l'ordre de la milliseconde.",
+    asset: "ACTIF",
+    type: "TYPE",
+    entry: "ENTRÉE",
+    profit: "PROFIT",
+    status: "STATUT",
+    active: "ACTIF",
+    completed: "TERMINÉ"
+  }
+};
+
+// German translations
+const deTranslation = {
+  nav: { pricing: "INVESTMENTPLÄNE", howItWorks: "INFRASTRUKTUR", about: "ÜBER UNS", contact: "INSTITUTIONELLER SUPPORT", login: "TERMINAL-ZUGANG", openAccount: "KONTO ERSTELLEN", dashboard: "DASHBOARD", logout: "ABMELDEN" },
+  footer: { desc: "Institutionelle Investmentinfrastruktur. Proprietäre Technologie für den modernen Markt.", platform: "Plattform", company: "Unternehmen", support: "Digitaler Support", rights: "Alle Rechte vorbehalten.", privacy: "Datenschutz", terms: "Bedingungen", disclaimer: "Finanzhinweis", address: "Geschäftsadresse", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, Brasilien", riskTitle: "RISIKOHINWEIS", riskText: "Der Handel an Finanzmärkten birgt ein erhebliches Verlustrisiko und ist nicht für alle Anleger geeignet. Vergangene Ergebnisse sind kein Indikator für zukünftige Ergebnisse. Der Wert von Anlagen kann steigen oder fallen. Investieren Sie kein Geld, dessen Verlust Sie sich nicht leisten können. Braxel Markets garantiert keine bestimmten Renditen." },
+  auth: { loginTitle: "Anmeldung", loginSubtitle: "Geben Sie Ihre Zugangsdaten ein.", registerTitle: "Konto erstellen", registerSubtitle: "Starten Sie Ihren Weg im institutionellen Markt.", email: "E-Mail-Adresse", password: "Passwort", fullName: "Vollständiger Name", forgotPassword: "Passwort vergessen?", noAccount: "Noch kein Konto?", hasAccount: "Bereits Zugang?", btnAccess: "KONTO ZUGREIFEN", btnCreate: "MEIN KONTO ERSTELLEN", termsAgree: "Ich stimme den AGB und Datenschutzrichtlinien zu.", futureTitle: "Die Zukunft der", futureSubtitle: "Investition", features: ["Institutionelle Algorithmen", "Fortschrittlicher Kapitalschutz", "Ausführung in Millisekunden", "Vollständige Transparenz"] },
+  hero: { title1: "ALGORITHMISCHES", title2: "ELITE-KAPITALMANAGEMENT.", desc: "Setzen Sie institutionelle quantitative Strategien ein, die für den modernen Markt entwickelt wurden. Erleben Sie Ausführungspräzision im Millisekundenbereich und fortschrittliche Risikominderungsprotokolle.", getStarted: "INVESTMENTPLÄNE ERKUNDEN", viewStrategies: "TECHNISCHE METHODIK" },
+  stats: { volume: "Strategisches Kapitalmanagement", traders: "Aktive Konten", uptime: "Infrastruktur-Uptime", latency: "Ausführungspräzision" },
+  methodology: { badge: "METHODIK", title: "QUANTITATIVE MODELLE", statArb: { title: "STATISTISCHE ARBITRAGE", desc: "Ausnutzung temporärer Preisineffizienzen zwischen korrelierten Assets mittels Kointegrationsmodellen und Pair Trading.", f1: "Kointegrationsanalyse", f2: "Pair-Selection-Algorithmen", f3: "Z-Score-Schwellenwert" }, meanRev: { title: "MEAN REVERSION", desc: "Identifikation von Preisabweichungen von historischen Durchschnitten mit systematischen Ein- und Ausstiegsregeln.", f1: "Bollinger-Band-Signale", f2: "RSI-Divergenz-Erkennung", f3: "Ornstein-Uhlenbeck-Modelle" }, hft: { title: "HOCHFREQUENZHANDEL", desc: "Ultra-Low-Latency-Ausführungsstrategien mit co-lokalisierter Infrastruktur für Orderplatzierung im Mikrosekundenbereich.", f1: "Marktmikrostruktur", f2: "Order-Flow-Analyse", f3: "Latenz-Arbitrage" } },
+  transparency: { badge: "INFRASTRUKTUR", title: "TRANSPARENTE TECHNOLOGIE", desc: "Unsere Infrastruktur basiert auf Enterprise-Grundlagen und gewährleistet Zuverlässigkeit, Geschwindigkeit und Sicherheit.", connectivity: { title: "KONNEKTIVITÄT", desc: "Direkter Marktzugang über Equinix-Rechenzentren (NY5, LD4, TY3) mit Sub-Millisekunden-Konnektivität zu führenden Börsen." }, cloud: { title: "CLOUD-AUSFÜHRUNG", desc: "Redundante Ausführungsengines auf AWS (us-east-1, eu-west-1) und Azure für Failover-Resilienz." }, security: { title: "SICHERHEIT", desc: "Ende-zu-Ende-Verschlüsselung, SOC 2 Typ II-Konformität und Multi-Layer-Authentifizierung für alle Operationen." } },
+  process_home: { badge: "PROZESS", title: "INSTITUTIONELLER", subtitle: "WORKFLOW", step1: { title: "REGISTRIERUNG", desc: "Sicheres Onboarding und Identitätsverifizierung." }, step2: { title: "ALLOKATION", desc: "Auswahl der verwalteten Kapitalstufe." }, step3: { title: "INTEGRATION", desc: "Bereitstellung der algorithmischen Infrastruktur." }, step4: { title: "ÜBERWACHUNG", desc: "Echtzeit-Performance-Tracking über Terminal." }, step5: { title: "LIQUIDITÄT", desc: "Vereinfachte Gewinnabhebungsprotokolle." } },
+  cta_home: { badge: "CHANCE", title: "SKALIEREN SIE IHR", subtitle: "KAPITAL", desc: "Treten Sie der Elite-Gruppe von Investoren bei, die Braxels proprietäre Infrastruktur nutzen.", btn: "ALLOKATION STARTEN", trust: "Institutionelle Sicherheit" },
+  pricing: { badge: "TRANSPARENZ", title: "KAPITAL-", subtitle: "ALLOKATIONEN", desc: "Institutionelle Infrastruktur mit transparenter Gebührenstruktur.", select: "DIESEN PLAN SICHERN", allocation: "VERWALTETES KAPITAL", month: "monatliche Gebühr" },
+  howItWorks: { badge: "INFRASTRUKTUR", title: "TECHNISCHE", subtitle: "ARCHITEKTUR", desc: "Unser proprietäres Ökosystem ist auf Geschwindigkeit, Sicherheit und konsistente Performance ausgelegt.", steps: [{ title: "REGISTRIERUNG", desc: "Erstellen Sie Ihr institutionelles Profil." }, { title: "DASHBOARD", desc: "Zugang zu Ihrem privaten Management-Terminal." }, { title: "PLANAUSWAHL", desc: "Wählen Sie Ihre Kapitalallokationsstufe." }, { title: "API-BEREITSTELLUNG", desc: "Automatisierte Anbindung an globale Märkte." }, { title: "AUSFÜHRUNG", desc: "Orderverarbeitung in Millisekunden." }, { title: "REPORTING", desc: "Detaillierte wöchentliche Performance-Analysen." }], cta: "BEREIT ZU STARTEN?", ctaBtn: "DEM NETZWERK BEITRETEN" },
+  about: { badge: "ÜBER UNS", title: "INSTITUTIONELLE", subtitle: "EXZELLENZ", desc: "Braxel Markets repräsentiert den Gipfel des algorithmischen Kapitalmanagements.", historyTitle: "UNSERE GESCHICHTE", historyDesc1: "Gegründet von einem Team aus quantitativen Analysten und Software-Ingenieuren, wurde Braxel geschaffen, um die Lücke zwischen Retail-Kapital und institutioneller Technologie zu schließen.", historyDesc2: "Heute konzentrieren wir uns auf risikoadjustierte Renditen und Infrastrukturstabilität und bieten modernste algorithmische Strategien für den modernen Investor.", stats: { founded: "Gegründet", users: "Aktive Nutzer", uptime: "Uptime", support: "Support" }, values: { mission: "MISSION", missionDesc: "Elite-algorithmische Infrastruktur für globales Kapital bereitzustellen.", vision: "VISION", visionDesc: "Die Zukunft des automatisierten quantitativen Managements zu definieren.", values: "WERTE", valuesDesc: "Transparenz, Präzision und unerschütterliche Sicherheit." }, teamTitle: "FÜHRUNGSTEAM", teamDesc: "Lernen Sie die Gründer und Manager hinter Braxel Markets kennen.", team: [{ name: "Bernardo Campi", role: "Gründer & CEO", bio: "Quantitativer Stratege und Unternehmer, der die Vision von Braxel Markets für institutionelle algorithmische Infrastruktur leitet.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Name des Co-Gründers]", role: "Co-Gründer & CTO", bio: "Software-Ingenieur spezialisiert auf Hochfrequenzsysteme und verteiltes Rechnen.", linkedin: "#", photo: "" }, { name: "[Name des Managers]", role: "Leiter Risikomanagement", bio: "Ehemaliger institutioneller Risikoanalyst mit Expertise in Portfolio-Optimierung.", linkedin: "#", photo: "" }] },
+  contact: { badge: "SUPPORT", title: "INSTITUTIONELLE", subtitle: "KANÄLE", desc: "Unser engagiertes Support-Team ist 24/7 für institutionelle Anfragen verfügbar.", infoTitle: "KONTAKT", formTitle: "DIREKTE ANFRAGE", placeholders: { name: "VOLLSTÄNDIGER NAME", email: "E-MAIL-ADRESSE", subject: "BETREFF", message: "NACHRICHT" }, sendBtn: "ANFRAGE SENDEN" },
+  dashboard: { portfolio: "Portfolio", activeServices: "Aktive Dienste", newAllocation: "Neue Allokation", noServices: "Keine aktiven Investmentpläne gefunden.", balance: "Aktueller Saldo", withdraw: "Abhebung", liquidity: "Liquidität", requestWithdraw: "Abhebung beantragen", selectAccount: "Konto auswählen", amount: "Betrag (USD)", iban: "IBAN / Bankdaten", btnWithdraw: "ABHEBUNGSANTRAG EINREICHEN", profile: "Profilverwaltung", settings: "Einstellungen", firstName: "Vorname", lastName: "Nachname", saveChanges: "ÄNDERUNGEN SPEICHERN", verifiedAccount: "Verifiziertes Konto", totalAUM: "Gesamtes verwaltetes Vermögen", activeAlgos: "Aktive Algorithmen", systemStatus: "Systemstatus", operational: "Betriebsbereit", infraProtection: "Infrastrukturschutz", twoFactor: "Zwei-Faktor-Authentifizierung", notEnabled: "Nicht aktiviert", enable2FA: "2FA aktivieren", kycStatus: "KYC-Verifizierung", verified: "Verifiziert", viewDocs: "Dokumente anzeigen", investor: "Investor" },
+  checkout: { summary: "ZUSAMMENFASSUNG", allocationTitle: "Institutionelle", allocationSubtitle: "Allokation", tierLabel: "Algorithmische Infrastrukturstufe", billedMonthly: "Monatlich abgerechnet", detailsTitle: "Allokationsdetails", managedCapital: "Verwaltetes Kapital", setupFee: "Einrichtungsgebühr", waived: "ERLASSEN", latency: "Ausführungslatenz", infrastructureTitle: "Enthaltene Infrastruktur", realTimeMonitoring: "Echtzeitüberwachung", activeUponDeployment: "Aktiv nach Bereitstellung", totalDue: "Gesamtbetrag", dedicatedNode: "Dedizierter Knoten", globalMarkets: "Globale Märkte", instantSetup: "Sofortige Einrichtung", authRequired: "AUTHENTIFIZIERUNG ERFORDERLICH", authDesc: "Bitte melden Sie sich an oder erstellen Sie ein Konto, um mit der Allokation fortzufahren.", btnLogin: "ANMELDEN ZUM FORTFAHREN", btnRegister: "KONTO ERSTELLEN", confirmDeployment: "Bereitstellung bestätigen", deploymentDesc: "Mit der Bestätigung autorisieren Sie die Bereitstellung der algorithmischen Infrastruktur für den Plan {{plan}}.", proceedPayment: "ZUR SICHEREN ZAHLUNG", secureGateway: "Sicheres Gateway", back: "Zurück", riskDisclosure: "Risikohinweis: Algorithmischer Handel birgt erhebliches Verlustrisiko. Vergangene Performance ist kein Indikator für zukünftige Ergebnisse.", secureTransaction: "Sichere Transaktion", paypalNote: "Ihre Zahlungsinformationen werden sicher über PayPal verarbeitet. Braxel Markets speichert keine Kartendaten.", encryptionNote: "Verschlüsselt mit institutionellen AES-256-Standards", verifying: "Institutionelle Transaktion wird verifiziert...", loading: "Terminal wird geladen...", globalInfra: "Globale Zahlungsinfrastruktur", qrCode: "QR-Code", allCards: "Alle Karten", localPay: "Lokale Zahlung" },
+  legal: { badgeLegal: "RECHTLICHES", termsTitle: "NUTZUNGSBEDINGUNGEN" },
+  faq: {
+    title: "HÄUFIG GESTELLTE FRAGEN",
+    badge: "FAQ",
+    q1: "Ist Vorerfahrung notwendig?",
+    a1: "Nein. Unsere Infrastruktur ist vollständig automatisiert. Sie müssen nur Ihre Allokationsstufe wählen und die Performance über Ihr Terminal überwachen.",
+    q2: "Welche Risiken sind beteiligt?",
+    a2: "Wie an jedem Finanzmarkt bestehen Risiken eines Kapitalverlusts durch Volatilität. Wir verwenden fortschrittliche Minderungsprotokolle zum Kapitalschutz.",
+    q3: "Wie funktioniert das System?",
+    a3: "Unsere proprietären Algorithmen führen hochfrequente quantitative Strategien an globalen Märkten mit Millisekundenpräzision aus.",
+    q4: "Kann ich meinen Plan kündigen?",
+    a4: "Ja. Sie können jederzeit die Kündigung und den Kapitalabzug über die Protokolle Ihres Dashboards beantragen."
+  },
+  diffs: {
+    title: "WARUM BRAXEL MARKETS?",
+    badge: "UNTERSCHEIDUNGSMERKMALE",
+    t1: "Proprietäre Technologie",
+    d1: "Neuronale Netze für institutionelle Ausführung entwickelt.",
+    t2: "Vollständige Automatisierung",
+    d2: "24/7 algorithmisches Management ohne menschliche emotionale Verzerrung.",
+    t3: "Vereinfachter Zugang",
+    d3: "Institutionelle Infrastruktur über ein intuitives Terminal zugänglich.",
+    t4: "Professionelles Niveau",
+    d4: "Direkte Verbindung zu globalen Liquiditätspools mit ultra-niedriger Latenz."
+  },
+  signals: {
+    title: "ALGORITHMISCHE",
+    subtitle: "AUSFÜHRUNG",
+    badge: "ECHTZEIT-TERMINAL",
+    desc: "Überwachen Sie unsere proprietäre Infrastruktur in Echtzeit. Jedes Signal wird von unseren neuronalen Netzen mit Millisekundenpräzision verarbeitet.",
+    asset: "ASSET",
+    type: "TYP",
+    entry: "EINSTIEG",
+    profit: "GEWINN",
+    status: "STATUS",
+    active: "AKTIV",
+    completed: "ABGESCHLOSSEN"
+  }
+};
+
+// Russian translations
+const ruTranslation = {
+  nav: { pricing: "ИНВЕСТИЦИОННЫЕ ПЛАНЫ", howItWorks: "ИНФРАСТРУКТУРА", about: "О НАС", contact: "ИНСТИТУЦИОНАЛЬНАЯ ПОДДЕРЖКА", login: "ДОСТУП К ТЕРМИНАЛУ", openAccount: "СОЗДАТЬ АККАУНТ", dashboard: "ПАНЕЛЬ УПРАВЛЕНИЯ", logout: "ВЫХОД" },
+  footer: { desc: "Инвестиционная инфраструктура институционального уровня. Проприетарная технология для современного рынка.", platform: "Платформа", company: "Компания", support: "Цифровая Поддержка", rights: "Все права защищены.", privacy: "Конфиденциальность", terms: "Условия", disclaimer: "Финансовое Уведомление", address: "Коммерческий Адрес", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, Бразилия", riskTitle: "ПРЕДУПРЕЖДЕНИЕ О РИСКАХ", riskText: "Торговля на финансовых рынках сопряжена со значительным риском убытков и подходит не всем инвесторам. Прошлые результаты не гарантируют будущих. Стоимость инвестиций может как расти, так и падать. Не инвестируйте средства, потерю которых вы не можете себе позволить. Braxel Markets не гарантирует конкретной доходности." },
+  auth: { loginTitle: "Вход", loginSubtitle: "Введите ваши учётные данные.", registerTitle: "Создать Аккаунт", registerSubtitle: "Начните свой путь на институциональном рынке.", email: "Электронная Почта", password: "Пароль", fullName: "Полное Имя", forgotPassword: "Забыли пароль?", noAccount: "Нет аккаунта?", hasAccount: "Уже есть доступ?", btnAccess: "ВОЙТИ В АККАУНТ", btnCreate: "СОЗДАТЬ АККАУНТ", termsAgree: "Я принимаю Условия и Политику конфиденциальности.", futureTitle: "Будущее", futureSubtitle: "Инвестиций", features: ["Алгоритмы институционального уровня", "Продвинутая защита капитала", "Исполнение в миллисекундах", "Полная прозрачность"] },
+  hero: { title1: "ЭЛИТНОЕ АЛГОРИТМИЧЕСКОЕ", title2: "УПРАВЛЕНИЕ КАПИТАЛОМ.", desc: "Применяйте количественные стратегии институционального уровня, разработанные для современного рынка. Испытайте точность исполнения в миллисекундах и продвинутые протоколы снижения рисков.", getStarted: "ИЗУЧИТЬ ИНВЕСТИЦИОННЫЕ ПЛАНЫ", viewStrategies: "ТЕХНИЧЕСКАЯ МЕТОДОЛОГИЯ" },
+  stats: { volume: "Стратегическое Управление Капиталом", traders: "Активные Счета", uptime: "Время Безотказной Работы", latency: "Точность Исполнения" },
+  methodology: { badge: "МЕТОДОЛОГИЯ", title: "КОЛИЧЕСТВЕННЫЕ МОДЕЛИ", statArb: { title: "СТАТИСТИЧЕСКИЙ АРБИТРАЖ", desc: "Использование временных ценовых неэффективностей между коррелированными активами с помощью моделей коинтеграции и парного трейдинга.", f1: "Анализ Коинтеграции", f2: "Алгоритмы Выбора Пар", f3: "Порог Z-Score" }, meanRev: { title: "ВОЗВРАТ К СРЕДНЕМУ", desc: "Выявление отклонений цены от исторических средних с систематическими правилами входа и выхода.", f1: "Сигналы Полос Боллинджера", f2: "Обнаружение Дивергенции RSI", f3: "Модели Орнштейна-Уленбека" }, hft: { title: "ВЫСОКОЧАСТОТНАЯ ТОРГОВЛЯ", desc: "Стратегии исполнения со сверхнизкой задержкой с использованием совмещённой инфраструктуры для размещения ордеров на уровне микросекунд.", f1: "Микроструктура Рынка", f2: "Анализ Потока Ордеров", f3: "Арбитраж Задержки" } },
+  transparency: { badge: "ИНФРАСТРУКТУРА", title: "ПРОЗРАЧНАЯ ТЕХНОЛОГИЯ", desc: "Наша инфраструктура построена на корпоративных основаниях, обеспечивая надёжность, скорость и безопасность.", connectivity: { title: "ПОДКЛЮЧЕНИЕ", desc: "Прямой доступ к рынку через дата-центры Equinix (NY5, LD4, TY3) с субмиллисекундным подключением к ведущим биржам." }, cloud: { title: "ОБЛАЧНОЕ ИСПОЛНЕНИЕ", desc: "Резервные движки исполнения на AWS (us-east-1, eu-west-1) и Azure для отказоустойчивости." }, security: { title: "БЕЗОПАСНОСТЬ", desc: "Сквозное шифрование, соответствие SOC 2 Type II и многоуровневая аутентификация для всех операций." } },
+  process_home: { badge: "ПРОЦЕСС", title: "ИНСТИТУЦИОНАЛЬНЫЙ", subtitle: "ПРОЦЕСС", step1: { title: "РЕГИСТРАЦИЯ", desc: "Безопасная регистрация и верификация личности." }, step2: { title: "АЛЛОКАЦИЯ", desc: "Выбор уровня управляемого капитала." }, step3: { title: "ИНТЕГРАЦИЯ", desc: "Развёртывание алгоритмической инфраструктуры." }, step4: { title: "МОНИТОРИНГ", desc: "Отслеживание результатов в реальном времени." }, step5: { title: "ЛИКВИДНОСТЬ", desc: "Упрощённые протоколы вывода прибыли." } },
+  cta_home: { badge: "ВОЗМОЖНОСТЬ", title: "МАСШТАБИРУЙТЕ СВОЙ", subtitle: "КАПИТАЛ", desc: "Присоединяйтесь к элитной группе инвесторов, использующих проприетарную инфраструктуру Braxel.", btn: "НАЧАТЬ АЛЛОКАЦИЮ", trust: "Безопасность Институционального Уровня" },
+  pricing: { badge: "ПРОЗРАЧНОСТЬ", title: "АЛЛОКАЦИИ", subtitle: "КАПИТАЛА", desc: "Институциональная инфраструктура с прозрачной структурой комиссий.", select: "ВЫБРАТЬ ЭТОТ ПЛАН", allocation: "УПРАВЛЯЕМЫЙ КАПИТАЛ", month: "ежемесячная плата" },
+  howItWorks: { badge: "ИНФРАСТРУКТУРА", title: "ТЕХНИЧЕСКАЯ", subtitle: "АРХИТЕКТУРА", desc: "Наша проприетарная экосистема создана для скорости, безопасности и стабильной производительности.", steps: [{ title: "РЕГИСТРАЦИЯ", desc: "Создайте институциональный профиль." }, { title: "ПАНЕЛЬ", desc: "Доступ к приватному терминалу управления." }, { title: "ВЫБОР ПЛАНА", desc: "Выберите уровень аллокации капитала." }, { title: "РАЗВЁРТЫВАНИЕ API", desc: "Автоматическое подключение к мировым рынкам." }, { title: "ИСПОЛНЕНИЕ", desc: "Обработка ордеров в миллисекундах." }, { title: "ОТЧЁТНОСТЬ", desc: "Детальная аналитика результатов за неделю." }], cta: "ГОТОВЫ НАЧАТЬ?", ctaBtn: "ПРИСОЕДИНИТЬСЯ К СЕТИ" },
+  about: { badge: "О НАС", title: "ИНСТИТУЦИОНАЛЬНОЕ", subtitle: "ПРЕВОСХОДСТВО", desc: "Braxel Markets представляет вершину алгоритмического управления капиталом.", historyTitle: "НАША ИСТОРИЯ", historyDesc1: "Основанная командой количественных аналитиков и программных инженеров, Braxel была создана, чтобы объединить розничный капитал и институциональные технологии.", historyDesc2: "Сегодня мы фокусируемся на доходности с учётом рисков и стабильности инфраструктуры, предоставляя передовые алгоритмические стратегии для современного инвестора.", stats: { founded: "Основана", users: "Активные Пользователи", uptime: "Время Работы", support: "Поддержка" }, values: { mission: "МИССИЯ", missionDesc: "Предоставить элитную алгоритмическую инфраструктуру для глобального капитала.", vision: "ВИДЕНИЕ", visionDesc: "Определить будущее автоматизированного количественного управления.", values: "ЦЕННОСТИ", valuesDesc: "Прозрачность, точность и непоколебимая безопасность." }, teamTitle: "КОМАНДА РУКОВОДСТВА", teamDesc: "Познакомьтесь с основателями и управляющими Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Основатель и CEO", bio: "Количественный стратег и предприниматель, возглавляющий видение Braxel Markets в области институциональной алгоритмической инфраструктуры.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Имя Сооснователя]", role: "Сооснователь и CTO", bio: "Программный инженер, специализирующийся на высокочастотных системах и распределённых вычислениях.", linkedin: "#", photo: "" }, { name: "[Имя Управляющего]", role: "Руководитель Управления Рисками", bio: "Бывший институциональный аналитик рисков с глубокой экспертизой в оптимизации портфеля.", linkedin: "#", photo: "" }] },
+  contact: { badge: "ПОДДЕРЖКА", title: "ИНСТИТУЦИОНАЛЬНЫЕ", subtitle: "КАНАЛЫ", desc: "Наша специализированная команда поддержки доступна 24/7 для институциональных запросов.", infoTitle: "КОНТАКТЫ", formTitle: "ПРЯМОЙ ЗАПРОС", placeholders: { name: "ПОЛНОЕ ИМЯ", email: "ЭЛЕКТРОННАЯ ПОЧТА", subject: "ТЕМА", message: "СООБЩЕНИЕ" }, sendBtn: "ОТПРАВИТЬ ЗАПРОС" },
+  dashboard: { portfolio: "Портфель", activeServices: "Активные Услуги", newAllocation: "Новая Аллокация", noServices: "Активные инвестиционные планы не найдены.", balance: "Текущий Баланс", withdraw: "Вывод", liquidity: "Ликвидность", requestWithdraw: "Запросить Вывод", selectAccount: "Выбрать Счёт", amount: "Сумма (USD)", iban: "IBAN / Банковские Реквизиты", btnWithdraw: "ОТПРАВИТЬ ЗАПРОС НА ВЫВОД", profile: "Управление Профилем", settings: "Настройки", firstName: "Имя", lastName: "Фамилия", saveChanges: "СОХРАНИТЬ ИЗМЕНЕНИЯ", verifiedAccount: "Верифицированный Аккаунт", totalAUM: "Общие Активы под Управлением", activeAlgos: "Активные Алгоритмы", systemStatus: "Статус Системы", operational: "Работает", infraProtection: "Защита Инфраструктуры", twoFactor: "Двухфакторная Аутентификация", notEnabled: "Не Активирована", enable2FA: "Включить 2FA", kycStatus: "Верификация KYC", verified: "Верифицирован", viewDocs: "Просмотр Документов", investor: "Инвестор" },
+  checkout: { summary: "ИТОГО", allocationTitle: "Институциональная", allocationSubtitle: "Аллокация", tierLabel: "Уровень Алгоритмической Инфраструктуры", billedMonthly: "Ежемесячная Оплата", detailsTitle: "Детали Аллокации", managedCapital: "Управляемый Капитал", setupFee: "Плата за Настройку", waived: "ОТМЕНЕНА", latency: "Задержка Исполнения", infrastructureTitle: "Включённая Инфраструктура", realTimeMonitoring: "Мониторинг в Реальном Времени", activeUponDeployment: "Активно после развёртывания", totalDue: "Итого к Оплате", dedicatedNode: "Выделенный Узел", globalMarkets: "Глобальные Рынки", instantSetup: "Мгновенная Настройка", authRequired: "ТРЕБУЕТСЯ АУТЕНТИФИКАЦИЯ", authDesc: "Войдите или создайте аккаунт для продолжения аллокации.", btnLogin: "ВОЙТИ ДЛЯ ПРОДОЛЖЕНИЯ", btnRegister: "СОЗДАТЬ АККАУНТ", confirmDeployment: "Подтвердить Развёртывание", deploymentDesc: "Подтверждая, вы разрешаете развёртывание алгоритмической инфраструктуры плана {{plan}}.", proceedPayment: "ПЕРЕЙТИ К БЕЗОПАСНОЙ ОПЛАТЕ", secureGateway: "Безопасный Шлюз", back: "Назад", riskDisclosure: "Раскрытие Рисков: Алгоритмическая торговля сопряжена со значительным риском убытков. Прошлые результаты не гарантируют будущих.", secureTransaction: "Безопасная Транзакция", paypalNote: "Платёжная информация обрабатывается безопасно через PayPal. Braxel Markets не хранит данные вашей карты.", encryptionNote: "Зашифровано по Институциональным Стандартам AES-256", verifying: "Верификация Институциональной Транзакции...", loading: "Загрузка Терминала...", globalInfra: "Глобальная Платёжная Инфраструктура", qrCode: "QR-Код", allCards: "Все Карты", localPay: "Локальная Оплата" },
+  legal: { badgeLegal: "ПРАВОВАЯ ИНФОРМАЦИЯ", termsTitle: "УСЛОВИЯ ОБСЛУЖИВАНИЯ" },
+  faq: {
+    title: "ЧАСТО ЗАДАВАЕМЫЕ ВОПРОСЫ",
+    badge: "FAQ",
+    q1: "Нужен ли предварительный опыт?",
+    a1: "Нет. Наша инфраструктура полностью автоматизирована. Вам нужно только выбрать уровень аллокации и отслеживать результаты через терминал.",
+    q2: "Какие риски существуют?",
+    a2: "Как и на любом финансовом рынке, существуют риски потери капитала из-за волатильности. Мы используем продвинутые протоколы для защиты капитала.",
+    q3: "Как работает система?",
+    a3: "Наши проприетарные алгоритмы исполняют высокочастотные количественные стратегии на мировых рынках с миллисекундной точностью.",
+    q4: "Могу ли я отменить план?",
+    a4: "Да. Вы можете запросить отмену и вывод капитала в любое время через протоколы панели управления."
+  },
+  diffs: {
+    title: "ПОЧЕМУ BRAXEL MARKETS?",
+    badge: "ПРЕИМУЩЕСТВА",
+    t1: "Проприетарная Технология",
+    d1: "Нейронные сети для исполнения институционального уровня.",
+    t2: "Полная Автоматизация",
+    d2: "Алгоритмическое управление 24/7 без человеческого эмоционального смещения.",
+    t3: "Упрощённый Доступ",
+    d3: "Институциональная инфраструктура через интуитивный терминал.",
+    t4: "Профессиональный Уровень",
+    d4: "Прямое подключение к глобальным пулам ликвидности со сверхнизкой задержкой."
+  },
+  signals: {
+    title: "АЛГОРИТМИЧЕСКОЕ",
+    subtitle: "ИСПОЛНЕНИЕ",
+    badge: "ТЕРМИНАЛ РЕАЛЬНОГО ВРЕМЕНИ",
+    desc: "Мониторьте нашу проприетарную инфраструктуру в реальном времени. Каждый сигнал обрабатывается нашими нейронными сетями с миллисекундной точностью.",
+    asset: "АКТИВ",
+    type: "ТИП",
+    entry: "ВХОД",
+    profit: "ПРИБЫЛЬ",
+    status: "СТАТУС",
+    active: "АКТИВНЫЙ",
+    completed: "ЗАВЕРШЁН"
+  }
+};
+
+// Chinese translations
+const zhTranslation = {
+  nav: { pricing: "投资计划", howItWorks: "基础设施", about: "关于我们", contact: "机构支持", login: "终端访问", openAccount: "创建账户", dashboard: "控制面板", logout: "退出登录" },
+  footer: { desc: "机构级投资基础设施。为现代市场打造的专有技术。", platform: "平台", company: "公司", support: "数字支持", rights: "保留所有权利。", privacy: "隐私", terms: "条款", disclaimer: "金融免责声明", address: "商业地址", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, 巴西", riskTitle: "风险免责声明", riskText: "金融市场交易涉及重大损失风险，并非适合所有投资者。过往业绩不代表未来表现。投资价值可能上升或下降。请勿投资您无法承受损失的资金。Braxel Markets不保证任何特定回报。" },
+  auth: { loginTitle: "登录", loginSubtitle: "请输入您的访问凭证。", registerTitle: "创建账户", registerSubtitle: "开启您的机构市场之旅。", email: "电子邮箱", password: "密码", fullName: "全名", forgotPassword: "忘记密码？", noAccount: "还没有账户？", hasAccount: "已有访问权限？", btnAccess: "访问账户", btnCreate: "创建我的账户", termsAgree: "我同意条款和隐私政策。", futureTitle: "投资的", futureSubtitle: "未来", features: ["机构级算法", "高级资本保护", "毫秒级执行", "完全透明"] },
+  hero: { title1: "精英算法", title2: "资本管理。", desc: "部署专为现代市场设计的机构级量化策略。体验毫秒级执行精度和先进的风险缓解协议。", getStarted: "探索投资计划", viewStrategies: "技术方法论" },
+  stats: { volume: "战略资本管理", traders: "活跃账户", uptime: "基础设施运行时间", latency: "执行精度" },
+  methodology: { badge: "方法论", title: "量化模型", statArb: { title: "统计套利", desc: "利用协整模型和配对交易，开发相关资产间的临时价格低效。", f1: "协整分析", f2: "配对选择算法", f3: "Z-Score阈值" }, meanRev: { title: "均值回归", desc: "识别资产价格偏离历史均值的情况，采用系统性的进出场规则。", f1: "布林带信号", f2: "RSI背离检测", f3: "Ornstein-Uhlenbeck模型" }, hft: { title: "高频交易", desc: "利用共址基础设施实现超低延迟执行策略，微秒级下单。", f1: "市场微观结构", f2: "订单流分析", f3: "延迟套利" } },
+  transparency: { badge: "基础设施", title: "透明技术", desc: "我们的基础设施建立在企业级基础之上，确保可靠性、速度和安全性。", connectivity: { title: "连接性", desc: "通过Equinix数据中心（NY5、LD4、TY3）直接市场访问，与主要交易所的亚毫秒连接。" }, cloud: { title: "云端执行", desc: "在AWS（us-east-1、eu-west-1）和Azure上部署冗余执行引擎，确保故障转移弹性。" }, security: { title: "安全性", desc: "端到端加密、SOC 2 Type II合规和所有操作的多层认证。" } },
+  process_home: { badge: "流程", title: "机构级", subtitle: "工作流", step1: { title: "注册", desc: "安全入驻和身份验证。" }, step2: { title: "配置", desc: "选择管理资本级别。" }, step3: { title: "集成", desc: "部署算法基础设施。" }, step4: { title: "监控", desc: "通过终端实时跟踪表现。" }, step5: { title: "流动性", desc: "简化的利润提取协议。" } },
+  cta_home: { badge: "机会", title: "扩展您的", subtitle: "资本", desc: "加入使用Braxel专有基础设施的精英投资者群体。", btn: "开始配置", trust: "机构级安全" },
+  pricing: { badge: "透明度", title: "资本", subtitle: "配置", desc: "机构级基础设施，透明费率结构。", select: "选择此计划", allocation: "管理资本", month: "月费" },
+  howItWorks: { badge: "基础设施", title: "技术", subtitle: "架构", desc: "我们的专有生态系统专为速度、安全和稳定性能而构建。", steps: [{ title: "注册", desc: "创建您的机构配置文件。" }, { title: "控制面板", desc: "访问您的私人管理终端。" }, { title: "选择计划", desc: "选择您的资本配置级别。" }, { title: "API部署", desc: "自动连接全球市场。" }, { title: "执行", desc: "毫秒级订单处理。" }, { title: "报告", desc: "详细的每周绩效分析。" }], cta: "准备好开始了吗？", ctaBtn: "加入网络" },
+  about: { badge: "关于我们", title: "机构级", subtitle: "卓越", desc: "Braxel Markets代表了算法资本管理的巅峰。", historyTitle: "我们的历史", historyDesc1: "由量化分析师和软件工程师团队创立，Braxel旨在弥合零售资本与机构技术之间的差距。", historyDesc2: "今天，我们专注于风险调整回报和基础设施稳定性，为现代投资者提供尖端算法策略。", stats: { founded: "成立", users: "活跃用户", uptime: "运行时间", support: "支持" }, values: { mission: "使命", missionDesc: "为全球资本提供精英算法基础设施。", vision: "愿景", visionDesc: "定义自动化量化管理的未来。", values: "价值观", valuesDesc: "透明、精确和坚定不移的安全。" }, teamTitle: "领导团队", teamDesc: "认识Braxel Markets背后的创始人和管理者。", team: [{ name: "Bernardo Campi", role: "创始人兼CEO", bio: "量化策略师和企业家，引领Braxel Markets在机构级算法基础设施方面的愿景。", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[联合创始人姓名]", role: "联合创始人兼CTO", bio: "专注于高频系统和分布式计算的软件工程师。", linkedin: "#", photo: "" }, { name: "[经理姓名]", role: "风险管理主管", bio: "前机构风险分析师，精通投资组合优化。", linkedin: "#", photo: "" }] },
+  contact: { badge: "支持", title: "机构", subtitle: "渠道", desc: "我们的专业支持团队全天候24/7为机构咨询提供服务。", infoTitle: "联系方式", formTitle: "直接咨询", placeholders: { name: "全名", email: "电子邮箱", subject: "主题", message: "留言" }, sendBtn: "发送咨询" },
+  dashboard: { portfolio: "投资组合", activeServices: "活跃服务", newAllocation: "新配置", noServices: "未找到活跃的投资计划。", balance: "当前余额", withdraw: "提款", liquidity: "流动性", requestWithdraw: "申请提款", selectAccount: "选择账户", amount: "金额 (USD)", iban: "IBAN / 银行信息", btnWithdraw: "提交提款申请", profile: "个人资料管理", settings: "设置", firstName: "名", lastName: "姓", saveChanges: "保存更改", verifiedAccount: "已验证账户", totalAUM: "管理资产总额", activeAlgos: "活跃算法", systemStatus: "系统状态", operational: "运行中", infraProtection: "基础设施保护", twoFactor: "双因素认证", notEnabled: "未启用", enable2FA: "启用2FA", kycStatus: "KYC验证", verified: "已验证", viewDocs: "查看文件", investor: "投资者" },
+  checkout: { summary: "摘要", allocationTitle: "机构", allocationSubtitle: "配置", tierLabel: "算法基础设施级别", billedMonthly: "按月计费", detailsTitle: "配置详情", managedCapital: "管理资本", setupFee: "设置费", waived: "免除", latency: "执行延迟", infrastructureTitle: "包含的基础设施", realTimeMonitoring: "实时监控", activeUponDeployment: "部署后激活", totalDue: "应付总额", dedicatedNode: "专用节点", globalMarkets: "全球市场", instantSetup: "即时设置", authRequired: "需要认证", authDesc: "请登录或创建账户以继续配置。", btnLogin: "登录以继续", btnRegister: "创建账户", confirmDeployment: "确认部署", deploymentDesc: "确认后，您授权部署与{{plan}}计划相关的算法基础设施。", proceedPayment: "继续安全支付", secureGateway: "安全网关", back: "返回", riskDisclosure: "风险披露：算法交易涉及重大损失风险。过往业绩不代表未来表现。", secureTransaction: "安全交易", paypalNote: "您的支付信息由PayPal安全处理。Braxel Markets不存储您的银行卡信息。", encryptionNote: "AES-256机构级加密标准", verifying: "正在验证机构交易...", loading: "正在加载终端...", globalInfra: "全球支付基础设施", qrCode: "二维码", allCards: "所有银行卡", localPay: "本地支付" },
+  legal: { badgeLegal: "法律", termsTitle: "服务条款" },
+  faq: {
+    title: "常见问题",
+    badge: "FAQ",
+    q1: "需要先前经验吗？",
+    a1: "不需要。我们的基础设施完全自动化。您只需选择配置级别并通过终端监控表现。",
+    q2: "涉及哪些风险？",
+    a2: "与任何金融市场一样，存在因波动性导致的资本损失风险。我们使用先进的缓解协议来保护资本。",
+    q3: "系统如何运作？",
+    a3: "我们的专有算法在全球市场以毫秒精度执行高频量化策略。",
+    q4: "我可以取消计划吗？",
+    a4: "可以。您可以随时通过控制面板协议申请取消和资本提取。"
+  },
+  diffs: {
+    title: "为什么选择BRAXEL MARKETS？",
+    badge: "差异化优势",
+    t1: "专有技术",
+    d1: "为机构级执行设计的神经网络。",
+    t2: "完全自动化",
+    d2: "24/7算法管理，无人类情绪偏差。",
+    t3: "简化访问",
+    d3: "通过直观终端访问机构基础设施。",
+    t4: "专业级别",
+    d4: "以超低延迟直连全球流动性池。"
+  },
+  signals: {
+    title: "实时算法",
+    subtitle: "执行",
+    badge: "实时终端",
+    desc: "实时监控我们的专有基础设施。每个信号都由我们的神经网络以毫秒精度处理。",
+    asset: "资产",
+    type: "类型",
+    entry: "入场",
+    profit: "利润",
+    status: "状态",
+    active: "活跃",
+    completed: "已完成"
+  }
+};
+
+// Japanese translations
+const jaTranslation = {
+  nav: { pricing: "投資プラン", howItWorks: "インフラストラクチャ", about: "会社概要", contact: "機関サポート", login: "ターミナルアクセス", openAccount: "アカウント作成", dashboard: "ダッシュボード", logout: "ログアウト" },
+  footer: { desc: "機関投資家レベルの投資インフラ。現代の市場のための独自テクノロジー。", platform: "プラットフォーム", company: "会社", support: "デジタルサポート", rights: "全著作権所有。", privacy: "プライバシー", terms: "利用規約", disclaimer: "金融免責事項", address: "本社所在地", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, ブラジル", riskTitle: "リスク免責事項", riskText: "金融市場での取引には重大な損失リスクが伴い、すべての投資家に適しているわけではありません。過去の実績は将来の結果を保証するものではありません。投資の価値は上下する可能性があります。失っても構わない資金以外は投資しないでください。Braxel Marketsは特定のリターンを保証しません。" },
+  auth: { loginTitle: "ログイン", loginSubtitle: "アクセス認証情報を入力してください。", registerTitle: "アカウント作成", registerSubtitle: "機関市場での旅を始めましょう。", email: "メールアドレス", password: "パスワード", fullName: "氏名", forgotPassword: "パスワードをお忘れですか？", noAccount: "アカウントをお持ちでないですか？", hasAccount: "既にアクセス権をお持ちですか？", btnAccess: "アカウントにアクセス", btnCreate: "アカウントを作成", termsAgree: "利用規約とプライバシーポリシーに同意します。", futureTitle: "投資の", futureSubtitle: "未来", features: ["機関投資家レベルのアルゴリズム", "高度な資本保護", "ミリ秒単位の約定", "完全な透明性"] },
+  hero: { title1: "エリートアルゴリズム", title2: "資本運用。", desc: "現代の市場向けに設計された機関投資家レベルの定量戦略を展開。ミリ秒単位の約定精度と高度なリスク軽減プロトコルを体験してください。", getStarted: "投資プランを見る", viewStrategies: "技術的方法論" },
+  stats: { volume: "戦略的資本管理", traders: "アクティブアカウント", uptime: "インフラ稼働率", latency: "約定精度" },
+  methodology: { badge: "方法論", title: "定量モデル", statArb: { title: "統計的裁定取引", desc: "共和分モデルとペアトレーディングを用いた相関資産間の一時的な価格非効率性の活用。", f1: "共和分分析", f2: "ペア選択アルゴリズム", f3: "Zスコア閾値" }, meanRev: { title: "平均回帰", desc: "過去の平均値からの資産価格偏差の特定と、体系的なエントリー・エグジットルール。", f1: "ボリンジャーバンドシグナル", f2: "RSIダイバージェンス検出", f3: "Ornstein-Uhlenbeckモデル" }, hft: { title: "高頻度取引", desc: "コロケーションインフラを活用したマイクロ秒レベルの注文発注のための超低遅延執行戦略。", f1: "市場マイクロストラクチャー", f2: "注文フロー分析", f3: "レイテンシーアービトラージ" } },
+  transparency: { badge: "インフラストラクチャ", title: "透明なテクノロジー", desc: "当社のインフラはエンタープライズグレードの基盤上に構築され、信頼性、速度、セキュリティを確保しています。", connectivity: { title: "接続性", desc: "Equinixデータセンター（NY5、LD4、TY3）経由の直接市場アクセス。主要取引所へのサブミリ秒接続。" }, cloud: { title: "クラウド実行", desc: "AWS（us-east-1、eu-west-1）とAzureに冗長実行エンジンを展開し、フェイルオーバー耐性を確保。" }, security: { title: "セキュリティ", desc: "エンドツーエンド暗号化、SOC 2 Type IIコンプライアンス、全操作に対する多層認証。" } },
+  process_home: { badge: "プロセス", title: "機関投資家", subtitle: "ワークフロー", step1: { title: "登録", desc: "安全なオンボーディングと本人確認。" }, step2: { title: "配分", desc: "運用資本レベルの選択。" }, step3: { title: "統合", desc: "アルゴリズムインフラの展開。" }, step4: { title: "監視", desc: "ターミナルによるリアルタイムパフォーマンス追跡。" }, step5: { title: "流動性", desc: "簡素化された利益引出プロトコル。" } },
+  cta_home: { badge: "機会", title: "資本を", subtitle: "拡大", desc: "Braxelの独自インフラを活用するエリート投資家グループに参加しましょう。", btn: "配分を開始", trust: "機関投資家レベルのセキュリティ" },
+  pricing: { badge: "透明性", title: "資本", subtitle: "配分", desc: "透明な手数料体系の機関投資家レベルインフラ。", select: "このプランを確保", allocation: "運用資本", month: "月額料金" },
+  howItWorks: { badge: "インフラストラクチャ", title: "技術", subtitle: "アーキテクチャ", desc: "当社の独自エコシステムは、速度、セキュリティ、安定したパフォーマンスのために構築されています。", steps: [{ title: "登録", desc: "機関プロファイルを作成。" }, { title: "ダッシュボード", desc: "プライベート管理ターミナルにアクセス。" }, { title: "プラン選択", desc: "資本配分レベルを選択。" }, { title: "API展開", desc: "グローバル市場への自動接続。" }, { title: "実行", desc: "ミリ秒単位の注文処理。" }, { title: "レポート", desc: "詳細な週次パフォーマンス分析。" }], cta: "始める準備はできましたか？", ctaBtn: "ネットワークに参加" },
+  about: { badge: "会社概要", title: "機関投資家レベル", subtitle: "エクセレンス", desc: "Braxel Marketsはアルゴリズム資本管理の頂点を代表します。", historyTitle: "沿革", historyDesc1: "定量アナリストとソフトウェアエンジニアのチームによって設立されたBraxelは、リテール資本と機関テクノロジーの間のギャップを埋めるために作られました。", historyDesc2: "今日、私たちはリスク調整後リターンとインフラの安定性に焦点を当て、現代の投資家のために最先端のアルゴリズム戦略を提供しています。", stats: { founded: "設立", users: "アクティブユーザー", uptime: "稼働率", support: "サポート" }, values: { mission: "ミッション", missionDesc: "グローバル資本のためのエリートアルゴリズムインフラを提供する。", vision: "ビジョン", visionDesc: "自動化された定量管理の未来を定義する。", values: "価値観", valuesDesc: "透明性、精度、揺るぎないセキュリティ。" }, teamTitle: "リーダーシップチーム", teamDesc: "Braxel Marketsの創業者と経営陣をご紹介します。", team: [{ name: "Bernardo Campi", role: "創業者兼CEO", bio: "機関投資家レベルのアルゴリズムインフラに向けたBraxel Marketsのビジョンを率いる定量ストラテジスト兼起業家。", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[共同創業者名]", role: "共同創業者兼CTO", bio: "高頻度システムと分散コンピューティングを専門とするソフトウェアエンジニア。", linkedin: "#", photo: "" }, { name: "[マネージャー名]", role: "リスク管理責任者", bio: "ポートフォリオ最適化に深い専門知識を持つ元機関リスクアナリスト。", linkedin: "#", photo: "" }] },
+  contact: { badge: "サポート", title: "機関投資家", subtitle: "チャネル", desc: "当社の専門サポートチームは、機関投資家のお問い合わせに24時間年中無休で対応しています。", infoTitle: "お問い合わせ", formTitle: "直接お問い合わせ", placeholders: { name: "氏名", email: "メールアドレス", subject: "件名", message: "メッセージ" }, sendBtn: "お問い合わせを送信" },
+  dashboard: { portfolio: "ポートフォリオ", activeServices: "アクティブサービス", newAllocation: "新規配分", noServices: "アクティブな投資プランが見つかりません。", balance: "現在の残高", withdraw: "出金", liquidity: "流動性", requestWithdraw: "出金を申請", selectAccount: "アカウントを選択", amount: "金額 (USD)", iban: "IBAN / 銀行情報", btnWithdraw: "出金申請を送信", profile: "プロフィール管理", settings: "設定", firstName: "名", lastName: "姓", saveChanges: "変更を保存", verifiedAccount: "認証済みアカウント", totalAUM: "運用資産総額", activeAlgos: "アクティブアルゴリズム", systemStatus: "システム状態", operational: "稼働中", infraProtection: "インフラ保護", twoFactor: "二要素認証", notEnabled: "未有効", enable2FA: "2FAを有効化", kycStatus: "KYC認証", verified: "認証済み", viewDocs: "書類を表示", investor: "投資家" },
+  checkout: { summary: "概要", allocationTitle: "機関", allocationSubtitle: "配分", tierLabel: "アルゴリズムインフラレベル", billedMonthly: "月次請求", detailsTitle: "配分詳細", managedCapital: "運用資本", setupFee: "セットアップ料", waived: "免除", latency: "約定遅延", infrastructureTitle: "含まれるインフラ", realTimeMonitoring: "リアルタイム監視", activeUponDeployment: "展開後にアクティブ", totalDue: "合計支払額", dedicatedNode: "専用ノード", globalMarkets: "グローバル市場", instantSetup: "即時セットアップ", authRequired: "認証が必要です", authDesc: "配分を進めるにはログインまたはアカウント作成が必要です。", btnLogin: "ログインして続行", btnRegister: "アカウント作成", confirmDeployment: "展開を確認", deploymentDesc: "確認することで、{{plan}}プランに関連するアルゴリズムインフラの展開を承認します。", proceedPayment: "安全な支払いに進む", secureGateway: "セキュアゲートウェイ", back: "戻る", riskDisclosure: "リスク開示：アルゴリズム取引には重大な損失リスクが伴います。過去の実績は将来の結果を保証しません。", secureTransaction: "安全な取引", paypalNote: "お支払い情報はPayPalにより安全に処理されます。Braxel Marketsはカード情報を保存しません。", encryptionNote: "AES-256機関グレード暗号化", verifying: "機関取引を確認中...", loading: "ターミナルを読み込み中...", globalInfra: "グローバル決済インフラ", qrCode: "QRコード", allCards: "全カード", localPay: "ローカル決済" },
+  legal: { badgeLegal: "法的情報", termsTitle: "利用規約" },
+  faq: {
+    title: "よくあるご質問",
+    badge: "FAQ",
+    q1: "事前経験は必要ですか？",
+    a1: "いいえ。当社のインフラは完全に自動化されています。配分レベルを選択し、ターミナルでパフォーマンスを監視するだけです。",
+    q2: "どのようなリスクがありますか？",
+    a2: "金融市場全般と同様、ボラティリティによる資本損失のリスクがあります。当社は資本保護のための高度な緩和プロトコルを使用しています。",
+    q3: "システムはどのように機能しますか？",
+    a3: "当社の独自アルゴリズムは、ミリ秒の精度でグローバル市場において高頻度定量戦略を実行します。",
+    q4: "プランをキャンセルできますか？",
+    a4: "はい。ダッシュボードのプロトコルを通じて、いつでもキャンセルと資本引出を申請できます。"
+  },
+  diffs: {
+    title: "なぜBRAXEL MARKETSか？",
+    badge: "差別化要因",
+    t1: "独自テクノロジー",
+    d1: "機関投資家レベルの約定のために設計されたニューラルネットワーク。",
+    t2: "完全自動化",
+    d2: "人間の感情バイアスのない24時間365日のアルゴリズム管理。",
+    t3: "簡素化されたアクセス",
+    d3: "直感的なターミナルを通じてアクセスする機関インフラ。",
+    t4: "プロフェッショナルグレード",
+    d4: "超低遅延でグローバル流動性プールに直接接続。"
+  },
+  signals: {
+    title: "リアルタイム",
+    subtitle: "アルゴリズム実行",
+    badge: "リアルタイムターミナル",
+    desc: "当社の独自インフラをリアルタイムで監視。すべてのシグナルはニューラルネットワークによりミリ秒の精度で処理されます。",
+    asset: "資産",
+    type: "タイプ",
+    entry: "エントリー",
+    profit: "利益",
+    status: "ステータス",
+    active: "アクティブ",
+    completed: "完了"
+  }
+};
+
+// Arabic translations
+const arTranslation = {
+  nav: { pricing: "خطط الاستثمار", howItWorks: "البنية التحتية", about: "من نحن", contact: "الدعم المؤسسي", login: "الوصول إلى المحطة", openAccount: "إنشاء حساب", dashboard: "لوحة التحكم", logout: "تسجيل الخروج" },
+  footer: { desc: "بنية تحتية استثمارية مؤسسية. تقنية مملوكة للسوق الحديث.", platform: "المنصة", company: "الشركة", support: "الدعم الرقمي", rights: "جميع الحقوق محفوظة.", privacy: "الخصوصية", terms: "الشروط", disclaimer: "إخلاء المسؤولية المالية", address: "العنوان التجاري", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, البرازيل", riskTitle: "إخلاء مسؤولية المخاطر", riskText: "التداول في الأسواق المالية ينطوي على مخاطر كبيرة للخسارة وليس مناسبًا لجميع المستثمرين. الأداء السابق لا يضمن النتائج المستقبلية. قيمة الاستثمارات قد ترتفع أو تنخفض. لا تستثمر أموالاً لا يمكنك تحمل خسارتها. Braxel Markets لا تضمن عوائد محددة." },
+  auth: { loginTitle: "تسجيل الدخول", loginSubtitle: "أدخل بيانات الوصول الخاصة بك.", registerTitle: "إنشاء حساب", registerSubtitle: "ابدأ رحلتك في السوق المؤسسي.", email: "البريد الإلكتروني", password: "كلمة المرور", fullName: "الاسم الكامل", forgotPassword: "نسيت كلمة المرور؟", noAccount: "ليس لديك حساب؟", hasAccount: "لديك وصول بالفعل؟", btnAccess: "الوصول إلى الحساب", btnCreate: "إنشاء حسابي", termsAgree: "أوافق على الشروط والخصوصية.", futureTitle: "مستقبل", futureSubtitle: "الاستثمار", features: ["خوارزميات مؤسسية", "حماية رأس المال المتقدمة", "تنفيذ بالميلي ثانية", "شفافية كاملة"] },
+  hero: { title1: "إدارة رأس المال", title2: "الخوارزمية النخبوية.", desc: "انشر استراتيجيات كمية مؤسسية مصممة للسوق الحديث. اختبر دقة تنفيذ بالميلي ثانية وبروتوكولات متقدمة لتخفيف المخاطر.", getStarted: "استكشف خطط الاستثمار", viewStrategies: "المنهجية التقنية" },
+  stats: { volume: "إدارة رأس المال الاستراتيجي", traders: "الحسابات النشطة", uptime: "وقت تشغيل البنية التحتية", latency: "دقة التنفيذ" },
+  methodology: { badge: "المنهجية", title: "النماذج الكمية", statArb: { title: "المراجحة الإحصائية", desc: "استغلال عدم كفاءة الأسعار المؤقتة بين الأصول المرتبطة باستخدام نماذج التكامل المشترك وتداول الأزواج.", f1: "تحليل التكامل المشترك", f2: "خوارزميات اختيار الأزواج", f3: "عتبة Z-Score" }, meanRev: { title: "العودة إلى المتوسط", desc: "تحديد انحرافات أسعار الأصول عن المتوسطات التاريخية مع قواعد دخول وخروج منهجية.", f1: "إشارات نطاقات بولينجر", f2: "كشف تباعد RSI", f3: "نماذج Ornstein-Uhlenbeck" }, hft: { title: "التداول عالي التردد", desc: "استراتيجيات تنفيذ منخفضة الكمون جدًا مع بنية تحتية مشتركة لإرسال الأوامر بمستوى الميكروثانية.", f1: "البنية المجهرية للسوق", f2: "تحليل تدفق الأوامر", f3: "مراجحة الكمون" } },
+  transparency: { badge: "البنية التحتية", title: "تقنية شفافة", desc: "بنيتنا التحتية مبنية على أسس مؤسسية تضمن الموثوقية والسرعة والأمان.", connectivity: { title: "الاتصال", desc: "وصول مباشر للسوق عبر مراكز بيانات Equinix (NY5, LD4, TY3) مع اتصال أقل من ميلي ثانية بالبورصات الرئيسية." }, cloud: { title: "التنفيذ السحابي", desc: "محركات تنفيذ احتياطية على AWS (us-east-1, eu-west-1) و Azure لمرونة تجاوز الأعطال." }, security: { title: "الأمان", desc: "تشفير من طرف إلى طرف، امتثال SOC 2 Type II ومصادقة متعددة الطبقات لجميع العمليات." } },
+  process_home: { badge: "العملية", title: "سير العمل", subtitle: "المؤسسي", step1: { title: "التسجيل", desc: "تسجيل آمن والتحقق من الهوية." }, step2: { title: "التخصيص", desc: "اختيار مستوى رأس المال المُدار." }, step3: { title: "التكامل", desc: "نشر البنية التحتية الخوارزمية." }, step4: { title: "المراقبة", desc: "تتبع الأداء في الوقت الفعلي." }, step5: { title: "السيولة", desc: "بروتوكولات مبسطة لسحب الأرباح." } },
+  cta_home: { badge: "فرصة", title: "وسّع", subtitle: "رأس مالك", desc: "انضم إلى مجموعة النخبة من المستثمرين الذين يستخدمون البنية التحتية المملوكة لـ Braxel.", btn: "ابدأ التخصيص", trust: "أمان مؤسسي" },
+  pricing: { badge: "الشفافية", title: "تخصيصات", subtitle: "رأس المال", desc: "بنية تحتية مؤسسية بهيكل رسوم شفاف.", select: "احصل على هذا الخطة", allocation: "رأس المال المُدار", month: "رسوم شهرية" },
+  howItWorks: { badge: "البنية التحتية", title: "البنية", subtitle: "التقنية", desc: "نظامنا البيئي المملوك مصمم للسرعة والأمان والأداء المتسق.", steps: [{ title: "التسجيل", desc: "أنشئ ملفك المؤسسي." }, { title: "لوحة التحكم", desc: "الوصول إلى محطة الإدارة الخاصة." }, { title: "اختيار الخطة", desc: "اختر مستوى تخصيص رأس المال." }, { title: "نشر API", desc: "الاتصال التلقائي بالأسواق العالمية." }, { title: "التنفيذ", desc: "معالجة الأوامر بالميلي ثانية." }, { title: "التقارير", desc: "تحليل أداء أسبوعي مفصل." }], cta: "مستعد للبدء؟", ctaBtn: "انضم إلى الشبكة" },
+  about: { badge: "من نحن", title: "التميز", subtitle: "المؤسسي", desc: "Braxel Markets تمثل قمة إدارة رأس المال الخوارزمية.", historyTitle: "تاريخنا", historyDesc1: "أسسها فريق من المحللين الكميين ومهندسي البرمجيات، أُنشئت Braxel لسد الفجوة بين رأس المال الفردي والتقنية المؤسسية.", historyDesc2: "اليوم، نركز على العوائد المعدلة حسب المخاطر واستقرار البنية التحتية، مع تقديم استراتيجيات خوارزمية متطورة للمستثمر الحديث.", stats: { founded: "تأسست", users: "المستخدمون النشطون", uptime: "وقت التشغيل", support: "الدعم" }, values: { mission: "المهمة", missionDesc: "تقديم بنية تحتية خوارزمية نخبوية لرأس المال العالمي.", vision: "الرؤية", visionDesc: "تحديد مستقبل الإدارة الكمية الآلية.", values: "القيم", valuesDesc: "الشفافية والدقة والأمان الراسخ." }, teamTitle: "فريق القيادة", teamDesc: "تعرف على المؤسسين والمديرين وراء Braxel Markets.", team: [{ name: "Bernardo Campi", role: "المؤسس والرئيس التنفيذي", bio: "استراتيجي كمي ورائد أعمال يقود رؤية Braxel Markets للبنية التحتية الخوارزمية المؤسسية.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[اسم الشريك المؤسس]", role: "الشريك المؤسس ومدير التقنية", bio: "مهندس برمجيات متخصص في أنظمة التردد العالي والحوسبة الموزعة.", linkedin: "#", photo: "" }, { name: "[اسم المدير]", role: "رئيس إدارة المخاطر", bio: "محلل مخاطر مؤسسي سابق ذو خبرة عميقة في تحسين المحافظ.", linkedin: "#", photo: "" }] },
+  contact: { badge: "الدعم", title: "القنوات", subtitle: "المؤسسية", desc: "فريق الدعم المتخصص لدينا متاح على مدار الساعة للاستفسارات المؤسسية.", infoTitle: "معلومات الاتصال", formTitle: "استفسار مباشر", placeholders: { name: "الاسم الكامل", email: "البريد الإلكتروني", subject: "الموضوع", message: "الرسالة" }, sendBtn: "إرسال الاستفسار" },
+  dashboard: { portfolio: "المحفظة", activeServices: "الخدمات النشطة", newAllocation: "تخصيص جديد", noServices: "لم يتم العثور على خطط استثمار نشطة.", balance: "الرصيد الحالي", withdraw: "سحب", liquidity: "السيولة", requestWithdraw: "طلب سحب", selectAccount: "اختر الحساب", amount: "المبلغ (USD)", iban: "IBAN / التفاصيل المصرفية", btnWithdraw: "إرسال طلب السحب", profile: "إدارة الملف", settings: "الإعدادات", firstName: "الاسم الأول", lastName: "الاسم الأخير", saveChanges: "حفظ التغييرات", verifiedAccount: "حساب موثق", totalAUM: "إجمالي الأصول المُدارة", activeAlgos: "الخوارزميات النشطة", systemStatus: "حالة النظام", operational: "يعمل", infraProtection: "حماية البنية التحتية", twoFactor: "المصادقة الثنائية", notEnabled: "غير مفعّلة", enable2FA: "تفعيل 2FA", kycStatus: "التحقق KYC", verified: "موثّق", viewDocs: "عرض المستندات", investor: "مستثمر" },
+  checkout: { summary: "الملخص", allocationTitle: "تخصيص", allocationSubtitle: "مؤسسي", tierLabel: "مستوى البنية التحتية الخوارزمية", billedMonthly: "فوترة شهرية", detailsTitle: "تفاصيل التخصيص", managedCapital: "رأس المال المُدار", setupFee: "رسوم الإعداد", waived: "معفاة", latency: "كمون التنفيذ", infrastructureTitle: "البنية التحتية المشمولة", realTimeMonitoring: "مراقبة في الوقت الفعلي", activeUponDeployment: "نشط بعد النشر", totalDue: "المجموع المستحق", dedicatedNode: "عقدة مخصصة", globalMarkets: "أسواق عالمية", instantSetup: "إعداد فوري", authRequired: "المصادقة مطلوبة", authDesc: "يرجى تسجيل الدخول أو إنشاء حساب للمتابعة.", btnLogin: "تسجيل الدخول للمتابعة", btnRegister: "إنشاء حساب", confirmDeployment: "تأكيد النشر", deploymentDesc: "بالتأكيد، تُخوّل نشر البنية التحتية الخوارزمية المرتبطة بخطة {{plan}}.", proceedPayment: "المتابعة إلى الدفع الآمن", secureGateway: "بوابة آمنة", back: "رجوع", riskDisclosure: "إفصاح المخاطر: التداول الخوارزمي ينطوي على مخاطر كبيرة للخسارة. الأداء السابق لا يضمن النتائج المستقبلية.", secureTransaction: "معاملة آمنة", paypalNote: "تتم معالجة بيانات الدفع بأمان بواسطة PayPal. Braxel Markets لا تخزن بيانات بطاقتك.", encryptionNote: "مشفر بمعايير AES-256 المؤسسية", verifying: "جارٍ التحقق من المعاملة المؤسسية...", loading: "جارٍ تحميل المحطة...", globalInfra: "بنية تحتية للدفع العالمي", qrCode: "رمز QR", allCards: "جميع البطاقات", localPay: "الدفع المحلي" },
+  legal: { badgeLegal: "قانوني", termsTitle: "شروط الخدمة" },
+  faq: {
+    title: "الأسئلة الشائعة",
+    badge: "FAQ",
+    q1: "هل الخبرة المسبقة ضرورية؟",
+    a1: "لا. بنيتنا التحتية مؤتمتة بالكامل. ما عليك سوى اختيار مستوى التخصيص ومراقبة الأداء عبر المحطة.",
+    q2: "ما هي المخاطر المتضمنة؟",
+    a2: "كما في أي سوق مالي، توجد مخاطر خسارة رأس المال بسبب التقلبات. نستخدم بروتوكولات متقدمة لحماية رأس المال.",
+    q3: "كيف يعمل النظام؟",
+    a3: "خوارزمياتنا المملوكة تنفذ استراتيجيات كمية عالية التردد في الأسواق العالمية بدقة الميلي ثانية.",
+    q4: "هل يمكنني إلغاء خطتي؟",
+    a4: "نعم. يمكنك طلب الإلغاء وسحب رأس المال في أي وقت من خلال بروتوكولات لوحة التحكم."
+  },
+  diffs: {
+    title: "لماذا BRAXEL MARKETS؟",
+    badge: "المميزات",
+    t1: "تقنية مملوكة",
+    d1: "شبكات عصبية مصممة للتنفيذ المؤسسي.",
+    t2: "أتمتة كاملة",
+    d2: "إدارة خوارزمية على مدار الساعة بدون تحيز عاطفي بشري.",
+    t3: "وصول مبسط",
+    d3: "بنية تحتية مؤسسية يمكن الوصول إليها عبر محطة بديهية.",
+    t4: "مستوى احترافي",
+    d4: "اتصال مباشر بمجمعات السيولة العالمية بكمون منخفض جدًا."
+  },
+  signals: {
+    title: "التنفيذ",
+    subtitle: "الخوارزمي",
+    badge: "المحطة في الوقت الفعلي",
+    desc: "راقب بنيتنا التحتية المملوكة في الوقت الفعلي. كل إشارة تتم معالجتها بواسطة شبكاتنا العصبية بدقة الميلي ثانية.",
+    asset: "الأصل",
+    type: "النوع",
+    entry: "الدخول",
+    profit: "الربح",
+    status: "الحالة",
+    active: "نشط",
+    completed: "مكتمل"
+  }
+};
+
+// Hebrew translations
+const heTranslation = {
+  nav: { pricing: "תוכניות השקעה", howItWorks: "תשתית", about: "אודות", contact: "תמיכה מוסדית", login: "גישה לטרמינל", openAccount: "יצירת חשבון", dashboard: "לוח בקרה", logout: "התנתקות" },
+  footer: { desc: "תשתית השקעות ברמה מוסדית. טכנולוגיה קניינית לשוק המודרני.", platform: "פלטפורמה", company: "חברה", support: "תמיכה דיגיטלית", rights: "כל הזכויות שמורות.", privacy: "פרטיות", terms: "תנאים", disclaimer: "הצהרה פיננסית", address: "כתובת מסחרית", addressValue: "Av. Paulista, 1374 - Bela Vista, São Paulo - SP, 01310-100, ברזיל", riskTitle: "הצהרת סיכונים", riskText: "מסחר בשווקים פיננסיים כרוך בסיכון משמעותי להפסד ואינו מתאים לכל המשקיעים. ביצועי עבר אינם מעידים על תוצאות עתידיות. ערך ההשקעות יכול לעלות או לרדת. אל תשקיע כסף שאינך יכול להרשות לעצמך להפסיד. Braxel Markets אינה מבטיחה תשואות ספציפיות." },
+  auth: { loginTitle: "התחברות", loginSubtitle: "הזן את פרטי הגישה שלך.", registerTitle: "יצירת חשבון", registerSubtitle: "התחל את המסע שלך בשוק המוסדי.", email: "כתובת דוא״ל", password: "סיסמה", fullName: "שם מלא", forgotPassword: "שכחת סיסמה?", noAccount: "אין לך חשבון?", hasAccount: "כבר יש לך גישה?", btnAccess: "גישה לחשבון", btnCreate: "צור את החשבון שלי", termsAgree: "אני מסכים לתנאים ולמדיניות הפרטיות.", futureTitle: "העתיד של", futureSubtitle: "ההשקעות", features: ["אלגוריתמים ברמה מוסדית", "הגנת הון מתקדמת", "ביצוע במילישניות", "שקיפות מלאה"] },
+  hero: { title1: "ניהול הון", title2: "אלגוריתמי של אליטה.", desc: "פרוס אסטרטגיות כמותיות ברמה מוסדית שתוכננו לשוק המודרני. חווה דיוק ביצוע במילישניות ופרוטוקולי הפחתת סיכונים מתקדמים.", getStarted: "חקור תוכניות השקעה", viewStrategies: "מתודולוגיה טכנית" },
+  stats: { volume: "ניהול הון אסטרטגי", traders: "חשבונות פעילים", uptime: "זמן פעילות תשתית", latency: "דיוק ביצוע" },
+  methodology: { badge: "מתודולוגיה", title: "מודלים כמותיים", statArb: { title: "ארביטראז׳ סטטיסטי", desc: "ניצול חוסר יעילות מחירים זמני בין נכסים מתואמים באמצעות מודלי קו-אינטגרציה ומסחר זוגות.", f1: "ניתוח קו-אינטגרציה", f2: "אלגוריתמי בחירת זוגות", f3: "סף Z-Score" }, meanRev: { title: "חזרה לממוצע", desc: "זיהוי סטיות מחיר נכסים מממוצעים היסטוריים עם כללי כניסה ויציאה שיטתיים.", f1: "אותות רצועות בולינגר", f2: "זיהוי דיברגנציית RSI", f3: "מודלי Ornstein-Uhlenbeck" }, hft: { title: "מסחר בתדירות גבוהה", desc: "אסטרטגיות ביצוע בהשהיה אולטרא-נמוכה עם תשתית משולבת להצבת פקודות ברמת מיקרושניות.", f1: "מיקרו-מבנה שוק", f2: "ניתוח זרימת פקודות", f3: "ארביטראז׳ השהיה" } },
+  transparency: { badge: "תשתית", title: "טכנולוגיה שקופה", desc: "התשתית שלנו בנויה על בסיס ארגוני, מבטיחה אמינות, מהירות ואבטחה.", connectivity: { title: "קישוריות", desc: "גישה ישירה לשוק דרך מרכזי נתונים של Equinix (NY5, LD4, TY3) עם קישוריות תת-מילישנייה לבורסות מובילות." }, cloud: { title: "ביצוע ענן", desc: "מנועי ביצוע רדונדנטיים על AWS (us-east-1, eu-west-1) ו-Azure לחוסן כשלים." }, security: { title: "אבטחה", desc: "הצפנה מקצה לקצה, עמידה ב-SOC 2 Type II ואימות רב-שכבתי לכל הפעולות." } },
+  process_home: { badge: "תהליך", title: "תהליך עבודה", subtitle: "מוסדי", step1: { title: "הרשמה", desc: "קליטה מאובטחת ואימות זהות." }, step2: { title: "הקצאה", desc: "בחירת רמת ההון המנוהל." }, step3: { title: "אינטגרציה", desc: "פריסת תשתית אלגוריתמית." }, step4: { title: "ניטור", desc: "מעקב ביצועים בזמן אמת." }, step5: { title: "נזילות", desc: "פרוטוקולים מופשטים למשיכת רווחים." } },
+  cta_home: { badge: "הזדמנות", title: "הגדל את", subtitle: "ההון שלך", desc: "הצטרף לקבוצת האליטה של משקיעים שמשתמשים בתשתית הקניינית של Braxel.", btn: "התחל הקצאה", trust: "אבטחה ברמה מוסדית" },
+  pricing: { badge: "שקיפות", title: "הקצאות", subtitle: "הון", desc: "תשתית ברמה מוסדית עם מבנה עמלות שקוף.", select: "הבטח תוכנית זו", allocation: "הון מנוהל", month: "עמלה חודשית" },
+  howItWorks: { badge: "תשתית", title: "ארכיטקטורה", subtitle: "טכנית", desc: "המערכת האקולוגית הקניינית שלנו בנויה למהירות, אבטחה וביצועים עקביים.", steps: [{ title: "הרשמה", desc: "צור את הפרופיל המוסדי שלך." }, { title: "לוח בקרה", desc: "גישה לטרמינל הניהול הפרטי." }, { title: "בחירת תוכנית", desc: "בחר את רמת הקצאת ההון." }, { title: "פריסת API", desc: "חיבור אוטומטי לשווקים גלובליים." }, { title: "ביצוע", desc: "עיבוד פקודות במילישניות." }, { title: "דיווח", desc: "ניתוח ביצועים שבועי מפורט." }], cta: "מוכן להתחיל?", ctaBtn: "הצטרף לרשת" },
+  about: { badge: "אודות", title: "מצוינות", subtitle: "מוסדית", desc: "Braxel Markets מייצגת את פסגת ניהול ההון האלגוריתמי.", historyTitle: "ההיסטוריה שלנו", historyDesc1: "הוקמה על ידי צוות של אנליסטים כמותיים ומהנדסי תוכנה, Braxel נוצרה לגשר על הפער בין הון קמעונאי לטכנולוגיה מוסדית.", historyDesc2: "כיום אנו מתמקדים בתשואות מותאמות סיכון ויציבות תשתית, ומספקים אסטרטגיות אלגוריתמיות חדשניות למשקיע המודרני.", stats: { founded: "הוקמה", users: "משתמשים פעילים", uptime: "זמן פעילות", support: "תמיכה" }, values: { mission: "משימה", missionDesc: "לספק תשתית אלגוריתמית של אליטה להון גלובלי.", vision: "חזון", visionDesc: "להגדיר את עתיד הניהול הכמותי האוטומטי.", values: "ערכים", valuesDesc: "שקיפות, דיוק ואבטחה בלתי מתפשרת." }, teamTitle: "צוות ההנהגה", teamDesc: "הכירו את המייסדים והמנהלים מאחורי Braxel Markets.", team: [{ name: "Bernardo Campi", role: "מייסד ומנכ״ל", bio: "אסטרטג כמותי ויזם המוביל את החזון של Braxel Markets לתשתית אלגוריתמית מוסדית.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[שם השותף המייסד]", role: "שותף מייסד ו-CTO", bio: "מהנדס תוכנה המתמחה במערכות תדירות גבוהה ומחשוב מבוזר.", linkedin: "#", photo: "" }, { name: "[שם המנהל]", role: "ראש ניהול סיכונים", bio: "אנליסט סיכונים מוסדי לשעבר עם מומחיות עמוקה באופטימיזציית תיקים.", linkedin: "#", photo: "" }] },
+  contact: { badge: "תמיכה", title: "ערוצים", subtitle: "מוסדיים", desc: "צוות התמיכה המסור שלנו זמין 24/7 לפניות מוסדיות.", infoTitle: "פרטי קשר", formTitle: "פנייה ישירה", placeholders: { name: "שם מלא", email: "כתובת דוא״ל", subject: "נושא", message: "הודעה" }, sendBtn: "שלח פנייה" },
+  dashboard: { portfolio: "תיק השקעות", activeServices: "שירותים פעילים", newAllocation: "הקצאה חדשה", noServices: "לא נמצאו תוכניות השקעה פעילות.", balance: "יתרה נוכחית", withdraw: "משיכה", liquidity: "נזילות", requestWithdraw: "בקש משיכה", selectAccount: "בחר חשבון", amount: "סכום (USD)", iban: "IBAN / פרטי בנק", btnWithdraw: "שלח בקשת משיכה", profile: "ניהול פרופיל", settings: "הגדרות", firstName: "שם פרטי", lastName: "שם משפחה", saveChanges: "שמור שינויים", verifiedAccount: "חשבון מאומת", totalAUM: "סך נכסים מנוהלים", activeAlgos: "אלגוריתמים פעילים", systemStatus: "מצב מערכת", operational: "פעיל", infraProtection: "הגנת תשתית", twoFactor: "אימות דו-שלבי", notEnabled: "לא מופעל", enable2FA: "הפעל 2FA", kycStatus: "אימות KYC", verified: "מאומת", viewDocs: "הצג מסמכים", investor: "משקיע" },
+  checkout: { summary: "סיכום", allocationTitle: "הקצאה", allocationSubtitle: "מוסדית", tierLabel: "רמת תשתית אלגוריתמית", billedMonthly: "חיוב חודשי", detailsTitle: "פרטי הקצאה", managedCapital: "הון מנוהל", setupFee: "דמי הקמה", waived: "מוותר", latency: "השהיית ביצוע", infrastructureTitle: "תשתית כלולה", realTimeMonitoring: "ניטור בזמן אמת", activeUponDeployment: "פעיל לאחר פריסה", totalDue: "סה״כ לתשלום", dedicatedNode: "צומת ייעודי", globalMarkets: "שווקים גלובליים", instantSetup: "הקמה מיידית", authRequired: "נדרש אימות", authDesc: "אנא התחבר או צור חשבון כדי להמשיך בהקצאה.", btnLogin: "התחבר להמשך", btnRegister: "צור חשבון", confirmDeployment: "אשר פריסה", deploymentDesc: "באישור, אתה מאשר את פריסת התשתית האלגוריתמית הקשורה לתוכנית {{plan}}.", proceedPayment: "המשך לתשלום מאובטח", secureGateway: "שער מאובטח", back: "חזרה", riskDisclosure: "גילוי סיכונים: מסחר אלגוריתמי כרוך בסיכון משמעותי להפסד. ביצועי עבר אינם מעידים על תוצאות עתידיות.", secureTransaction: "עסקה מאובטחת", paypalNote: "פרטי התשלום שלך מעובדים בצורה מאובטחת על ידי PayPal. Braxel Markets אינה מאחסנת את פרטי הכרטיס.", encryptionNote: "מוצפן בתקני AES-256 מוסדיים", verifying: "מאמת עסקה מוסדית...", loading: "טוען טרמינל...", globalInfra: "תשתית תשלומים גלובלית", qrCode: "קוד QR", allCards: "כל הכרטיסים", localPay: "תשלום מקומי" },
+  legal: { badgeLegal: "משפטי", termsTitle: "תנאי שירות" },
+  faq: {
+    title: "שאלות נפוצות",
+    badge: "FAQ",
+    q1: "האם נדרש ניסיון קודם?",
+    a1: "לא. התשתית שלנו אוטומטית לחלוטין. עליך רק לבחור את רמת ההקצאה ולעקוב אחר הביצועים דרך הטרמינל.",
+    q2: "מהם הסיכונים הכרוכים?",
+    a2: "כמו בכל שוק פיננסי, קיימים סיכוני הפסד הון עקב תנודתיות. אנו משתמשים בפרוטוקולים מתקדמים להגנת ההון.",
+    q3: "איך המערכת עובדת?",
+    a3: "האלגוריתמים הקנייניים שלנו מבצעים אסטרטגיות כמותיות בתדירות גבוהה בשווקים גלובליים בדיוק של מילישניות.",
+    q4: "האם אפשר לבטל את התוכנית?",
+    a4: "כן. ניתן לבקש ביטול ומשיכת הון בכל עת דרך פרוטוקולי לוח הבקרה."
+  },
+  diffs: {
+    title: "למה BRAXEL MARKETS?",
+    badge: "יתרונות",
+    t1: "טכנולוגיה קניינית",
+    d1: "רשתות עצביות שתוכננו לביצוע ברמה מוסדית.",
+    t2: "אוטומציה מלאה",
+    d2: "ניהול אלגוריתמי 24/7 ללא הטיה רגשית אנושית.",
+    t3: "גישה מופשטת",
+    d3: "תשתית מוסדית נגישה דרך טרמינל אינטואיטיבי.",
+    t4: "רמה מקצועית",
+    d4: "חיבור ישיר למאגרי נזילות גלובליים בהשהיה אולטרא-נמוכה."
+  },
+  signals: {
+    title: "ביצוע",
+    subtitle: "אלגוריתמי",
+    badge: "טרמינל בזמן אמת",
+    desc: "עקוב אחר התשתית הקניינית שלנו בזמן אמת. כל אות מעובד על ידי הרשתות העצביות שלנו בדיוק של מילישניות.",
+    asset: "נכס",
+    type: "סוג",
+    entry: "כניסה",
+    profit: "רווח",
+    status: "מצב",
+    active: "פעיל",
+    completed: "הושלם"
+  }
+};
+
 const resources = {
   en: { translation: enTranslation },
   pt: { translation: ptTranslation },
-  it: { translation: enTranslation }, // Fallback to English for others to prevent key errors
-  es: { translation: enTranslation },
-  fr: { translation: enTranslation },
-  de: { translation: enTranslation },
-  ru: { translation: enTranslation },
-  zh: { translation: enTranslation },
-  ja: { translation: enTranslation },
-  ar: { translation: enTranslation },
-  he: { translation: enTranslation }
+  it: { translation: itTranslation },
+  es: { translation: esTranslation },
+  fr: { translation: frTranslation },
+  de: { translation: deTranslation },
+  ru: { translation: ruTranslation },
+  zh: { translation: zhTranslation },
+  ja: { translation: jaTranslation },
+  ar: { translation: arTranslation },
+  he: { translation: heTranslation }
 };
 
 i18n
