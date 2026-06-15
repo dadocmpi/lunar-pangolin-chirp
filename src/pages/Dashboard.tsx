@@ -351,20 +351,20 @@ const Dashboard = () => {
             <div className="flex-1">
               {kycStatus === 'pending' && (
                 <>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-[#D4AF37]">KYC Verification Required</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Complete identity verification to access all platform features. This is mandatory for all accounts managing capital.</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-[#D4AF37]">{t('dashboard.kycRequired')}</p>
+                  <p className="text-[10px] text-slate-400 mt-1">{t('dashboard.kycRequiredDesc')}</p>
                 </>
               )}
               {kycStatus === 'submitted' && (
                 <>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-yellow-500">KYC Under Review</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Your documents are being reviewed by our compliance team. This usually takes 24-48 hours.</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-yellow-500">{t('dashboard.kycUnderReview')}</p>
+                  <p className="text-[10px] text-slate-400 mt-1">{t('dashboard.kycUnderReviewDesc')}</p>
                 </>
               )}
               {kycStatus === 'rejected' && (
                 <>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-red-500">KYC Verification Rejected</p>
-                  <p className="text-[10px] text-slate-400 mt-1">Your documents were not accepted. Please resubmit with valid documentation.</p>
+                  <p className="text-[11px] font-bold uppercase tracking-widest text-red-500">{t('dashboard.kycRejected')}</p>
+                  <p className="text-[10px] text-slate-400 mt-1">{t('dashboard.kycRejectedDesc')}</p>
                 </>
               )}
             </div>
@@ -372,7 +372,7 @@ const Dashboard = () => {
               onClick={() => { setActiveView('settings'); setSettingsTab('kyc'); }}
               className="bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-10 text-[9px] font-black uppercase tracking-widest shrink-0"
             >
-              {kycStatus === 'rejected' ? 'Resubmit Documents' : 'Complete Verification'}
+              {kycStatus === 'rejected' ? t('dashboard.resubmitDocs') : t('dashboard.completeVerification')}
             </Button>
           </div>
         )}
@@ -433,7 +433,7 @@ const Dashboard = () => {
               <div className="absolute inset-0 bg-[#121212]/80 backdrop-blur-sm z-10 flex items-center justify-center">
                 <div className="text-center p-12 max-w-md">
                   <Shield size={48} className="mx-auto text-[#D4AF37] mb-6" />
-                  <h3 className="text-lg font-black uppercase tracking-tight mb-3">Verification Required</h3>
+                  <h3 className="text-lg font-black uppercase tracking-tight mb-3">{t('dashboard.verificationRequired')}</h3>
                   <p className="text-slate-400 text-[12px] leading-relaxed mb-6">
                     Complete your KYC verification to access all platform features. This is a mandatory compliance requirement for all accounts.
                   </p>
@@ -469,11 +469,11 @@ const Dashboard = () => {
                     </p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total Profit</p>
+                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.totalProfit')}</p>
                     <p className="text-xl md:text-2xl font-serif font-bold text-emerald-500">+12.4%</p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">Drawdown</p>
+                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.drawdown')}</p>
                     <p className="text-xl md:text-2xl font-serif font-bold text-yellow-500">-2.1%</p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
@@ -517,7 +517,7 @@ const Dashboard = () => {
             {activeView === 'performance' && (
               <div className="space-y-8">
                 <div>
-                  <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Analytics</span>
+                  <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.analytics')}</span>
                   <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Performance Dashboard</h2>
                 </div>
 
@@ -529,19 +529,19 @@ const Dashboard = () => {
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingUp size={12} className="text-emerald-500" />
-                      <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Total Profit</p>
+                      <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.totalProfit')}</p>
                     </div>
                     <p className="text-xl font-serif font-bold text-emerald-500">+$3,240.00</p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingDown size={12} className="text-yellow-500" />
-                      <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">Max Drawdown</p>
+                      <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.maxDrawdown')}</p>
                     </div>
                     <p className="text-xl font-serif font-bold text-yellow-500">-4.2%</p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">Assets in Operation</p>
+                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.assetsInOperation')}</p>
                     <p className="text-xl font-serif font-bold text-white">BTC, ETH, SOL</p>
                   </div>
                 </div>
@@ -549,7 +549,7 @@ const Dashboard = () => {
                 <PerformanceChart />
 
                 <div className="bg-[#1A1A1A] border border-white/10 p-8">
-                  <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-6">Monthly Returns</h3>
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-6">{t('dashboard.monthlyReturns')}</h3>
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
                     {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((month, i) => {
                       const returns = [2.1, 1.8, -0.4, 3.2, 2.8, 1.9];
@@ -578,7 +578,7 @@ const Dashboard = () => {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   <form className="bg-[#1A1A1A] border border-white/10 p-8 space-y-6" onSubmit={(e) => e.preventDefault()}>
-                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-4">New Withdrawal Request</h3>
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-4">{t('dashboard.newWithdrawalRequest')}</h3>
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.selectAccount')}</label>
                       <select className="w-full bg-white/5 border border-white/10 h-14 px-4 text-[12px] font-bold uppercase tracking-widest text-white outline-none appearance-none">
@@ -595,12 +595,12 @@ const Dashboard = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Wallet / IBAN</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.walletIban')}</label>
                       <Input placeholder="Crypto wallet address or IBAN" className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Network</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.network')}</label>
                       <select className="w-full bg-white/5 border border-white/10 h-14 px-4 text-[12px] font-bold uppercase tracking-widest text-white outline-none appearance-none">
                         <option className="bg-[#1A1A1A]">ERC-20 (Ethereum)</option>
                         <option className="bg-[#1A1A1A]">TRC-20 (Tron)</option>
@@ -616,7 +616,7 @@ const Dashboard = () => {
 
                   {/* Transaction History */}
                   <div className="bg-[#1A1A1A] border border-white/10 p-8">
-                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Transaction History</h3>
+                    <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">{t('dashboard.transactionHistory')}</h3>
                     <div className="space-y-4">
                       {mockTransactions.map((tx) => (
                         <div key={tx.id} className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5">
@@ -653,7 +653,7 @@ const Dashboard = () => {
             {activeView === 'auditlog' && (
               <div className="space-y-8">
                 <div>
-                  <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Operations</span>
+                  <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.operations')}</span>
                   <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Audit Log</h2>
                   <p className="text-slate-500 text-[12px] mt-2">All algorithmic orders executed on your account.</p>
                 </div>
@@ -662,13 +662,13 @@ const Dashboard = () => {
                   <table className="w-full min-w-[600px]">
                     <thead>
                       <tr className="border-b border-white/5">
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Asset</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Type</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Entry</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Exit</th>
+                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.asset')}</th>
+                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.type')}</th>
+                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.entry')}</th>
+                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.exit')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Profit</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Time</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Status</th>
+                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.time')}</th>
+                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.status')}</th>
                       </tr>
                     </thead>
                     <tbody>
