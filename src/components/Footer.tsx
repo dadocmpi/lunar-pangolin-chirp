@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Send, Twitter, Linkedin, MapPin, Building2, AlertTriangle } from 'lucide-react';
+import { Mail, Send, Twitter, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
@@ -76,20 +76,13 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Company Registration & Address */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 py-8 border-t border-white/5">
+        {/* Company Address */}
+        <div className="mb-12 py-8 border-t border-white/5">
           <div className="flex items-start gap-4">
             <MapPin className="text-[#D4AF37] shrink-0 mt-1" size={16} />
             <div>
               <h5 className="text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{t('footer.address')}</h5>
               <p className="text-slate-500 text-[11px] leading-relaxed">{t('footer.addressValue')}</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <Building2 className="text-[#D4AF37] shrink-0 mt-1" size={16} />
-            <div>
-              <h5 className="text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{t('footer.registration')}</h5>
-              <p className="text-slate-500 text-[11px] leading-relaxed">{t('footer.registrationValue')}</p>
             </div>
           </div>
         </div>

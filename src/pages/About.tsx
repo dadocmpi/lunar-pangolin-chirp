@@ -10,7 +10,7 @@ import MarketTicker from '@/components/MarketTicker';
 const About = () => {
   const { t } = useTranslation();
 
-  const team = t('about.team', { returnObjects: true }) as Array<{ name: string; role: string; bio: string; linkedin: string }>;
+  const team = t('about.team', { returnObjects: true }) as Array<{ name: string; role: string; bio: string; linkedin: string; photo: string }>;
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#D4AF37] selection:text-black">
@@ -84,9 +84,17 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
             {Array.isArray(team) && team.map((member, i) => (
               <div key={i} className="p-12 bg-[#080B12] flex flex-col items-center text-center hover:bg-white/[0.02] transition-all group">
-                <div className="w-20 h-20 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full flex items-center justify-center mb-8 group-hover:border-[#D4AF37]/50 transition-all">
-                  <Users className="text-[#D4AF37]" size={28} />
-                </div>
+                {member.photo ? (
+                  <img 
+                    src={member.photo} 
+                    alt={member.name} 
+                    className="w-24 h-24 rounded-full object-cover border-2 border-[#D4AF37]/20 mb-8 group-hover:border-[#D4AF37]/50 transition-all"
+                  />
+                ) : (
+                  <div className="w-24 h-24 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full flex items-center justify-center mb-8 group-hover:border-[#D4AF37]/50 transition-all">
+                    <Users className="text-[#D4AF37]" size={28} />
+                  </div>
+                )}
                 <h3 className="text-[13px] font-bold uppercase tracking-[0.15em] mb-2 text-white">{member.name}</h3>
                 <p className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.2em] mb-6">{member.role}</p>
                 <p className="text-slate-500 text-[12px] leading-relaxed mb-6">{member.bio}</p>
