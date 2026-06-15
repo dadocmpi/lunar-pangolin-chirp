@@ -16,8 +16,6 @@ import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import Differentiators from '@/components/Differentiators';
 import FAQ from '@/components/FAQ';
-import LiveSignals from '@/components/LiveSignals';
-import ProfitCalculator from '@/components/ProfitCalculator';
 import FloatingSupport from '@/components/FloatingSupport';
 
 const Index = () => {
@@ -98,9 +96,6 @@ const Index = () => {
 
       {/* Differentiators Section */}
       <Differentiators />
-
-      {/* Profit Calculator Section */}
-      <ProfitCalculator />
 
       {/* Methodology Section */}
       <section className="py-32 px-8 bg-[#05070A]">
@@ -185,8 +180,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Live Signals Section */}
-      <LiveSignals />
+
 
       {/* Process Flow Section */}
       <section className="py-32 px-8 bg-[#05070A] border-t border-white/5">
