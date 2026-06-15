@@ -24,8 +24,8 @@ const Index = () => {
   const { t } = useTranslation();
   
   const stats = [
-    { value: "$2.4B+", label: t('stats.volume') },
-    { value: "12,400+", label: t('stats.traders') },
+    { value: t('stats.volume'), label: "" },
+    { value: "500+", label: t('stats.traders') },
     { value: "99.97%", label: t('stats.uptime') },
     { value: "<1.8ms", label: t('stats.latency') },
   ];
@@ -113,22 +113,22 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/5 border border-white/5">
             {[
               {
-                title: t('methodology.momentum.title'),
+                title: t('methodology.statArb.title'),
+                icon: <Scale size={28} />,
+                features: [t('methodology.statArb.f1'), t('methodology.statArb.f2'), t('methodology.statArb.f3')],
+                desc: t('methodology.statArb.desc')
+              },
+              {
+                title: t('methodology.meanRev.title'),
                 icon: <TrendingUp size={28} />,
-                features: [t('methodology.momentum.f1'), t('methodology.momentum.f2'), t('methodology.momentum.f3')],
-                desc: t('methodology.momentum.desc')
+                features: [t('methodology.meanRev.f1'), t('methodology.meanRev.f2'), t('methodology.meanRev.f3')],
+                desc: t('methodology.meanRev.desc')
               },
               {
-                title: t('methodology.volatility.title'),
-                icon: <ShieldAlert size={28} />,
-                features: [t('methodology.volatility.f1'), t('methodology.volatility.f2'), t('methodology.volatility.f3')],
-                desc: t('methodology.volatility.desc')
-              },
-              {
-                title: t('methodology.risk.title'),
-                icon: <PieChart size={28} />,
-                features: [t('methodology.risk.f1'), t('methodology.risk.f2'), t('methodology.risk.f3')],
-                desc: t('methodology.risk.desc')
+                title: t('methodology.hft.title'),
+                icon: <Zap size={28} />,
+                features: [t('methodology.hft.f1'), t('methodology.hft.f2'), t('methodology.hft.f3')],
+                desc: t('methodology.hft.desc')
               }
             ].map((item, i) => (
               <div key={i} className="p-16 bg-[#080B12] flex flex-col hover:bg-white/[0.01] transition-all duration-500 group">
@@ -142,6 +142,43 @@ const Index = () => {
                     </li>
                   ))}
                 </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Transparency / Infrastructure Section */}
+      <section className="py-32 px-8 bg-black border-t border-white/5">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="mb-24 text-center">
+            <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-6 block">{t('transparency.badge')}</span>
+            <h2 className="text-[24px] md:text-[32px] font-serif font-bold uppercase tracking-tight leading-tight">{t('transparency.title')}</h2>
+            <p className="text-slate-400 text-[14px] mt-6 max-w-[680px] mx-auto leading-relaxed">{t('transparency.desc')}</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/5 border border-white/5">
+            {[
+              {
+                title: t('transparency.connectivity.title'),
+                icon: <Network size={28} />,
+                desc: t('transparency.connectivity.desc')
+              },
+              {
+                title: t('transparency.cloud.title'),
+                icon: <Server size={28} />,
+                desc: t('transparency.cloud.desc')
+              },
+              {
+                title: t('transparency.security.title'),
+                icon: <Shield size={28} />,
+                desc: t('transparency.security.desc')
+              }
+            ].map((item, i) => (
+              <div key={i} className="p-16 bg-[#080B12] flex flex-col hover:bg-white/[0.01] transition-all duration-500 group">
+                <div className="text-[#D4AF37] mb-10 group-hover:scale-110 transition-transform duration-500">{item.icon}</div>
+                <h3 className="text-[13px] font-bold uppercase tracking-[0.2em] mb-6 text-white leading-relaxed">{item.title}</h3>
+                <p className="text-slate-500 text-[14px] leading-relaxed font-medium">{item.desc}</p>
               </div>
             ))}
           </div>
