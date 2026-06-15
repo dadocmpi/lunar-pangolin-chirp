@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Send, Twitter, Linkedin } from 'lucide-react';
+import { Mail, Send, Twitter, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
@@ -73,6 +73,28 @@ const Footer = () => {
                 <a href="https://t.me/braxelmarkets" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest hover:text-[#D4AF37]">Telegram Support</a>
               </li>
             </ul>
+          </div>
+        </div>
+
+        {/* Company Address */}
+        <div className="mb-12 py-8 border-t border-white/5">
+          <div className="flex items-start gap-4">
+            <MapPin className="text-[#D4AF37] shrink-0 mt-1" size={16} />
+            <div>
+              <h5 className="text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-2">{t('footer.address')}</h5>
+              <p className="text-slate-500 text-[11px] leading-relaxed">{t('footer.addressValue')}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Risk Disclaimer */}
+        <div className="mb-10 p-6 border border-yellow-900/30 bg-yellow-950/10 rounded-sm">
+          <div className="flex items-start gap-4">
+            <AlertTriangle className="text-yellow-600 shrink-0 mt-0.5" size={16} />
+            <div>
+              <h5 className="text-yellow-600 text-[10px] font-bold uppercase tracking-[0.3em] mb-3">{t('footer.riskTitle')}</h5>
+              <p className="text-slate-500 text-[11px] leading-relaxed">{t('footer.riskText')}</p>
+            </div>
           </div>
         </div>
 
