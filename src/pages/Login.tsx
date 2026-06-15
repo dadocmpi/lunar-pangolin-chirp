@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 const Login = () => {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with loading true
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -23,12 +23,53 @@ const Login = () => {
   const plan = location.state?.plan;
   const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
 
-  // Load saved email on mount
+  // Check for existing session and restore if valid
   useEffect(() => {
-    const savedEmail = localStorage.getItem('rememberedEmail');
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
+    const restoreSession = async () => {
+      try {
+        // Check if remember me was set
+        const rememberedEmail = localStorage.getItem('rememberedEmail');
+        const sessionExpiry = localStorage.getItem('sessionExpiry');
+        
+        // Check if session is still valid (30 days)
+        const isSessionValid = sessionExpiry && parseInt(sessionExpiry) > Date.now();
+        
+        if (isSessionValid && rememberedEmail) {
+          // Restore email
+          setEmail(rememberedEmail);
+          setRememberMe(true);
+          
+          // Check Supabase session
+          const { data: { session }, error } = await supabase.auth.getSession();
+          
+          if (session && !error) {
+            // Session exists, redirect to dashboard
+            navigate('/dashboard');
+            return;
+          }
+        }
+        
+        // Load saved email if exists (for when session expired but user wants to re-login)
+        if (rememberedEmail && !isSessionValid) {
+          setEmail(rememberedEmail);
+        }
+      } catch (err) {
+        console.error('Session restore error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
+  }, [navigate]);
+
+  // Clean up expired sessions
+  useEffect(() => {
+    const sessionExpiry = localStorage.getItem('sessionExpiry');
+    if (sessionExpiry && parseInt(sessionExpiry) < Date.now()) {
+      localStorage.removeItem('rememberedEmail');
+      localStorage.removeItem('sessionExpiry');
+      setRememberMe(false);
     }
   }, []);
 
@@ -52,10 +93,9 @@ const Login = () => {
         throw error;
       }
 
-      // Handle remember me
+      // Handle remember me - set 30 days expiry
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
-        // Keep session for 30 days
         localStorage.setItem('sessionExpiry', (Date.now() + 30 * 24 * 60 * 60 * 1000).toString());
       } else {
         localStorage.removeItem('rememberedEmail');
@@ -71,14 +111,14 @@ const Login = () => {
     }
   };
 
-  // Check if session is still valid
-  useEffect(() => {
-    const sessionExpiry = localStorage.getItem('sessionExpiry');
-    if (sessionExpiry && parseInt(sessionExpiry) < Date.now()) {
-      localStorage.removeItem('rememberedEmail');
-      localStorage.removeItem('sessionExpiry');
-    }
-  }, []);
+  // Show loading while checking session
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#05070A]">
+        <Loader2 className="animate-spin text-[#C5A059]" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#05070A]">
@@ -167,7 +207,7 @@ const Login = () => {
                   </svg>
                 )}
               </button>
-              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Remember Me</span>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('auth.rememberMe')}</span>
             </div>
             
             <Button 
