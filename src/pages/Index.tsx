@@ -22,7 +22,6 @@ const Index = () => {
   const { t } = useTranslation();
   
   const stats = [
-    { value: t('stats.volume'), label: "" },
     { value: "500+", label: t('stats.traders') },
     { value: "99.97%", label: t('stats.uptime') },
     { value: "<1.8ms", label: t('stats.latency') },
@@ -80,7 +79,7 @@ const Index = () => {
 
       {/* Stats Section */}
       <section className="bg-black py-24 px-8 border-b border-white/5">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-16">
           {stats.map((stat, i) => (
             <div key={i} className="text-center group">
               <div className="font-serif text-[32px] md:text-[42px] font-bold text-white mb-3 tracking-[-0.02em] group-hover:text-[#D4AF37] transition-colors duration-500">
