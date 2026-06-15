@@ -109,7 +109,7 @@ const Contact = () => {
                 <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Mail size={28} /></div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">E-mail</p>
-                  <p className="text-slate-400 text-[14px]">marketsbraxel@gmail.com</p>
+                  <a href="mailto:marketsbraxel@ouvidor.net" className="text-slate-400 text-[14px] hover:text-[#D4AF37] transition-colors">marketsbraxel@ouvidor.net</a>
                 </div>
               </div>
               <div className="flex items-start gap-6 group">

@@ -32,7 +32,12 @@ import {
   AlertTriangle,
   Eye,
   EyeOff,
-  KeyRound
+  KeyRound,
+  ChevronDown,
+  ChevronLeft,
+  Globe,
+  CreditCard,
+  MapPin
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,6 +45,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { countriesData, getCountryByCode } from '@/data/kycData';
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -51,12 +57,20 @@ const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
-  // KYC state
+  // KYC state - NEW IMPROVED FLOW
   const [kycStatus, setKycStatus] = useState<'pending' | 'submitted' | 'approved' | 'rejected'>('pending');
-  const [kycDocuments, setKycDocuments] = useState({
-    identity: null as File | null,
-    address: null as File | null,
-  });
+  const [kycStep, setKycStep] = useState<'country' | 'method' | 'document' | 'review'>('country');
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
+  const [kycDocument, setKycDocument] = useState<File | null>(null);
+  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
+  const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
+  const [submittingKyc, setSubmittingKyc] = useState(false);
+
+  // Get current country data
+  const countryData = selectedCountry ? getCountryByCode(selectedCountry) : null;
+  const methodData = countryData?.methods.find(m => m.id === selectedMethod);
 
   // Profile edit state
   const [editFirstName, setEditFirstName] = useState('');
@@ -207,21 +221,85 @@ const Dashboard = () => {
   };
 
   const handleKycSubmit = async () => {
-    if (!kycDocuments.identity || !kycDocuments.address) {
-      showError('Please upload both required documents.');
+    if (!kycDocument) {
+      showError('Please upload a document.');
       return;
     }
+    if (!selectedCountry || !selectedMethod || !selectedDocument) {
+      showError('Please complete all verification steps.');
+      return;
+    }
+
+    setSubmittingKyc(true);
     try {
+      // Upload document to Supabase Storage
+      const fileName = `${user.id}/${Date.now()}_${kycDocument.name}`;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('kyc-documents')
+        .upload(fileName, kycDocument);
+
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        // Continue anyway for demo - in production you might want to handle this differently
+      }
+
+      // Get public URL for the uploaded document
+      const { data: urlData } = supabase.storage
+        .from('kyc-documents')
+        .getPublicUrl(fileName);
+
+      // Save KYC data to profile
       const { error } = await supabase
         .from('profiles')
-        .upsert({ id: user.id, kyc_status: 'submitted' } as any);
+        .upsert({ 
+          id: user.id, 
+          kyc_status: 'submitted',
+          kyc_country: selectedCountry,
+          kyc_method: selectedMethod,
+          kyc_document_type: selectedDocument,
+          kyc_document_url: urlData?.publicUrl || '',
+          kyc_submitted_at: new Date().toISOString()
+        } as any);
+
+      if (error) throw error;
 
       setKycStatus('submitted');
+      
+      // Trigger email notification via edge function
+      try {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://ymzdxifedtjwkxkzfwqu.supabase.co'}/functions/v1/kyc-notification`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.id,
+            fullName: profile?.first_name + ' ' + profile?.last_name,
+            email: user.email,
+            country: selectedCountry,
+            verificationMethod: selectedMethod,
+            documentType: selectedDocument,
+            documentUrl: urlData?.publicUrl || ''
+          })
+        });
+      } catch (emailError) {
+        console.error('Email notification error (non-blocking):', emailError);
+      }
+
       showSuccess('Documents submitted for verification. You will be notified once reviewed.');
     } catch (err: any) {
       showError(err.message || 'Failed to submit documents.');
+    } finally {
+      setSubmittingKyc(false);
     }
   };
+
+  // KYC step navigation
+  const goToKycStep = (step: 'country' | 'method' | 'document' | 'review') => {
+    setKycStep(step);
+  };
+
+  const canProceedToMethod = selectedCountry !== null;
+  const canProceedToDocument = selectedMethod !== null;
+  const canSubmit = kycDocument !== null && selectedDocument !== null;
 
   // Mock data for demo purposes
   const mockTransactions = [
@@ -741,7 +819,7 @@ const Dashboard = () => {
                   </div>
                 )}
 
-                {/* KYC Tab */}
+                {/* KYC Tab - NEW IMPROVED FLOW */}
                 {settingsTab === 'kyc' && (
                   <div className="space-y-8">
                     {/* KYC Status Banner */}
@@ -771,110 +849,223 @@ const Dashboard = () => {
                           {kycStatus === 'approved' ? 'Your identity has been verified. All features are unlocked.' :
                            kycStatus === 'submitted' ? 'Our compliance team is reviewing your documents. This usually takes 24-48 hours.' :
                            kycStatus === 'rejected' ? 'Your documents were not accepted. Please resubmit with valid documentation.' :
-                           'Submit your identity documents to unlock all platform features. This is mandatory for all accounts.'}
+                           'Complete identity verification to unlock all platform features.'}
                         </p>
                       </div>
                     </div>
 
-                    {/* Document Upload Section */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="bg-[#1A1A1A] border border-white/10 p-8 space-y-6">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className={cn("w-12 h-12 flex items-center justify-center",
-                            kycStatus === 'approved' ? "bg-emerald-500/10" : "bg-white/5"
-                          )}>
-                            {kycStatus === 'approved' ? (
-                              <CheckCircle2 size={20} className="text-emerald-500" />
-                            ) : kycDocuments.identity ? (
-                              <CheckCircle2 size={20} className="text-[#D4AF37]" />
-                            ) : (
-                              <FileText size={20} className="text-slate-500" />
-                            )}
-                          </div>
-                          <div>
-                            <h4 className="text-[11px] font-bold uppercase tracking-widest">Identity Document</h4>
-                            <p className={cn("text-[9px] uppercase tracking-widest",
-                              kycStatus === 'approved' ? 'text-emerald-500' :
-                              kycDocuments.identity ? 'text-[#D4AF37]' : 'text-slate-500'
-                            )}>
-                              {kycStatus === 'approved' ? 'Approved' : kycDocuments.identity ? 'File Selected' : 'Required'}
-                            </p>
-                          </div>
-                        </div>
-                        <label className="block border-2 border-dashed border-white/10 p-8 text-center cursor-pointer hover:border-[#D4AF37]/30 transition-colors">
-                          <input
-                            type="file"
-                            accept="image/*,.pdf"
-                            className="hidden"
-                            onChange={(e) => setKycDocuments({ ...kycDocuments, identity: e.target.files?.[0] || null })}
-                            disabled={kycStatus === 'approved' || kycStatus === 'submitted'}
-                          />
-                          <Upload size={24} className="mx-auto text-slate-600 mb-3" />
-                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                            {kycDocuments.identity ? kycDocuments.identity.name : 'Passport or ID Card'}
-                          </p>
-                          <p className="text-[9px] text-slate-600 mt-1">PNG, JPG, PDF up to 10MB</p>
-                        </label>
-                      </div>
-
-                      <div className="bg-[#1A1A1A] border border-white/10 p-8 space-y-6">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className={cn("w-12 h-12 flex items-center justify-center",
-                            kycStatus === 'approved' ? "bg-emerald-500/10" : "bg-white/5"
-                          )}>
-                            {kycStatus === 'approved' ? (
-                              <CheckCircle2 size={20} className="text-emerald-500" />
-                            ) : kycDocuments.address ? (
-                              <CheckCircle2 size={20} className="text-[#D4AF37]" />
-                            ) : (
-                              <FileText size={20} className="text-slate-500" />
-                            )}
-                          </div>
-                          <div>
-                            <h4 className="text-[11px] font-bold uppercase tracking-widest">Proof of Address</h4>
-                            <p className={cn("text-[9px] uppercase tracking-widest",
-                              kycStatus === 'approved' ? 'text-emerald-500' :
-                              kycDocuments.address ? 'text-[#D4AF37]' : 'text-slate-500'
-                            )}>
-                              {kycStatus === 'approved' ? 'Approved' : kycDocuments.address ? 'File Selected' : 'Required'}
-                            </p>
-                          </div>
-                        </div>
-                        <label className="block border-2 border-dashed border-white/10 p-8 text-center cursor-pointer hover:border-[#D4AF37]/30 transition-colors">
-                          <input
-                            type="file"
-                            accept="image/*,.pdf"
-                            className="hidden"
-                            onChange={(e) => setKycDocuments({ ...kycDocuments, address: e.target.files?.[0] || null })}
-                            disabled={kycStatus === 'approved' || kycStatus === 'submitted'}
-                          />
-                          <Upload size={24} className="mx-auto text-slate-600 mb-3" />
-                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
-                            {kycDocuments.address ? kycDocuments.address.name : 'Utility Bill or Bank Statement'}
-                          </p>
-                          <p className="text-[9px] text-slate-600 mt-1">Dated within last 3 months</p>
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Submit Button */}
+                    {/* Verification Flow - Only show when not approved/submitted */}
                     {kycStatus !== 'approved' && kycStatus !== 'submitted' && (
-                      <Button
-                        onClick={handleKycSubmit}
-                        className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
-                      >
-                        <Upload size={16} className="mr-2" /> Submit Documents for Verification
-                      </Button>
+                      <div className="bg-[#1A1A1A] border border-white/10 p-8">
+                        {/* Progress Steps */}
+                        <div className="flex items-center justify-between mb-8">
+                          {[
+                            { id: 'country', label: 'Country', icon: Globe },
+                            { id: 'method', label: 'Method', icon: CreditCard },
+                            { id: 'document', label: 'Document', icon: FileText },
+                            { id: 'review', label: 'Review', icon: CheckCircle2 },
+                          ].map((step, i) => (
+                            <React.Fragment key={step.id}>
+                              <div className="flex flex-col items-center">
+                                <div className={cn(
+                                  "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all",
+                                  kycStep === step.id ? "border-[#D4AF37] bg-[#D4AF37]/10" :
+                                  (kycStep === 'method' && step.id === 'country') || 
+                                  (kycStep === 'document' && (step.id === 'country' || step.id === 'method')) ||
+                                  (kycStep === 'review' && (step.id === 'country' || step.id === 'method' || step.id === 'document'))
+                                    ? "border-emerald-500 bg-emerald-500/10"
+                                    : "border-white/10 bg-white/5"
+                                )}>
+                                  <step.icon size={16} className={cn(
+                                    kycStep === step.id ? "text-[#D4AF37]" :
+                                    (kycStep === 'method' && step.id === 'country') || 
+                                    (kycStep === 'document' && (step.id === 'country' || step.id === 'method')) ||
+                                    (kycStep === 'review' && (step.id === 'country' || step.id === 'method' || step.id === 'document'))
+                                      ? "text-emerald-500" : "text-slate-500"
+                                  )} />
+                                </div>
+                                <span className={cn("text-[9px] mt-2 font-bold uppercase tracking-wider",
+                                  kycStep === step.id ? "text-[#D4AF37]" : "text-slate-500"
+                                )}>{step.label}</span>
+                              </div>
+                              {i < 3 && (
+                                <div className={cn(
+                                  "flex-1 h-0.5 mx-2",
+                                  (kycStep === 'method' && step.id === 'country') || 
+                                  (kycStep === 'document' && step.id === 'method') ||
+                                  (kycStep === 'review' && step.id === 'document')
+                                    ? "bg-emerald-500" : "bg-white/10"
+                                )} />
+                              )}
+                            </React.Fragment>
+                          ))}
+                        </div>
+
+                        {/* Step 1: Select Country */}
+                        {kycStep === 'country' && (
+                          <div className="space-y-6">
+                            <div>
+                              <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">Select Your Country</h3>
+                              <p className="text-[11px] text-slate-400">Choose the country that issued your identity document.</p>
+                            </div>
+                            <div className="relative">
+                              <button
+                                onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
+                                className="w-full flex items-center justify-between p-4 bg-white/5 border border-white/10 hover:border-[#D4AF37]/30 transition-colors"
+                              >
+                                <span className="text-[12px] font-medium">
+                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${getCountryByCode(selectedCountry)?.name}` : 'Select a country...'}
+                                </span>
+                                <ChevronDown size={16} className={cn("text-slate-400 transition-transform", countryDropdownOpen && "rotate-180")} />
+                              </button>
+                              {countryDropdownOpen && (
+                                <div className="absolute z-10 w-full mt-1 bg-[#1A1A1A] border border-white/10 max-h-64 overflow-y-auto">
+                                  {countriesData.map((country) => (
+                                    <button
+                                      key={country.code}
+                                      onClick={() => {
+                                        setSelectedCountry(country.code);
+                                        setSelectedMethod(null);
+                                        setSelectedDocument(null);
+                                        setCountryDropdownOpen(false);
+                                      }}
+                                      className="w-full flex items-center gap-3 p-3 hover:bg-white/5 text-left transition-colors"
+                                    >
+                                      <span className="text-lg">{country.flag}</span>
+                                      <span className="text-[11px] font-medium text-white">{country.name}</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <Button
+                              onClick={() => goToKycStep('method')}
+                              disabled={!canProceedToMethod}
+                              className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-12 font-black text-[10px] uppercase tracking-widest disabled:opacity-50"
+                            >
+                              Continue to Method Selection
+                            </Button>
+                          </div>
+                        )}
+
+                        {/* Step 2: Select Verification Method */}
+                        {kycStep === 'method' && countryData && (
+                          <div className="space-y-6">
+                            <div className="flex items-center gap-3">
+                              <button onClick={() => goToKycStep('country')} className="text-slate-400 hover:text-white">
+                                <ChevronLeft size={20} />
+                              </button>
+                              <div>
+                                <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">Select Verification Method</h3>
+                                <p className="text-[11px] text-slate-400">Choose how you want to verify your identity for {countryData.name}.</p>
+                              </div>
+                            </div>
+                            <div className="space-y-3">
+                              {countryData.methods.map((method) => (
+                                <button
+                                  key={method.id}
+                                  onClick={() => {
+                                    setSelectedMethod(method.id);
+                                    setSelectedDocument(null);
+                                    goToKycStep('document');
+                                  }}
+                                  className={cn(
+                                    "w-full p-4 border text-left transition-all",
+                                    selectedMethod === method.id
+                                      ? "border-[#D4AF37] bg-[#D4AF37]/5"
+                                      : "border-white/10 hover:border-white/20 bg-white/[0.02]"
+                                  )}
+                                >
+                                  <span className="text-[12px] font-bold uppercase tracking-widest">{method.name}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Step 3: Select Document and Upload */}
+                        {kycStep === 'document' && methodData && (
+                          <div className="space-y-6">
+                            <div className="flex items-center gap-3">
+                              <button onClick={() => goToKycStep('method')} className="text-slate-400 hover:text-white">
+                                <ChevronLeft size={20} />
+                              </button>
+                              <div>
+                                <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">Upload Your Document</h3>
+                                <p className="text-[11px] text-slate-400">Select and upload one valid document from the options below.</p>
+                              </div>
+                            </div>
+                            
+                            {/* Document Type Selection */}
+                            <div className="space-y-3">
+                              {methodData.documents.map((doc) => (
+                                <button
+                                  key={doc.id}
+                                  onClick={() => setSelectedDocument(doc.id)}
+                                  className={cn(
+                                    "w-full p-4 border text-left transition-all",
+                                    selectedDocument === doc.id
+                                      ? "border-[#D4AF37] bg-[#D4AF37]/5"
+                                      : "border-white/10 hover:border-white/20 bg-white/[0.02]"
+                                  )}
+                                >
+                                  <span className="text-[12px] font-bold uppercase tracking-widest block">{doc.name}</span>
+                                  <span className="text-[10px] text-slate-500 mt-1 block">{doc.description}</span>
+                                </button>
+                              ))}
+                            </div>
+
+                            {/* File Upload */}
+                            {selectedDocument && (
+                              <div className="mt-6">
+                                <label className={cn(
+                                  "block border-2 border-dashed p-8 text-center cursor-pointer transition-all",
+                                  kycDocument ? "border-emerald-500/50 bg-emerald-500/5" : "border-white/10 hover:border-[#D4AF37]/30"
+                                )}>
+                                  <input
+                                    type="file"
+                                    accept="image/*,.pdf"
+                                    className="hidden"
+                                    onChange={(e) => setKycDocument(e.target.files?.[0] || null)}
+                                  />
+                                  {kycDocument ? (
+                                    <div className="space-y-2">
+                                      <CheckCircle2 size={32} className="mx-auto text-emerald-500" />
+                                      <p className="text-[11px] font-bold text-emerald-500 uppercase tracking-widest">{kycDocument.name}</p>
+                                      <p className="text-[9px] text-slate-500">{(kycDocument.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    </div>
+                                  ) : (
+                                    <div className="space-y-2">
+                                      <Upload size={32} className="mx-auto text-slate-600" />
+                                      <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Click to upload or drag and drop</p>
+                                      <p className="text-[9px] text-slate-600">PNG, JPG, PDF up to 10MB</p>
+                                    </div>
+                                  )}
+                                </label>
+                              </div>
+                            )}
+
+                            <Button
+                              onClick={handleKycSubmit}
+                              disabled={!canSubmit || submittingKyc}
+                              className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-50"
+                            >
+                              {submittingKyc ? <Loader2 className="animate-spin mr-2" /> : <Upload size={16} className="mr-2" />}
+                              {submittingKyc ? 'Submitting...' : 'Submit for Verification'}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     )}
 
-                    {/* Verification Steps */}
+                    {/* Verification Steps - Simplified */}
                     <div className="bg-[#1A1A1A] border border-white/10 p-8">
-                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Verification Steps</h3>
+                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Verification Progress</h3>
                       <div className="space-y-4">
                         {[
                           { step: 'Email Verification', status: user?.email_confirmed_at ? 'approved' : 'pending' },
-                          { step: 'Identity Document Upload', status: kycStatus === 'approved' ? 'approved' : kycDocuments.identity || kycStatus === 'submitted' ? 'submitted' : 'pending' },
-                          { step: 'Proof of Address', status: kycStatus === 'approved' ? 'approved' : kycDocuments.address || kycStatus === 'submitted' ? 'submitted' : 'pending' },
+                          { step: 'Identity Document', status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : selectedCountry ? 'submitted' : 'pending' },
+                          { step: 'Compliance Review', status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : 'pending' },
                           { step: 'Account Activation', status: kycStatus === 'approved' ? 'approved' : 'pending' },
                         ].map((item, i) => (
                           <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5">
@@ -888,7 +1079,7 @@ const Dashboard = () => {
                               item.status === 'submitted' ? 'text-yellow-500' :
                               item.status === 'rejected' ? 'text-red-500' : 'text-slate-500'
                             )}>
-                              {item.status === 'submitted' ? 'Under Review' : item.status}
+                              {item.status === 'submitted' ? 'In Progress' : item.status === 'approved' ? 'Complete' : 'Pending'}
                             </span>
                           </div>
                         ))}

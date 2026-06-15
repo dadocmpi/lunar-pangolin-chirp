@@ -34,7 +34,8 @@ const Register = () => {
         options: {
           data: {
             full_name: fullName,
-          }
+          },
+          persistSession: true, // Enable session persistence
         }
       });
 
