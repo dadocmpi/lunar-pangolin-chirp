@@ -19,7 +19,11 @@ import {
   Activity,
   CreditCard,
   QrCode,
-  Smartphone
+  Smartphone,
+  Globe2,
+  Building2,
+  User,
+  FileText
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
@@ -28,6 +32,30 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
+// Lista de países com moedas
+const countries = [
+  { code: 'BR', name: 'Brazil', currency: 'BRL', flag: '🇧🇷' },
+  { code: 'US', name: 'United States', currency: 'USD', flag: '🇺🇸' },
+  { code: 'GB', name: 'United Kingdom', currency: 'GBP', flag: '🇬🇧' },
+  { code: 'DE', name: 'Germany', currency: 'EUR', flag: '🇩🇪' },
+  { code: 'FR', name: 'France', currency: 'EUR', flag: '🇫🇷' },
+  { code: 'ES', name: 'Spain', currency: 'EUR', flag: '🇪🇸' },
+  { code: 'IT', name: 'Italy', currency: 'EUR', flag: '🇮🇹' },
+  { code: 'PT', name: 'Portugal', currency: 'EUR', flag: '🇵🇹' },
+  { code: 'MX', name: 'Mexico', currency: 'MXN', flag: '🇲🇽' },
+  { code: 'AR', name: 'Argentina', currency: 'ARS', flag: '🇦🇷' },
+  { code: 'CL', name: 'Chile', currency: 'CLP', flag: '🇨🇱' },
+  { code: 'CO', name: 'Colombia', currency: 'COP', flag: '🇨🇴' },
+  { code: 'JP', name: 'Japan', currency: 'JPY', flag: '🇯🇵' },
+  { code: 'CN', name: 'China', currency: 'CNY', flag: '🇨🇳' },
+  { code: 'KR', name: 'South Korea', currency: 'KRW', flag: '🇰🇷' },
+  { code: 'IN', name: 'India', currency: 'INR', flag: '🇮🇳' },
+  { code: 'RU', name: 'Russia', currency: 'USD', flag: '🇷🇺' },
+  { code: 'AE', name: 'UAE', currency: 'AED', flag: '🇦🇪' },
+  { code: 'SA', name: 'Saudi Arabia', currency: 'SAR', flag: '🇸🇦' },
+  { code: 'OTHER', name: 'Other Country', currency: 'USD', flag: '🌍' },
+];
+
 const Checkout = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -35,8 +63,21 @@ const Checkout = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [showPayPal, setShowPayPal] = useState(false);
+  const [showWise, setShowWise] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'paypal' | 'wise' | null>(null);
   const plan = location.state?.plan;
+
+  // Dados do cliente para Wise
+  const [clientData, setClientData] = useState({
+    country: '',
+    fullName: '',
+    document: '',
+    address: '',
+    city: '',
+    postalCode: '',
+  });
+  const [step, setStep] = useState<'method' | 'data' | 'payment'>('method');
 
   const getPayPalLocale = (lng: string) => {
     const map: Record<string, string> = {
@@ -102,6 +143,78 @@ const Checkout = () => {
   }
 
   const numericPrice = plan.price.replace(/[^0-9.]/g, '');
+  
+  const handleSelectPaymentMethod = (method: 'paypal' | 'wise') => {
+    setPaymentMethod(method);
+    if (method === 'wise') {
+      setShowWise(true);
+      setShowPayPal(false);
+      // Preencher com dados do usuário se disponíveis
+      if (user) {
+        setClientData(prev => ({
+          ...prev,
+          fullName: user.user_metadata?.full_name || user.email?.split('@')[0] || '',
+        }));
+      }
+    } else {
+      setShowPayPal(true);
+      setShowWise(false);
+    }
+    setStep('payment');
+  };
+
+  const handleWiseSubmit = async () => {
+    // Validar dados
+    if (!clientData.country || !clientData.fullName || !clientData.document) {
+      showError(t('checkout.fillAllFields') || "Please fill all required fields");
+      return;
+    }
+    
+    setProcessing(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // Aqui você integraria com a API do Wise
+      // Por enquanto, simulamos a criação de uma conta Wise
+      const response = await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/wise-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: JSON.stringify({
+          planName: plan.name,
+          accountSize: plan.accountSize,
+          clientData: clientData,
+          amount: numericPrice
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.status === 'success' || result.status === 'pending') {
+        // Redirecionar para o Wise ou mostrar instruções
+        if (result.wiseUrl) {
+          window.open(result.wiseUrl, '_blank');
+        }
+        showSuccess(t('checkout.wiseInstructions') || "Wise payment instructions sent. Complete your payment and return here.");
+        navigate('/dashboard');
+      } else {
+        throw new Error(result.error || "Error processing Wise payment");
+      }
+    } catch (error: any) {
+      showError(error.message || "Error processing payment. Please contact support.");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleBackToMethod = () => {
+    setStep('method');
+    setPaymentMethod(null);
+    setShowPayPal(false);
+    setShowWise(false);
+  };
 
   return (
     <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#C5A059] selection:text-black">
@@ -228,49 +341,215 @@ const Checkout = () => {
                     <ShieldCheck size={16} className="text-green-500" />
                   </div>
 
-                  {!showPayPal ? (
+                  {!showPayPal && !showWise ? (
                     <div className="space-y-8 animate-fadeInUp">
                       <div className="space-y-4">
-                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.confirmDeployment')}</h2>
+                        <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.selectPaymentMethod')}</h2>
                         <p className="text-slate-500 text-[10px] uppercase tracking-widest leading-relaxed">
-                          {t('checkout.deploymentDesc', { plan: plan.name })}
+                          {t('checkout.choosePayment')}
                         </p>
                       </div>
 
-                      <div className="p-6 bg-white/[0.02] border border-white/10 space-y-6">
-                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 text-center">{t('checkout.globalInfra')}</p>
-                        <div className="grid grid-cols-3 gap-4">
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
-                              <QrCode size={18} />
+                      {/* Seleção de Método de Pagamento */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* PayPal */}
+                        <button
+                          onClick={() => handleSelectPaymentMethod('paypal')}
+                          className="p-6 bg-white/[0.02] border border-white/10 hover:border-[#C5A059] transition-all text-left group"
+                        >
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-[#003087]/20 flex items-center justify-center">
+                              <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5" />
                             </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.qrCode')}</span>
-                          </div>
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
-                              <CreditCard size={18} />
+                            <div>
+                              <h3 className="text-[11px] font-bold uppercase tracking-widest">PayPal</h3>
+                              <p className="text-[9px] text-slate-500">Credit/Debit Cards</p>
                             </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.allCards')}</span>
                           </div>
-                          <div className="flex flex-col items-center gap-2">
-                            <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
-                              <Smartphone size={18} />
+                          <p className="text-[9px] text-slate-600 uppercase tracking-widest">
+                            {t('checkout.paypalDesc') || "Fast and secure payment with PayPal protection"}
+                          </p>
+                        </button>
+
+                        {/* Wise */}
+                        <button
+                          onClick={() => handleSelectPaymentMethod('wise')}
+                          className="p-6 bg-white/[0.02] border border-white/10 hover:border-[#C5A059] transition-all text-left group"
+                        >
+                          <div className="flex items-center gap-4 mb-4">
+                            <div className="w-12 h-12 bg-[#00B9E6]/20 flex items-center justify-center">
+                              <svg viewBox="0 0 24 24" className="h-6 w-6 text-[#00B9E6]" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-6h-2v6zm0-8h2V7h-2v2z"/>
+                              </svg>
                             </div>
-                            <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.localPay')}</span>
+                            <div>
+                              <h3 className="text-[11px] font-bold uppercase tracking-widest">Wise</h3>
+                              <p className="text-[9px] text-slate-500">{t('checkout.wiseLabel') || "International Transfers"}</p>
+                            </div>
                           </div>
-                        </div>
+                          <p className="text-[9px] text-slate-600 uppercase tracking-widest">
+                            {t('checkout.wiseDesc') || "Low cost international bank transfers"}
+                          </p>
+                        </button>
                       </div>
 
-                      <Button 
-                        onClick={() => setShowPayPal(true)}
-                        className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-16 font-black text-[12px] uppercase tracking-[0.3em] transition-all group"
-                      >
-                        {t('checkout.proceedPayment')} <ChevronRight size={18} className="ml-2 group-hover:translate-x-1 transition-transform" />
-                      </Button>
+                      {/* Wise Form */}
+                      {showWise && (
+                        <div className="p-6 bg-white/[0.02] border border-[#00B9E6]/30 space-y-6 animate-fadeInUp">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Globe2 size={16} className="text-[#00B9E6]" />
+                              <span className="text-[11px] font-bold uppercase tracking-widest text-[#00B9E6]">{t('checkout.wiseForm')}</span>
+                            </div>
+                            <button 
+                              onClick={handleBackToMethod}
+                              className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
+                            >
+                              {t('checkout.back')}
+                            </button>
+                          </div>
+
+                          {/* Seleção de País */}
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.selectCountry')} *</label>
+                            <select
+                              value={clientData.country}
+                              onChange={(e) => setClientData({...clientData, country: e.target.value})}
+                              className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white uppercase tracking-widest focus:border-[#00B9E6] outline-none"
+                            >
+                              <option value="">{t('checkout.selectCountry')}</option>
+                              {countries.map(c => (
+                                <option key={c.code} value={c.code}>{c.flag} {c.name} ({c.currency})</option>
+                              ))}
+                            </select>
+                          </div>
+
+                          {/* Nome Completo */}
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.fullName')} *</label>
+                            <div className="relative">
+                              <User size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                              <input
+                                type="text"
+                                value={clientData.fullName}
+                                onChange={(e) => setClientData({...clientData, fullName: e.target.value})}
+                                placeholder={t('checkout.fullNamePlaceholder') || "John Doe"}
+                                className="w-full bg-white/5 border border-white/10 h-12 pl-12 pr-4 text-[11px] font-medium text-white placeholder:text-slate-700 uppercase tracking-widest focus:border-[#00B9E6] outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Documento (CPF/CNPJ/Passport) */}
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
+                              {clientData.country === 'BR' ? 'CPF/CNPJ' : 'ID/Passport'} *
+                            </label>
+                            <div className="relative">
+                              <FileText size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                              <input
+                                type="text"
+                                value={clientData.document}
+                                onChange={(e) => setClientData({...clientData, document: e.target.value})}
+                                placeholder={clientData.country === 'BR' ? '000.000.000-00' : 'AB123456'}
+                                className="w-full bg-white/5 border border-white/10 h-12 pl-12 pr-4 text-[11px] font-medium text-white placeholder:text-slate-700 uppercase tracking-widest focus:border-[#00B9E6] outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Endereço */}
+                          <div className="space-y-2">
+                            <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.address')} *</label>
+                            <div className="relative">
+                              <Building2 size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" />
+                              <input
+                                type="text"
+                                value={clientData.address}
+                                onChange={(e) => setClientData({...clientData, address: e.target.value})}
+                                placeholder={t('checkout.addressPlaceholder') || "123 Main St, Apt 4"}
+                                className="w-full bg-white/5 border border-white/10 h-12 pl-12 pr-4 text-[11px] font-medium text-white placeholder:text-slate-700 uppercase tracking-widest focus:border-[#00B9E6] outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Cidade e CEP */}
+                          <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                              <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.city')} *</label>
+                              <input
+                                type="text"
+                                value={clientData.city}
+                                onChange={(e) => setClientData({...clientData, city: e.target.value})}
+                                placeholder={t('checkout.cityPlaceholder') || "São Paulo"}
+                                className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 uppercase tracking-widest focus:border-[#00B9E6] outline-none"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.postalCode')} *</label>
+                              <input
+                                type="text"
+                                value={clientData.postalCode}
+                                onChange={(e) => setClientData({...clientData, postalCode: e.target.value})}
+                                placeholder={t('checkout.postalCodePlaceholder') || "01310-100"}
+                                className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 uppercase tracking-widest focus:border-[#00B9E6] outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          <Button 
+                            onClick={handleWiseSubmit}
+                            disabled={processing}
+                            className="w-full bg-[#00B9E6] hover:bg-[#00a3c9] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all"
+                          >
+                            {processing ? <Loader2 className="animate-spin" /> : t('checkout.proceedWise')}
+                          </Button>
+
+                          <p className="text-[8px] text-center text-slate-600 uppercase tracking-widest">
+                            {t('checkout.wiseNote') || "You will be redirected to Wise to complete your international transfer"}
+                          </p>
+                        </div>
+                      )}
+
+                      {!showWise && (
+                        <div className="p-6 bg-white/[0.02] border border-white/10 space-y-6">
+                          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 text-center">{t('checkout.globalInfra')}</p>
+                          <div className="grid grid-cols-3 gap-4">
+                            <div className="flex flex-col items-center gap-2">
+                              <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
+                                <QrCode size={18} />
+                              </div>
+                              <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.qrCode')}</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-2">
+                              <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
+                                <CreditCard size={18} />
+                              </div>
+                              <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.allCards')}</span>
+                            </div>
+                            <div className="flex flex-col items-center gap-2">
+                              <div className="w-10 h-10 bg-white/5 flex items-center justify-center text-[#C5A059]">
+                                <Smartphone size={18} />
+                              </div>
+                              <span className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.localPay')}</span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {showPayPal && !showWise && (
+                        <Button 
+                          onClick={() => setShowPayPal(false)}
+                          className="w-full bg-white/5 hover:bg-white/10 text-white rounded-none h-12 font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+                        >
+                          {t('checkout.back')}
+                        </Button>
+                      )}
 
                       <div className="flex flex-col gap-4">
                         <div className="flex items-center justify-center gap-6 opacity-40 grayscale">
                           <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-4" />
+                          <svg viewBox="0 0 24 24" className="h-5 text-[#00B9E6]" fill="currentColor">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+                          </svg>
                           <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-3" />
                           <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-5" />
                         </div>
@@ -282,7 +561,7 @@ const Checkout = () => {
                       <div className="flex items-center justify-between">
                         <h2 className="text-[12px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">{t('checkout.secureGateway')}</h2>
                         <button 
-                          onClick={() => setShowPayPal(false)}
+                          onClick={() => { setShowPayPal(false); setShowWise(false); setStep('method'); }}
                           className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
                         >
                           {t('checkout.back')}
