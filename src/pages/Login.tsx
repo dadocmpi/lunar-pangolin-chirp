@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 const Login = () => {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(true); // Start with loading true
+  const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
@@ -23,55 +23,30 @@ const Login = () => {
   const plan = location.state?.plan;
   const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
 
-  // Check for existing session and restore if valid
+  // On mount: if a valid Supabase session exists, go straight to dashboard.
+  // Sessions persist indefinitely via localStorage until the user clicks logout.
   useEffect(() => {
-    const restoreSession = async () => {
+    const checkSession = async () => {
       try {
-        // Check if remember me was set
-        const rememberedEmail = localStorage.getItem('rememberedEmail');
-        const sessionExpiry = localStorage.getItem('sessionExpiry');
-        
-        // Check if session is still valid (30 days)
-        const isSessionValid = sessionExpiry && parseInt(sessionExpiry) > Date.now();
-        
-        if (isSessionValid && rememberedEmail) {
-          // Restore email
-          setEmail(rememberedEmail);
-          setRememberMe(true);
-          
-          // Check Supabase session
-          const { data: { session }, error } = await supabase.auth.getSession();
-          
-          if (session && !error) {
-            // Session exists, redirect to dashboard
-            navigate('/dashboard');
-            return;
-          }
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate(from, { replace: true });
+          return;
         }
-        
-        // Load saved email if exists (for when session expired but user wants to re-login)
-        if (rememberedEmail && !isSessionValid) {
-          setEmail(rememberedEmail);
+        // Pre-fill email if the user had "Remember Me" checked previously
+        const savedEmail = localStorage.getItem('rememberedEmail');
+        if (savedEmail) {
+          setEmail(savedEmail);
+          setRememberMe(true);
         }
       } catch (err) {
-        console.error('Session restore error:', err);
+        console.error('Session check error:', err);
       } finally {
         setLoading(false);
       }
     };
-
-    restoreSession();
-  }, [navigate]);
-
-  // Clean up expired sessions
-  useEffect(() => {
-    const sessionExpiry = localStorage.getItem('sessionExpiry');
-    if (sessionExpiry && parseInt(sessionExpiry) < Date.now()) {
-      localStorage.removeItem('rememberedEmail');
-      localStorage.removeItem('sessionExpiry');
-      setRememberMe(false);
-    }
-  }, []);
+    checkSession();
+  }, [navigate, from]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +59,6 @@ const Login = () => {
       });
 
       if (error) {
-        // Check if it's a "Invalid login credentials" error
         if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
           showError("Account not found. Please create an account first.");
           navigate('/register', { state: { from, plan } });
@@ -93,16 +67,15 @@ const Login = () => {
         throw error;
       }
 
-      // Handle remember me - set 30 days expiry
+      // Remember Me — just saves the email for next visit pre-fill.
+      // The session itself always persists until logout.
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
-        localStorage.setItem('sessionExpiry', (Date.now() + 30 * 24 * 60 * 60 * 1000).toString());
       } else {
         localStorage.removeItem('rememberedEmail');
-        localStorage.removeItem('sessionExpiry');
       }
 
-      showSuccess("Login successful!");
+      showSuccess(t('auth.loginSuccess') || "Login successful!");
       navigate(from, { state: { plan } });
     } catch (error: any) {
       showError(error.message || "Error logging in.");
@@ -111,7 +84,6 @@ const Login = () => {
     }
   };
 
-  // Show loading while checking session
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#05070A]">
@@ -150,7 +122,7 @@ const Login = () => {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="mb-10">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Security</span>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('auth.securityLabel')}</span>
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{t('auth.loginTitle')}</h1>
             <p className="text-slate-500 text-xs mt-2">{t('auth.loginSubtitle')}</p>
           </div>
@@ -189,7 +161,7 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Remember Me Checkbox */}
+            {/* Remember Me — saves email for pre-fill; session always persists until logout */}
             <div className="flex items-center gap-3">
               <button
                 type="button"
@@ -220,7 +192,7 @@ const Login = () => {
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              {t('auth.noAccount')} <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">Create account</Link>
+              {t('auth.noAccount')} <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">{t('auth.createAccount')}</Link>
             </p>
           </div>
         </div>

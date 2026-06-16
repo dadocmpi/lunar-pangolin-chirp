@@ -95,8 +95,9 @@ const Dashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const channel = supabase
-        .channel('schema-db-changes')
+      // Subscribe to services changes (for portfolio updates)
+      const servicesChannel = supabase
+        .channel('services-changes')
         .on(
           'postgres_changes',
           {
@@ -109,7 +110,35 @@ const Dashboard = () => {
         )
         .subscribe();
 
-      return () => { supabase.removeChannel(channel); };
+      // Subscribe to profile changes (for real-time KYC status updates)
+      const profileChannel = supabase
+        .channel('profile-kyc-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${user.id}`
+          },
+          (payload) => {
+            const newKycStatus = (payload.new as any)?.kyc_status;
+            if (newKycStatus) {
+              setKycStatus(newKycStatus);
+              if (newKycStatus === 'approved') {
+                showSuccess('Your identity has been verified! All features are now unlocked.');
+              } else if (newKycStatus === 'rejected') {
+                showError('Your verification was rejected. Please resubmit your documents.');
+              }
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(servicesChannel);
+        supabase.removeChannel(profileChannel);
+      };
     };
 
     setupRealtime();
@@ -159,6 +188,8 @@ const Dashboard = () => {
   };
 
   const handleLogout = async () => {
+    localStorage.removeItem('rememberedEmail');
+    localStorage.removeItem('sessionExpiry');
     await supabase.auth.signOut();
     navigate('/login');
   };
