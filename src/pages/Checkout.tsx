@@ -76,11 +76,14 @@ const countries = [
   // Mais países podem ser adicionados...
 ];
 
-// Redes de criptomoedas suportadas
+// Redes de criptomoedas suportadas com suas carteiras
 const cryptoNetworks = [
-  { id: 'TRC20', name: 'TRON (TRC20)', symbol: 'USDT', explorer: 'https://tronscan.org' },
-  { id: 'ERC20', name: 'Ethereum (ERC20)', symbol: 'USDT', explorer: 'https://etherscan.io' },
-  { id: 'BEP20', name: 'BNB Chain (BEP20)', symbol: 'USDT', explorer: 'https://bscscan.io' },
+  { id: 'TRC20', name: 'TRON (TRC20)', symbol: 'USDT', address: 'TJZARrDbBjTjjUvEb7BwqD3AoFsVNyShtm', explorer: 'https://tronscan.org' },
+  { id: 'BTC', name: 'Bitcoin (BTC)', symbol: 'BTC', address: 'bc1qfhkwc02k58h0q8yq9tqcyvja7cnrq57hwygm76', explorer: 'https://blockstream.info' },
+  { id: 'ETH', name: 'Ethereum (ERC20)', symbol: 'ETH', address: '0x46252C57F22A5e3f2d5638bD21C892c9876D6e68', explorer: 'https://etherscan.io' },
+  { id: 'BNB', name: 'BNB Chain (BEP20)', symbol: 'BNB', address: '0x46252C57F22A5e3f2d5638bD21C892c9876D6e68', explorer: 'https://bscscan.io' },
+  { id: 'POLYGON', name: 'Polygon (MATIC)', symbol: 'MATIC', address: '0x46252C57F22A5e3f2d5638bD21C892c9876D6e68', explorer: 'https://polygonscan.com' },
+  { id: 'SOL', name: 'Solana (SOL)', symbol: 'SOL', address: '6Hj6JfMDhSBJuPcX7keB6pPcVXsojEwqdgPt7HKcwxjQ', explorer: 'https://solscan.io' },
 ];
 
 // Obter nome do país no idioma correto
@@ -613,6 +616,27 @@ const Checkout = () => {
                             </button>
                           ))}
                         </div>
+                      </div>
+
+                      <div className="p-4 bg-[#C5A059]/10 border border-[#C5A059]/30">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059]">{t('checkout.yourAddress')}</p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <p className="text-[9px] font-mono text-slate-400 break-all flex-1">{selectedCrypto.address}</p>
+                          <button 
+                            onClick={() => copyToClipboard(selectedCrypto.address)}
+                            className="text-[#C5A059] hover:text-white transition-colors"
+                          >
+                            <Copy size={12} />
+                          </button>
+                        </div>
+                        <a 
+                          href={`${selectedCrypto.explorer}/address/${selectedCrypto.address}`} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[8px] text-slate-500 hover:text-[#C5A059] transition-colors flex items-center gap-1 mt-2"
+                        >
+                          <ExternalLink size={8} /> {selectedCrypto.explorer.replace('https://', '')}
+                        </a>
                       </div>
 
                       <div className="space-y-2">
