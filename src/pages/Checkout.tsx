@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { 
   ShieldCheck, 
@@ -13,7 +13,9 @@ import {
   User,
   Bitcoin,
   Wallet,
-  Lock
+  Lock,
+  Search,
+  Phone
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
@@ -21,6 +23,69 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+
+// Lista completa de países com código DDI
+const countries = [
+  { code: 'BR', name: 'Brazil', ddi: '+55', flag: '🇧🇷' },
+  { code: 'US', name: 'United States', ddi: '+1', flag: '🇺🇸' },
+  { code: 'GB', name: 'United Kingdom', ddi: '+44', flag: '🇬🇧' },
+  { code: 'DE', name: 'Germany', ddi: '+49', flag: '🇩🇪' },
+  { code: 'FR', name: 'France', ddi: '+33', flag: '🇫🇷' },
+  { code: 'ES', name: 'Spain', ddi: '+34', flag: '🇪🇸' },
+  { code: 'IT', name: 'Italy', ddi: '+39', flag: '🇮🇹' },
+  { code: 'PT', name: 'Portugal', ddi: '+351', flag: '🇵🇹' },
+  { code: 'MX', name: 'Mexico', ddi: '+52', flag: '🇲🇽' },
+  { code: 'AR', name: 'Argentina', ddi: '+54', flag: '🇦🇷' },
+  { code: 'CL', name: 'Chile', ddi: '+56', flag: '🇨🇱' },
+  { code: 'CO', name: 'Colombia', ddi: '+57', flag: '🇨🇴' },
+  { code: 'PE', name: 'Peru', ddi: '+51', flag: '🇵🇪' },
+  { code: 'VE', name: 'Venezuela', ddi: '+58', flag: '🇻🇪' },
+  { code: 'EC', name: 'Ecuador', ddi: '+593', flag: '🇪🇨' },
+  { code: 'UY', name: 'Uruguay', ddi: '+598', flag: '🇺🇾' },
+  { code: 'PY', name: 'Paraguay', ddi: '+595', flag: '🇵🇾' },
+  { code: 'BO', name: 'Bolivia', ddi: '+591', flag: '🇧🇴' },
+  { code: 'JP', name: 'Japan', ddi: '+81', flag: '🇯🇵' },
+  { code: 'CN', name: 'China', ddi: '+86', flag: '🇨🇳' },
+  { code: 'KR', name: 'South Korea', ddi: '+82', flag: '🇰🇷' },
+  { code: 'IN', name: 'India', ddi: '+91', flag: '🇮🇳' },
+  { code: 'ID', name: 'Indonesia', ddi: '+62', flag: '🇮🇩' },
+  { code: 'TH', name: 'Thailand', ddi: '+66', flag: '🇹🇭' },
+  { code: 'VN', name: 'Vietnam', ddi: '+84', flag: '🇻🇳' },
+  { code: 'PH', name: 'Philippines', ddi: '+63', flag: '🇵🇭' },
+  { code: 'MY', name: 'Malaysia', ddi: '+60', flag: '🇲🇾' },
+  { code: 'SG', name: 'Singapore', ddi: '+65', flag: '🇸🇬' },
+  { code: 'AU', name: 'Australia', ddi: '+61', flag: '🇦🇺' },
+  { code: 'NZ', name: 'New Zealand', ddi: '+64', flag: '🇳🇿' },
+  { code: 'CA', name: 'Canada', ddi: '+1', flag: '🇨🇦' },
+  { code: 'RU', name: 'Russia', ddi: '+7', flag: '🇷🇺' },
+  { code: 'UA', name: 'Ukraine', ddi: '+380', flag: '🇺🇦' },
+  { code: 'TR', name: 'Turkey', ddi: '+90', flag: '🇹🇷' },
+  { code: 'IL', name: 'Israel', ddi: '+972', flag: '🇮🇱' },
+  { code: 'AE', name: 'UAE', ddi: '+971', flag: '🇦🇪' },
+  { code: 'SA', name: 'Saudi Arabia', ddi: '+966', flag: '🇸🇦' },
+  { code: 'ZA', name: 'South Africa', ddi: '+27', flag: '🇿🇦' },
+  { code: 'EG', name: 'Egypt', ddi: '+20', flag: '🇪🇬' },
+  { code: 'NG', name: 'Nigeria', ddi: '+234', flag: '🇳🇬' },
+  { code: 'KE', name: 'Kenya', ddi: '+254', flag: '🇰🇪' },
+  { code: 'GH', name: 'Ghana', ddi: '+233', flag: '🇬🇭' },
+  { code: 'PL', name: 'Poland', ddi: '+48', flag: '🇵🇱' },
+  { code: 'NL', name: 'Netherlands', ddi: '+31', flag: '🇳🇱' },
+  { code: 'BE', name: 'Belgium', ddi: '+32', flag: '🇧🇪' },
+  { code: 'CH', name: 'Switzerland', ddi: '+41', flag: '🇨🇭' },
+  { code: 'AT', name: 'Austria', ddi: '+43', flag: '🇦🇹' },
+  { code: 'SE', name: 'Sweden', ddi: '+46', flag: '🇸🇪' },
+  { code: 'NO', name: 'Norway', ddi: '+47', flag: '🇳🇴' },
+  { code: 'DK', name: 'Denmark', ddi: '+45', flag: '🇩🇰' },
+  { code: 'FI', name: 'Finland', ddi: '+358', flag: '🇫🇮' },
+  { code: 'GR', name: 'Greece', ddi: '+30', flag: '🇬🇷' },
+  { code: 'CZ', name: 'Czech Republic', ddi: '+420', flag: '🇨🇿' },
+  { code: 'HU', name: 'Hungary', ddi: '+36', flag: '🇭🇺' },
+  { code: 'RO', name: 'Romania', ddi: '+40', flag: '🇷🇴' },
+  { code: 'BG', name: 'Bulgaria', ddi: '+359', flag: '🇧🇬' },
+  { code: 'HR', name: 'Croatia', ddi: '+385', flag: '🇭🇷' },
+  { code: 'RS', name: 'Serbia', ddi: '+381', flag: '🇷🇸' },
+  { code: 'OTHER', name: 'Other', ddi: '+', flag: '🌍' },
+];
 
 // Redes de criptomoedas suportadas
 const cryptoNetworks = [
@@ -48,6 +113,12 @@ const Checkout = () => {
     name: '',
   });
 
+  // País e telefone
+  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
+  const [countrySearch, setCountrySearch] = useState('');
+  const [showCountryDropdown, setShowCountryDropdown] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState('');
+
   // Dados da cripto
   const [selectedCrypto, setSelectedCrypto] = useState(cryptoNetworks[0]);
   const [cryptoAddress, setCryptoAddress] = useState('');
@@ -63,6 +134,15 @@ const Checkout = () => {
   }, [plan, navigate]);
 
   const numericPrice = plan.price.replace(/[^0-9.]/g, '');
+
+  // Países filtrados pela busca
+  const filteredCountries = useMemo(() => {
+    if (!countrySearch) return countries;
+    return countries.filter(c => 
+      c.name.toLowerCase().includes(countrySearch.toLowerCase()) ||
+      c.code.toLowerCase().includes(countrySearch.toLowerCase())
+    );
+  }, [countrySearch]);
 
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
@@ -82,7 +162,7 @@ const Checkout = () => {
   };
 
   const handleCardSubmit = async () => {
-    if (!cardData.number || !cardData.expiry || !cardData.cvc || !cardData.name) {
+    if (!cardData.number || !cardData.expiry || !cardData.cvc || !cardData.name || !phoneNumber) {
       showError(t('checkout.fillAllFields') || "Fill all card fields");
       return;
     }
@@ -103,7 +183,9 @@ const Checkout = () => {
           cardLast4: cardData.number.replace(/\s/g, '').slice(-4),
           cardName: cardData.name,
           amount: numericPrice,
-          currency: 'USD'
+          currency: 'USD',
+          country: selectedCountry.code,
+          phone: selectedCountry.ddi + phoneNumber
         })
       });
 
@@ -351,6 +433,73 @@ const Checkout = () => {
                       <div className="flex items-center gap-2">
                         <CreditCard size={16} className="text-blue-400" />
                         <span className="text-[11px] font-bold uppercase tracking-widest text-blue-400">{t('checkout.creditCard')}</span>
+                      </div>
+
+                      {/* Campo de busca de país */}
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.selectCountry')}</label>
+                        <div className="relative">
+                          <div 
+                            onClick={() => setShowCountryDropdown(!showCountryDropdown)}
+                            className="w-full bg-white/5 border border-white/10 h-12 px-4 flex items-center justify-between cursor-pointer hover:border-[#C5A059] transition-colors"
+                          >
+                            <span className="text-[11px] font-medium text-white uppercase tracking-widest">
+                              {selectedCountry.flag} {selectedCountry.name} ({selectedCountry.ddi})
+                            </span>
+                            <Search size={14} className="text-slate-500" />
+                          </div>
+                          
+                          {showCountryDropdown && (
+                            <div className="absolute z-50 w-full mt-1 bg-[#080B12] border border-white/10 max-h-64 overflow-hidden">
+                              <div className="p-2 border-b border-white/10">
+                                <input
+                                  type="text"
+                                  value={countrySearch}
+                                  onChange={(e) => setCountrySearch(e.target.value)}
+                                  placeholder={t('checkout.searchCountry') || "Search country..."}
+                                  className="w-full bg-white/5 border border-white/10 h-10 px-3 text-[11px] text-white placeholder:text-slate-700 focus:border-[#C5A059] outline-none"
+                                  autoFocus
+                                />
+                              </div>
+                              <div className="overflow-y-auto max-h-48">
+                                {filteredCountries.map((country) => (
+                                  <div
+                                    key={country.code}
+                                    onClick={() => {
+                                      setSelectedCountry(country);
+                                      setShowCountryDropdown(false);
+                                      setCountrySearch('');
+                                    }}
+                                    className="p-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 border-b border-white/5"
+                                  >
+                                    <span className="text-lg">{country.flag}</span>
+                                    <div>
+                                      <p className="text-[10px] font-bold uppercase tracking-widest text-white">{country.name}</p>
+                                      <p className="text-[9px] text-slate-500">{country.ddi}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Telefone */}
+                      <div className="space-y-2">
+                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.phone')}</label>
+                        <div className="flex gap-2">
+                          <div className="w-24 bg-white/5 border border-white/10 h-12 flex items-center justify-center text-[11px] font-bold text-white uppercase tracking-widest">
+                            {selectedCountry.ddi}
+                          </div>
+                          <input
+                            type="tel"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                            placeholder="999999999"
+                            className="flex-1 bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
+                          />
+                        </div>
                       </div>
 
                       <div className="space-y-2">
