@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Minimize2 } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Minimize2, Headphones } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface Message {
@@ -74,7 +74,7 @@ Keep responses friendly, professional, and under 200 words.`;
   };
 
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    if (isOpen) {
       const lang = getCurrentLanguage();
       const welcomeMessages: Record<string, string> = {
         'English': `Welcome to Braxel Markets Support! 👋\n\nI'm your AI assistant. How can I help you today?`,
@@ -91,7 +91,7 @@ Keep responses friendly, professional, and under 200 words.`;
       };
 
       setMessages([{
-        id: 'welcome',
+        id: 'welcome-' + Date.now(),
         role: 'assistant',
         content: welcomeMessages[lang] || welcomeMessages['English'],
         timestamp: new Date()
@@ -187,11 +187,9 @@ Keep responses friendly, professional, and under 200 words.`;
         aria-label="Open Support Chat"
       >
         <div className="absolute inset-0 bg-[#D4AF37] blur-xl opacity-20 group-hover:opacity-50 transition-opacity" />
-        <div className="relative bg-[#D4AF37] text-black p-4 rounded-full flex items-center justify-center shadow-2xl hover:-translate-y-1 hover:scale-105 transition-all duration-300">
-          <MessageCircle size={24} />
-        </div>
-        <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black/90 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-          {t('nav.support')}
+        <div className="relative bg-[#D4AF37] text-black px-6 py-4 flex items-center justify-center shadow-2xl hover:-translate-y-1 hover:scale-105 transition-all duration-300 gap-3">
+          <Headphones size={20} />
+          <span className="text-[11px] font-black uppercase tracking-[0.2em]">{t('nav.support')}</span>
         </div>
       </button>
     );
