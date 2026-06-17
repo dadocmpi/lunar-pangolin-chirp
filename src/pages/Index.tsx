@@ -17,7 +17,7 @@ import MarketTicker from '@/components/MarketTicker';
 import Differentiators from '@/components/Differentiators';
 import FAQ from '@/components/FAQ';
 import SupportChatbot from '@/components/SupportChatbot';
-import { LogoMetatrader, LogoVisa, LogoAES } from '@/components/LogoVault';
+
 
 const Index = () => {
   const { t } = useTranslation();
@@ -63,16 +63,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Trust Logos Section */}
-      <section className="py-12 border-b border-white/5 bg-black/50">
-        <div className="container mx-auto px-8">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-40 hover:opacity-70 transition-opacity duration-500">
-            <LogoMetatrader />
-            <LogoVisa />
-            <LogoAES />
-          </div>
-        </div>
-      </section>
 
       {/* Stats Section */}
       <section className="bg-black py-24 px-8 border-b border-white/5">
