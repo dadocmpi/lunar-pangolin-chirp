@@ -17,6 +17,7 @@ import MarketTicker from '@/components/MarketTicker';
 import Differentiators from '@/components/Differentiators';
 import FAQ from '@/components/FAQ';
 import SupportChatbot from '@/components/SupportChatbot';
+import { LogoMetatrader, LogoBinance, LogoVisa, LogoAES, LogoPaypal } from '@/components/LogoVault';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -65,14 +66,12 @@ const Index = () => {
       {/* Trust Logos Section */}
       <section className="py-12 border-b border-white/5 bg-black/50">
         <div className="container mx-auto px-8">
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale hover:opacity-60 transition-opacity duration-500">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/MetaQuotes_Logo.svg" alt="MetaTrader" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Binance_Logo.svg" alt="Binance" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
-            <div className="flex items-center gap-2 text-[10px] font-black tracking-widest text-white">
-              <Lock size={14} /> AES-256 SECURE
-            </div>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-40 hover:opacity-70 transition-opacity duration-500">
+            <LogoMetatrader />
+            <LogoBinance />
+            <LogoPaypal />
+            <LogoVisa />
+            <LogoAES />
           </div>
         </div>
       </section>

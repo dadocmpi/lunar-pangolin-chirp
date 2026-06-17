@@ -11,6 +11,9 @@ import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import { showSuccess, showError } from '@/utils/toast';
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
 const Contact = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
@@ -63,18 +66,43 @@ const Contact = () => {
     setLoading(true);
     
     try {
-      // Simulate API call (In production, this would call a Supabase Edge Function)
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      // Call the Supabase Edge Function to send email via Resend
+      const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+        },
+        body: JSON.stringify({
+          to: 'marketsbraxel@ouvidor.net',
+          subject: `[Contact Form] ${formData.subject} - from ${formData.name}`,
+          html: `
+            <h2>New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${formData.name}</p>
+            <p><strong>Email:</strong> ${formData.email}</p>
+            <p><strong>Subject:</strong> ${formData.subject}</p>
+            <p><strong>Message:</strong></p>
+            <p>${formData.message.replace(/\n/g, '<br>')}</p>
+            <hr>
+            <p><small>Sent from braxelmarkets.vercel.app</small></p>
+          `,
+          replyTo: formData.email
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send email');
+      }
+
       showSuccess("Message sent successfully! Our team will contact you soon.");
       setFormData({ name: '', email: '', subject: '', message: '', website: '' });
       generateCaptcha();
-      
-      // Set cooldown for 60 seconds to prevent flooding
+
       setCooldown(true);
       setTimeout(() => setCooldown(false), 60000);
     } catch (error) {
-      showError("Failed to send message. Please try again later.");
+      console.error('Email error:', error);
+      showError("Failed to send message. Please try again or email us directly at marketsbraxel@ouvidor.net");
     } finally {
       setLoading(false);
     }

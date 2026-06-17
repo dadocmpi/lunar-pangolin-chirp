@@ -23,6 +23,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { LogoVisa, LogoMastercard } from '@/components/LogoVault';
 
 // Lista completa de países do mundo com DDI e traduções
 const countries = [
@@ -417,8 +418,8 @@ const Checkout = () => {
                           {t('checkout.cardDesc')}
                         </p>
                         <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-5 brightness-200 opacity-70 group-hover:opacity-100 transition-opacity" />
-                          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 brightness-200 opacity-70 group-hover:opacity-100 transition-opacity" />
+                          <LogoVisa size="lg" />
+                          <LogoMastercard size="lg" />
                           <div className="flex-1" />
                           <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-green-500/70 transition-colors">
                             <CheckCircle2 size={10} /> {t('checkout.instant')}
