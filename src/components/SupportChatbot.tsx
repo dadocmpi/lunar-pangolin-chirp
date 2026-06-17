@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Minimize2, Headphones } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import LogoBraxel from '@/components/LogoBraxel';
 
 interface Message {
   id: string;
@@ -206,17 +207,12 @@ Keep responses friendly, professional, and under 200 words.`;
         <div className="bg-gradient-to-r from-[#0a0e27] to-[#0f1430] p-4 border-b border-white/5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-[#D4AF37]/20 rounded-full flex items-center justify-center">
-                  <Bot size={20} className="text-[#D4AF37]" />
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0a0e27]" />
-              </div>
+              <LogoBraxel size="lg" variant="icon" />
               <div>
                 <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">{t('chatbot.title')}</h3>
-                <p className="text-[9px] text-green-500 flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                  AI Assistant
+                <p className="text-[9px] text-[#D4AF37] flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-[#D4AF37] rounded-full animate-pulse" />
+                  Braxel Markets AI
                 </p>
               </div>
             </div>
