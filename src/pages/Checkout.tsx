@@ -396,47 +396,68 @@ const Checkout = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Cartão de Crédito */}
                     <button
                       onClick={() => setShowCard(true)}
-                      className="p-6 bg-white/[0.02] border border-white/10 hover:border-[#C5A059] transition-all text-left group"
+                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-[#D4AF37] hover:shadow-[0_0_40px_rgba(212,175,55,0.1)] transition-all text-left group overflow-hidden"
                     >
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 bg-[#1A1F71]/20 flex items-center justify-center">
-                          <CreditCard size={24} className="text-blue-400" />
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-500/5 to-transparent rounded-bl-full" />
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-5 mb-6">
+                          <div className="w-16 h-16 bg-gradient-to-br from-[#1A1F71]/30 to-[#1A1F71]/10 flex items-center justify-center border border-white/10 group-hover:border-[#D4AF37]/30 transition-all">
+                            <CreditCard size={28} className="text-blue-400" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">{t('checkout.creditCard')}</h3>
+                            <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.instantPayment')}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-[11px] font-bold uppercase tracking-widest">{t('checkout.creditCard')}</h3>
-                          <p className="text-[9px] text-slate-500">{t('checkout.instantPayment')}</p>
+                        <p className="text-[10px] text-slate-500 leading-relaxed mb-6">
+                          {t('checkout.cardDesc')}
+                        </p>
+                        <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-5 brightness-200 opacity-70 group-hover:opacity-100 transition-opacity" />
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-6 brightness-200 opacity-70 group-hover:opacity-100 transition-opacity" />
+                          <div className="flex-1" />
+                          <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-green-500/70 transition-colors">
+                            <CheckCircle2 size={10} /> {t('checkout.instant')}
+                          </div>
                         </div>
-                      </div>
-                      <p className="text-[9px] text-slate-600 uppercase tracking-widest">
-                        {t('checkout.cardDesc')}
-                      </p>
-                      <div className="flex gap-2 mt-4">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard" className="h-5" />
                       </div>
                     </button>
 
                     {/* Criptomoedas */}
                     <button
                       onClick={() => setShowCrypto(true)}
-                      className="p-6 bg-white/[0.02] border border-white/10 hover:border-[#C5A059] transition-all text-left group"
+                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-[#D4AF37] hover:shadow-[0_0_40px_rgba(212,175,55,0.1)] transition-all text-left group overflow-hidden"
                     >
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="w-12 h-12 bg-[#F7931A]/20 flex items-center justify-center">
-                          <Bitcoin size={24} className="text-[#F7931A]" />
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#F7931A]/5 to-transparent rounded-bl-full" />
+                      <div className="relative z-10">
+                        <div className="flex items-center gap-5 mb-6">
+                          <div className="w-16 h-16 bg-gradient-to-br from-[#F7931A]/20 to-[#F7931A]/5 flex items-center justify-center border border-white/10 group-hover:border-[#D4AF37]/30 transition-all">
+                            <Bitcoin size={28} className="text-[#F7931A]" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">{t('checkout.crypto')}</h3>
+                            <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.cryptoLabel')}</p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-[11px] font-bold uppercase tracking-widest">{t('checkout.crypto')}</h3>
-                          <p className="text-[9px] text-slate-500">{t('checkout.cryptoLabel')}</p>
+                        <p className="text-[10px] text-slate-500 leading-relaxed mb-6">
+                          {t('checkout.cryptoDesc')}
+                        </p>
+                        <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                          <div className="flex gap-2">
+                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">BTC</span>
+                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">ETH</span>
+                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">USDT</span>
+                          </div>
+                          <div className="flex-1" />
+                          <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-[#F7931A]/70 transition-colors">
+                            <CheckCircle2 size={10} /> {t('checkout.noKyc')}
+                          </div>
                         </div>
                       </div>
-                      <p className="text-[9px] text-slate-600 uppercase tracking-widest">
-                        {t('checkout.cryptoDesc')}
-                      </p>
                     </button>
                   </div>
 
