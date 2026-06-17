@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Minimize2, Loader2, ExternalLink } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, User, Minimize2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Message {
   id: string;
@@ -10,57 +11,32 @@ interface Message {
   timestamp: Date;
 }
 
-interface SuggestedQuestion {
-  id: string;
-  question: string;
-  answer: string;
-}
-
-// Predefined knowledge base for common questions
-const suggestedQuestions: SuggestedQuestion[] = [
-  {
-    id: '1',
-    question: 'How do I start investing?',
-    answer: 'To start investing with Braxel Markets:\n\n1. Create an account and complete KYC verification\n2. Log in to your dashboard\n3. Choose an investment plan\n4. Complete payment\n5. Your algorithmic infrastructure will be deployed automatically\n\nThe process is designed to be seamless and fully automated.'
-  },
-  {
-    id: '2',
-    question: 'What is the minimum investment?',
-    answer: 'Our investment plans start at different tiers based on managed capital:\n\n• Starter: Starting allocation available\n• Professional: Mid-tier institutional access\n• Enterprise: Full institutional infrastructure\n\nVisit our Pricing page for detailed information about each plan and managed capital tiers.'
-  },
-  {
-    id: '3',
-    question: 'How does algorithmic trading work?',
-    answer: 'Our proprietary algorithms execute high-frequency trading strategies across global markets:\n\n• Statistical Arbitrage: Exploiting price inefficiencies\n• Mean Reversion: Trading around historical averages\n• High-Frequency Trading: Ultra-low latency execution\n\nAll strategies are fully automated and monitored 24/7.'
-  },
-  {
-    id: '4',
-    question: 'What are the fees?',
-    answer: 'Braxel Markets charges:\n\n• Setup Fee: One-time fee (varies by plan)\n• Monthly Management Fee: Based on your chosen tier\n• No hidden costs or performance fees\n\nExact pricing is displayed during the checkout process.'
-  },
-  {
-    id: '5',
-    question: 'How do I withdraw profits?',
-    answer: 'Withdrawing your profits is simple:\n\n1. Log in to your dashboard\n2. Go to the Portfolio section\n3. Select your active service\n4. Click "Request Withdrawal"\n5. Enter the amount and your wallet/IBAN details\n6. Submit the request\n\nWithdrawals are typically processed within 1-3 business days.'
-  },
-  {
-    id: '6',
-    question: 'Is my investment safe?',
-    answer: 'We implement institutional-grade security measures:\n\n• End-to-end encryption (AES-256)\n• SOC 2 Type II compliance\n• Multi-layer authentication\n• Direct market access via Equinix data centers\n• Redundant cloud infrastructure (AWS + Azure)\n\nHowever, all trading involves risk. Past performance does not guarantee future results.'
-  },
-  {
-    id: '7',
-    question: 'How long does KYC take?',
-    answer: 'KYC (Know Your Customer) verification typically takes:\n\n• Automatic approval: Instant for valid documents\n• Manual review: 24-48 hours\n\nOur compliance team reviews all submissions to ensure security while maintaining a smooth onboarding experience.'
-  },
-  {
-    id: '8',
-    question: 'Contact support',
-    answer: 'Our institutional support team is available 24/7:\n\n• Email: marketsbraxel@ouvidor.net\n• Response time: Within 24 hours\n\nFor urgent matters, please include "URGENT" in your email subject line.'
-  }
-];
+// Language detection map
+const languageMap: Record<string, string> = {
+  'pt': 'Portuguese',
+  'pt-BR': 'Portuguese',
+  'es': 'Spanish',
+  'es-ES': 'Spanish',
+  'it': 'Italian',
+  'it-IT': 'Italian',
+  'fr': 'French',
+  'fr-FR': 'French',
+  'de': 'German',
+  'de-DE': 'German',
+  'ru': 'Russian',
+  'ru-RU': 'Russian',
+  'zh': 'Chinese',
+  'zh-CN': 'Chinese',
+  'ja': 'Japanese',
+  'ja-JP': 'Japanese',
+  'ar': 'Arabic',
+  'ar-SA': 'Arabic',
+  'he': 'Hebrew',
+  'he-IL': 'Hebrew',
+};
 
 const SupportChatbot = () => {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -68,22 +44,60 @@ const SupportChatbot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const initialMessage: Message = {
-    id: 'welcome',
-    role: 'assistant',
-    content: `Welcome to Braxel Markets Support! 👋
+  const getCurrentLanguage = (): string => {
+    const lang = i18n.language;
+    return languageMap[lang] || languageMap[lang.split('-')[0]] || 'English';
+  };
 
-I'm your AI assistant, here to help you with any questions about our institutional trading platform.
+  const getSystemPrompt = (): string => {
+    const lang = getCurrentLanguage();
+    return `You are a professional AI support assistant for Braxel Markets, an institutional algorithmic trading platform.
 
-How can I assist you today?`,
-    timestamp: new Date()
+IMPORTANT: You must respond ONLY in ${lang} language, regardless of what language the user writes in.
+
+About Braxel Markets:
+- Institutional-grade algorithmic trading platform
+- Proprietary algorithms for high-frequency trading
+- Managed capital tiers from Starter to Enterprise
+- 24/7 automated trading with millisecond execution
+- SOC 2 Type II compliant security
+- Based in São Paulo, Brazil
+
+Your role:
+- Answer questions about the platform, services, and trading
+- Help with account, KYC, and payment questions
+- Be professional, concise, and helpful
+- Never provide financial advice
+- Direct users to email support (marketsbraxel@ouvidor.net) for complex issues
+
+Keep responses friendly, professional, and under 200 words.`;
   };
 
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      setMessages([initialMessage]);
+      const lang = getCurrentLanguage();
+      const welcomeMessages: Record<string, string> = {
+        'English': `Welcome to Braxel Markets Support! 👋\n\nI'm your AI assistant. How can I help you today?`,
+        'Portuguese': `Bem-vindo ao Suporte Braxel Markets! 👋\n\nSou seu assistente virtual. Como posso ajudá-lo hoje?`,
+        'Spanish': `¡Bienvenido al Soporte de Braxel Markets! 👋\n\nSoy tu asistente virtual. ¿Cómo puedo ayudarte hoy?`,
+        'Italian': `Benvenuto nel Supporto Braxel Markets! 👋\n\nSono il tuo assistente virtual. Come posso aiutarti oggi?`,
+        'French': `Bienvenue sur le Support Braxel Markets! 👋\n\nJe suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui?`,
+        'German': `Willkommen im Braxel Markets Support! 👋\n\nIch bin Ihr virtueller Assistent. Wie kann ich Ihnen heute helfen?`,
+        'Russian': `Добро пожаловать в поддержку Braxel Markets! 👋\n\nЯ ваш виртуальный помощник. Чем я могу вам помочь сегодня?`,
+        'Chinese': `欢迎来到 Braxel Markets 支持！👋\n\n我是您的虚拟助手。今天我能为您提供什么帮助？`,
+        'Japanese': `Braxel Marketsサポートへようこそ！👋\n\n私はバーチャルアシスタントです。本日はどのようなお手伝いができるでしょうか？`,
+        'Arabic': `مرحبًا بك في دعم Braxel Markets! 👋\n\nأنا مساعدك الافتراضي. كيف يمكنني مساعدتك اليوم؟`,
+        'Hebrew': `ברוכים הבאים לתמיכת Braxel Markets! 👋\n\nאני העוזר הווירטואלי שלך. איך אוכל לעזור לך היום?`,
+      };
+
+      setMessages([{
+        id: 'welcome',
+        role: 'assistant',
+        content: welcomeMessages[lang] || welcomeMessages['English'],
+        timestamp: new Date()
+      }]);
     }
-  }, [isOpen]);
+  }, [isOpen, i18n.language]);
 
   useEffect(() => {
     scrollToBottom();
@@ -93,29 +107,41 @@ How can I assist you today?`,
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const findAnswer = (query: string): string => {
-    const lowerQuery = query.toLowerCase();
+  const callGeminiAPI = async (userMessage: string): Promise<string> => {
+    const apiKey = 'AIzaSyCmYnZ6wwrD0omqIbQ4Gk9JfWckgKGVkoQ';
+    const systemPrompt = getSystemPrompt();
     
-    // Check for keyword matches
-    for (const item of suggestedQuestions) {
-      const keywords = item.question.toLowerCase().split(' ');
-      const matchCount = keywords.filter(word => lowerQuery.includes(word)).length;
-      if (matchCount >= 2 || lowerQuery.includes(item.question.toLowerCase())) {
-        return item.answer;
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{ text: userMessage }]
+          }],
+          systemInstruction: {
+            parts: [{ text: systemPrompt }]
+          },
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 500,
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('API request failed');
       }
+
+      const data = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || 
+             "I apologize, but I'm having trouble responding right now. Please email us at marketsbraxel@ouvidor.net for assistance.";
+    } catch (error) {
+      console.error('Gemini API error:', error);
+      return "I apologize, but I'm having trouble responding right now. Please email us at marketsbraxel@ouvidor.net for assistance.";
     }
-    
-    // Return a generic response with suggestions
-    return `Thank you for your question! 
-
-I found some topics that might help:
-
-• Getting started with investing
-• Investment plans and pricing
-• Algorithmic trading explained
-• Security measures
-
-If you need more specific assistance, please contact our support team at marketsbraxel@ouvidor.net or use one of the quick questions below.`;
   };
 
   const handleSendMessage = async () => {
@@ -132,45 +158,21 @@ If you need more specific assistance, please contact our support team at markets
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate AI response delay
-    setTimeout(() => {
-      const answer = findAnswer(inputValue);
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: answer,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 1000);
-  };
-
-  const handleQuickQuestion = (question: SuggestedQuestion) => {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: question.question,
+    const response = await callGeminiAPI(inputValue);
+    
+    const assistantMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant',
+      content: response,
       timestamp: new Date()
     };
-
-    setMessages(prev => [...prev, userMessage]);
-    setIsTyping(true);
-
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: question.answer,
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 800);
+    
+    setMessages(prev => [...prev, assistantMessage]);
+    setIsTyping(false);
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
+    return date.toLocaleTimeString(i18n.language, { 
       hour: '2-digit', 
       minute: '2-digit',
       hour12: false 
@@ -189,7 +191,7 @@ If you need more specific assistance, please contact our support team at markets
           <MessageCircle size={24} />
         </div>
         <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black/90 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
-          AI Support
+          {t('nav.support')}
         </div>
       </button>
     );
@@ -213,10 +215,10 @@ If you need more specific assistance, please contact our support team at markets
                 <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-[#0a0e27]" />
               </div>
               <div>
-                <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">Braxel Support</h3>
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">{t('chatbot.title')}</h3>
                 <p className="text-[9px] text-green-500 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                  AI Assistant Online
+                  AI Assistant
                 </p>
               </div>
             </div>
@@ -304,22 +306,6 @@ If you need more specific assistance, please contact our support team at markets
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Quick Questions */}
-            <div className="px-4 py-3 bg-[#0a0e27] border-t border-white/5">
-              <p className="text-[8px] font-bold uppercase tracking-widest text-slate-500 mb-2">Quick Questions</p>
-              <div className="flex flex-wrap gap-2">
-                {suggestedQuestions.slice(0, 4).map((q) => (
-                  <button
-                    key={q.id}
-                    onClick={() => handleQuickQuestion(q)}
-                    className="text-[9px] font-medium px-3 py-1.5 bg-white/5 border border-white/10 hover:border-[#D4AF37]/50 hover:text-[#D4AF37] transition-colors"
-                  >
-                    {q.question.length > 25 ? q.question.slice(0, 25) + '...' : q.question}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Input Area */}
             <div className="p-4 bg-[#0a0e27] border-t border-white/5">
               <div className="flex gap-2">
@@ -328,7 +314,7 @@ If you need more specific assistance, please contact our support team at markets
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                  placeholder="Ask a question..."
+                  placeholder={t('chatbot.placeholder')}
                   className="flex-1 bg-white/5 border border-white/10 px-4 py-3 text-[11px] text-white placeholder:text-slate-600 focus:border-[#D4AF37] outline-none transition-colors"
                 />
                 <button
@@ -340,7 +326,7 @@ If you need more specific assistance, please contact our support team at markets
                 </button>
               </div>
               <p className="text-[8px] text-slate-600 mt-2 text-center">
-                Need more help? Email: marketsbraxel@ouvidor.net
+                {t('chatbot.emailSupport')} marketsbraxel@ouvidor.net
               </p>
             </div>
           </>
