@@ -16,7 +16,7 @@ import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import Differentiators from '@/components/Differentiators';
 import FAQ from '@/components/FAQ';
-import FloatingSupport from '@/components/FloatingSupport';
+import SupportChatbot from '@/components/SupportChatbot';
 
 const Index = () => {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ const Index = () => {
     <div className="min-h-screen bg-black font-sans text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       <MarketTicker />
-      <FloatingSupport />
+      <SupportChatbot />
 
       {/* Hero Section */}
       <section className="relative mt-[180px] min-h-[80vh] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
