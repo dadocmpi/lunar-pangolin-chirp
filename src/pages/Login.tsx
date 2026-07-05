@@ -1,19 +1,21 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError } from '@/utils/toast';
+import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 
 const Login = () => {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -21,19 +23,59 @@ const Login = () => {
   const plan = location.state?.plan;
   const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
 
+  // On mount: if a valid Supabase session exists, go straight to dashboard.
+  // Sessions persist indefinitely via localStorage until the user clicks logout.
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          navigate(from, { replace: true });
+          return;
+        }
+        // Pre-fill email if the user had "Remember Me" checked previously
+        const savedEmail = localStorage.getItem('rememberedEmail');
+        if (savedEmail) {
+          setEmail(savedEmail);
+          setRememberMe(true);
+        }
+      } catch (err) {
+        console.error('Session check error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkSession();
+  }, [navigate, from]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (error) {
+        if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
+          showError("Account not found. Please create an account first.");
+          navigate('/register', { state: { from, plan } });
+          return;
+        }
+        throw error;
+      }
 
-      showSuccess(t('auth.loginSuccessMessage'));
+      // Remember Me — just saves the email for next visit pre-fill.
+      // The session itself always persists until logout.
+      if (rememberMe) {
+        localStorage.setItem('rememberedEmail', email);
+      } else {
+        localStorage.removeItem('rememberedEmail');
+      }
+
+
       navigate(from, { state: { plan } });
     } catch (error: any) {
       showError(error.message || t('auth.loginErrorMessage'));
@@ -41,6 +83,14 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#05070A]">
+        <Loader2 className="animate-spin text-[#C5A059]" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#05070A]">
@@ -72,7 +122,8 @@ const Login = () => {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="mb-10">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('auth.securityBadge')}</span>
+           
+            main
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{t('auth.loginTitle')}</h1>
             <p className="text-slate-500 text-xs mt-2">{t('auth.loginSubtitle')}</p>
           </div>
@@ -110,6 +161,27 @@ const Login = () => {
                 />
               </div>
             </div>
+
+            {/* Remember Me — saves email for pre-fill; session always persists until logout */}
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setRememberMe(!rememberMe)}
+                className={cn(
+                  "w-5 h-5 border-2 flex items-center justify-center transition-all",
+                  rememberMe 
+                    ? "bg-[#C5A059] border-[#C5A059]" 
+                    : "border-white/20 bg-transparent hover:border-white/40"
+                )}
+              >
+                {rememberMe && (
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 6L5 9L10 3" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                )}
+              </button>
+              <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{t('auth.rememberMe')}</span>
+            </div>
             
             <Button 
               disabled={loading}
@@ -121,7 +193,7 @@ const Login = () => {
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              {t('auth.noAccount')} <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">{t('auth.createAccountLink')}</Link>
+
             </p>
           </div>
         </div>

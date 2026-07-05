@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  zoom: 0.8;
+}
+
 :root {
   --color-black: #000000;
   --color-dark-blue: #0a0e27;

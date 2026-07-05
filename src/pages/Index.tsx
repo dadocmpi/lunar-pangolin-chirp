@@ -16,16 +16,14 @@ import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import Differentiators from '@/components/Differentiators';
 import FAQ from '@/components/FAQ';
-import LiveSignals from '@/components/LiveSignals';
-import ProfitCalculator from '@/components/ProfitCalculator';
-import FloatingSupport from '@/components/FloatingSupport';
+import SupportChatbot from '@/components/SupportChatbot';
+
 
 const Index = () => {
   const { t } = useTranslation();
   
   const stats = [
-    { value: "$2.4B+", label: t('stats.volume') },
-    { value: "12,400+", label: t('stats.traders') },
+    { value: "500+", label: t('stats.traders') },
     { value: "99.97%", label: t('stats.uptime') },
     { value: "<1.8ms", label: t('stats.latency') },
   ];
@@ -34,7 +32,7 @@ const Index = () => {
     <div className="min-h-screen bg-black font-sans text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       <MarketTicker />
-      <FloatingSupport />
+      <SupportChatbot />
 
       {/* Hero Section */}
       <section className="relative mt-[180px] min-h-[80vh] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
@@ -65,24 +63,10 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Trust Logos Section */}
-      <section className="py-12 border-b border-white/5 bg-black/50">
-        <div className="container mx-auto px-8">
-          <div className="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-30 grayscale hover:opacity-60 transition-opacity duration-500">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/4/4b/MetaQuotes_Logo.svg" alt="MetaTrader" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e8/Binance_Logo.svg" alt="Binance" className="h-6" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" alt="PayPal" className="h-5" />
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa" className="h-4" />
-            <div className="flex items-center gap-2 text-[10px] font-black tracking-widest text-white">
-              <Lock size={14} /> AES-256 SECURE
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Stats Section */}
       <section className="bg-black py-24 px-8 border-b border-white/5">
-        <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16">
+        <div className="max-w-[1200px] mx-auto grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-16">
           {stats.map((stat, i) => (
             <div key={i} className="text-center group">
               <div className="font-serif text-[32px] md:text-[42px] font-bold text-white mb-3 tracking-[-0.02em] group-hover:text-[#D4AF37] transition-colors duration-500">
@@ -99,9 +83,6 @@ const Index = () => {
       {/* Differentiators Section */}
       <Differentiators />
 
-      {/* Profit Calculator Section */}
-      <ProfitCalculator />
-
       {/* Methodology Section */}
       <section className="py-32 px-8 bg-[#05070A]">
         <div className="max-w-[1200px] mx-auto">
@@ -113,22 +94,22 @@ const Index = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/5 border border-white/5">
             {[
               {
-                title: t('methodology.momentum.title'),
+                title: t('methodology.statArb.title'),
+                icon: <Scale size={28} />,
+                features: [t('methodology.statArb.f1'), t('methodology.statArb.f2'), t('methodology.statArb.f3')],
+                desc: t('methodology.statArb.desc')
+              },
+              {
+                title: t('methodology.meanRev.title'),
                 icon: <TrendingUp size={28} />,
-                features: [t('methodology.momentum.f1'), t('methodology.momentum.f2'), t('methodology.momentum.f3')],
-                desc: t('methodology.momentum.desc')
+                features: [t('methodology.meanRev.f1'), t('methodology.meanRev.f2'), t('methodology.meanRev.f3')],
+                desc: t('methodology.meanRev.desc')
               },
               {
-                title: t('methodology.volatility.title'),
-                icon: <ShieldAlert size={28} />,
-                features: [t('methodology.volatility.f1'), t('methodology.volatility.f2'), t('methodology.volatility.f3')],
-                desc: t('methodology.volatility.desc')
-              },
-              {
-                title: t('methodology.risk.title'),
-                icon: <PieChart size={28} />,
-                features: [t('methodology.risk.f1'), t('methodology.risk.f2'), t('methodology.risk.f3')],
-                desc: t('methodology.risk.desc')
+                title: t('methodology.hft.title'),
+                icon: <Zap size={28} />,
+                features: [t('methodology.hft.f1'), t('methodology.hft.f2'), t('methodology.hft.f3')],
+                desc: t('methodology.hft.desc')
               }
             ].map((item, i) => (
               <div key={i} className="p-16 bg-[#080B12] flex flex-col hover:bg-white/[0.01] transition-all duration-500 group">
@@ -148,8 +129,44 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Live Signals Section */}
-      <LiveSignals />
+      {/* Transparency / Infrastructure Section */}
+      <section className="py-32 px-8 bg-black border-t border-white/5">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="mb-24 text-center">
+            <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-6 block">{t('transparency.badge')}</span>
+            <h2 className="text-[24px] md:text-[32px] font-serif font-bold uppercase tracking-tight leading-tight">{t('transparency.title')}</h2>
+            <p className="text-slate-400 text-[14px] mt-6 max-w-[680px] mx-auto leading-relaxed">{t('transparency.desc')}</p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/5 border border-white/5">
+            {[
+              {
+                title: t('transparency.connectivity.title'),
+                icon: <Network size={28} />,
+                desc: t('transparency.connectivity.desc')
+              },
+              {
+                title: t('transparency.cloud.title'),
+                icon: <Server size={28} />,
+                desc: t('transparency.cloud.desc')
+              },
+              {
+                title: t('transparency.security.title'),
+                icon: <Shield size={28} />,
+                desc: t('transparency.security.desc')
+              }
+            ].map((item, i) => (
+              <div key={i} className="p-16 bg-[#080B12] flex flex-col hover:bg-white/[0.01] transition-all duration-500 group">
+                <div className="text-[#D4AF37] mb-10 group-hover:scale-110 transition-transform duration-500">{item.icon}</div>
+                <h3 className="text-[13px] font-bold uppercase tracking-[0.2em] mb-6 text-white leading-relaxed">{item.title}</h3>
+                <p className="text-slate-500 text-[14px] leading-relaxed font-medium">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
 
       {/* Process Flow Section */}
       <section className="py-32 px-8 bg-[#05070A] border-t border-white/5">
