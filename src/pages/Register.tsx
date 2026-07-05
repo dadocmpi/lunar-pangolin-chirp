@@ -41,10 +41,10 @@ const Register = () => {
 
       if (error) throw error;
 
-      showSuccess("Account created! Please check your email to confirm.");
+      showSuccess(t('auth.registerSuccessMessage'));
       navigate('/login', { state: { from, plan } });
     } catch (error: any) {
-      showError(error.message || "Error creating account.");
+      showError(error.message || t('auth.registerErrorMessage'));
     } finally {
       setLoading(false);
     }
@@ -84,14 +84,14 @@ const Register = () => {
         </div>
         
         <div className="relative z-10 text-slate-600 text-[10px] font-bold uppercase tracking-widest">
-          © 2026 Braxel Markets. Institutional Infrastructure.
+          © 2026 Braxel Markets. {t('auth.registerSideFooter')}
         </div>
       </div>
       
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="mb-10">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">Access</span>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('auth.accessBadge')}</span>
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{t('auth.registerTitle')}</h1>
             <p className="text-slate-500 text-xs mt-2">{t('auth.registerSubtitle')}</p>
           </div>
@@ -105,7 +105,7 @@ const Register = () => {
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your name" 
+                  placeholder={t('auth.fullNamePlaceholder')} 
                   className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
@@ -120,7 +120,7 @@ const Register = () => {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com" 
+                  placeholder={t('auth.emailPlaceholder')} 
                   className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
@@ -158,7 +158,7 @@ const Register = () => {
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-              {t('auth.hasAccount')} <Link to="/login" state={{ from, plan }} className="text-[#C5A059] hover:underline">Login</Link>
+              {t('auth.hasAccount')} <Link to="/login" state={{ from, plan }} className="text-[#C5A059] hover:underline">{t('auth.loginLink')}</Link>
             </p>
           </div>
         </div>

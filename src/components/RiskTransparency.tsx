@@ -28,9 +28,9 @@ const RiskTransparency = () => {
             <div className="absolute inset-0 bg-[#D4AF37]/5 blur-3xl group-hover:bg-[#D4AF37]/10 transition-all" />
             <div className="relative border border-white/10 bg-[#080B12] p-12 flex flex-col items-center text-center">
               <ShieldAlert size={64} className="text-[#D4AF37] mb-8" />
-              <h3 className="text-[14px] font-bold uppercase tracking-[3px] text-white mb-4">Institutional Protocol</h3>
+              <h3 className="text-[14px] font-bold uppercase tracking-[3px] text-white mb-4">{t('transparency.protocolTitle')}</h3>
               <p className="text-slate-500 text-[12px] leading-relaxed">
-                Our infrastructure follows strict compliance and risk management standards to ensure the highest level of operational security.
+                {t('transparency.protocolDesc')}
               </p>
             </div>
           </div>
