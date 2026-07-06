@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Send, Twitter, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
+import { Mail, Twitter, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
@@ -32,9 +32,6 @@ const Footer = () => {
               {t('footer.desc')}
             </p>
             <div className="flex items-center gap-4">
-              <a href="https://t.me/braxelmarkets" target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
-                <Send size={16} />
-              </a>
               <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
                 <Twitter size={16} />
               </a>
@@ -67,10 +64,6 @@ const Footer = () => {
               <li className="flex items-start gap-3">
                 <Mail className="text-[#D4AF37] shrink-0" size={16} />
                 <a href="mailto:marketsbraxel@ouvidor.net" className="text-[10px] font-bold uppercase tracking-widest hover:text-[#D4AF37] transition-colors">marketsbraxel@ouvidor.net</a>
-              </li>
-              <li className="flex items-start gap-3">
-                <Send className="text-[#D4AF37] shrink-0" size={16} />
-                <a href="https://t.me/braxelmarkets" target="_blank" rel="noopener noreferrer" className="text-[10px] font-bold uppercase tracking-widest hover:text-[#D4AF37]">Telegram Support</a>
               </li>
             </ul>
           </div>

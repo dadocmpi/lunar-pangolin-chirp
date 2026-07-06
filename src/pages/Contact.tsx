@@ -140,13 +140,7 @@ const Contact = () => {
                   <a href="mailto:marketsbraxel@ouvidor.net" className="text-slate-400 text-[14px] hover:text-[#D4AF37] transition-colors">marketsbraxel@ouvidor.net</a>
                 </div>
               </div>
-              <div className="flex items-start gap-6 group">
-                <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Send size={28} /></div>
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">Telegram</p>
-                  <a href="https://t.me/braxelmarkets" target="_blank" rel="noopener noreferrer" className="text-slate-400 text-[14px] hover:text-[#D4AF37] transition-colors">@braxelmarkets</a>
-                </div>
-              </div>
+
               <div className="flex items-start gap-6 group">
                 <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Clock size={28} /></div>
                 <div>
