@@ -12,28 +12,78 @@ interface Message {
   timestamp: Date;
 }
 
-// Language detection map
+// Complete Language detection map - supports all website languages
 const languageMap: Record<string, string> = {
+  // Portuguese
   'pt': 'Portuguese',
   'pt-BR': 'Portuguese',
+  'pt-PT': 'Portuguese',
+  // Spanish
   'es': 'Spanish',
   'es-ES': 'Spanish',
+  'es-MX': 'Spanish',
+  'es-AR': 'Spanish',
+  // Italian
   'it': 'Italian',
   'it-IT': 'Italian',
+  // French
   'fr': 'French',
   'fr-FR': 'French',
+  'fr-CA': 'French',
+  // German
   'de': 'German',
   'de-DE': 'German',
+  'de-AT': 'German',
+  'de-CH': 'German',
+  // Russian
   'ru': 'Russian',
   'ru-RU': 'Russian',
+  // Chinese
   'zh': 'Chinese',
   'zh-CN': 'Chinese',
+  'zh-TW': 'Chinese',
+  'zh-HK': 'Chinese',
+  // Japanese
   'ja': 'Japanese',
   'ja-JP': 'Japanese',
+  // Arabic
   'ar': 'Arabic',
   'ar-SA': 'Arabic',
+  'ar-AE': 'Arabic',
+  'ar-EG': 'Arabic',
+  // Hebrew
   'he': 'Hebrew',
   'he-IL': 'Hebrew',
+  // Korean
+  'ko': 'Korean',
+  'ko-KR': 'Korean',
+  // Hindi
+  'hi': 'Hindi',
+  'hi-IN': 'Hindi',
+  // Turkish
+  'tr': 'Turkish',
+  'tr-TR': 'Turkish',
+  // Dutch
+  'nl': 'Dutch',
+  'nl-NL': 'Dutch',
+  // Polish
+  'pl': 'Polish',
+  'pl-PL': 'Polish',
+  // Indonesian
+  'id': 'Indonesian',
+  'id-ID': 'Indonesian',
+  // Thai
+  'th': 'Thai',
+  'th-TH': 'Thai',
+  // Vietnamese
+  'vi': 'Vietnamese',
+  'vi-VN': 'Vietnamese',
+  // English (default)
+  'en': 'English',
+  'en-US': 'English',
+  'en-GB': 'English',
+  'en-CA': 'English',
+  'en-AU': 'English',
 };
 
 const SupportChatbot = () => {
@@ -131,17 +181,25 @@ IMPORTANT RULES:
     if (isOpen) {
       const lang = getCurrentLanguage();
       const welcomeMessages: Record<string, string> = {
-        'English': `Welcome to Braxel Markets Support! 👋\n\nI'm your AI assistant. How can I help you today?`,
-        'Portuguese': `Bem-vindo ao Suporte Braxel Markets! 👋\n\nSou seu assistente virtual. Como posso ajudá-lo hoje?`,
-        'Spanish': `¡Bienvenido al Soporte de Braxel Markets! 👋\n\nSoy tu asistente virtual. ¿Cómo puedo ayudarte hoy?`,
-        'Italian': `Benvenuto nel Supporto Braxel Markets! 👋\n\nSono il tuo assistente virtual. Come posso aiutarti oggi?`,
-        'French': `Bienvenue sur le Support Braxel Markets! 👋\n\nJe suis votre assistant virtuel. Comment puis-je vous aider aujourd'hui?`,
-        'German': `Willkommen im Braxel Markets Support! 👋\n\nIch bin Ihr virtueller Assistent. Wie kann ich Ihnen heute helfen?`,
-        'Russian': `Добро пожаловать в поддержку Braxel Markets! 👋\n\nЯ ваш виртуальный помощник. Чем я могу вам помочь сегодня?`,
-        'Chinese': `欢迎来到 Braxel Markets 支持！👋\n\n我是您的虚拟助手。今天我能为您提供什么帮助？`,
-        'Japanese': `Braxel Marketsサポートへようこそ！👋\n\n私はバーチャルアシスタントです。本日はどのようなお手伝いができるでしょうか？`,
-        'Arabic': `مرحبًا بك في دعم Braxel Markets! 👋\n\nأنا مساعدك الافتراضي. كيف يمكنني مساعدتك اليوم؟`,
-        'Hebrew': `ברוכים הבאים לתמיכת Braxel Markets! 👋\n\nאני העוזר הווירטואלי שלך. איך אוכל לעזור לך היום?`,
+        'English': `Welcome to Braxel Markets Support! 👋\n\nI'm your AI assistant, specialized in helping with all platform questions.\n\nHow can I help you today?`,
+        'Portuguese': `Bem-vindo ao Suporte Braxel Markets! 👋\n\nSou seu assistente virtual, especializado em ajudar com todas as perguntas sobre a plataforma.\n\nComo posso ajudá-lo hoje?`,
+        'Spanish': `¡Bienvenido al Soporte de Braxel Markets! 👋\n\nSoy tu asistente virtual, especializado en ayudar con todas las preguntas de la plataforma.\n\n¿Cómo puedo ayudarte hoy?`,
+        'Italian': `Benvenuto nel Supporto Braxel Markets! 👋\n\nSono il tuo assistente virtual, specializzato nell'aiutarti con tutte le domande sulla piattaforma.\n\nCome posso aiutarti oggi?`,
+        'French': `Bienvenue sur le Support Braxel Markets! 👋\n\nJe suis votre assistant virtuel, spécialisé dans l'aide sur toutes les questions de la plateforme.\n\nComment puis-je vous aider aujourd'hui?`,
+        'German': `Willkommen im Braxel Markets Support! 👋\n\nIch bin Ihr virtueller Assistent, spezialisiert auf alle Plattformfragen.\n\nWie kann ich Ihnen heute helfen?`,
+        'Russian': `Добро пожаловать в поддержку Braxel Markets! 👋\n\nЯ ваш виртуальный помощник, специализирующийся на всех вопросах о платформе.\n\nЧем я могу вам помочь сегодня?`,
+        'Chinese': `欢迎来到 Braxel Markets 支持！👋\n\n我是您的虚拟助手，专为解答平台所有问题而设计。\n\n今天我能为您提供什么帮助？`,
+        'Japanese': `Braxel Marketsサポートへようこそ！👋\n\n私はバーチャルアシスタントです。プラットフォームに関するご質問にお答えします。\n\n本日どのようにお手伝いしましょうか？`,
+        'Arabic': `مرحبًا بك في دعم Braxel Markets! 👋\n\nأنا مساعدك الافتراضي، متخصص في المساعدة بخصوص جميع أسئلة المنصة.\n\nكيف يمكنني مساعدتك اليوم؟`,
+        'Hebrew': `ברוכים הבאים לתמיכת Braxel Markets! 👋\n\nאני העוזר הווירטואלי שלך, מומחה בכל שאלות הפלטפורמה.\n\nאיך אוכל לעזור לך היום?`,
+        'Korean': `Braxel Markets 지원에 오신 것을 환영합니다! 👋\n\n저는 플랫폼 질문에 도움을 드리는 AI 어시스턴트입니다.\n\n오늘 어떻게 도와드릴까요?`,
+        'Hindi': `Braxel Markets सपोर्ट में आपका स्वागत है! 👋\n\nमैं आपका AI असिस्टेंट हूं, प्लेटफॉर्म से संबंधित सभी प्रश्नों में मदद करने में विशेषज्ञ।\n\nआज मैं आपकी कैसे मदद कर सकता हूं?`,
+        'Turkish': `Braxel Markets Destek'e hoş geldiniz! 👋\n\nBen size platform hakkındaki tüm sorularda yardımcı olmak için uzmanlaşmış yapay zeka asistanınızım.\n\nBugün size nasıl yardımcı olabilirim?`,
+        'Dutch': `Welkom bij Braxel Markets Support! 👋\n\nIk ben uw AI-assistent, gespecialiseerd in het beantwoorden van alle platformvragen.\n\nHoe kan ik u vandaag helpen?`,
+        'Polish': `Witamy w Wsparciu Braxel Markets! 👋\n\nJestem Twoim asystentem AI, specjalizującym się w odpowiadaniu na wszystkie pytania dotyczące platformy.\n\nJak mogę Ci dzisiaj pomóc?`,
+        'Indonesian': `Selamat datang di Dukungan Braxel Markets! 👋\n\nSaya adalah asisten AI Anda, spesialis dalam membantu semua pertanyaan tentang platform.\n\nBagaimana saya bisa membantu Anda hari ini?`,
+        'Thai': `ยินดีต้อนรับสู่การสนับสนุน Braxel Markets! 👋\n\nฉันคือผู้ช่วย AI ของคุณ ผู้เชี่ยวชาญด้านการตอบคำถามทั้งหมดเกี่ยวกับแพลตฟอร์ม\n\nวันนี้ฉันจะช่วยคุณได้อย่างไร?`,
+        'Vietnamese': `Chào mừng bạn đến với Hỗ trợ Braxel Markets! 👋\n\nTôi là trợ lý AI của bạn, chuyên trợ giúp về tất cả các câu hỏi liên quan đến nền tảng.\n\nHôm nay tôi có thể giúp gì cho bạn?`,
       };
 
       setMessages([{
