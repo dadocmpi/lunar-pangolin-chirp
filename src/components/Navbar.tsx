@@ -128,7 +128,7 @@ const Navbar = () => {
           <div className="h-px bg-white/5 w-full" />
           
           <div className="space-y-4">
-            <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase">Select Language</p>
+            <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase">{t('nav.selectLanguage')}</p>
             <div className="grid grid-cols-2 gap-4">
               {supportedLanguages.map((lang) => (
                 <button 
