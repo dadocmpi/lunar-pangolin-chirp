@@ -193,7 +193,7 @@ const Login = () => {
           
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
-
+              {t('auth.noAccount')} <Link to="/register" state={{ from, plan }} className="text-[#C5A059] hover:underline">{t('auth.registerLink')}</Link>
             </p>
           </div>
         </div>
