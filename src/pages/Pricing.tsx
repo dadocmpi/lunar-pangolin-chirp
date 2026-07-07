@@ -21,7 +21,12 @@ const Pricing = () => {
       price: "€70.00",
       accountSize: "$2,000",
       iconType: "zap",
-      features: t('plans.starterFeatures').split(', '),
+      features: [
+        t('plans.features.automation'),
+        t('plans.features.accountManagement'),
+        t('plans.features.emailSupport'),
+        t('plans.features.controlledRisk'),
+      ],
     },
     {
       id: "pro",
@@ -29,7 +34,11 @@ const Pricing = () => {
       price: "€160.00",
       accountSize: "$5,000",
       iconType: "award",
-      features: t('plans.proFeatures').split(', '),
+      features: [
+        t('plans.features.starterFeatures'),
+        t('plans.features.prioritySupport'),
+        t('plans.features.detailedLogs'),
+      ],
       popular: true
     },
     {
@@ -38,7 +47,11 @@ const Pricing = () => {
       price: "€320.00",
       accountSize: "$10,000",
       iconType: "shield",
-      features: t('plans.advancedFeatures').split(', '),
+      features: [
+        t('plans.features.proFeatures'),
+        t('plans.features.multiAccount'),
+        t('plans.features.weeklyReports'),
+      ],
     },
     {
       id: "elite",
@@ -46,7 +59,11 @@ const Pricing = () => {
       price: "€630.00",
       accountSize: "$20,000",
       iconType: "crown",
-      features: t('plans.eliteFeatures').split(', '),
+      features: [
+        t('plans.features.advancedFeatures'),
+        t('plans.features.24_7Support'),
+        t('plans.features.dedicatedManager'),
+      ],
     }
   ];
 

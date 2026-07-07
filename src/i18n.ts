@@ -52,6 +52,7 @@ const enTranslation = {
       multiAccount: "Multi-Account",
       weeklyReports: "Weekly Reports",
       advancedFeatures: "Advanced Features",
+      24_7Support: "24/7 Support",
       dedicatedManager: "Dedicated Manager"
     }
   },
@@ -131,7 +132,22 @@ const ptTranslation = {
     advancedFeatures: "Recursos Pro, Multi-Conta, Relatórios Semanais",
     elite: "ELITE 20K",
     eliteFeatures: "Recursos Avançados, Suporte 24/7, Gerente Dedicado",
-    managedCapital: "Capital Gerenciado"
+    managedCapital: "Capital Gerenciado",
+    features: {
+      automation: "Automação",
+      accountManagement: "Gestão de Conta",
+      emailSupport: "Suporte por Email",
+      controlledRisk: "Risco Controlado",
+      starterFeatures: "Recursos Starter",
+      prioritySupport: "Suporte Prioritário",
+      detailedLogs: "Logs Detalhados",
+      proFeatures: "Recursos Pro",
+      multiAccount: "Multi-Conta",
+      weeklyReports: "Relatórios Semanais",
+      advancedFeatures: "Recursos Avançados",
+      24_7Support: "Suporte 24/7",
+      dedicatedManager: "Gerente Dedicado"
+    }
   },
   howItWorks: { badge: "INFRAESTRUTURA", title: "ARQUITETURA", subtitle: "TÉCNICA", desc: "Nosso ecossistema proprietário é construído para velocidade, segurança e desempenho consistente.", steps: [{ title: "REGISTRO", desc: "Crie seu perfil institucional." }, { title: "PAINEL", desc: "Acesse seu terminal privado de gestão." }, { title: "SELEÇÃO DE PLANO", desc: "Escolha seu nível de alocação de capital." }, { title: "IMPLANTAÇÃO DE API", desc: "Conexão automatizada aos mercados globais." }, { title: "EXECUÇÃO", desc: "Processamento de ordens em milissegundos." }, { title: "RELATÓRIOS", desc: "Análise detalhada de desempenho semanal." }], cta: "PRONTO PARA COMEÇAR?", ctaBtn: "ENTRAR NA REDE" },
   about: { badge: "SOBRE NÓS", title: "EXCELÊNCIA", subtitle: "INSTITUCIONAL", desc: "Braxel Markets representa o auge da gestão algorítmica de capital.", historyTitle: "NOSSA HISTÓRIA", historyDesc1: "Fundada por uma equipe de analistas quantitativos e engenheiros de software, a Braxel foi criada para preencher a lacuna entre capital de varejo e tecnologia institucional.", historyDesc2: "Hoje, nos concentramos em retornos ajustados ao risco e estabilidade da infraestrutura, fornecendo estratégias algorítmicas de ponta para o investidor moderno.", stats: { founded: "Fundada", users: "Usuários Ativos", uptime: "Tempo de Atividade", support: "Suporte" }, values: { mission: "MISSÃO", missionDesc: "Fornecer infraestrutura algorítmica de elite para capital global.", vision: "VISÃO", visionDesc: "Definir o futuro da gestão quantitativa automatizada.", values: "VALORES", valuesDesc: "Transparência, precisão e segurança inabalável." }, teamTitle: "EQUIPE DE LIDERANÇA", teamDesc: "Conheça os fundadores e gestores por trás da Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Fundador & CEO", bio: "Estrategista quantitativo e empreendedor liderando a visão da Braxel Markets para infraestrutura algorítmica institucional.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Nome do Cofundador]", role: "Cofundador & CTO", bio: "Engenheiro de software especializado em sistemas de alta frequência e computação distribuída.", linkedin: "#", photo: "" }, { name: "[Nome do Gestor]", role: "Diretor de Gestão de Riscos", bio: "Ex-analista de riscos institucionais com ampla experiência em otimização de portfólio.", linkedin: "#", photo: "" }] },
@@ -208,7 +224,22 @@ const itTranslation = {
     advancedFeatures: "Funzionalità Pro, Multi-Account, Report Settimanali",
     elite: "ELITE 20K",
     eliteFeatures: "Funzionalità Avanzate, Supporto 24/7, Manager Dedicato",
-    managedCapital: "Capitale Gestito"
+    managedCapital: "Capitale Gestito",
+    features: {
+      automation: "Automazione",
+      accountManagement: "Gestione Account",
+      emailSupport: "Supporto Email",
+      controlledRisk: "Rischio Controllato",
+      starterFeatures: "Funzionalità Starter",
+      prioritySupport: "Supporto Prioritario",
+      detailedLogs: "Log Dettagliati",
+      proFeatures: "Funzionalità Pro",
+      multiAccount: "Multi-Account",
+      weeklyReports: "Report Settimanali",
+      advancedFeatures: "Funzionalità Avanzate",
+      24_7Support: "Supporto 24/7",
+      dedicatedManager: "Manager Dedicato"
+    }
   },
   howItWorks: { badge: "INFRASTRUTTURA", title: "ARCHITETTURA", subtitle: "TECNICA", desc: "Il nostro ecosistema proprietario è costruito per velocità, sicurezza e performance costanti.", steps: [{ title: "REGISTRAZIONE", desc: "Crea il tuo profilo istituzionale." }, { title: "PANNELLO", desc: "Accedi al tuo terminale privato di gestione." }, { title: "SELEZIONE PIANO", desc: "Scegli il tuo livello di allocazione del capitale." }, { title: "IMPLEMENTAZIONE API", desc: "Connessione automatizzata ai mercati globali." }, { title: "ESECUZIONE", desc: "Elaborazione ordini in millisecondi." }, { title: "REPORTISTICA", desc: "Analisi dettagliata delle performance settimanali." }], cta: "PRONTO PER INIZIARE?", ctaBtn: "UNISCITI ALLA RETE" },
   about: { badge: "CHI SIAMO", title: "ECCELLENZA", subtitle: "ISTITUZIONALE", desc: "Braxel Markets rappresenta l'apice della gestione algoritmica del capitale.", historyTitle: "LA NOSTRA STORIA", historyDesc1: "Fondata da un team di analisti quantitativi e ingegneri del software, Braxel è stata creata per colmare il divario tra capitale retail e tecnologia istituzionale.", historyDesc2: "Oggi ci concentriamo su rendimenti aggiustati per il rischio e stabilità infrastrutturale, fornendo strategie algoritmiche all'avanguardia per l'investitore moderno.", stats: { founded: "Fondata", users: "Utenti Attivi", uptime: "Uptime", support: "Supporto" }, values: { mission: "MISSIONE", missionDesc: "Fornire infrastruttura algoritmica d'élite per il capitale globale.", vision: "VISIONE", visionDesc: "Definire il futuro della gestione quantitativa automatizzata.", values: "VALORI", valuesDesc: "Trasparenza, precisione e sicurezza incrollabile." }, teamTitle: "TEAM DI LEADERSHIP", teamDesc: "Incontra i fondatori e i gestori dietro Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Fondatore & CEO", bio: "Stratega quantitativo e imprenditore che guida la visione di Braxel Markets per l'infrastruttura algoritmica istituzionale.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Nome Co-Fondatore]", role: "Co-Fondatore & CTO", bio: "Ingegnere del software specializzato in sistemi ad alta frequenza e calcolo distribuito.", linkedin: "#", photo: "" }, { name: "[Nome Gestore]", role: "Head of Risk Management", bio: "Ex analista di rischio istituzionale con expertise in ottimizzazione del portafoglio.", linkedin: "#", photo: "" }] },
@@ -277,7 +308,23 @@ const esTranslation = {
     advancedFeatures: "Características Pro, Multi-Cuenta, Reportes Semanales",
     elite: "ELITE 20K",
     eliteFeatures: "Características Avanzadas, Soporte 24/7, Gestor Dedicado",
-    managedCapital: "Capital Gestionado"
+    managedCapital: "Capital Gestionado",
+    features: {
+      automation: "Automatización",
+      accountManagement: "Gestión de Cuenta",
+      emailSupport: "Soporte por Email",
+      controlledRisk: "Riesgo Controlado",
+      starterFeatures: "Características Starter",
+      prioritySupport: "Soporte Prioritario",
+      detailedLogs: "Logs Detallados",
+      proFeatures: "Características Pro",
+      multiAccount: "Multi-Cuenta",
+      weeklyReports: "Reportes Semanales",
+      advancedFeatures: "Características Avanzadas",
+      24_7Support: "Soporte 24/7",
+      dedicatedManager: "Gestor Dedicado"
+    }
+  },
   },
   howItWorks: { badge: "INFRAESTRUCTURA", title: "ARQUITECTURA", subtitle: "TÉCNICA", desc: "Nuestro ecosistema propietario está construido para velocidad, seguridad y rendimiento constante.", steps: [{ title: "REGISTRO", desc: "Cree su perfil institucional." }, { title: "PANEL", desc: "Acceda a su terminal privado de gestión." }, { title: "SELECCIÓN DE PLAN", desc: "Elija su nivel de asignación de capital." }, { title: "IMPLEMENTACIÓN API", desc: "Conexión automatizada a mercados globales." }, { title: "EJECUCIÓN", desc: "Procesamiento de órdenes en milisegundos." }, { title: "REPORTES", desc: "Análisis detallado de rendimiento semanal." }], cta: "¿LISTO PARA COMENZAR?", ctaBtn: "UNIRSE A LA RED" },
   about: { badge: "SOBRE NOSOTROS", title: "EXCELENCIA", subtitle: "INSTITUCIONAL", desc: "Braxel Markets representa la cúspide de la gestión algorítmica de capital.", historyTitle: "NUESTRA HISTORIA", historyDesc1: "Fundada por un equipo de analistas cuantitativos e ingenieros de software, Braxel fue creada para cerrar la brecha entre el capital retail y la tecnología institucional.", historyDesc2: "Hoy nos enfocamos en rendimientos ajustados al riesgo y estabilidad de infraestructura, proporcionando estrategias algorítmicas de vanguardia para el inversor moderno.", stats: { founded: "Fundada", users: "Usuarios Activos", uptime: "Uptime", support: "Soporte" }, values: { mission: "MISIÓN", missionDesc: "Proporcionar infraestructura algorítmica de élite para el capital global.", vision: "VISIÓN", visionDesc: "Definir el futuro de la gestión cuantitativa automatizada.", values: "VALORES", valuesDesc: "Transparencia, precisión y seguridad inquebrantable." }, teamTitle: "EQUIPO DE LIDERAZGO", teamDesc: "Conozca a los fundadores y gestores detrás de Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Fundador & CEO", bio: "Estratega cuantitativo y emprendedor liderando la visión de Braxel Markets para infraestructura algorítmica institucional.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Nombre del Co-Fundador]", role: "Co-Fundador & CTO", bio: "Ingeniero de software especializado en sistemas de alta frecuencia y computación distribuida.", linkedin: "#", photo: "" }, { name: "[Nombre del Gestor]", role: "Head de Gestión de Riesgo", bio: "Ex analista de riesgo institucional con expertise en optimización de portafolio.", linkedin: "#", photo: "" }] },
@@ -346,7 +393,23 @@ const frTranslation = {
     advancedFeatures: "Fonctionnalités Pro, Multi-Comptes, Rapports Hebdomadaires",
     elite: "ELITE 20K",
     eliteFeatures: "Fonctionnalités Avancées, Support 24/7, Gestionnaire Dédié",
-    managedCapital: "Capital Géréré"
+    managedCapital: "Capital Géréré",
+    features: {
+      automation: "Automatisation",
+      accountManagement: "Gestion de Compte",
+      emailSupport: "Support Email",
+      controlledRisk: "Risque Contrôlé",
+      starterFeatures: "Fonctionnalités Starter",
+      prioritySupport: "Support Prioritaire",
+      detailedLogs: "Logs Détaillés",
+      proFeatures: "Fonctionnalités Pro",
+      multiAccount: "Multi-Comptes",
+      weeklyReports: "Rapports Hebdomadaires",
+      advancedFeatures: "Fonctionnalités Avancées",
+      24_7Support: "Support 24/7",
+      dedicatedManager: "Gestionnaire Dédié"
+    }
+  },
   },
   howItWorks: { badge: "INFRASTRUCTURE", title: "ARCHITECTURE", subtitle: "TECHNIQUE", desc: "Notre écosystème propriétaire est conçu pour la vitesse, la sécurité et des performances constantes.", steps: [{ title: "INSCRIPTION", desc: "Créez votre profil institutionnel." }, { title: "TABLEAU DE BORD", desc: "Accédez à votre terminal privé de gestion." }, { title: "SÉLECTION DU PLAN", desc: "Choisissez votre niveau d'allocation de capital." }, { title: "DÉPLOIEMENT API", desc: "Connexion automatisée aux marchés mondiaux." }, { title: "EXÉCUTION", desc: "Traitement des ordres en millisecondes." }, { title: "REPORTING", desc: "Analyse détaillée des performances hebdomadaires." }], cta: "PRÊT À COMMENCER ?", ctaBtn: "REJOINDRE LE RÉSEAU" },
   about: { badge: "À PROPOS", title: "EXCELLENCE", subtitle: "INSTITUTIONNELLE", desc: "Braxel Markets représente le sommet de la gestion algorithmique du capital.", historyTitle: "NOTRE HISTOIRE", historyDesc1: "Fondée par une équipe d'analystes quantitatifs et d'ingénieurs logiciels, Braxel a été créée pour combler le fossé entre le capital retail et la technologie institutionnelle.", historyDesc2: "Aujourd'hui, nous nous concentrons sur les rendements ajustés au risque et la stabilité de l'infrastructure, offrant des stratégies algorithmiques de pointe pour l'investisseur moderne.", stats: { founded: "Fondée", users: "Utilisateurs Actifs", uptime: "Uptime", support: "Support" }, values: { mission: "MISSION", missionDesc: "Fournir une infrastructure algorithmique d'élite pour le capital mondial.", vision: "VISION", visionDesc: "Définir l'avenir de la gestion quantitative automatisée.", values: "VALEURS", valuesDesc: "Transparence, précision et sécurité inébranlable." }, teamTitle: "ÉQUIPE DE DIRECTION", teamDesc: "Découvrez les fondateurs et gestionnaires derrière Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Fondateur & CEO", bio: "Stratège quantitatif et entrepreneur dirigeant la vision de Braxel Markets pour l'infrastructure algorithmique institutionnelle.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Nom du Co-Fondateur]", role: "Co-Fondateur & CTO", bio: "Ingénieur logiciel spécialisé dans les systèmes haute fréquence et le calcul distribué.", linkedin: "#", photo: "" }, { name: "[Nom du Gestionnaire]", role: "Directeur de la Gestion des Risques", bio: "Ancien analyste de risque institutionnel avec une expertise en optimisation de portefeuille.", linkedin: "#", photo: "" }] },
@@ -415,7 +478,23 @@ const deTranslation = {
     advancedFeatures: "Pro-Funktionen, Multi-Konto, Wochenberichte",
     elite: "ELITE 20K",
     eliteFeatures: "Fortgeschrittene Funktionen, 24/7-Support, Dedizierter Manager",
-    managedCapital: "Verwaltetes Kapital"
+    managedCapital: "Verwaltetes Kapital",
+    features: {
+      automation: "Automatisierung",
+      accountManagement: "Kontoverwaltung",
+      emailSupport: "E-Mail-Support",
+      controlledRisk: "Kontrolliertes Risiko",
+      starterFeatures: "Starter-Funktionen",
+      prioritySupport: "Prioritäts-Support",
+      detailedLogs: "Detaillierte Protokolle",
+      proFeatures: "Pro-Funktionen",
+      multiAccount: "Multi-Konto",
+      weeklyReports: "Wochenberichte",
+      advancedFeatures: "Fortgeschrittene Funktionen",
+      24_7Support: "24/7-Support",
+      dedicatedManager: "Dedizierter Manager"
+    }
+  },
   },
   howItWorks: { badge: "INFRASTRUKTUR", title: "TECHNISCHE", subtitle: "ARCHITEKTUR", desc: "Unser proprietäres Ökosystem ist auf Geschwindigkeit, Sicherheit und konsistente Performance ausgelegt.", steps: [{ title: "REGISTRIERUNG", desc: "Erstellen Sie Ihr institutionelles Profil." }, { title: "DASHBOARD", desc: "Zugang zu Ihrem privaten Management-Terminal." }, { title: "PLANAUSWAHL", desc: "Wählen Sie Ihre Kapitalallokationsstufe." }, { title: "API-BEREITSTELLUNG", desc: "Automatisierte Anbindung an globale Märkte." }, { title: "AUSFÜHRUNG", desc: "Orderverarbeitung in Millisekunden." }, { title: "REPORTING", desc: "Detaillierte wöchentliche Performance-Analysen." }], cta: "BEREIT ZU STARTEN?", ctaBtn: "DEM NETZWERK BEITRETEN" },
   about: { badge: "ÜBER UNS", title: "INSTITUTIONELLE", subtitle: "EXZELLENZ", desc: "Braxel Markets repräsentiert den Gipfel des algorithmischen Kapitalmanagements.", historyTitle: "UNSERE GESCHICHTE", historyDesc1: "Gegründet von einem Team aus quantitativen Analysten und Software-Ingenieuren, wurde Braxel geschaffen, um die Lücke zwischen Retail-Kapital und institutioneller Technologie zu schließen.", historyDesc2: "Heute konzentrieren wir uns auf risikoadjustierte Renditen und Infrastrukturstabilität und bieten modernste algorithmische Strategien für den modernen Investor.", stats: { founded: "Gegründet", users: "Aktive Nutzer", uptime: "Uptime", support: "Support" }, values: { mission: "MISSION", missionDesc: "Elite-algorithmische Infrastruktur für globales Kapital bereitzustellen.", vision: "VISION", visionDesc: "Die Zukunft des automatisierten quantitativen Managements zu definieren.", values: "WERTE", valuesDesc: "Transparenz, Präzision und unerschütterliche Sicherheit." }, teamTitle: "FÜHRUNGSTEAM", teamDesc: "Lernen Sie die Gründer und Manager hinter Braxel Markets kennen.", team: [{ name: "Bernardo Campi", role: "Gründer & CEO", bio: "Quantitativer Stratege und Unternehmer, der die Vision von Braxel Markets für institutionelle algorithmische Infrastruktur leitet.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Name des Co-Gründers]", role: "Co-Gründer & CTO", bio: "Software-Ingenieur spezialisiert auf Hochfrequenzsysteme und verteiltes Rechnen.", linkedin: "#", photo: "" }, { name: "[Name des Managers]", role: "Leiter Risikomanagement", bio: "Ehemaliger institutioneller Risikoanalyst mit Expertise in Portfolio-Optimierung.", linkedin: "#", photo: "" }] },
@@ -484,7 +563,23 @@ const ruTranslation = {
     advancedFeatures: "Функции Про, Мульти-Аккаунт, Еженедельные Отчёты",
     elite: "ЭЛИТА 20K",
     eliteFeatures: "Продвинутые Функции, Поддержка 24/7, Выделенный Менеджер",
-    managedCapital: "Управляемый Капитал"
+    managedCapital: "Управляемый Капитал",
+    features: {
+      automation: "Автоматизация",
+      accountManagement: "Управление Аккаунтом",
+      emailSupport: "Email-поддержка",
+      controlledRisk: "Контролируемый Риск",
+      starterFeatures: "Функции Стартера",
+      prioritySupport: "Приоритетная Поддержка",
+      detailedLogs: "Детальные Логи",
+      proFeatures: "Функции Про",
+      multiAccount: "Мульти-Аккаунт",
+      weeklyReports: "Еженедельные Отчёты",
+      advancedFeatures: "Продвинутые Функции",
+      24_7Support: "Поддержка 24/7",
+      dedicatedManager: "Выделенный Менеджер"
+    }
+  },
   },
   howItWorks: { badge: "ИНФРАСТРУКТУРА", title: "ТЕХНИЧЕСКАЯ", subtitle: "АРХИТЕКТУРА", desc: "Наша проприетарная экосистема создана для скорости, безопасности и стабильной производительности.", steps: [{ title: "РЕГИСТРАЦИЯ", desc: "Создайте институциональный профиль." }, { title: "ПАНЕЛЬ", desc: "Доступ к приватному терминалу управления." }, { title: "ВЫБОР ПЛАНА", desc: "Выберите уровень аллокации капитала." }, { title: "РАЗВЁРТЫВАНИЕ API", desc: "Автоматическое подключение к мировым рынкам." }, { title: "ИСПОЛНЕНИЕ", desc: "Обработка ордеров в миллисекундах." }, { title: "ОТЧЁТНОСТЬ", desc: "Детальная аналитика результатов за неделю." }], cta: "ГОТОВЫ НАЧАТЬ?", ctaBtn: "ПРИСОЕДИНИТЬСЯ К СЕТИ" },
   about: { badge: "О НАС", title: "ИНСТИТУЦИОНАЛЬНОЕ", subtitle: "ПРЕВОСХОДСТВО", desc: "Braxel Markets представляет вершину алгоритмического управления капиталом.", historyTitle: "НАША ИСТОРИЯ", historyDesc1: "Основанная командой количественных аналитиков и программных инженеров, Braxel была создана, чтобы объединить розничный капитал и институциональные технологии.", historyDesc2: "Сегодня мы фокусируемся на доходности с учётом рисков и стабильности инфраструктуры, предоставляя передовые алгоритмические стратегии для современного инвестора.", stats: { founded: "Основана", users: "Активные Пользователи", uptime: "Время Работы", support: "Поддержка" }, values: { mission: "МИССИЯ", missionDesc: "Предоставить элитную алгоритмическую инфраструктуру для глобального капитала.", vision: "ВИДЕНИЕ", visionDesc: "Определить будущее автоматизированного количественного управления.", values: "ЦЕННОСТИ", valuesDesc: "Прозрачность, точность и непоколебимая безопасность." }, teamTitle: "КОМАНДА РУКОВОДСТВА", teamDesc: "Познакомьтесь с основателями и управляющими Braxel Markets.", team: [{ name: "Bernardo Campi", role: "Основатель и CEO", bio: "Количественный стратег и предприниматель, возглавляющий видение Braxel Markets в области институциональной алгоритмической инфраструктуры.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[Имя Сооснователя]", role: "Сооснователь и CTO", bio: "Программный инженер, специализирующийся на высокочастотных системах и распределённых вычислениях.", linkedin: "#", photo: "" }, { name: "[Имя Управляющего]", role: "Руководитель Управления Рисками", bio: "Бывший институциональный аналитик рисков с глубокой экспертизой в оптимизации портфеля.", linkedin: "#", photo: "" }] },
@@ -552,7 +647,23 @@ const zhTranslation = {
     advancedFeatures: "专业功能、多账户、周报",
     elite: "精英 20K",
     eliteFeatures: "高级功能、24/7支持、专属经理",
-    managedCapital: "管理资本"
+    managedCapital: "管理资本",
+    features: {
+      automation: "自动化",
+      accountManagement: "账户管理",
+      emailSupport: "邮件支持",
+      controlledRisk: "风险控制",
+      starterFeatures: "初学者功能",
+      prioritySupport: "优先支持",
+      detailedLogs: "详细日志",
+      proFeatures: "专业功能",
+      multiAccount: "多账户",
+      weeklyReports: "周报",
+      advancedFeatures: "高级功能",
+      24_7Support: "24/7支持",
+      dedicatedManager: "专属经理"
+    }
+  },
   },
   howItWorks: { badge: "基础设施", title: "技术", subtitle: "架构", desc: "我们的专有生态系统专为速度、安全和稳定性能而构建。", steps: [{ title: "注册", desc: "创建您的机构配置文件。" }, { title: "控制面板", desc: "访问您的私人管理终端。" }, { title: "选择计划", desc: "选择您的资本配置级别。" }, { title: "API部署", desc: "自动连接全球市场。" }, { title: "执行", desc: "毫秒级订单处理。" }, { title: "报告", desc: "详细的每周绩效分析。" }], cta: "准备好开始了吗？", ctaBtn: "加入网络" },
   about: { badge: "关于我们", title: "机构级", subtitle: "卓越", desc: "Braxel Markets代表了算法资本管理的巅峰。", historyTitle: "我们的历史", historyDesc1: "由量化分析师和软件工程师团队创立，Braxel旨在弥合零售资本与机构技术之间的差距。", historyDesc2: "今天，我们专注于风险调整回报和基础设施稳定性，为现代投资者提供尖端算法策略。", stats: { founded: "成立", users: "活跃用户", uptime: "运行时间", support: "支持" }, values: { mission: "使命", missionDesc: "为全球资本提供精英算法基础设施。", vision: "愿景", visionDesc: "定义自动化量化管理的未来。", values: "价值观", valuesDesc: "透明、精确和坚定不移的安全。" }, teamTitle: "领导团队", teamDesc: "认识Braxel Markets背后的创始人和管理者。", team: [{ name: "Bernardo Campi", role: "创始人兼CEO", bio: "量化策略师和企业家，引领Braxel Markets在机构级算法基础设施方面的愿景。", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[联合创始人姓名]", role: "联合创始人兼CTO", bio: "专注于高频系统和分布式计算的软件工程师。", linkedin: "#", photo: "" }, { name: "[经理姓名]", role: "风险管理主管", bio: "前机构风险分析师，精通投资组合优化。", linkedin: "#", photo: "" }] },
@@ -620,7 +731,23 @@ const jaTranslation = {
     advancedFeatures: "プロ機能、マルチ口座、週次レポート",
     elite: "エリート 20K",
     eliteFeatures: "アドバンス機能、24/7サポート、専任マネージャー",
-    managedCapital: "運用資本"
+    managedCapital: "運用資本",
+    features: {
+      automation: "自動化",
+      accountManagement: "口座管理",
+      emailSupport: "メールサポート",
+      controlledRisk: "リスク管理",
+      starterFeatures: "スターター機能",
+      prioritySupport: "優先サポート",
+      detailedLogs: "詳細ログ",
+      proFeatures: "プロ機能",
+      multiAccount: "マルチ口座",
+      weeklyReports: "週次レポート",
+      advancedFeatures: "アドバンス機能",
+      24_7Support: "24/7サポート",
+      dedicatedManager: "専任マネージャー"
+    }
+  },
   },
   howItWorks: { badge: "インフラストラクチャ", title: "技術", subtitle: "アーキテクチャ", desc: "当社の独自エコシステムは、速度、セキュリティ、安定したパフォーマンスのために構築されています。", steps: [{ title: "登録", desc: "機関プロファイルを作成。" }, { title: "ダッシュボード", desc: "プライベート管理ターミナルにアクセス。" }, { title: "プラン選択", desc: "資本配分レベルを選択。" }, { title: "API展開", desc: "グローバル市場への自動接続。" }, { title: "実行", desc: "ミリ秒単位の注文処理。" }, { title: "レポート", desc: "詳細な週次パフォーマンス分析。" }], cta: "始める準備はできましたか？", ctaBtn: "ネットワークに参加" },
   about: { badge: "会社概要", title: "機関投資家レベル", subtitle: "エクセレンス", desc: "Braxel Marketsはアルゴリズム資本管理の頂点を代表します。", historyTitle: "沿革", historyDesc1: "定量アナリストとソフトウェアエンジニアのチームによって設立されたBraxelは、リテール資本と機関テクノロジーの間のギャップを埋めるために作られました。", historyDesc2: "今日、私たちはリスク調整後リターンとインフラの安定性に焦点を当て、現代の投資家のために最先端のアルゴリズム戦略を提供しています。", stats: { founded: "設立", users: "アクティブユーザー", uptime: "稼働率", support: "サポート" }, values: { mission: "ミッション", missionDesc: "グローバル資本のためのエリートアルゴリズムインフラを提供する。", vision: "ビジョン", visionDesc: "自動化された定量管理の未来を定義する。", values: "価値観", valuesDesc: "透明性、精度、揺るぎないセキュリティ。" }, teamTitle: "リーダーシップチーム", teamDesc: "Braxel Marketsの創業者と経営陣をご紹介します。", team: [{ name: "Bernardo Campi", role: "創業者兼CEO", bio: "機関投資家レベルのアルゴリズムインフラに向けたBraxel Marketsのビジョンを率いる定量ストラテジスト兼起業家。", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[共同創業者名]", role: "共同創業者兼CTO", bio: "高頻度システムと分散コンピューティングを専門とするソフトウェアエンジニア。", linkedin: "#", photo: "" }, { name: "[マネージャー名]", role: "リスク管理責任者", bio: "ポートフォリオ最適化に深い専門知識を持つ元機関リスクアナリスト。", linkedin: "#", photo: "" }] },
@@ -689,7 +816,23 @@ const arTranslation = {
     advancedFeatures: "ميزات برو، حسابات متعددة، تقارير أسبوعية",
     elite: "إيليت 20K",
     eliteFeatures: "ميزات متقدمة، دعم على مدار الساعة، مدير مخصص",
-    managedCapital: "رأس المال المُدار"
+    managedCapital: "رأس المال المُدار",
+    features: {
+      automation: "أتمتة",
+      accountManagement: "إدارة الحساب",
+      emailSupport: "دعم البريد الإلكتروني",
+      controlledRisk: "مخاطر محكومة",
+      starterFeatures: "ميزات ستارتر",
+      prioritySupport: "دعم أولوي",
+      detailedLogs: "سجلات مفصلة",
+      proFeatures: "ميزات برو",
+      multiAccount: "حسابات متعددة",
+      weeklyReports: "تقارير أسبوعية",
+      advancedFeatures: "ميزات متقدمة",
+      24_7Support: "دعم على مدار الساعة",
+      dedicatedManager: "مدير مخصص"
+    }
+  },
   },
   howItWorks: { badge: "البنية التحتية", title: "البنية", subtitle: "التقنية", desc: "نظامنا البيئي المملوك مصمم للسرعة والأمان والأداء المتسق.", steps: [{ title: "التسجيل", desc: "أنشئ ملفك المؤسسي." }, { title: "لوحة التحكم", desc: "الوصول إلى محطة الإدارة الخاصة." }, { title: "اختيار الخطة", desc: "اختر مستوى تخصيص رأس المال." }, { title: "نشر API", desc: "الاتصال التلقائي بالأسواق العالمية." }, { title: "التنفيذ", desc: "معالجة الأوامر بالميلي ثانية." }, { title: "التقارير", desc: "تحليل أداء أسبوعي مفصل." }], cta: "مستعد للبدء؟", ctaBtn: "انضم إلى الشبكة" },
   about: { badge: "من نحن", title: "التميز", subtitle: "المؤسسي", desc: "Braxel Markets تمثل قمة إدارة رأس المال الخوارزمية.", historyTitle: "تاريخنا", historyDesc1: "أسسها فريق من المحللين الكميين ومهندسي البرمجيات، أُنشئت Braxel لسد الفجوة بين رأس المال الفردي والتقنية المؤسسية.", historyDesc2: "اليوم، نركز على العوائد المعدلة حسب المخاطر واستقرار البنية التحتية، مع تقديم استراتيجيات خوارزمية متطورة للمستثمر الحديث.", stats: { founded: "تأسست", users: "المستخدمون النشطون", uptime: "وقت التشغيل", support: "الدعم" }, values: { mission: "المهمة", missionDesc: "تقديم بنية تحتية خوارزمية نخبوية لرأس المال العالمي.", vision: "الرؤية", visionDesc: "تحديد مستقبل الإدارة الكمية الآلية.", values: "القيم", valuesDesc: "الشفافية والدقة والأمان الراسخ." }, teamTitle: "فريق القيادة", teamDesc: "تعرف على المؤسسين والمديرين وراء Braxel Markets.", team: [{ name: "Bernardo Campi", role: "المؤسس والرئيس التنفيذي", bio: "استراتيجي كمي ورائد أعمال يقود رؤية Braxel Markets للبنية التحتية الخوارزمية المؤسسية.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[اسم الشريك المؤسس]", role: "الشريك المؤسس ومدير التقنية", bio: "مهندس برمجيات متخصص في أنظمة التردد العالي والحوسبة الموزعة.", linkedin: "#", photo: "" }, { name: "[اسم المدير]", role: "رئيس إدارة المخاطر", bio: "محلل مخاطر مؤسسي سابق ذو خبرة عميقة في تحسين المحافظ.", linkedin: "#", photo: "" }] },
@@ -758,7 +901,23 @@ const heTranslation = {
     advancedFeatures: "תכונות פרו, מספר חשבונות, דוחות שבועיים",
     elite: "אליט 20K",
     eliteFeatures: "תכונות מתקדמות, תמיכה 24/7, מנהל ייעודי",
-    managedCapital: "הון מנוהל"
+    managedCapital: "הון מנוהל",
+    features: {
+      automation: "אוטומציה",
+      accountManagement: "ניהול חשבון",
+      emailSupport: "תמיכה באימייל",
+      controlledRisk: "סיכון מבוקר",
+      starterFeatures: "תכונות סטרטר",
+      prioritySupport: "תמיכה בעדיפות",
+      detailedLogs: "לוגים מפורטים",
+      proFeatures: "תכונות פרו",
+      multiAccount: "מספר חשבונות",
+      weeklyReports: "דוחות שבועיים",
+      advancedFeatures: "תכונות מתקדמות",
+      24_7Support: "תמיכה 24/7",
+      dedicatedManager: "מנהל ייעודי"
+    }
+  },
   },
   howItWorks: { badge: "תשתית", title: "ארכיטקטורה", subtitle: "טכנית", desc: "המערכת האקולוגית הקניינית שלנו בנויה למהירות, אבטחה וביצועים עקביים.", steps: [{ title: "הרשמה", desc: "צור את הפרופיל המוסדי שלך." }, { title: "לוח בקרה", desc: "גישה לטרמינל הניהול הפרטי." }, { title: "בחירת תוכנית", desc: "בחר את רמת הקצאת ההון." }, { title: "פריסת API", desc: "חיבור אוטומטי לשווקים גלובליים." }, { title: "ביצוע", desc: "עיבוד פקודות במילישניות." }, { title: "דיווח", desc: "ניתוח ביצועים שבועי מפורט." }], cta: "מוכן להתחיל?", ctaBtn: "הצטרף לרשת" },
   about: { badge: "אודות", title: "מצוינות", subtitle: "מוסדית", desc: "Braxel Markets מייצגת את פסגת ניהול ההון האלגוריתמי.", historyTitle: "ההיסטוריה שלנו", historyDesc1: "הוקמה על ידי צוות של אנליסטים כמותיים ומהנדסי תוכנה, Braxel נוצרה לגשר על הפער בין הון קמעונאי לטכנולוגיה מוסדית.", historyDesc2: "כיום אנו מתמקדים בתשואות מותאמות סיכון ויציבות תשתית, ומספקים אסטרטגיות אלגוריתמיות חדשניות למשקיע המודרני.", stats: { founded: "הוקמה", users: "משתמשים פעילים", uptime: "זמן פעילות", support: "תמיכה" }, values: { mission: "משימה", missionDesc: "לספק תשתית אלגוריתמית של אליטה להון גלובלי.", vision: "חזון", visionDesc: "להגדיר את עתיד הניהול הכמותי האוטומטי.", values: "ערכים", valuesDesc: "שקיפות, דיוק ואבטחה בלתי מתפשרת." }, teamTitle: "צוות ההנהגה", teamDesc: "הכירו את המייסדים והמנהלים מאחורי Braxel Markets.", team: [{ name: "Bernardo Campi", role: "מייסד ומנכ״ל", bio: "אסטרטג כמותי ויזם המוביל את החזון של Braxel Markets לתשתית אלגוריתמית מוסדית.", linkedin: "#", photo: "/team-bernardo-campi.jpg" }, { name: "[שם השותף המייסד]", role: "שותף מייסד ו-CTO", bio: "מהנדס תוכנה המתמחה במערכות תדירות גבוהה ומחשוב מבוזר.", linkedin: "#", photo: "" }, { name: "[שם המנהל]", role: "ראש ניהול סיכונים", bio: "אנליסט סיכונים מוסדי לשעבר עם מומחיות עמוקה באופטימיזציית תיקים.", linkedin: "#", photo: "" }] },
