@@ -102,6 +102,24 @@ const SupportChatbot = () => {
 
   const getSystemPrompt = (): string => {
     const lang = getCurrentLanguage();
+    
+    // Translations for plan names and descriptions
+    const planNames: Record<string, { starter: string; pro: string; advanced: string; elite: string; starterDesc: string; proDesc: string; advancedDesc: string; eliteDesc: string; tiersTitle: string }> = {
+      'Portuguese': { starter: 'Iniciante', pro: 'Profissional', advanced: 'Avançado', elite: 'Elite', starterDesc: 'Negociação gerenciada de nível inicial', proDesc: 'Recursos e limites aprimorados', advancedDesc: 'Para traders e fundos profissionais', eliteDesc: 'Soluções personalizadas para grandes instituições', tiersTitle: 'Níveis de Capital Gerenciado' },
+      'Spanish': { starter: 'Inicial', pro: 'Profesional', advanced: 'Avanzado', elite: 'Élite', starterDesc: 'Negociação gerenciada de nivel inicial', proDesc: 'Funciones y límites mejorados', advancedDesc: 'Para comerciantes e fondos profesionales', eliteDesc: 'Soluciones personalizadas para grandes instituciones', tiersTitle: 'Niveles de Capital Gestionado' },
+      'Italian': { starter: 'Principiante', pro: 'Professionale', advanced: 'Avanzato', elite: 'Elite', starterDesc: 'Negociação gerenciada a livello iniziale', proDesc: 'Funzionalità e limiti migliorati', advancedDesc: 'Per trader e fondi professionali', eliteDesc: 'Soluzioni personalizzate per grandi istituzioni', tiersTitle: 'Livelli di Capitale Gestito' },
+      'French': { starter: 'Débutant', pro: 'Professionnel', advanced: 'Avancé', elite: 'Élite', starterDesc: 'Negociação gerenciada de niveau débutant', proDesc: 'Fonctionnalités et limites améliorées', advancedDesc: 'Pour traders et fonds professionnels', eliteDesc: 'Solutions personnalisées pour grandes institutions', tiersTitle: 'Niveaux de Capital Géréré' },
+      'German': { starter: 'Anfänger', pro: 'Professionell', advanced: 'Fortgeschritten', elite: 'Elite', starterDesc: 'Einsteiger-Managed-Trading', proDesc: 'Erweiterte Funktionen und Limits', advancedDesc: 'Für professionelle Händler und Fonds', eliteDesc: 'Individuelle Lösungen für große Institutionen', tiersTitle: 'Verwaltete Kapitalstufen' },
+      'Russian': { starter: 'Начинающий', pro: 'Профессионал', advanced: 'Продвинутый', elite: 'Элита', starterDesc: 'Начальный уровень управления торговлей', proDesc: 'Расширенные функции и лимиты', advancedDesc: 'Для профессиональных трейдеров и фондов', eliteDesc: 'Индивидуальные решения для крупных институтов', tiersTitle: 'Уровни управляемого капитала' },
+      'Chinese': { starter: '初学者', pro: '专业', advanced: '高级', elite: '精英', starterDesc: '入门级托管交易', proDesc: '增强的功能和限额', advancedDesc: '适用于专业交易者和基金', eliteDesc: '大型机构定制解决方案', tiersTitle: '管理资本级别' },
+      'Japanese': { starter: '初心者', pro: 'プロフェッショナル', advanced: 'アドバンス', elite: 'エリート', starterDesc: '初級者向け管理取引', proDesc: '強化された機能と制限', advancedDesc: 'プロフェッショナルトレーダーとファンド向け', eliteDesc: '大口機関向けカスタムソリューション', tiersTitle: '管理資本レベル' },
+      'Arabic': { starter: 'مبتدئ', pro: 'محترف', advanced: 'متقدم', elite: 'نخبة', starterDesc: 'تداول مُدار للمبتدئين', proDesc: 'ميزات وحدود محسّنة', advancedDesc: 'للمتداولين والصناديق المحترفين', eliteDesc: 'حلول مخصصة للمؤسسات الكبيرة', tiersTitle: 'مستويات رأس المال المُدار' },
+      'Hebrew': { starter: 'מתחיל', pro: 'מקצועי', advanced: 'מתקדם', elite: 'אליטה', starterDesc: 'מסחר מנוהל למתחילים', proDesc: 'תכונות ומגבלות משופרות', advancedDesc: 'לסוחרים וקרנות מקצועיים', eliteDesc: 'פתרונות מותאמים למוסדות גדולים', tiersTitle: 'רמות ההון המנוהל' },
+      'English': { starter: 'Starter', pro: 'Professional', advanced: 'Advanced', elite: 'Enterprise', starterDesc: 'Entry-level managed trading', proDesc: 'Enhanced features and limits', advancedDesc: 'For professional traders and funds', eliteDesc: 'Custom solutions for large institutions', tiersTitle: 'Managed Capital Tiers' }
+    };
+    
+    const names = planNames[lang] || planNames['English'];
+    
     return `You are an expert AI support assistant for Braxel Markets - a premier institutional algorithmic trading platform.
 
 CRITICAL INSTRUCTIONS:
@@ -121,16 +139,16 @@ COMPANY:
 
 SERVICES:
 1. Algorithmic Trading: Proprietary HFT (High-Frequency Trading) algorithms
-2. Managed Capital Tiers: Starter → Professional → Institutional → Enterprise
+2. ${names.tiersTitle}: ${names.starter} → ${names.pro} → ${names.advanced} → ${names.elite}
 3. Real-time Market Data: Live ticker with crypto, forex, indices, commodities
 4. Client Terminal: Advanced trading dashboard
 5. KYC System: Mandatory identity verification for all users
 
 TRADING TIERS:
-- Starter: Entry-level managed trading
-- Professional: Enhanced features and limits
-- Institutional: For professional traders and funds
-- Enterprise: Custom solutions for large institutions
+- ${names.starter}: ${names.starterDesc}
+- ${names.pro}: ${names.proDesc}
+- ${names.advanced}: ${names.advancedDesc}
+- ${names.elite}: ${names.eliteDesc}
 
 SECURITY:
 - SOC 2 Type II compliant

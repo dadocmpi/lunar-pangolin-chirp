@@ -17,36 +17,53 @@ const Pricing = () => {
   const plans = [
     {
       id: "starter",
-      name: "Starter 2K",
+      name: t('plans.starter'),
       price: "€70.00",
       accountSize: "$2,000",
       iconType: "zap",
-      features: ["Automation", "Account Management", "Email Support", "Controlled Risk"],
+      features: [
+        t('plans.features.automation'),
+        t('plans.features.accountManagement'),
+        t('plans.features.emailSupport'),
+        t('plans.features.controlledRisk'),
+      ],
     },
     {
       id: "pro",
-      name: "Pro 5K",
+      name: t('plans.pro'),
       price: "€160.00",
       accountSize: "$5,000",
       iconType: "award",
-      features: ["Starter Features", "Priority Support", "Detailed Logs"],
+      features: [
+        t('plans.features.starterFeatures'),
+        t('plans.features.prioritySupport'),
+        t('plans.features.detailedLogs'),
+      ],
       popular: true
     },
     {
       id: "advanced",
-      name: "Advanced 10K",
+      name: t('plans.advanced'),
       price: "€320.00",
       accountSize: "$10,000",
       iconType: "shield",
-      features: ["Pro Features", "Multi-Account", "Weekly Reports"],
+      features: [
+        t('plans.features.proFeatures'),
+        t('plans.features.multiAccount'),
+        t('plans.features.weeklyReports'),
+      ],
     },
     {
       id: "elite",
-      name: "Elite 20K",
+      name: t('plans.elite'),
       price: "€630.00",
       accountSize: "$20,000",
       iconType: "crown",
-      features: ["Advanced Features", "24/7 Support", "Dedicated Manager"],
+      features: [
+        t('plans.features.advancedFeatures'),
+        t('plans.features.24_7Support'),
+        t('plans.features.dedicatedManager'),
+      ],
     }
   ];
 
@@ -102,7 +119,7 @@ const Pricing = () => {
                   <span className="text-slate-600 text-[10px] uppercase tracking-widest ml-2">/ {t('pricing.month')}</span>
                 </div>
                 <div className="p-6 bg-white/[0.03] border border-white/5 mb-10">
-                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-2">{t('pricing.allocation')}</p>
+                  <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-2">{t('plans.managedCapital')}</p>
                   <p className="text-[22px] font-serif font-bold text-[#D4AF37]">{plan.accountSize} USD</p>
                 </div>
                 <ul className="space-y-5 mb-12 flex-grow">
