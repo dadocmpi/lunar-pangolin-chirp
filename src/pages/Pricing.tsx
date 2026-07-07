@@ -9,17 +9,27 @@ import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '@/hooks/useCurrency';
+
+// Prices in USD (will be converted to user's local currency)
+const PRICES_USD = {
+  starter: { monthly: 75, account: 2000 },
+  pro: { monthly: 175, account: 5000 },
+  advanced: { monthly: 350, account: 10000 },
+  elite: { monthly: 690, account: 20000 },
+};
 
 const Pricing = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { convertPrice, currency, isLoading, countryCode } = useCurrency();
 
   const plans = [
     {
       id: "starter",
       name: t('plans.starter'),
-      price: "€70.00",
-      accountSize: "$2,000",
+      price: convertPrice(PRICES_USD.starter.monthly),
+      accountSize: convertPrice(PRICES_USD.starter.account),
       iconType: "zap",
       features: [
         t('plans.features.automation'),
@@ -31,8 +41,8 @@ const Pricing = () => {
     {
       id: "pro",
       name: t('plans.pro'),
-      price: "€160.00",
-      accountSize: "$5,000",
+      price: convertPrice(PRICES_USD.pro.monthly),
+      accountSize: convertPrice(PRICES_USD.pro.account),
       iconType: "award",
       features: [
         t('plans.features.starterFeatures'),
@@ -44,8 +54,8 @@ const Pricing = () => {
     {
       id: "advanced",
       name: t('plans.advanced'),
-      price: "€320.00",
-      accountSize: "$10,000",
+      price: convertPrice(PRICES_USD.advanced.monthly),
+      accountSize: convertPrice(PRICES_USD.advanced.account),
       iconType: "shield",
       features: [
         t('plans.features.proFeatures'),
@@ -56,8 +66,8 @@ const Pricing = () => {
     {
       id: "elite",
       name: t('plans.elite'),
-      price: "€630.00",
-      accountSize: "$20,000",
+      price: convertPrice(PRICES_USD.elite.monthly),
+      accountSize: convertPrice(PRICES_USD.elite.account),
       iconType: "crown",
       features: [
         t('plans.features.advancedFeatures'),
@@ -104,6 +114,11 @@ const Pricing = () => {
 
       <section className="py-24">
         <div className="container mx-auto px-8">
+          {!isLoading && (
+            <div className="text-center mb-8 text-xs text-slate-500">
+              {t('pricing.detectedCurrency', 'Prices shown in your local currency ({{currency}}) based on your location', { currency: currency })}
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5">
             {plans.map((plan, i) => (
               <div key={i} className="p-12 bg-[#080B12] flex flex-col h-full relative hover:bg-white/[0.02] transition-all group">
@@ -120,7 +135,7 @@ const Pricing = () => {
                 </div>
                 <div className="p-6 bg-white/[0.03] border border-white/5 mb-10">
                   <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-2">{t('plans.managedCapital')}</p>
-                  <p className="text-[22px] font-serif font-bold text-[#D4AF37]">{plan.accountSize} USD</p>
+                  <p className="text-[22px] font-serif font-bold text-[#D4AF37]">{plan.accountSize}</p>
                 </div>
                 <ul className="space-y-5 mb-12 flex-grow">
                   {plan.features.map((f, j) => (
