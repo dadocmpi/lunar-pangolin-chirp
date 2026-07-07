@@ -52,7 +52,7 @@ const enTranslation = {
       multiAccount: "Multi-Account",
       weeklyReports: "Weekly Reports",
       advancedFeatures: "Advanced Features",
-      24_7Support: "24/7 Support",
+      support247: "24/7 Support",
       dedicatedManager: "Dedicated Manager"
     }
   },
@@ -145,7 +145,7 @@ const ptTranslation = {
       multiAccount: "Multi-Conta",
       weeklyReports: "Relatórios Semanais",
       advancedFeatures: "Recursos Avançados",
-      24_7Support: "Suporte 24/7",
+      support247: "Suporte 24/7",
       dedicatedManager: "Gerente Dedicado"
     }
   },
@@ -237,7 +237,7 @@ const itTranslation = {
       multiAccount: "Multi-Account",
       weeklyReports: "Report Settimanali",
       advancedFeatures: "Funzionalità Avanzate",
-      24_7Support: "Supporto 24/7",
+      support247: "Supporto 24/7",
       dedicatedManager: "Manager Dedicato"
     }
   },
@@ -321,7 +321,7 @@ const esTranslation = {
       multiAccount: "Multi-Cuenta",
       weeklyReports: "Reportes Semanales",
       advancedFeatures: "Características Avanzadas",
-      24_7Support: "Soporte 24/7",
+      support247: "Soporte 24/7",
       dedicatedManager: "Gestor Dedicado"
     }
   },
@@ -406,7 +406,7 @@ const frTranslation = {
       multiAccount: "Multi-Comptes",
       weeklyReports: "Rapports Hebdomadaires",
       advancedFeatures: "Fonctionnalités Avancées",
-      24_7Support: "Support 24/7",
+      support247: "Support 24/7",
       dedicatedManager: "Gestionnaire Dédié"
     }
   },
@@ -491,7 +491,7 @@ const deTranslation = {
       multiAccount: "Multi-Konto",
       weeklyReports: "Wochenberichte",
       advancedFeatures: "Fortgeschrittene Funktionen",
-      24_7Support: "24/7-Support",
+      support247: "24/7-Support",
       dedicatedManager: "Dedizierter Manager"
     }
   },
@@ -576,7 +576,7 @@ const ruTranslation = {
       multiAccount: "Мульти-Аккаунт",
       weeklyReports: "Еженедельные Отчёты",
       advancedFeatures: "Продвинутые Функции",
-      24_7Support: "Поддержка 24/7",
+      support247: "Поддержка 24/7",
       dedicatedManager: "Выделенный Менеджер"
     }
   },
@@ -660,7 +660,7 @@ const zhTranslation = {
       multiAccount: "多账户",
       weeklyReports: "周报",
       advancedFeatures: "高级功能",
-      24_7Support: "24/7支持",
+      support247: "24/7支持",
       dedicatedManager: "专属经理"
     }
   },
@@ -744,7 +744,7 @@ const jaTranslation = {
       multiAccount: "マルチ口座",
       weeklyReports: "週次レポート",
       advancedFeatures: "アドバンス機能",
-      24_7Support: "24/7サポート",
+      support247: "24/7サポート",
       dedicatedManager: "専任マネージャー"
     }
   },
@@ -829,7 +829,7 @@ const arTranslation = {
       multiAccount: "حسابات متعددة",
       weeklyReports: "تقارير أسبوعية",
       advancedFeatures: "ميزات متقدمة",
-      24_7Support: "دعم على مدار الساعة",
+      support247: "دعم على مدار الساعة",
       dedicatedManager: "مدير مخصص"
     }
   },
@@ -914,7 +914,7 @@ const heTranslation = {
       multiAccount: "מספר חשבונות",
       weeklyReports: "דוחות שבועיים",
       advancedFeatures: "תכונות מתקדמות",
-      24_7Support: "תמיכה 24/7",
+      support247: "תמיכה 24/7",
       dedicatedManager: "מנהל ייעודי"
     }
   },

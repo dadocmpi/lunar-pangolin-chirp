@@ -71,7 +71,7 @@ const Pricing = () => {
       iconType: "crown",
       features: [
         t('plans.features.advancedFeatures'),
-        t('plans.features.24_7Support'),
+        t('plans.features.support247'),
         t('plans.features.dedicatedManager'),
       ],
     }
