@@ -52,14 +52,14 @@ const Contact = () => {
 
     // 2. Captcha check
     if (parseInt(userAnswer) !== captcha.a) {
-      showError("Incorrect security answer. Please try again.");
+      showError(t('contact.incorrectAnswer'));
       generateCaptcha();
       return;
     }
 
     // 3. Rate limiting check
     if (cooldown) {
-      showError("Please wait a moment before sending another message.");
+      showError(t('contact.waitMessage'));
       return;
     }
 
@@ -94,7 +94,7 @@ const Contact = () => {
         throw new Error('Failed to send email');
       }
 
-      showSuccess("Message sent successfully! Our team will contact you soon.");
+      showSuccess(t('contact.messageSent'));
       setFormData({ name: '', email: '', subject: '', message: '', website: '' });
       generateCaptcha();
 
@@ -102,7 +102,7 @@ const Contact = () => {
       setTimeout(() => setCooldown(false), 60000);
     } catch (error) {
       console.error('Email error:', error);
-      showError("Failed to send message. Please try again or email us directly at marketsbraxel@ouvidor.net");
+      showError(t('contact.messageFailed'));
     } finally {
       setLoading(false);
     }
@@ -144,8 +144,8 @@ const Contact = () => {
               <div className="flex items-start gap-6 group">
                 <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Clock size={28} /></div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">Support Hours</p>
-                  <p className="text-slate-400 text-[14px]">24/7 Institutional Support</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">{t('contact.supportHours')}</p>
+                  <p className="text-slate-400 text-[14px]">{t('contact.institutionalSupport')}</p>
                 </div>
               </div>
             </div>
@@ -201,13 +201,13 @@ const Contact = () => {
               <div className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/10">
                 <ShieldCheck className="text-[#D4AF37]" size={20} />
                 <div className="flex-1">
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">Security Challenge: {captcha.q} = ?</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2">{t('contact.securityChallenge')}: {captcha.q} = ?</p>
                   <Input 
                     required
                     type="number"
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
-                    placeholder="Answer"
+                    placeholder={t('contact.securityAnswer')}
                     className="bg-black border-white/10 rounded-none h-10 text-[11px] font-bold uppercase tracking-[2px] focus:border-[#D4AF37]"
                   />
                 </div>
@@ -217,7 +217,7 @@ const Contact = () => {
                 disabled={loading || cooldown}
                 className="w-full bg-[#D4AF37] hover:bg-[#C9A227] text-black rounded-none h-16 text-[12px] font-black uppercase tracking-[2px] transition-all border-none"
               >
-                {loading ? <Loader2 className="animate-spin" /> : cooldown ? "PLEASE WAIT..." : t('contact.sendBtn')}
+                {loading ? <Loader2 className="animate-spin" /> : cooldown ? t('contact.cooldown') + "..." : t('contact.sendBtn')}
               </Button>
             </form>
           </div>

@@ -225,10 +225,10 @@ const Checkout = () => {
         showSuccess(t('checkout.paymentSuccess') || "Payment approved!");
         navigate('/dashboard');
       } else {
-        throw new Error(result.error || "Payment failed");
+        throw new Error(result.error || t('checkout.paymentFailed'));
       }
     } catch (error: any) {
-      showError(error.message || "Payment error.");
+      showError(error.message || t('checkout.paymentError'));
     } finally {
       setProcessing(false);
     }
@@ -259,10 +259,10 @@ const Checkout = () => {
       if (result.status === 'success' || result.status === 'pending') {
         showSuccess(t('checkout.cryptoPending') || "Payment registered!");
       } else {
-        throw new Error(result.error || "Error");
+        throw new Error(result.error || t('checkout.paymentError'));
       }
     } catch (error: any) {
-      showError(error.message);
+      showError(error.message || t('checkout.paymentError'));
     } finally {
       setProcessing(false);
     }
@@ -547,7 +547,7 @@ const Checkout = () => {
                             type="tel"
                             value={phoneNumber}
                             onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                            placeholder="999999999"
+                            placeholder={t('checkout.phonePlaceholder')}
                             className="flex-1 bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
                           />
                         </div>
@@ -559,7 +559,7 @@ const Checkout = () => {
                           type="text"
                           value={cardData.number}
                           onChange={(e) => setCardData({...cardData, number: formatCardNumber(e.target.value)})}
-                          placeholder="0000 0000 0000 0000"
+                          placeholder={t('checkout.cardNumberPlaceholder')}
                           maxLength={19}
                           className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
                         />
@@ -571,7 +571,7 @@ const Checkout = () => {
                           type="text"
                           value={cardData.name}
                           onChange={(e) => setCardData({...cardData, name: e.target.value.toUpperCase()})}
-                          placeholder="JOAO SILVA"
+                          placeholder={t('checkout.cardNamePlaceholder')}
                           className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 uppercase tracking-widest focus:border-[#C5A059] outline-none"
                         />
                       </div>
@@ -583,18 +583,18 @@ const Checkout = () => {
                             type="text"
                             value={cardData.expiry}
                             onChange={(e) => setCardData({...cardData, expiry: formatExpiry(e.target.value)})}
-                            placeholder="MM/YY"
+                            placeholder={t('checkout.cardExpiryPlaceholder')}
                             maxLength={5}
                             className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
                           />
                         </div>
                         <div className="space-y-2">
-                          <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">CVC</label>
+                          <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.cvvLabel')}</label>
                           <input
                             type="text"
                             value={cardData.cvc}
                             onChange={(e) => setCardData({...cardData, cvc: e.target.value.replace(/\D/g, '')})}
-                            placeholder="123"
+                            placeholder={t('checkout.cvvPlaceholder')}
                             maxLength={4}
                             className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
                           />

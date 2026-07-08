@@ -60,7 +60,7 @@ const Login = () => {
 
       if (error) {
         if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
-          showError("Account not found. Please create an account first.");
+          showError(t('auth.accountNotFound'));
           navigate('/register', { state: { from, plan } });
           return;
         }
@@ -156,7 +156,7 @@ const Login = () => {
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••" 
+                  placeholder={t('auth.password')} 
                   className="pl-12 bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white placeholder:text-slate-700 focus:border-[#C5A059]" 
                 />
               </div>
