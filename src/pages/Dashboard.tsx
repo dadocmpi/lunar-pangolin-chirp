@@ -126,9 +126,9 @@ const Dashboard = () => {
             if (newKycStatus) {
               setKycStatus(newKycStatus);
               if (newKycStatus === 'approved') {
-                showSuccess('Your identity has been verified! All features are now unlocked.');
+                showSuccess(t('dashboard.identityVerified'));
               } else if (newKycStatus === 'rejected') {
-                showError('Your verification was rejected. Please resubmit your documents.');
+                showError(t('dashboard.verificationRejected'));
               }
             }
           }
@@ -204,9 +204,9 @@ const Dashboard = () => {
       if (error) throw error;
       
       setProfile({ ...profile, first_name: editFirstName, last_name: editLastName });
-      showSuccess('Profile updated successfully.');
+      showSuccess(t('dashboard.profileUpdated'));
     } catch (err: any) {
-      showError(err.message || 'Failed to update profile.');
+      showError(t('dashboard.failedUpdateProfile'));
     } finally {
       setSavingProfile(false);
     }
@@ -214,38 +214,38 @@ const Dashboard = () => {
 
   const handleEmailChange = async () => {
     if (editEmail === user?.email) {
-      showError('Please enter a different email address.');
+      showError(t('dashboard.differentEmail'));
       return;
     }
     try {
       const { error } = await supabase.auth.updateUser({ email: editEmail });
       if (error) throw error;
       setEmailChangeRequested(true);
-      showSuccess('A confirmation link has been sent to the new email address. Please verify to complete the change.');
+      showSuccess(t('dashboard.confirmationLinkSent'));
     } catch (err: any) {
-      showError(err.message || 'Failed to update email.');
+      showError(t('dashboard.failedEmail'));
     }
   };
 
   const handleChangePassword = async () => {
     if (newPassword !== confirmNewPassword) {
-      showError('Passwords do not match.');
+      showError(t('dashboard.passwordsDoNotMatch'));
       return;
     }
     if (newPassword.length < 8) {
-      showError('Password must be at least 8 characters.');
+      showError(t('dashboard.passwordTooShort'));
       return;
     }
     setChangingPassword(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
-      showSuccess('Password changed successfully.');
+      showSuccess(t('dashboard.passwordChanged'));
       setCurrentPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
     } catch (err: any) {
-      showError(err.message || 'Failed to change password.');
+      showError(t('dashboard.failedPassword'));
     } finally {
       setChangingPassword(false);
     }
@@ -253,11 +253,11 @@ const Dashboard = () => {
 
   const handleKycSubmit = async () => {
     if (!kycDocument) {
-      showError('Please upload a document.');
+      showError(t('dashboard.uploadDocument'));
       return;
     }
     if (!selectedCountry || !selectedMethod || !selectedDocument) {
-      showError('Please complete all verification steps.');
+      showError(t('dashboard.completeSteps'));
       return;
     }
 
@@ -315,9 +315,9 @@ const Dashboard = () => {
         console.error('Email notification error (non-blocking):', emailError);
       }
 
-      showSuccess('Documents submitted for verification. You will be notified once reviewed.');
+      showSuccess(t('dashboard.documentsSubmitted'));
     } catch (err: any) {
-      showError(err.message || 'Failed to submit documents.');
+      showError(t('dashboard.failedDocuments'));
     } finally {
       setSubmittingKyc(false);
     }
@@ -622,12 +622,12 @@ const Dashboard = () => {
 
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.amount')}</label>
-                      <Input placeholder="0.00" className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
+                      <Input placeholder={t('dashboard.withdrawalAmountPlaceholder')} className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
                     </div>
 
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.walletIban')}</label>
-                      <Input placeholder="Crypto wallet address or IBAN" className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
+                      <Input placeholder={t('dashboard.withdrawalWalletPlaceholder')} className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white" />
                     </div>
 
                     <div className="space-y-2">
@@ -812,12 +812,12 @@ const Dashboard = () => {
                       {!emailChangeRequested ? (
                         <>
                           <div className="space-y-2">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">New Email Address</label>
+                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.newEmailLabel')}</label>
                             <Input
                               type="email"
                               value={editEmail}
                               onChange={(e) => setEditEmail(e.target.value)}
-                              placeholder="new@email.com"
+                              placeholder={t('dashboard.newEmailPlaceholder')}
                               className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white"
                             />
                           </div>
@@ -825,7 +825,7 @@ const Dashboard = () => {
                             onClick={handleEmailChange}
                             className="bg-white/10 hover:bg-white/20 text-white rounded-none h-12 font-black text-[10px] uppercase tracking-widest"
                           >
-                            <Mail size={16} className="mr-2" /> Send Confirmation Link
+                            <Mail size={16} className="mr-2" /> {t('dashboard.sendConfirmationLink')}
                           </Button>
                         </>
                       ) : (
@@ -1146,7 +1146,7 @@ const Dashboard = () => {
                           <p className="text-[9px] text-slate-500">Scan with your authenticator app</p>
                         </div>
 
-                        <Input placeholder="Enter 6-digit code" className="bg-white/5 border-white/10 rounded-none h-14 text-center text-[18px] font-mono tracking-[0.5em] text-white" />
+                        <Input placeholder={t('dashboard.verificationCodePlaceholder')} className="bg-white/5 border-white/10 rounded-none h-14 text-center text-[18px] font-mono tracking-[0.5em] text-white" />
 
                         <Button className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-12 font-black text-[10px] uppercase tracking-widest">
                           {t('dashboard.enable2FA')}
@@ -1172,7 +1172,7 @@ const Dashboard = () => {
                               type={showNewPassword ? 'text' : 'password'}
                               value={newPassword}
                               onChange={(e) => setNewPassword(e.target.value)}
-                              placeholder="Minimum 8 characters"
+                              placeholder={t('dashboard.minPasswordPlaceholder')}
                               className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white pr-12"
                             />
                             <button
@@ -1191,7 +1191,7 @@ const Dashboard = () => {
                             type="password"
                             value={confirmNewPassword}
                             onChange={(e) => setConfirmNewPassword(e.target.value)}
-                            placeholder="Re-enter new password"
+                            placeholder={t('dashboard.confirmPasswordPlaceholder')}
                             className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white"
                           />
                         </div>
