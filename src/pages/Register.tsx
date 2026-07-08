@@ -28,18 +28,33 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
           },
-          persistSession: true, // Enable session persistence
+          persistSession: true,
         }
       });
 
       if (error) throw error;
+
+      // Send registration notification to company
+      try {
+        await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/user-registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: data.user?.id,
+            email: email,
+            fullName: fullName
+          })
+        });
+      } catch (notifError) {
+        console.error('Registration notification error:', notifError);
+      }
 
       showSuccess(t('auth.registerSuccessMessage'));
       navigate('/login', { state: { from, plan } });
