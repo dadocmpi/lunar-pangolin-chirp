@@ -3,8 +3,11 @@
 import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { useTranslation } from 'react-i18next';
 
 const Privacy = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-[#05070A] text-white">
       <Navbar />
@@ -20,8 +23,8 @@ const Privacy = () => {
         </div>
         <div className="container mx-auto px-4 md:px-8">
           <div className="max-w-3xl">
-            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">Privacy</span>
-            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">Privacy <br /><span className="text-[#C5A059]">Policy</span></h1>
+            <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-4 block">{t('privacyPage.privacy')}</span>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 uppercase">{t('privacyPage.title')}</h1>
           </div>
         </div>
       </section>
@@ -30,16 +33,16 @@ const Privacy = () => {
         <section className="border border-white/10 bg-[#080B12] p-12 md:p-16">
           <div className="max-w-4xl mx-auto space-y-12 text-slate-400 text-sm leading-relaxed">
             <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Data Collection</h2>
-              <p>We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">{t('privacyPage.dataCollectionTitle')}</h2>
+              <p>{t('privacyPage.dataCollectionText')}</p>
             </div>
             <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Use of Information</h2>
-              <p>The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">{t('privacyPage.useOfInfoTitle')}</h2>
+              <p>{t('privacyPage.useOfInfoText')}</p>
             </div>
             <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">Security</h2>
-              <p>We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.</p>
+              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">{t('privacyPage.securityTitle')}</h2>
+              <p>{t('privacyPage.securityText')}</p>
             </div>
           </div>
         </section>

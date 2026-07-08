@@ -112,6 +112,34 @@ const enTranslation = {
 
 // Portuguese translations
 const ptTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "PLANOS DE INVESTIMENTO", howItWorks: "INFRAESTRUTURA", about: "SOBRE NÓS", contact: "SUPORTE INSTITUCIONAL", login: "ACESSO AO TERMINAL", support: "Suporte", openAccount: "CRIAR CONTA", dashboard: "PAINEL", logout: "SAIR", selectLanguage: "Select Language" },
   footer: { desc: "Infraestrutura de investimento de nível institucional. Tecnologia proprietária para o mercado moderno.", platform: "Plataforma", company: "Empresa", support: "Suporte Digital", rights: "Todos os direitos reservados.", privacy: "Privacidade", terms: "Termos", disclaimer: "Aviso Financeiro", address: "Endereço Comercial", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, España", riskTitle: "AVISO DE RISCO", riskText: "A negociação nos mercados financeiros envolve risco substancial de perda e não é adequada para todos os investidores. Desempenhos passados não são indicativos de resultados futuros. O valor dos investimentos pode diminuir ou aumentar. Não invista dinheiro que você não pode se dar ao luxo de perder. Braxel Markets não garante retornos específicos." },
   chatbot: { title: "Suporte Braxel", placeholder: "Digite uma mensagem...", emailSupport: "E-mail:" },
@@ -204,6 +232,34 @@ const ptTranslation = {
 
 // Italian translations
 const itTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "PIANI DI INVESTIMENTO", howItWorks: "INFRASTRUTTURA", about: "CHI SIAMO", contact: "SUPPORTO ISTITUZIONALE", login: "ACCESSO TERMINALE", support: "Supporto", openAccount: "CREA ACCOUNT", dashboard: "PANNELLO", logout: "ESCI", selectLanguage: "Select Language" },
   footer: { desc: "Infrastruttura di investimento di livello istituzionale. Tecnologia proprietaria per il mercato moderno.", platform: "Piattaforma", company: "Azienda", support: "Supporto Digitale", rights: "Tutti i diritti riservati.", privacy: "Privacy", terms: "Termini", disclaimer: "Avviso Finanziario", address: "Indirizzo Commerciale", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Spagna", riskTitle: "AVVISO DI RISCHIO", riskText: "Il trading nei mercati finanziari comporta un rischio sostanziale di perdita e non è adatto a tutti gli investitori. Le performance passate non sono indicative dei risultati futuri. Il valore degli investimenti può diminuire o aumentare. Non investire denaro che non puoi permetterti di perdere. Braxel Markets non garantisce rendimenti specifici." },
   chatbot: { title: "Supporto Braxel", placeholder: "Scrivi un messaggio...", emailSupport: "Email:" },
@@ -288,6 +344,34 @@ const itTranslation = {
 
 // Spanish translations
 const esTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "PLANES DE INVERSIÓN", howItWorks: "INFRAESTRUCTURA", about: "SOBRE NOSOTROS", contact: "SOPORTE INSTITUCIONAL", login: "ACCESO AL TERMINAL", support: "Soporte", openAccount: "CREAR CUENTA", dashboard: "PANEL", logout: "CERRAR SESIÓN", selectLanguage: "Select Language" },
   footer: { desc: "Infraestructura de inversión de nivel institucional. Tecnología propietaria para el mercado moderno.", platform: "Plataforma", company: "Empresa", support: "Soporte Digital", rights: "Todos los derechos reservados.", privacy: "Privacidad", terms: "Términos", disclaimer: "Aviso Financiero", address: "Dirección Comercial", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, España", riskTitle: "AVISO DE RIESGO", riskText: "El trading en mercados financieros implica un riesgo sustancial de pérdida y no es apto para todos los inversores. El rendimiento pasado no es indicativo de resultados futuros. El valor de las inversiones puede disminuir o aumentar. No invierta dinero que no pueda permitirse perder. Braxel Markets no garantiza rendimientos específicos." },
   chatbot: { title: "Soporte Braxel", placeholder: "Escribe un mensaje...", emailSupport: "Email:" },
@@ -372,6 +456,34 @@ const esTranslation = {
 
 // French translations
 const frTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "PLANS D'INVESTISSEMENT", howItWorks: "INFRASTRUCTURE", about: "À PROPOS", contact: "SUPPORT INSTITUTIONNEL", login: "ACCÈS TERMINAL", support: "Support", openAccount: "CRÉER UN COMPTE", dashboard: "TABLEAU DE BORD", logout: "DÉCONNEXION", selectLanguage: "Select Language" },
   footer: { desc: "Infrastructure d'investissement de niveau institutionnel. Technologie propriétaire pour le marché moderne.", platform: "Plateforme", company: "Entreprise", support: "Support Digital", rights: "Tous droits réservés.", privacy: "Confidentialité", terms: "Conditions", disclaimer: "Avertissement Financier", address: "Adresse Commerciale", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Espagne", riskTitle: "AVERTISSEMENT SUR LES RISQUES", riskText: "Le trading sur les marchés financiers comporte un risque substantiel de perte et ne convient pas à tous les investisseurs. Les performances passées ne préjugent pas des résultats futurs. La valeur des investissements peut baisser ou augmenter. N'investissez pas d'argent que vous ne pouvez pas vous permettre de perdre. Braxel Markets ne garantit aucun rendement spécifique." },
   chatbot: { title: "Support Braxel", placeholder: "Tapez un message...", emailSupport: "Email:" },
@@ -456,6 +568,34 @@ const frTranslation = {
 
 // German translations
 const deTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "INVESTMENTPLÄNE", howItWorks: "INFRASTRUKTUR", about: "ÜBER UNS", contact: "INSTITUTIONELLER SUPPORT", login: "TERMINAL-ZUGANG", support: "Support", openAccount: "KONTO ERSTELLEN", dashboard: "DASHBOARD", logout: "ABMELDEN", selectLanguage: "Select Language" },
   footer: { desc: "Institutionelle Investmentinfrastruktur. Proprietäre Technologie für den modernen Markt.", platform: "Plattform", company: "Unternehmen", support: "Digitaler Support", rights: "Alle Rechte vorbehalten.", privacy: "Datenschutz", terms: "Bedingungen", disclaimer: "Finanzhinweis", address: "Geschäftsadresse", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Spanien", riskTitle: "RISIKOHINWEIS", riskText: "Der Handel an Finanzmärkten birgt ein erhebliches Verlustrisiko und ist nicht für alle Anleger geeignet. Vergangene Ergebnisse sind kein Indikator für zukünftige Ergebnisse. Der Wert von Anlagen kann steigen oder fallen. Investieren Sie kein Geld, dessen Verlust Sie sich nicht leisten können. Braxel Markets garantiert keine bestimmten Renditen." },
   chatbot: { title: "Braxel Support", placeholder: "Nachricht eingeben...", emailSupport: "Email:" },
@@ -540,6 +680,34 @@ const deTranslation = {
 
 // Russian translations
 const ruTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "ИНВЕСТИЦИОННЫЕ ПЛАНЫ", howItWorks: "ИНФРАСТРУКТУРА", about: "О НАС", contact: "ИНСТИТУЦИОНАЛЬНАЯ ПОДДЕРЖКА", login: "ДОСТУП К ТЕРМИНАЛУ", support: "Поддержка", openAccount: "СОЗДАТЬ АККАУНТ", dashboard: "ПАНЕЛЬ УПРАВЛЕНИЯ", logout: "ВЫХОД", selectLanguage: "Select Language" },
   footer: { desc: "Инвестиционная инфраструктура институционального уровня. Проприетарная технология для современного рынка.", platform: "Платформа", company: "Компания", support: "Цифровая Поддержка", rights: "Все права защищены.", privacy: "Конфиденциальность", terms: "Условия", disclaimer: "Финансовое Уведомление", address: "Коммерческий Адрес", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Испания", riskTitle: "ПРЕДУПРЕЖДЕНИЕ О РИСКАХ", riskText: "Торговля на финансовых рынках сопряжена со значительным риском убытков и подходит не всем инвесторам. Прошлые результаты не гарантируют будущих. Стоимость инвестиций может как расти, так и падать. Не инвестируйте средства, потерю которых вы не можете себе позволить. Braxel Markets не гарантирует конкретной доходности." },
   chatbot: { title: "Поддержка Braxel", placeholder: "Введите сообщение...", emailSupport: "Email:" },
@@ -624,6 +792,34 @@ const ruTranslation = {
 
 // Chinese translations
 const zhTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "投资计划", howItWorks: "基础设施", about: "关于我们", contact: "机构支持", login: "终端访问", support: "支持", openAccount: "创建账户", dashboard: "控制面板", logout: "退出登录", selectLanguage: "Select Language" },
   footer: { desc: "机构级投资基础设施。为现代市场打造的专有技术。", platform: "平台", company: "公司", support: "数字支持", rights: "保留所有权利。", privacy: "隐私", terms: "条款", disclaimer: "金融免责声明", address: "商业地址", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, 西班牙", riskTitle: "风险免责声明", riskText: "金融市场交易涉及重大损失风险，并非适合所有投资者。过往业绩不代表未来表现。投资价值可能上升或下降。请勿投资您无法承受损失的资金。Braxel Markets不保证任何特定回报。" },
   auth: { loginTitle: "登录", loginSubtitle: "请输入您的访问凭证。", registerTitle: "创建账户", registerSubtitle: "开启您的机构市场之旅。", email: "电子邮箱", password: "密码", fullName: "全名", forgotPassword: "忘记密码？", noAccount: "还没有账户？", hasAccount: "已有访问权限？", btnAccess: "访问账户", btnCreate: "创建我的账户", termsAgree: "我同意条款和隐私政策。", futureTitle: "投资的", futureSubtitle: "未来", features: ["机构级算法", "高级资本保护", "毫秒级执行", "完全透明"] },
@@ -707,6 +903,34 @@ const zhTranslation = {
 
 // Japanese translations
 const jaTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "投資プラン", howItWorks: "インフラストラクチャ", about: "会社概要", contact: "機関サポート", login: "ターミナルアクセス", support: "サポート", openAccount: "アカウント作成", dashboard: "ダッシュボード", logout: "ログアウト", selectLanguage: "Select Language" },
   footer: { desc: "機関投資家レベルの投資インフラ。現代の市場のための独自テクノロジー。", platform: "プラットフォーム", company: "会社", support: "デジタルサポート", rights: "全著作権所有。", privacy: "プライバシー", terms: "利用規約", disclaimer: "金融免責事項", address: "本社所在地", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, スペイン", riskTitle: "リスク免責事項", riskText: "金融市場での取引には重大な損失リスクが伴い、すべての投資家に適しているわけではありません。過去の実績は将来の結果を保証するものではありません。投資の価値は上下する可能性があります。失っても構わない資金以外は投資しないでください。Braxel Marketsは特定のリターンを保証しません。" },
   auth: { loginTitle: "ログイン", loginSubtitle: "アクセス認証情報を入力してください。", registerTitle: "アカウント作成", registerSubtitle: "機関市場での旅を始めましょう。", email: "メールアドレス", password: "パスワード", fullName: "氏名", forgotPassword: "パスワードをお忘れですか？", noAccount: "アカウントをお持ちでないですか？", hasAccount: "既にアクセス権をお持ちですか？", btnAccess: "アカウントにアクセス", btnCreate: "アカウントを作成", termsAgree: "利用規約とプライバシーポリシーに同意します。", futureTitle: "投資の", futureSubtitle: "未来", features: ["機関投資家レベルのアルゴリズム", "高度な資本保護", "ミリ秒単位の約定", "完全な透明性"] },
@@ -790,6 +1014,34 @@ const jaTranslation = {
 
 // Arabic translations
 const arTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "خطط الاستثمار", howItWorks: "البنية التحتية", about: "من نحن", contact: "الدعم المؤسسي", login: "الوصول إلى المحطة", support: "الدعم", openAccount: "إنشاء حساب", dashboard: "لوحة التحكم", logout: "تسجيل الخروج", selectLanguage: "اختر اللغة" },
   footer: { desc: "بنية تحتية استثمارية مؤسسية. تقنية مملوكة للسوق الحديث.", platform: "المنصة", company: "الشركة", support: "الدعم الرقمي", rights: "جميع الحقوق محفوظة.", privacy: "الخصوصية", terms: "الشروط", disclaimer: "إخلاء المسؤولية المالية", address: "العنوان التجاري", addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, إسبانيا", riskTitle: "إخلاء مسؤولية المخاطر", riskText: "التداول في الأسواق المالية ينطوي على مخاطر كبيرة للخسارة وليس مناسبًا لجميع المستثمرين. الأداء السابق لا يضمن النتائج المستقبلية. قيمة الاستثمارات قد ترتفع أو تنخفض. لا تستثمر أموالاً لا يمكنك تحمل خسارتها. Braxel Markets لا تضمن عوائد محددة." },
   chatbot: { title: "دعم Braxel", placeholder: "اكتب رسالة...", emailSupport: "البريد الإلكتروني:" },
@@ -874,6 +1126,34 @@ const arTranslation = {
 
 // Hebrew translations
 const heTranslation = {
+  disclaimerPage: {
+    title: "Financial Disclaimer",
+    risk: "Risk",
+    importantRiskTitle: "Important Risk Warning",
+    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    noAdviceTitle: "No Advice",
+    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    limitationTitle: "Limitation of Liability",
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
+  },
+  privacyPage: {
+    title: "Privacy Policy",
+    privacy: "Privacy",
+    dataCollectionTitle: "Data Collection",
+    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    useOfInfoTitle: "Use of Information",
+    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    securityTitle: "Security",
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
+  },
   nav: { pricing: "תוכניות השקעה", howItWorks: "תשתית", about: "אודות", contact: "תמיכה מוסדית", login: "גישה לטרמינל", support: "תמיכה", openAccount: "יצירת חשבון", dashboard: "לוח בקרה", logout: "התנתקות", selectLanguage: "בחר שפה" },
   footer: { desc: "תשתית השקעות ברמה מוסדית. טכנולוגיה קניינית לשוק המודרני.", platform: "פלטפורמה", company: "חברה", support: "תמיכה דיגיטלית", rights: "כל הזכויות שמורות.", privacy: "פרטיות", terms: "תנאים", disclaimer: "הצהרה פיננסית", address: "כתובת מסחרית", addressValue: "Calle de la Haya, 28935, Parque Coimbra, מדריד, ספרד", riskTitle: "הצהרת סיכונים", riskText: "מסחר בשווקים פיננסיים כרוך בסיכון משמעותי להפסד ואינו מתאים לכל המשקיעים. ביצועי עבר אינם מעידים על תוצאות עתידיות. ערך ההשקעות יכול לעלות או לרדת. אל תשקיע כסף שאינך יכול להרשות לעצמך להפסיד. Braxel Markets אינה מבטיחה תשואות ספציפיות." },
   chatbot: { title: "תמיכת Braxel", placeholder: "הקלד הודעה...", emailSupport: "אימייל:" },

@@ -77,14 +77,14 @@ const Contact = () => {
           to: 'marketsbraxel@ouvidor.net',
           subject: `[Contact Form] ${formData.subject} - from ${formData.name}`,
           html: `
-            <h2>New Contact Form Submission</h2>
-            <p><strong>Name:</strong> ${formData.name}</p>
-            <p><strong>Email:</strong> ${formData.email}</p>
-            <p><strong>Subject:</strong> ${formData.subject}</p>
-            <p><strong>Message:</strong></p>
+            <h2>${t('contactEmail.newSubmission')}</h2>
+            <p><strong>${t('contactEmail.name')}:</strong> ${formData.name}</p>
+            <p><strong>${t('contactEmail.email')}:</strong> ${formData.email}</p>
+            <p><strong>${t('contactEmail.subject')}:</strong> ${formData.subject}</p>
+            <p><strong>${t('contactEmail.message')}:</strong></p>
             <p>${formData.message.replace(/\n/g, '<br>')}</p>
             <hr>
-            <p><small>Sent from braxelmarkets.vercel.app</small></p>
+            <p><small>${t('contactEmail.sentFrom')} braxelmarkets.vercel.app</small></p>
           `,
           replyTo: formData.email
         })
