@@ -348,9 +348,9 @@ const Dashboard = () => {
   ];
 
   const mockSecurityLog = [
-    { event: 'Login from new device', time: '2 hours ago' },
-    { event: 'Password changed', time: '5 days ago' },
-    { event: 'Account created', time: '30 days ago' },
+    { event: t('dashboard.loginNewDevice') || 'Login from new device', time: '2 hours ago' },
+    { event: t('dashboard.passwordChangedEvent') || 'Password changed', time: '5 days ago' },
+    { event: t('dashboard.accountCreated') || 'Account created', time: '30 days ago' },
   ];
 
   // KYC blocking overlay
@@ -795,14 +795,14 @@ const Dashboard = () => {
                     {/* Email Change */}
                     <div className="bg-[#1A1A1A] border border-white/10 p-8 space-y-6">
                       <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-3">
-                        <Mail size={16} className="text-[#D4AF37]" /> Email Address
+                        <Mail size={16} className="text-[#D4AF37]" /> {t('dashboard.emailAddress')}
                       </h3>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
-                        Changing your email requires verification. A confirmation link will be sent to the new email address.
+                        {t('dashboard.changeEmailDescription') || 'Changing your email requires verification. A confirmation link will be sent to the new email address.'}
                       </p>
 
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Current Email</label>
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.currentEmail')}</label>
                         <div className="flex items-center gap-2 p-4 bg-white/[0.02] border border-white/5">
                           <CheckCircle2 size={14} className="text-emerald-500" />
                           <span className="text-[12px] text-white">{user?.email}</span>
@@ -1166,7 +1166,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">New Password</label>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.newPassword')}</label>
                           <div className="relative">
                             <Input
                               type={showNewPassword ? 'text' : 'password'}
@@ -1186,7 +1186,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Confirm New Password</label>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.confirmNewPassword')}</label>
                           <Input
                             type="password"
                             value={confirmNewPassword}
