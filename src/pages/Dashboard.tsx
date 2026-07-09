@@ -945,7 +945,7 @@ const Dashboard = () => {
                                 className="w-full flex items-center justify-between p-4 bg-white/5 border border-white/10 hover:border-[#D4AF37]/30 transition-colors"
                               >
                                 <span className="text-[12px] font-medium">
-                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${getCountryByCode(selectedCountry)?.name}` : 'Select a country...'}
+                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${getCountryByCode(selectedCountry)?.name}` : t('dashboard.selectCountry')}
                                 </span>
                                 <ChevronDown size={16} className={cn("text-slate-400 transition-transform", countryDropdownOpen && "rotate-180")} />
                               </button>
@@ -1091,13 +1091,13 @@ const Dashboard = () => {
 
                     {/* Verification Steps - Simplified */}
                     <div className="bg-[#1A1A1A] border border-white/10 p-8">
-                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Verification Progress</h3>
+                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">{t('dashboard.verificationProgress')}</h3>
                       <div className="space-y-4">
                         {[
-                          { step: 'Email Verification', status: user?.email_confirmed_at ? 'approved' : 'pending' },
-                          { step: 'Identity Document', status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : selectedCountry ? 'submitted' : 'pending' },
-                          { step: 'Compliance Review', status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : 'pending' },
-                          { step: 'Account Activation', status: kycStatus === 'approved' ? 'approved' : 'pending' },
+                          { step: t('dashboard.emailVerification'), status: user?.email_confirmed_at ? 'approved' : 'pending' },
+                          { step: t('dashboard.identityDocument') || 'Identity Document', status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : selectedCountry ? 'submitted' : 'pending' },
+                          { step: t('dashboard.complianceReview') || 'Compliance Review', status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : 'pending' },
+                          { step: t('dashboard.accountActivation') || 'Account Activation', status: kycStatus === 'approved' ? 'approved' : 'pending' },
                         ].map((item, i) => (
                           <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5">
                             {item.status === 'approved' && <CheckCircle2 size={16} className="text-emerald-500" />}
