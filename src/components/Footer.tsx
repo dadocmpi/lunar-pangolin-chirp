@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Twitter, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
+import { Mail, X, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
@@ -32,8 +32,11 @@ const Footer = () => {
               {t('footer.desc')}
             </p>
             <div className="flex items-center gap-4">
+              <a href="mailto:marketsbraxel@ouvidor.net" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
+                <Mail size={16} />
+              </a>
               <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
-                <Twitter size={16} />
+                <X size={16} />
               </a>
               <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
                 <Linkedin size={16} />
