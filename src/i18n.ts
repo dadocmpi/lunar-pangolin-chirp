@@ -1255,10 +1255,10 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    fallbackLng: 'pt',
+    fallbackLng: 'en',
     debug: false,
     detection: {
-      order: ['navigator', 'localStorage', 'cookie', 'sessionStorage'],
+      order: ['localStorage', 'navigator', 'cookie', 'sessionStorage'],
       caches: ['localStorage'],
     },
     interpolation: {

