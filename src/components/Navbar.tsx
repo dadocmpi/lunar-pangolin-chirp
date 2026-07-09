@@ -130,13 +130,8 @@ const Navbar = () => {
 
         {isLoggedIn ? (
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 bg-[#1a1f2e] border border-white/10 px-4 py-2 rounded-none hover:border-[#D4AF37]/50 transition-all outline-none group">
-              <User size={16} className="text-[#D4AF37]" />
-              <div className="flex flex-col items-start">
-                <span className="text-[9px] font-bold text-slate-400 tracking-wider uppercase">Perfil</span>
-                <span className="text-[10px] font-medium text-white tracking-wide max-w-[120px] truncate">{userEmail}</span>
-              </div>
-              <ChevronDown size={12} className="text-slate-400 ml-1" />
+            <DropdownMenuTrigger className="flex items-center justify-center w-10 h-10 bg-[#1a1f2e] border border-white/10 rounded-full hover:border-[#D4AF37] transition-all outline-none">
+              <User size={18} className="text-[#D4AF37]" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[200px] z-[1100]">
               <div className="px-4 py-3 border-b border-white/10">
