@@ -2,8 +2,14 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, X, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
+import { Mail, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+const TwitterXLogo = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -35,8 +41,8 @@ const Footer = () => {
               <a href="mailto:marketsbraxel@ouvidor.net" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
                 <Mail size={16} />
               </a>
-              <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
-                <X size={16} />
+              <a href="https://x.com/braxelmarkets" target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
+                <TwitterXLogo />
               </a>
               <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
                 <Linkedin size={16} />
