@@ -122,8 +122,6 @@ const Login = () => {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
           <div className="mb-10">
-           
-            main
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter">{t('auth.loginTitle')}</h1>
             <p className="text-slate-500 text-xs mt-2">{t('auth.loginSubtitle')}</p>
           </div>
