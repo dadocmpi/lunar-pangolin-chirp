@@ -38,9 +38,9 @@ const Footer = () => {
               {t('footer.desc')}
             </p>
             <div className="flex items-center gap-4">
-              <a href="mailto:marketsbraxel@ouvidor.net?subject=Contato%20-%20Braxel%20Markets&body=Ol%C3%A1%2C%20gostaria%20de%20mais%20informa%C3%A7%C3%B5es." className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
+              <Link to="/contact" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
                 <Mail size={16} />
-              </a>
+              </Link>
               <a href="https://x.com/braxelmarkets" target="_blank" rel="noopener noreferrer" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
                 <TwitterXLogo />
               </a>
