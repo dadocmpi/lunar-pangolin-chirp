@@ -1,23 +1,56 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Globe, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Menu, X, Globe, ChevronDown, User, LayoutDashboard, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { supportedLanguages } from '../i18n';
+import { supabase } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+      if (session?.user?.email) {
+        setUserEmail(session.user.email);
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+      if (session?.user?.email) {
+        setUserEmail(session.user.email);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsLoggedIn(false);
+    setUserEmail('');
+    navigate('/');
+  };
 
   const navLinks = [
     { name: t('nav.pricing'), path: '/pricing' },
@@ -68,7 +101,7 @@ const Navbar = () => {
         ))}
       </nav>
 
-      <div className="hidden lg:flex items-center gap-8">
+      <div className="hidden lg:flex items-center gap-6">
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2 text-[10px] font-bold text-slate-300 tracking-[0.15em] uppercase font-tech hover:text-[#D4AF37] transition-colors outline-none group">
             <Globe size={12} className="group-hover:rotate-12 transition-transform" />
@@ -95,18 +128,54 @@ const Navbar = () => {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Link 
-          to="/login" 
-          className="text-[10px] font-bold text-white tracking-[0.2em] uppercase font-tech hover:text-[#D4AF37] transition-colors duration-300 border-l border-white/10 pl-8"
-        >
-          {t('nav.login')}
-        </Link>
-        
-        <Link to="/register">
-          <button className="bg-[#D4AF37] text-black text-[10px] font-black tracking-[0.25em] uppercase font-tech px-8 py-3.5 rounded-none hover:bg-white hover:-translate-y-[1px] transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.1)]">
-            {t('nav.openAccount')}
-          </button>
-        </Link>
+        {isLoggedIn ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger className="flex items-center gap-2 bg-[#1a1f2e] border border-white/10 px-4 py-2 rounded-none hover:border-[#D4AF37]/50 transition-all outline-none group">
+              <User size={16} className="text-[#D4AF37]" />
+              <div className="flex flex-col items-start">
+                <span className="text-[9px] font-bold text-slate-400 tracking-wider uppercase">Perfil</span>
+                <span className="text-[10px] font-medium text-white tracking-wide max-w-[120px] truncate">{userEmail}</span>
+              </div>
+              <ChevronDown size={12} className="text-slate-400 ml-1" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[200px] z-[1100]">
+              <div className="px-4 py-3 border-b border-white/10">
+                <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase mb-1">Sessão Ativa</p>
+                <p className="text-[11px] text-slate-300 truncate">{userEmail}</p>
+              </div>
+              <DropdownMenuItem 
+                onClick={() => navigate('/dashboard')}
+                className="hover:bg-[#D4AF37] hover:text-black cursor-pointer text-[11px] font-bold tracking-wide p-4 rounded-none transition-colors focus:bg-[#D4AF37] focus:text-black"
+              >
+                <LayoutDashboard size={14} className="mr-3" />
+                Acessar Painel
+              </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuItem 
+                onClick={handleLogout}
+                className="hover:bg-red-600 hover:text-white cursor-pointer text-[11px] font-bold tracking-wide p-4 rounded-none transition-colors text-red-400 focus:bg-red-600 focus:text-white"
+              >
+                <LogOut size={14} className="mr-3" />
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <>
+            <Link 
+              to="/login" 
+              className="text-[10px] font-bold text-white tracking-[0.2em] uppercase font-tech hover:text-[#D4AF37] transition-colors duration-300"
+            >
+              {t('nav.login')}
+            </Link>
+            
+            <Link to="/register">
+              <button className="bg-[#D4AF37] text-black text-[10px] font-black tracking-[0.25em] uppercase font-tech px-8 py-3.5 rounded-none hover:bg-white hover:-translate-y-[1px] transition-all duration-300 shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+                {t('nav.openAccount')}
+              </button>
+            </Link>
+          </>
+        )}
       </div>
 
       <button className="lg:hidden text-white p-2" onClick={() => setIsOpen(!isOpen)}>
@@ -146,14 +215,33 @@ const Navbar = () => {
           </div>
 
           <div className="mt-auto space-y-6">
-            <Link to="/login" onClick={() => setIsOpen(false)} className="block text-[11px] font-bold text-white tracking-[0.3em] uppercase font-tech">
-              {t('nav.login')}
-            </Link>
-            <Link to="/register" onClick={() => setIsOpen(false)}>
-              <button className="w-full bg-[#D4AF37] text-black text-[11px] font-black tracking-[0.3em] uppercase font-tech px-6 py-5 rounded-none">
-                {t('nav.openAccount')}
-              </button>
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <button 
+                  onClick={() => { navigate('/dashboard'); setIsOpen(false); }}
+                  className="block w-full text-left text-[11px] font-bold text-white tracking-[0.3em] uppercase font-tech"
+                >
+                  Acessar Painel
+                </button>
+                <button 
+                  onClick={() => { handleLogout(); setIsOpen(false); }}
+                  className="block w-full text-left text-[11px] font-bold text-red-400 tracking-[0.3em] uppercase font-tech"
+                >
+                  Sair
+                </button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setIsOpen(false)} className="block text-[11px] font-bold text-white tracking-[0.3em] uppercase font-tech">
+                  {t('nav.login')}
+                </Link>
+                <Link to="/register" onClick={() => setIsOpen(false)}>
+                  <button className="w-full bg-[#D4AF37] text-black text-[11px] font-black tracking-[0.3em] uppercase font-tech px-6 py-5 rounded-none">
+                    {t('nav.openAccount')}
+                  </button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
