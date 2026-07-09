@@ -81,11 +81,29 @@ supabase functions deploy send-email
 
 4. Clique no link e verifique se:
    - A página `/auth-callback` carrega
-   - Após confirmação, redireciona para `/dashboard`
+   - Após confirmação, redireciona para `/login`
 
 ## URLs dos Ambientes
 
+- **Produção**: https://braxelmarkets.vercel.app
 - **Work 1**: https://work-1-davivwbrvnwnuagg.prod-runtime.all-hands.dev
 - **Work 2**: https://work-2-davivwbrvnwnuagg.prod-runtime.all-hands.dev
 
-Adicione estas URLs como Redirect URLs temporariamente durante testes.
+### Configuração no Supabase Dashboard
+
+1. Vá em **Authentication > URL Configuration**
+
+2. Configure:
+   - **Site URL**: `https://braxelmarkets.vercel.app`
+   
+3. Em **Redirect URLs**, adicione:
+   ```
+   https://braxelmarkets.vercel.app/auth-callback
+   ```
+
+### Fluxo de Confirmação
+
+1. Usuário se registra → recebe email
+2. Clica no link de confirmação
+3. `/auth-callback` confirma o email
+4. Redireciona para `/login` (para fazer login)

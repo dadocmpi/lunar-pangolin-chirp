@@ -31,9 +31,9 @@ const AuthCallback = () => {
           
           if (data.user) {
             setStatus('success');
-            // Redirect to dashboard after a brief delay
+            // Redirect to login after successful confirmation
             setTimeout(() => {
-              navigate('/dashboard', { replace: true });
+              navigate('/login', { replace: true });
             }, 2000);
             return;
           }
@@ -57,7 +57,7 @@ const AuthCallback = () => {
             if (data.user) {
               setStatus('success');
               setTimeout(() => {
-                navigate('/dashboard', { replace: true });
+                navigate('/login', { replace: true });
               }, 2000);
               return;
             }
@@ -97,7 +97,7 @@ const AuthCallback = () => {
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Email Confirmed!</h2>
             <p className="text-slate-400 mb-4">Your account has been successfully verified.</p>
-            <p className="text-[#C5A059] text-sm">Redirecting to dashboard...</p>
+            <p className="text-[#C5A059] text-sm">Redirecting to login...</p>
           </>
         )}
         
