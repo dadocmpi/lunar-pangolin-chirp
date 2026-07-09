@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, Globe, User, LayoutDashboard, LogOut } from 'lucide-react';
+import { Menu, X, Globe, ChevronDown, User, LayoutDashboard, LogOut } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { supportedLanguages } from '../i18n';
@@ -130,12 +130,17 @@ const Navbar = () => {
 
         {isLoggedIn ? (
           <DropdownMenu>
-            <DropdownMenuTrigger className="relative flex items-center justify-center w-10 h-10 bg-[#1a1f2e] border border-white/10 rounded-full hover:border-[#D4AF37] transition-all outline-none group">
-              <User size={18} className="text-[#D4AF37]" />
+            <DropdownMenuTrigger className="flex items-center gap-2 bg-[#1a1f2e] border border-white/10 px-4 py-2 rounded-none hover:border-[#D4AF37]/50 transition-all outline-none group">
+              <User size={16} className="text-[#D4AF37]" />
+              <div className="flex flex-col items-start">
+                <span className="text-[9px] font-bold text-slate-400 tracking-wider uppercase">Perfil</span>
+                <span className="text-[10px] font-medium text-white tracking-wide max-w-[120px] truncate">{userEmail}</span>
+              </div>
+              <ChevronDown size={12} className="text-slate-400 ml-1" />
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[200px] z-[1100]">
               <div className="px-4 py-3 border-b border-white/10">
-                <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase mb-1">Logged in as</p>
+                <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase mb-1">Sessão Ativa</p>
                 <p className="text-[11px] text-slate-300 truncate">{userEmail}</p>
               </div>
               <DropdownMenuItem 
@@ -143,7 +148,7 @@ const Navbar = () => {
                 className="hover:bg-[#D4AF37] hover:text-black cursor-pointer text-[11px] font-bold tracking-wide p-4 rounded-none transition-colors focus:bg-[#D4AF37] focus:text-black"
               >
                 <LayoutDashboard size={14} className="mr-3" />
-                Access Dashboard
+                Acessar Painel
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/5" />
               <DropdownMenuItem 
@@ -151,7 +156,7 @@ const Navbar = () => {
                 className="hover:bg-red-600 hover:text-white cursor-pointer text-[11px] font-bold tracking-wide p-4 rounded-none transition-colors text-red-400 focus:bg-red-600 focus:text-white"
               >
                 <LogOut size={14} className="mr-3" />
-                Logout
+                Sair
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -214,17 +219,15 @@ const Navbar = () => {
               <>
                 <button 
                   onClick={() => { navigate('/dashboard'); setIsOpen(false); }}
-                  className="flex items-center gap-3 text-[11px] font-bold text-white tracking-[0.2em] uppercase"
+                  className="block w-full text-left text-[11px] font-bold text-white tracking-[0.3em] uppercase font-tech"
                 >
-                  <LayoutDashboard size={16} className="text-[#D4AF37]" />
-                  Access Dashboard
+                  Acessar Painel
                 </button>
                 <button 
                   onClick={() => { handleLogout(); setIsOpen(false); }}
-                  className="flex items-center gap-3 text-[11px] font-bold text-red-400 tracking-[0.2em] uppercase"
+                  className="block w-full text-left text-[11px] font-bold text-red-400 tracking-[0.3em] uppercase font-tech"
                 >
-                  <LogOut size={16} />
-                  Logout
+                  Sair
                 </button>
               </>
             ) : (
