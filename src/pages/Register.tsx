@@ -27,6 +27,9 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
 
+    // Get the site URL for email confirmation redirect
+    const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -35,7 +38,7 @@ const Register = () => {
           data: {
             full_name: fullName,
           },
-          persistSession: true,
+          emailRedirectTo: `${siteUrl}/auth-callback`,
         }
       });
 
@@ -54,6 +57,26 @@ const Register = () => {
         });
       } catch (notifError) {
         console.error('Registration notification error:', notifError);
+      }
+
+      // Send custom confirmation email
+      try {
+        // Generate confirmation URL using Supabase admin client approach
+        const confirmationUrl = `${siteUrl}/auth-callback?token=${data.session?.access_token}&type=signup`;
+        
+        await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/confirm-signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: data.user?.id,
+            email: email,
+            name: fullName,
+            confirmationUrl: `${siteUrl}/auth-callback`
+          })
+        });
+      } catch (emailError) {
+        console.error('Confirmation email error:', emailError);
+        // Don't fail the registration if email fails
       }
 
       showSuccess(t('auth.registerSuccessMessage'));
