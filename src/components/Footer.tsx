@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, X, Linkedin, MapPin, AlertTriangle } from 'lucide-react';
+import { Mail, X, MapPin, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
@@ -37,9 +37,6 @@ const Footer = () => {
               </a>
               <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
                 <X size={16} />
-              </a>
-              <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
-                <Linkedin size={16} />
               </a>
             </div>
           </div>

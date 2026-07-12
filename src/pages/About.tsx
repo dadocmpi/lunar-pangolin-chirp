@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Shield, Target, Eye, Users, Award, Globe, Landmark, Zap, Linkedin } from 'lucide-react';
+import { Shield, Target, Eye, Users, Award, Globe, Landmark, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -10,7 +10,7 @@ import MarketTicker from '@/components/MarketTicker';
 const About = () => {
   const { t } = useTranslation();
 
-  const team = t('about.team', { returnObjects: true }) as Array<{ name: string; role: string; bio: string; linkedin: string; photo: string }>;
+  const team = t('about.team', { returnObjects: true }) as Array<{ name: string; role: string; bio: string; photo: string }>;
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#D4AF37] selection:text-black">
@@ -97,15 +97,7 @@ const About = () => {
                 )}
                 <h3 className="text-[13px] font-bold uppercase tracking-[0.15em] mb-2 text-white">{member.name}</h3>
                 <p className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.2em] mb-6">{member.role}</p>
-                <p className="text-slate-500 text-[12px] leading-relaxed mb-6">{member.bio}</p>
-                <a 
-                  href={member.linkedin} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-[#D4AF37] transition-colors"
-                >
-                  <Linkedin size={14} /> LinkedIn
-                </a>
+                <p className="text-slate-500 text-[12px] leading-relaxed">{member.bio}</p>
               </div>
             ))}
           </div>
