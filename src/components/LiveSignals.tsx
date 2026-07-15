@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Activity, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { fetchAllMarketData } from '@/services/marketDataService';
 
 interface Signal {
   id: string;
@@ -14,42 +15,44 @@ interface Signal {
   status: 'ACTIVE' | 'COMPLETED';
 }
 
+interface MarketData {
+  crypto: Record<string, { price: number; changePercent: number }>;
+  twelves: Record<string, { price: number; changePercent: number }>;
+}
+
 const LiveSignals = () => {
   const { t } = useTranslation();
   const [signals, setSignals] = useState<Signal[]>([]);
-  const [marketPrices, setMarketPrices] = useState<Record<string, number>>({});
+  const [marketData, setMarketData] = useState<MarketData>({ crypto: {}, twelves: {} });
   
-  const cryptoAssets = ["BTCUSDT", "ETHUSDT", "PAXGUSDT"];
-  const fxAssets = ["EURUSD", "GBPUSD", "GBPJPY", "USDCAD"];
-  const allAssets = [...cryptoAssets, ...fxAssets];
+  // All assets for signals
+  const allAssets = [
+    // Crypto
+    { symbol: 'BTCUSDT', name: 'BTC/USD', type: 'crypto' },
+    { symbol: 'ETHUSDT', name: 'ETH/USD', type: 'crypto' },
+    { symbol: 'PAXGUSDT', name: 'GOLD', type: 'crypto' },
+    // Indices
+    { symbol: 'IXIC', name: 'NASDAQ', type: 'index' },
+    // Commodities
+    { symbol: 'XAG/USD', name: 'SILVER', type: 'commodity' },
+    { symbol: 'WTI', name: 'OIL (WTI)', type: 'commodity' },
+    // Forex
+    { symbol: 'EUR/USD', name: 'EUR/USD', type: 'forex' },
+    { symbol: 'GBP/USD', name: 'GBP/USD', type: 'forex' },
+  ];
 
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/price');
-        const cryptoData = await cryptoRes.json();
-        const fxRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const fxData = await fxRes.json();
-
-        const prices: Record<string, number> = {};
-        cryptoData.forEach((item: any) => {
-          if (cryptoAssets.includes(item.symbol)) prices[item.symbol] = parseFloat(item.price);
-        });
-
-        if (fxData.rates) {
-          prices["EURUSD"] = 1 / fxData.rates.EUR;
-          prices["GBPUSD"] = 1 / fxData.rates.GBP;
-          prices["GBPJPY"] = fxData.rates.JPY / fxData.rates.GBP;
-          prices["USDCAD"] = fxData.rates.CAD;
-        }
-        setMarketPrices(prices);
+        const data = await fetchAllMarketData();
+        setMarketData(data);
       } catch (e) {
         console.error("Error fetching live prices", e);
       }
     };
 
     fetchPrices();
-    const interval = setInterval(fetchPrices, 5000);
+    const interval = setInterval(fetchPrices, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -67,25 +70,49 @@ const LiveSignals = () => {
         });
       }
       
+      // Para índices (NASDAQ) - 2 decimais
+      if (asset === "NASDAQ") {
+        return val.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+          useGrouping: true
+        });
+      }
+      
+      // Para Commodities (Silver, Oil) - 2 decimais
+      if (asset === "SILVER" || asset === "OIL (WTI)") {
+        return val.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+          useGrouping: false
+        });
+      }
+      
       // Para Forex e outros, limitamos a no máximo 4 casas decimais
       return Number(val.toFixed(4)).toString();
     };
 
-    const formatAssetName = (symbol: string) => {
-      if (symbol === "PAXGUSDT") return "GOLD";
-      if (symbol.includes("USDT")) return symbol.replace("USDT", "/USD");
-      return symbol.slice(0, 3) + "/" + symbol.slice(3);
+    // Get price based on asset type and symbol
+    const getPrice = (asset: { symbol: string; name: string; type: string }) => {
+      if (asset.type === 'crypto') {
+        return marketData.crypto[asset.symbol]?.price || 0;
+      } else if (asset.type === 'index' || asset.type === 'commodity' || asset.type === 'forex') {
+        return marketData.twelves[asset.symbol]?.price || 0;
+      }
+      return 0;
     };
 
-    if (Object.keys(marketPrices).length > 0 && signals.length === 0) {
-      const initial = allAssets.slice(0, 5).map((symbol, i) => {
-        const name = formatAssetName(symbol);
-        const price = marketPrices[symbol] || 0;
+    // Check if we have any market data
+    const hasMarketData = Object.keys(marketData.crypto).length > 0 || Object.keys(marketData.twelves).length > 0;
+
+    if (hasMarketData && signals.length === 0) {
+      const initial = allAssets.slice(0, 5).map((asset, i) => {
+        const price = getPrice(asset);
         return {
           id: i.toString(),
-          asset: name,
+          asset: asset.name,
           type: Math.random() > 0.5 ? 'BUY' : 'SELL' as 'BUY' | 'SELL',
-          entry: formatPrice(price, name),
+          entry: formatPrice(price, asset.name),
           profit: `+${(Math.random() * 0.9).toFixed(2)}%`,
           status: 'COMPLETED' as 'COMPLETED'
         };
@@ -94,17 +121,16 @@ const LiveSignals = () => {
     }
 
     const interval = setInterval(() => {
-      if (Object.keys(marketPrices).length === 0) return;
+      if (!hasMarketData) return;
       
       const randomAsset = allAssets[Math.floor(Math.random() * allAssets.length)];
-      const name = formatAssetName(randomAsset);
-      const price = marketPrices[randomAsset] || 0;
+      const price = getPrice(randomAsset);
 
       const newSignal: Signal = {
         id: Date.now().toString(),
-        asset: name,
+        asset: randomAsset.name,
         type: Math.random() > 0.5 ? 'BUY' : 'SELL',
-        entry: formatPrice(price, name),
+        entry: formatPrice(price, randomAsset.name),
         profit: Math.random() > 0.3 ? `+${(Math.random() * 0.4).toFixed(2)}%` : '---',
         status: Math.random() > 0.3 ? 'COMPLETED' : 'ACTIVE'
       };
@@ -113,7 +139,7 @@ const LiveSignals = () => {
     }, 8000);
 
     return () => clearInterval(interval);
-  }, [marketPrices]);
+  }, [marketData]);
 
   return (
     <section className="py-32 px-8 bg-black border-t border-white/5">

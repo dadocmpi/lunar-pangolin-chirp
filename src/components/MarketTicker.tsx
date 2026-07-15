@@ -1,36 +1,45 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
+import { fetchAllMarketData } from '@/services/marketDataService';
+
+interface TickerItem {
+  pair: string;
+  value: number;
+  change: number;
+  up: boolean;
+  decimals: number;
+}
 
 const MarketTicker = () => {
-  const [prices, setPrices] = useState([
-    { pair: "BTC/USD", value: 0, change: 0, up: true },
-    { pair: "ETH/USD", value: 0, change: 0, up: true },
-    { pair: "EUR/USD", value: 1.0844, change: 0.12, up: true },
-    { pair: "GBP/USD", value: 1.2632, change: -0.05, up: false },
-    { pair: "GBP/JPY", value: 190.45, change: 0.15, up: true },
-    { pair: "USD/CAD", value: 1.3520, change: -0.08, up: false },
-    { pair: "GOLD", value: 0, change: 0, up: true },
+  const [prices, setPrices] = useState<TickerItem[]>([
+    // Crypto
+    { pair: "BTC/USD", value: 0, change: 0, up: true, decimals: 2 },
+    { pair: "ETH/USD", value: 0, change: 0, up: true, decimals: 2 },
+    { pair: "GOLD", value: 0, change: 0, up: true, decimals: 2 },
+    // Indices
+    { pair: "NASDAQ", value: 0, change: 0, up: true, decimals: 2 },
+    // Commodities
+    { pair: "SILVER", value: 0, change: 0, up: true, decimals: 2 },
+    { pair: "OIL (WTI)", value: 0, change: 0, up: true, decimals: 2 },
+    // Forex
+    { pair: "EUR/USD", value: 0, change: 0, up: true, decimals: 4 },
+    { pair: "GBP/USD", value: 0, change: 0, up: true, decimals: 4 },
+    { pair: "GBP/JPY", value: 0, change: 0, up: true, decimals: 3 },
+    { pair: "USD/CAD", value: 0, change: 0, up: true, decimals: 4 },
   ]);
 
-  const d1Data = useRef<any>({});
+  const marketData = useRef<{
+    crypto: Record<string, { price: number; changePercent: number }>;
+    twelves: Record<string, { price: number; changePercent: number }>;
+    timestamp: number;
+  }>({ crypto: {}, twelves: {}, timestamp: 0 });
 
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
-        // Cripto e Ouro (PAXG) via Binance - 24/7
-        const cryptoRes = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","PAXGUSDT"]');
-        const cryptoJson = await cryptoRes.json();
-        
-        // Forex via ExchangeRate (Dados de fechamento ou tempo real)
-        const fxRes = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
-        const fxJson = await fxRes.json();
-
-        d1Data.current = {
-          crypto: cryptoJson,
-          fx: fxJson.rates,
-          timestamp: Date.now()
-        };
+        const data = await fetchAllMarketData();
+        marketData.current = data;
       } catch (error) {
         console.error("Erro ao sincronizar dados:", error);
       }
@@ -44,31 +53,51 @@ const MarketTicker = () => {
         let newValue = p.value;
         let newChange = p.change;
 
-        // Lógica para Cripto (Sempre Real)
-        if (d1Data.current.crypto) {
-          const symbolToFind = p.pair === "GOLD" ? "PAXGUSDT" : p.pair.replace('/', '').replace('USD', 'USDT');
-          const cryptoItem = d1Data.current.crypto.find((i: any) => i.symbol === symbolToFind);
-          
-          if (cryptoItem) {
-            const base = parseFloat(cryptoItem.lastPrice);
-            // Adiciona micro-oscilação de 0.01% para parecer vivo entre updates da API
-            newValue = base + (Math.random() - 0.5) * (base * 0.0002);
-            newChange = parseFloat(cryptoItem.priceChangePercent);
-          }
+        // Crypto via Binance
+        if (p.pair === "BTC/USD" && marketData.current.crypto.BTCUSDT) {
+          const data = marketData.current.crypto.BTCUSDT;
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.0002);
+          newChange = data.changePercent;
+        } else if (p.pair === "ETH/USD" && marketData.current.crypto.ETHUSDT) {
+          const data = marketData.current.crypto.ETHUSDT;
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.0002);
+          newChange = data.changePercent;
+        } else if (p.pair === "GOLD" && marketData.current.crypto.PAXGUSDT) {
+          const data = marketData.current.crypto.PAXGUSDT;
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.0002);
+          newChange = data.changePercent;
         }
-
-        // Lógica para Forex (Real + Jitter no final de semana)
-        if (d1Data.current.fx) {
-          let baseFx = 0;
-          if (p.pair === "EUR/USD") baseFx = 1 / d1Data.current.fx.EUR;
-          else if (p.pair === "GBP/USD") baseFx = 1 / d1Data.current.fx.GBP;
-          else if (p.pair === "GBP/JPY") baseFx = d1Data.current.fx.JPY / d1Data.current.fx.GBP;
-          else if (p.pair === "USD/CAD") baseFx = d1Data.current.fx.CAD;
-
-          if (baseFx > 0) {
-            // Micro-oscilação para Forex (0.005%)
-            newValue = baseFx + (Math.random() - 0.5) * (baseFx * 0.0001);
-          }
+        // Indices & Commodities via Twelves Data
+        else if (p.pair === "NASDAQ" && marketData.current.twelves.IXIC) {
+          const data = marketData.current.twelves.IXIC;
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.00005);
+          newChange = data.changePercent;
+        } else if (p.pair === "SILVER" && marketData.current.twelves['XAG/USD']) {
+          const data = marketData.current.twelves['XAG/USD'];
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.0001);
+          newChange = data.changePercent;
+        } else if (p.pair === "OIL (WTI)" && marketData.current.twelves.WTI) {
+          const data = marketData.current.twelves.WTI;
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.0001);
+          newChange = data.changePercent;
+        }
+        // Forex via Twelves Data
+        else if (p.pair === "EUR/USD" && marketData.current.twelves['EUR/USD']) {
+          const data = marketData.current.twelves['EUR/USD'];
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.00005);
+          newChange = data.changePercent;
+        } else if (p.pair === "GBP/USD" && marketData.current.twelves['GBP/USD']) {
+          const data = marketData.current.twelves['GBP/USD'];
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.00005);
+          newChange = data.changePercent;
+        } else if (p.pair === "GBP/JPY" && marketData.current.twelves['GBP/JPY']) {
+          const data = marketData.current.twelves['GBP/JPY'];
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.00005);
+          newChange = data.changePercent;
+        } else if (p.pair === "USD/CAD" && marketData.current.twelves['USD/CAD']) {
+          const data = marketData.current.twelves['USD/CAD'];
+          newValue = data.price + (Math.random() - 0.5) * (data.price * 0.00005);
+          newChange = data.changePercent;
         }
 
         return {
@@ -95,10 +124,7 @@ const MarketTicker = () => {
           <div key={i} className="flex items-center gap-3 font-tech text-[11px] font-bold">
             <span className="text-slate-500 uppercase tracking-widest">{item.pair}</span>
             <span className="text-white tabular-nums">
-              {item.value === 0 ? "---" : 
-                item.pair === 'GOLD' || item.pair.includes('BTC') || item.pair.includes('ETH')
-                ? item.value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                : item.value.toFixed(4)}
+              {item.value === 0 ? "---" : item.value.toLocaleString(undefined, { minimumFractionDigits: item.decimals, maximumFractionDigits: item.decimals })}
             </span>
             <span className={item.up ? "text-green-500" : "text-red-500"}>
               {item.up ? '▲' : '▼'} {Math.abs(item.change).toFixed(2)}%
