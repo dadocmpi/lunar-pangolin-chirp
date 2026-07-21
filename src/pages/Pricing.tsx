@@ -12,11 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { useCurrency } from '@/hooks/useCurrency';
 
 // Prices in USD (will be converted to user's local currency)
+// New pricing: 5K-80€, 10K-120€, 25K-430€, 100K-850€
 const PRICES_USD = {
-  starter: { monthly: 75, account: 2000 },
-  pro: { monthly: 175, account: 5000 },
-  advanced: { monthly: 350, account: 10000 },
-  elite: { monthly: 690, account: 20000 },
+  starter: { monthly: 87, account: 5000 },
+  pro: { monthly: 131, account: 10000 },
+  advanced: { monthly: 469, account: 25000 },
+  elite: { monthly: 927, account: 100000 },
 };
 
 const Pricing = () => {
