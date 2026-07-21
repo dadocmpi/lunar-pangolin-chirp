@@ -73,6 +73,7 @@ const Navbar = () => {
   };
 
   const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
+  const [logoError, setLogoError] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 w-full h-24 bg-black/90 backdrop-blur-xl border-b border-white/5 z-[1000] px-6 md:px-12 flex items-center justify-between">
@@ -81,11 +82,19 @@ const Navbar = () => {
         onClick={handleLogoClick}
         className="flex items-center group"
       >
-        <img 
-          src={logoUrl} 
-          alt="Braxel Markets" 
-          className="h-14 md:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
-        />
+        {logoError ? (
+          <div className="h-14 md:h-16 w-auto flex items-center">
+            <span className="text-[#D4AF37] text-3xl md:text-4xl font-black tracking-tight">B</span>
+            <span className="text-white text-lg md:text-xl font-bold ml-2 tracking-wide">RAXEL</span>
+          </div>
+        ) : (
+          <img 
+            src={logoUrl} 
+            alt="Braxel Markets" 
+            className="h-14 md:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+            onError={() => setLogoError(true)}
+          />
+        )}
       </Link>
 
       <nav className="hidden lg:flex items-center gap-10">
@@ -108,7 +117,11 @@ const Navbar = () => {
             {i18n.language.toUpperCase()}
             <ChevronDown size={10} className="opacity-50" />
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[180px] p-0 z-[1100]">
+          <DropdownMenuContent 
+            sideOffset={8} 
+            align="end" 
+            className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[180px] p-0 z-[1100]"
+          >
             <ScrollArea className="h-[300px]">
               <div className="p-1">
                 {supportedLanguages.map((lang) => (
@@ -133,7 +146,11 @@ const Navbar = () => {
             <DropdownMenuTrigger className="flex items-center justify-center w-10 h-10 bg-[#1a1f2e] border border-white/10 rounded-full hover:border-[#D4AF37] transition-all outline-none">
               <User size={18} className="text-[#D4AF37]" />
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[200px] z-[1100]">
+            <DropdownMenuContent 
+              sideOffset={8} 
+              align="end" 
+              className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[200px] z-[1100]"
+            >
               <div className="px-4 py-3 border-b border-white/10">
                 <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase mb-1">Sessão Ativa</p>
                 <p className="text-[11px] text-slate-300 truncate">{userEmail}</p>
