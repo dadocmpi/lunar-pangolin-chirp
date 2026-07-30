@@ -15,7 +15,11 @@ import {
   Wallet,
   Lock,
   Search,
-  Phone
+  Phone,
+  Copy,
+  ExternalLink,
+  Building2,
+  Globe
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
@@ -93,6 +97,20 @@ const getCountryName = (country: any, lang: string): string => {
   return country[nameKey] || country.name;
 };
 
+// Dados bancários Wise para receber transferências
+const wiseAccount = {
+  holderName: "YOUR_NAME_HERE",
+  email: "your-wise-email@example.com",
+  bankName: "Community Federal Savings Bank",
+  accountType: "Checking",
+  routingNumber: "XXXXXXXXX",
+  accountNumber: "XXXXXXXXXXXX",
+  iban: "XXXXXXXXXXXXXXXXXX",
+  swift: "XXXXXX",
+  address: "1045 Avenue of the Americas, New York, NY 10018",
+  currency: "USD"
+};
+
 const Checkout = () => {
   const { t, i18n } = useTranslation();
   const location = useLocation();
@@ -101,6 +119,8 @@ const Checkout = () => {
   const [user, setUser] = useState<any>(null);
   const [showCard, setShowCard] = useState(false);
   const [showCrypto, setShowCrypto] = useState(false);
+  const [showWise, setShowWise] = useState(false);
+  const [wiseConfirmed, setWiseConfirmed] = useState(false);
   const [processing, setProcessing] = useState(false);
   const plan = location.state?.plan;
 
@@ -273,6 +293,45 @@ const Checkout = () => {
     showSuccess(t('checkout.copied') || "Copied!");
   };
 
+  const handleWiseSubmit = async () => {
+    if (!wiseConfirmed) {
+      showError(t('checkout.wiseConfirmRequired') || "Please confirm you made the transfer");
+      return;
+    }
+    
+    setProcessing(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      const response = await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/wise-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token}`
+        },
+        body: JSON.stringify({
+          planName: plan.name,
+          accountSize: plan.accountSize,
+          amount: plan.price,
+          paymentMethod: 'Wise Transfer'
+        })
+      });
+
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        showSuccess(t('checkout.wisePaymentSuccess') || "Payment confirmed! Your account is being set up.");
+        setTimeout(() => navigate('/dashboard'), 2000);
+      } else {
+        throw new Error(result.error || t('checkout.paymentError'));
+      }
+    } catch (error: any) {
+      showError(error.message || t('checkout.paymentError'));
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   if (loading || processing) {
     return (
       <div className="min-h-screen bg-[#05070A] flex flex-col items-center justify-center gap-6">
@@ -388,7 +447,7 @@ const Checkout = () => {
                 </div>
               )}
 
-              {!showCard && !showCrypto ? (
+              {!showWise && !showCrypto ? (
                 <div className="space-y-8 animate-fadeInUp">
                   <div className="space-y-4">
                     <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">{t('checkout.selectPaymentMethod')}</h2>
@@ -397,32 +456,37 @@ const Checkout = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Cartão de Crédito */}
+                  <div className="grid grid-cols-1 gap-6">
+                    {/* Wise Transfer - Principal (Cartão + Transferência) */}
                     <button
-                      onClick={() => setShowCard(true)}
-                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-[#D4AF37] hover:shadow-[0_0_40px_rgba(212,175,55,0.1)] transition-all text-left group overflow-hidden"
+                      onClick={() => setShowWise(true)}
+                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-[#12B488] hover:shadow-[0_0_40px_rgba(18,180,136,0.1)] transition-all text-left group overflow-hidden"
                     >
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-blue-500/5 to-transparent rounded-bl-full" />
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#12B488]/5 to-transparent rounded-bl-full" />
                       <div className="relative z-10">
                         <div className="flex items-center gap-5 mb-6">
-                          <div className="w-16 h-16 bg-gradient-to-br from-[#1A1F71]/30 to-[#1A1F71]/10 flex items-center justify-center border border-white/10 group-hover:border-[#D4AF37]/30 transition-all">
-                            <CreditCard size={28} className="text-blue-400" />
+                          <div className="w-16 h-16 bg-gradient-to-br from-[#12B488]/20 to-[#12B488]/5 flex items-center justify-center border border-white/10 group-hover:border-[#12B488]/30 transition-all">
+                            <Building2 size={28} className="text-[#12B488]" />
                           </div>
                           <div className="flex-1">
-                            <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">{t('checkout.creditCard')}</h3>
-                            <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.instantPayment')}</p>
+                            <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">{t('checkout.wiseTransfer')}</h3>
+                            <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.wiseInternational')}</p>
                           </div>
                         </div>
                         <p className="text-[10px] text-slate-500 leading-relaxed mb-6">
-                          {t('checkout.cardDesc')}
+                          {t('checkout.wiseDesc')}
                         </p>
                         <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                          <LogoVisa size="lg" />
-                          <LogoMastercard size="lg" />
+                          <div className="flex gap-2">
+                            <CreditCard size={12} className="text-slate-500" />
+                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">Card</span>
+                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">Wire</span>
+                            <Globe size={12} className="text-slate-500" />
+                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">{t('checkout.anyCountry')}</span>
+                          </div>
                           <div className="flex-1" />
-                          <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-green-500/70 transition-colors">
-                            <CheckCircle2 size={10} /> {t('checkout.instant')}
+                          <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-[#12B488]/70 transition-colors">
+                            <CheckCircle2 size={10} /> {t('checkout.lowFees')}
                           </div>
                         </div>
                       </div>
@@ -431,12 +495,12 @@ const Checkout = () => {
                     {/* Criptomoedas */}
                     <button
                       onClick={() => setShowCrypto(true)}
-                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-[#D4AF37] hover:shadow-[0_0_40px_rgba(212,175,55,0.1)] transition-all text-left group overflow-hidden"
+                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-[#F7931A] hover:shadow-[0_0_40px_rgba(212,175,55,0.1)] transition-all text-left group overflow-hidden"
                     >
                       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#F7931A]/5 to-transparent rounded-bl-full" />
                       <div className="relative z-10">
                         <div className="flex items-center gap-5 mb-6">
-                          <div className="w-16 h-16 bg-gradient-to-br from-[#F7931A]/20 to-[#F7931A]/5 flex items-center justify-center border border-white/10 group-hover:border-[#D4AF37]/30 transition-all">
+                          <div className="w-16 h-16 bg-gradient-to-br from-[#F7931A]/20 to-[#F7931A]/5 flex items-center justify-center border border-white/10 group-hover:border-[#F7931A]/30 transition-all">
                             <Bitcoin size={28} className="text-[#F7931A]" />
                           </div>
                           <div className="flex-1">
@@ -472,7 +536,7 @@ const Checkout = () => {
               ) : (
                 <div className="space-y-6 animate-fadeInUp">
                   <button 
-                    onClick={() => { setShowCard(false); setShowCrypto(false); }}
+                    onClick={() => { setShowCard(false); setShowCrypto(false); setShowWise(false); setWiseConfirmed(false); }}
                     className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
                   >
                     ← {t('checkout.back')}
@@ -684,6 +748,162 @@ const Checkout = () => {
                         <Wallet size={16} className="mr-2" />
                         {t('checkout.confirmCrypto')}
                       </Button>
+                    </div>
+                  )}
+
+                  {/* WISE TRANSFER */}
+                  {showWise && (
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-2">
+                        <Building2 size={16} className="text-[#12B488]" />
+                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#12B488]">{t('checkout.wiseTransfer')}</span>
+                      </div>
+
+                      {/* Instruções */}
+                      <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#12B488]">{t('checkout.transferInstructions')}</p>
+                        <ol className="text-[8px] text-slate-400 mt-2 space-y-1 list-decimal list-inside">
+                          <li>{t('checkout.wiseStep1')}</li>
+                          <li>{t('checkout.wiseStep2')}</li>
+                          <li>{t('checkout.wiseStep3')}</li>
+                        </ol>
+                      </div>
+
+                      {/* Dados Bancários */}
+                      <div className="p-4 bg-white/[0.02] border border-white/10 space-y-4">
+                        <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                          <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('checkout.bankDetails')}</span>
+                          <span className="text-[8px] text-[#12B488] font-bold bg-[#12B488]/10 px-2 py-1">{wiseAccount.currency}</span>
+                        </div>
+
+                        {/* Account Holder */}
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.accountHolder')}</label>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] text-white">{wiseAccount.holderName}</p>
+                            <button onClick={() => copyToClipboard(wiseAccount.holderName)} className="text-slate-500 hover:text-[#12B488] transition-colors">
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Bank Name */}
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.bankName')}</label>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] text-white">{wiseAccount.bankName}</p>
+                            <button onClick={() => copyToClipboard(wiseAccount.bankName)} className="text-slate-500 hover:text-[#12B488] transition-colors">
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Routing Number */}
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.routingNumber')}</label>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] font-mono text-white">{wiseAccount.routingNumber}</p>
+                            <button onClick={() => copyToClipboard(wiseAccount.routingNumber)} className="text-slate-500 hover:text-[#12B488] transition-colors">
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Account Number */}
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.accountNumber')}</label>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] font-mono text-white">{wiseAccount.accountNumber}</p>
+                            <button onClick={() => copyToClipboard(wiseAccount.accountNumber)} className="text-slate-500 hover:text-[#12B488] transition-colors">
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* IBAN */}
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">IBAN</label>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] font-mono text-white">{wiseAccount.iban}</p>
+                            <button onClick={() => copyToClipboard(wiseAccount.iban)} className="text-slate-500 hover:text-[#12B488] transition-colors">
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* SWIFT/BIC */}
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">SWIFT / BIC</label>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] font-mono text-white">{wiseAccount.swift}</p>
+                            <button onClick={() => copyToClipboard(wiseAccount.swift)} className="text-slate-500 hover:text-[#12B488] transition-colors">
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Address */}
+                        <div className="space-y-1">
+                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.bankAddress')}</label>
+                          <div className="flex items-center justify-between">
+                            <p className="text-[10px] text-white">{wiseAccount.address}</p>
+                            <button onClick={() => copyToClipboard(wiseAccount.address)} className="text-slate-500 hover:text-[#12B488] transition-colors">
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Montante */}
+                      <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
+                        <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.amountToSend')}</p>
+                        <p className="text-2xl font-bold text-[#12B488]">{plan.price}</p>
+                        <p className="text-[8px] text-slate-600 mt-1">{t('checkout.paymentReference')}</p>
+                      </div>
+
+                      {/* Confirmação */}
+                      <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30">
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]">{t('checkout.important')}</p>
+                        <p className="text-[8px] text-slate-500 mt-1">{t('checkout.wiseNote')}</p>
+                      </div>
+
+                      {/* Checkbox de confirmação */}
+                      <label className="flex items-start gap-3 cursor-pointer p-4 bg-white/[0.02] border border-white/10 hover:border-[#12B488]/30 transition-colors">
+                        <input
+                          type="checkbox"
+                          checked={wiseConfirmed}
+                          onChange={(e) => setWiseConfirmed(e.target.checked)}
+                          className="mt-1 w-4 h-4 accent-[#12B488]"
+                        />
+                        <span className="text-[9px] text-slate-400 leading-relaxed">
+                          {t('checkout.wiseConfirmText')}
+                        </span>
+                      </label>
+
+                      <Button 
+                        onClick={handleWiseSubmit}
+                        disabled={!wiseConfirmed}
+                        className={`w-full rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all ${
+                          wiseConfirmed 
+                            ? 'bg-[#12B488] hover:bg-[#0e9978] text-white' 
+                            : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                        }`}
+                      >
+                        <Building2 size={16} className="mr-2" />
+                        {t('checkout.confirmWise')}
+                      </Button>
+
+                      {/* Link para Wise */}
+                      <div className="text-center">
+                        <a 
+                          href="https://wise.com" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-[8px] text-slate-500 hover:text-[#12B488] transition-colors inline-flex items-center gap-1"
+                        >
+                          <Globe size={10} /> {t('checkout.openWise')}
+                        </a>
+                      </div>
                     </div>
                   )}
                 </div>
