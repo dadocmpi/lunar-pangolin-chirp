@@ -18,7 +18,7 @@ function escapeHtml(text: string): string {
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-async function sendUserCryptoPendingEmail(userEmail: string, fullName: string, planName: string, amount: string, network: string, userAddress: string) {
+async function sendUserCryptoPendingEmail(userEmail: string, fullName: string, planName: string, amount: string, network: string) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
   
   if (!resendApiKey) {
@@ -60,7 +60,7 @@ async function sendUserCryptoPendingEmail(userEmail: string, fullName: string, p
       <p style="margin:5px 0;font-size:14px"><strong>Plan:</strong> ${escapeHtml(planName)}</p>
       <p style="margin:5px 0;font-size:14px"><strong>Amount:</strong> ${escapeHtml(amount)} USD</p>
       <p style="margin:5px 0;font-size:14px"><strong>Network:</strong> ${escapeHtml(network)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Your Address:</strong> ${escapeHtml(userAddress)}</p>
+
       <p style="margin:5px 0;font-size:14px"><strong>Status:</strong> Pending Confirmation</p>
     </div>
     <p class="text">You will receive another email once your payment is confirmed and your account is fully activated.</p>
@@ -82,7 +82,6 @@ Details:
 - Plan: ${planName}
 - Amount: ${amount} USD
 - Network: ${network}
-- Your Address: ${userAddress}
 - Status: Pending Confirmation
 
 You will receive another email once your payment is confirmed.
@@ -124,7 +123,6 @@ async function sendCompanyCryptoRequestEmail(
   planName: string, 
   amount: string, 
   network: string,
-  userAddress: string,
   paymentId: string
 ) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
@@ -175,8 +173,7 @@ async function sendCompanyCryptoRequestEmail(
     <div class="field"><div class="label">Plan</div><div class="value">${escapeHtml(planName)}</div></div>
     <div class="field"><div class="label">Amount (USD)</div><div class="value">${escapeHtml(amount)}</div></div>
     <div class="field"><div class="label">Network</div><div class="value">${escapeHtml(network)}</div></div>
-    <div class="field"><div class="label">User's Sending Address</div><div class="value">${escapeHtml(userAddress)}</div></div>
-    <div class="field"><div class="label">Status</div><div class="value" style="color:#ffc107">PENDING — VERIFICATION REQUIRED</div></div>
+        <div class="field"><div class="label">Status</div><div class="value" style="color:#ffc107">PENDING — VERIFICATION REQUIRED</div></div>
     <div class="field"><div class="label">Timestamp</div><div class="value">${new Date().toUTCString()}</div></div>
     <hr style="border:none;border-top:1px solid #eee;margin:24px 0">
     <p style="font-size:13px;color:#666"><strong>⚠️ Action Required:</strong></p>
@@ -254,7 +251,7 @@ serve(async (req) => {
       .eq('id', user.id)
       .single();
 
-    const { planName, accountSize, network, amountUSD, userAddress } = await req.json()
+    const { planName, accountSize, network, amountUSD } = await req.json()
 
     // Create a pending payment record
     const paymentId = `PAY-${Date.now()}-${Math.floor(Math.random() * 1000)}`
@@ -269,7 +266,6 @@ serve(async (req) => {
         plan_name: planName,
         network: network,
         amount_usd: amountUSD,
-        user_address: userAddress,
         status: 'pending',
         created_at: new Date().toISOString()
       }])
@@ -285,8 +281,7 @@ serve(async (req) => {
       profile?.full_name || '',
       planName,
       amountUSD,
-      network,
-      userAddress
+      network
     );
 
     // Send notification to company for manual verification
@@ -296,7 +291,6 @@ serve(async (req) => {
       planName,
       amountUSD,
       network,
-      userAddress,
       paymentId
     );
 
