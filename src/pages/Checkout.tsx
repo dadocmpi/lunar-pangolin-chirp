@@ -571,7 +571,7 @@ const Checkout = () => {
                       </div>
 
                       <div className="p-4 bg-[#C5A059]/10 border border-[#C5A059]/30">
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059]">{t('checkout.yourAddress')}</p>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059]">'Send to this address'</p>
                         <div className="flex items-center gap-2 mt-2">
                           <p className="text-[9px] font-mono text-slate-400 break-all flex-1">{selectedCrypto.address}</p>
                           <button 
