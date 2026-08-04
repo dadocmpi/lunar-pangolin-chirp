@@ -117,7 +117,6 @@ const Checkout = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
-  const [showCard, setShowCard] = useState(false);
   const [showCrypto, setShowCrypto] = useState(false);
   const [showWise, setShowWise] = useState(false);
   const [wiseConfirmed, setWiseConfirmed] = useState(false);
@@ -140,7 +139,6 @@ const Checkout = () => {
 
   // Dados da cripto
   const [selectedCrypto, setSelectedCrypto] = useState(cryptoNetworks[0]);
-  const [cryptoAddress, setCryptoAddress] = useState('');
 
   useEffect(() => {
     const checkUser = async () => {
@@ -270,7 +268,6 @@ const Checkout = () => {
           accountSize: plan.accountSize,
           network: selectedCrypto.id,
           amountUSD: numericPrice,
-          userAddress: cryptoAddress
         })
       });
 
@@ -542,137 +539,6 @@ const Checkout = () => {
                     ← {t('checkout.back')}
                   </button>
 
-                  {/* CARTÃO DE CRÉDITO */}
-                  {showCard && (
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2">
-                        <CreditCard size={16} className="text-blue-400" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-blue-400">{t('checkout.creditCard')}</span>
-                      </div>
-
-                      {/* Campo de busca de país */}
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.selectCountry')}</label>
-                        <div className="relative">
-                          <div 
-                            onClick={() => setShowCountryDropdown(!showCountryDropdown)}
-                            className="w-full bg-white/5 border border-white/10 h-12 px-4 flex items-center justify-between cursor-pointer hover:border-[#C5A059] transition-colors"
-                          >
-                            <span className="text-[11px] font-medium text-white uppercase tracking-widest">
-                              {selectedCountry.flag} {getCountryName(selectedCountry, i18n.language)} ({selectedCountry.ddi})
-                            </span>
-                            <Search size={14} className="text-slate-500" />
-                          </div>
-                          
-                          {showCountryDropdown && (
-                            <div className="absolute z-50 w-full mt-1 bg-[#080B12] border border-white/10 max-h-64 overflow-hidden">
-                              <div className="p-2 border-b border-white/10">
-                                <input
-                                  type="text"
-                                  value={countrySearch}
-                                  onChange={(e) => setCountrySearch(e.target.value)}
-                                  placeholder={t('checkout.searchCountry') || "Search country..."}
-                                  className="w-full bg-white/5 border border-white/10 h-10 px-3 text-[11px] text-white placeholder:text-slate-700 focus:border-[#C5A059] outline-none"
-                                  autoFocus
-                                />
-                              </div>
-                              <div className="overflow-y-auto max-h-48">
-                                {filteredCountries.map((country) => (
-                                  <div
-                                    key={country.code}
-                                    onClick={() => {
-                                      setSelectedCountry(country);
-                                      setShowCountryDropdown(false);
-                                      setCountrySearch('');
-                                    }}
-                                    className="p-3 hover:bg-white/10 cursor-pointer flex items-center gap-3 border-b border-white/5"
-                                  >
-                                    <span className="text-lg">{country.flag}</span>
-                                    <div>
-                                      <p className="text-[10px] font-bold uppercase tracking-widest text-white">{getCountryName(country, i18n.language)}</p>
-                                      <p className="text-[9px] text-slate-500">{country.ddi}</p>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Telefone */}
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.phone')}</label>
-                        <div className="flex gap-2">
-                          <div className="w-24 bg-white/5 border border-white/10 h-12 flex items-center justify-center text-[11px] font-bold text-white uppercase tracking-widest">
-                            {selectedCountry.ddi}
-                          </div>
-                          <input
-                            type="tel"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
-                            placeholder={t('checkout.phonePlaceholder')}
-                            className="flex-1 bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.cardNumber')}</label>
-                        <input
-                          type="text"
-                          value={cardData.number}
-                          onChange={(e) => setCardData({...cardData, number: formatCardNumber(e.target.value)})}
-                          placeholder={t('checkout.cardNumberPlaceholder')}
-                          maxLength={19}
-                          className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.cardName')}</label>
-                        <input
-                          type="text"
-                          value={cardData.name}
-                          onChange={(e) => setCardData({...cardData, name: e.target.value.toUpperCase()})}
-                          placeholder={t('checkout.cardNamePlaceholder')}
-                          className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 uppercase tracking-widest focus:border-[#C5A059] outline-none"
-                        />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.cardExpiry')}</label>
-                          <input
-                            type="text"
-                            value={cardData.expiry}
-                            onChange={(e) => setCardData({...cardData, expiry: formatExpiry(e.target.value)})}
-                            placeholder={t('checkout.cardExpiryPlaceholder')}
-                            maxLength={5}
-                            className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.cvvLabel')}</label>
-                          <input
-                            type="text"
-                            value={cardData.cvc}
-                            onChange={(e) => setCardData({...cardData, cvc: e.target.value.replace(/\D/g, '')})}
-                            placeholder={t('checkout.cvvPlaceholder')}
-                            maxLength={4}
-                            className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-medium text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
-                          />
-                        </div>
-                      </div>
-
-                      <Button 
-                        onClick={handleCardSubmit}
-                        className="w-full bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all"
-                      >
-                        {t('checkout.payNow')} {plan.price}
-                      </Button>
-                    </div>
-                  )}
 
                   {/* CRIPTOMOEDAS */}
                   {showCrypto && (
@@ -726,15 +592,6 @@ const Checkout = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.yourAddress')}</label>
-                        <input
-                          type="text"
-                          value={cryptoAddress}
-                          onChange={(e) => setCryptoAddress(e.target.value)}
-                          placeholder={t('checkout.yourAddressPlaceholder')}
-                          className="w-full bg-white/5 border border-white/10 h-12 px-4 text-[11px] font-mono text-white placeholder:text-slate-700 tracking-widest focus:border-[#C5A059] outline-none"
-                        />
-                      </div>
 
                       <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30">
                         <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]">{t('checkout.important')}</p>
