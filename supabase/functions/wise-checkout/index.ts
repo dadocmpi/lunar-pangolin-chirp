@@ -248,10 +248,11 @@ serve(async (req) => {
       .eq('id', user.id)
       .single();
 
-    const { planName, accountSize, amount, paymentMethod } = await req.json()
+    const { planName, accountSize, amount, currency, paymentMethod } = await req.json()
 
     // Create a pending payment record
-    const paymentId = `WISE-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+    const wiseCurrency = (currency || 'USD').toUpperCase();
+    const paymentId = `WISE-${wiseCurrency}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
     const balance = parseFloat(accountSize.replace(/[^0-9.]/g, ''))
 
     // Store pending payment for manual verification
@@ -261,7 +262,7 @@ serve(async (req) => {
         user_id: user.id,
         payment_id: paymentId,
         plan_name: planName,
-        network: 'WISE',
+        network: `WISE-${wiseCurrency}`,
         amount_usd: amount,
         user_address: 'N/A',
         status: 'pending',
@@ -278,7 +279,7 @@ serve(async (req) => {
       user.email || '',
       profile?.full_name || '',
       planName,
-      amount
+      `${amount} (Wise ${wiseCurrency})`
     );
 
     // Send notification to company for manual verification
@@ -286,11 +287,11 @@ serve(async (req) => {
       user.email || '',
       profile?.full_name || '',
       planName,
-      amount,
+      `${amount} (Wise ${wiseCurrency})`,
       paymentId
     );
 
-    console.log(`[wise-checkout] SUCCESS: Wise payment pending for user ${user.id}, Payment ID: ${paymentId}`)
+    console.log(`[wise-checkout] SUCCESS: Wise ${wiseCurrency} payment pending for user ${user.id}, Payment ID: ${paymentId}`)
     return new Response(JSON.stringify({ 
       status: 'pending', 
       paymentId,
