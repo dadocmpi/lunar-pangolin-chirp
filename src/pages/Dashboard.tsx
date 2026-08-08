@@ -350,9 +350,9 @@ const Dashboard = () => {
   ];
 
   const mockSecurityLog = [
-    { event: 'Login from new device', time: '2 hours ago' },
-    { event: 'Password changed', time: '5 days ago' },
-    { event: 'Account created', time: '30 days ago' },
+    { eventKey: 'dashboard.kyc.eventLoginNewDevice', timeKey: 'dashboard.kyc.timeHoursAgo', count: 2 },
+    { eventKey: 'dashboard.kyc.eventPasswordChanged', timeKey: 'dashboard.kyc.timeDaysAgo', count: 5 },
+    { eventKey: 'dashboard.kyc.eventAccountCreated', timeKey: 'dashboard.kyc.timeDaysAgo', count: 30 },
   ];
 
   // KYC blocking overlay
@@ -436,9 +436,9 @@ const Dashboard = () => {
 
             {[
               { id: 'services', label: t('nav.dashboard'), icon: <LayoutDashboard size={18} /> },
-              { id: 'performance', label: 'Performance', icon: <BarChart3 size={18} /> },
+              { id: 'performance', label: t('dashboard.navPerformance'), icon: <BarChart3 size={18} /> },
               { id: 'withdraw', label: t('dashboard.withdraw'), icon: <Wallet size={18} /> },
-              { id: 'auditlog', label: 'Audit Log', icon: <Activity size={18} /> },
+              { id: 'auditlog', label: t('dashboard.navAuditLog'), icon: <Activity size={18} /> },
               { id: 'settings', label: t('dashboard.settings'), icon: <Settings size={18} /> },
             ].map((item) => (
               <button
@@ -468,13 +468,13 @@ const Dashboard = () => {
                   <Shield size={48} className="mx-auto text-[#D4AF37] mb-6" />
                   <h3 className="text-lg font-black uppercase tracking-tight mb-3">{t('dashboard.verificationRequired')}</h3>
                   <p className="text-slate-400 text-[12px] leading-relaxed mb-6">
-                    Complete your KYC verification to access all platform features. This is a mandatory compliance requirement for all accounts.
+                    {t('dashboard.kycCompleteDesc')}
                   </p>
                   <Button
                     onClick={() => { setActiveView('settings'); setSettingsTab('kyc'); }}
                     className="bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-12 text-[10px] font-black uppercase tracking-widest"
                   >
-                    Go to Verification
+                    {t('dashboard.goToVerification')}
                   </Button>
                 </div>
               </div>
@@ -741,9 +741,9 @@ const Dashboard = () => {
                 {/* Settings Tabs */}
                 <div className="flex border-b border-white/10">
                   {[
-                    { id: 'profile', label: 'Profile', icon: <User size={14} /> },
-                    { id: 'kyc', label: 'KYC Verification', icon: <FileText size={14} /> },
-                    { id: 'security', label: 'Security', icon: <Shield size={14} /> },
+                    { id: 'profile', label: t('dashboard.tabProfile'), icon: <User size={14} /> },
+                    { id: 'kyc', label: t('dashboard.tabKycVerification'), icon: <FileText size={14} /> },
+                    { id: 'security', label: t('dashboard.tabSecurity'), icon: <Shield size={14} /> },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -873,16 +873,16 @@ const Dashboard = () => {
                           kycStatus === 'submitted' ? 'text-yellow-500' :
                           kycStatus === 'rejected' ? 'text-red-500' : 'text-[#D4AF37]'
                         )}>
-                          {kycStatus === 'approved' ? 'Verification Approved' :
-                           kycStatus === 'submitted' ? 'Documents Under Review' :
-                           kycStatus === 'rejected' ? 'Verification Rejected' :
-                           'Verification Required'}
+                          {kycStatus === 'approved' ? t('dashboard.kyc.approved') :
+                           kycStatus === 'submitted' ? t('dashboard.kyc.underReview') :
+                           kycStatus === 'rejected' ? t('dashboard.kyc.rejected') :
+                           t('dashboard.kyc.required')}
                         </p>
                         <p className="text-[10px] text-slate-400 mt-1">
-                          {kycStatus === 'approved' ? 'Your identity has been verified. All features are unlocked.' :
-                           kycStatus === 'submitted' ? 'Our compliance team is reviewing your documents. This usually takes 24-48 hours.' :
-                           kycStatus === 'rejected' ? 'Your documents were not accepted. Please resubmit with valid documentation.' :
-                           'Complete identity verification to unlock all platform features.'}
+                          {kycStatus === 'approved' ? t('dashboard.kyc.descApproved') :
+                           kycStatus === 'submitted' ? t('dashboard.kyc.descSubmitted') :
+                           kycStatus === 'rejected' ? t('dashboard.kyc.descRejected') :
+                           t('dashboard.kyc.descRequired')}
                         </p>
                       </div>
                     </div>
@@ -893,10 +893,10 @@ const Dashboard = () => {
                         {/* Progress Steps */}
                         <div className="flex items-center justify-between mb-8">
                           {[
-                            { id: 'country', label: 'Country', icon: Globe },
-                            { id: 'method', label: 'Method', icon: CreditCard },
-                            { id: 'document', label: 'Document', icon: FileText },
-                            { id: 'review', label: 'Review', icon: CheckCircle2 },
+                            { id: 'country', label: t('dashboard.kyc.stepCountry'), icon: Globe },
+                            { id: 'method', label: t('dashboard.kyc.stepMethod'), icon: CreditCard },
+                            { id: 'document', label: t('dashboard.kyc.stepDocument'), icon: FileText },
+                            { id: 'review', label: t('dashboard.kyc.stepReview'), icon: CheckCircle2 },
                           ].map((step, i) => (
                             <React.Fragment key={step.id}>
                               <div className="flex flex-col items-center">
@@ -938,8 +938,8 @@ const Dashboard = () => {
                         {kycStep === 'country' && (
                           <div className="space-y-6">
                             <div>
-                              <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">Select Your Country</h3>
-                              <p className="text-[11px] text-slate-400">Choose the country that issued your identity document.</p>
+                              <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">{t('dashboard.kyc.selectCountry')}</h3>
+                              <p className="text-[11px] text-slate-400">{t('dashboard.kyc.selectCountryDesc')}</p>
                             </div>
                             <div className="relative">
                               <button
@@ -947,7 +947,7 @@ const Dashboard = () => {
                                 className="w-full flex items-center justify-between p-4 bg-white/5 border border-white/10 hover:border-[#D4AF37]/30 transition-colors"
                               >
                                 <span className="text-[12px] font-medium">
-                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${getCountryByCode(selectedCountry)?.name}` : 'Select a country...'}
+                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${getCountryByCode(selectedCountry)?.name}` : t('dashboard.kyc.selectCountryPlaceholder')}
                                 </span>
                                 <ChevronDown size={16} className={cn("text-slate-400 transition-transform", countryDropdownOpen && "rotate-180")} />
                               </button>
@@ -989,8 +989,8 @@ const Dashboard = () => {
                                 <ChevronLeft size={20} />
                               </button>
                               <div>
-                                <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">Select Verification Method</h3>
-                                <p className="text-[11px] text-slate-400">Choose how you want to verify your identity for {countryData.name}.</p>
+                                <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">{t('dashboard.kyc.selectMethod')}</h3>
+                                <p className="text-[11px] text-slate-400">{t('dashboard.kyc.selectMethodDesc', { country: countryData.name })}</p>
                               </div>
                             </div>
                             <div className="space-y-3">
@@ -1024,8 +1024,8 @@ const Dashboard = () => {
                                 <ChevronLeft size={20} />
                               </button>
                               <div>
-                                <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">Upload Your Document</h3>
-                                <p className="text-[11px] text-slate-400">Select and upload one valid document from the options below.</p>
+                                <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">{t('dashboard.kyc.uploadDocument')}</h3>
+                                <p className="text-[11px] text-slate-400">{t('dashboard.kyc.uploadDocumentDesc')}</p>
                               </div>
                             </div>
                             
@@ -1070,7 +1070,7 @@ const Dashboard = () => {
                                   ) : (
                                     <div className="space-y-2">
                                       <Upload size={32} className="mx-auto text-slate-600" />
-                                      <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Click to upload or drag and drop</p>
+                                      <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.kyc.clickToUpload')}</p>
                                       <p className="text-[9px] text-slate-600">PNG, JPG, PDF up to 10MB</p>
                                     </div>
                                   )}
@@ -1084,7 +1084,7 @@ const Dashboard = () => {
                               className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-50"
                             >
                               {submittingKyc ? <Loader2 className="animate-spin mr-2" /> : <Upload size={16} className="mr-2" />}
-                              {submittingKyc ? 'Submitting...' : 'Submit for Verification'}
+                              {submittingKyc ? t('dashboard.kyc.submitting') : t('dashboard.kyc.submitForVerification')}
                             </Button>
                           </div>
                         )}
@@ -1093,13 +1093,13 @@ const Dashboard = () => {
 
                     {/* Verification Steps - Simplified */}
                     <div className="bg-[#1A1A1A] border border-white/10 p-8">
-                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Verification Progress</h3>
+                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">{t('dashboard.kyc.progressTitle')}</h3>
                       <div className="space-y-4">
                         {[
-                          { step: 'Email Verification', status: user?.email_confirmed_at ? 'approved' : 'pending' },
-                          { step: 'Identity Document', status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : selectedCountry ? 'submitted' : 'pending' },
-                          { step: 'Compliance Review', status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : 'pending' },
-                          { step: 'Account Activation', status: kycStatus === 'approved' ? 'approved' : 'pending' },
+                          { step: t('dashboard.kyc.stepEmailVerification'), status: user?.email_confirmed_at ? 'approved' : 'pending' },
+                          { step: t('dashboard.kyc.stepIdentityDocument'), status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : selectedCountry ? 'submitted' : 'pending' },
+                          { step: t('dashboard.kyc.stepComplianceReview'), status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : 'pending' },
+                          { step: t('dashboard.kyc.stepAccountActivation'), status: kycStatus === 'approved' ? 'approved' : 'pending' },
                         ].map((item, i) => (
                           <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5">
                             {item.status === 'approved' && <CheckCircle2 size={16} className="text-emerald-500" />}
@@ -1112,7 +1112,7 @@ const Dashboard = () => {
                               item.status === 'submitted' ? 'text-yellow-500' :
                               item.status === 'rejected' ? 'text-red-500' : 'text-slate-500'
                             )}>
-                              {item.status === 'submitted' ? 'In Progress' : item.status === 'approved' ? 'Complete' : 'Pending'}
+                              {item.status === 'submitted' ? t('dashboard.kyc.statusInProgress') : item.status === 'approved' ? t('dashboard.kyc.statusComplete') : t('dashboard.kyc.statusPending')}
                             </span>
                           </div>
                         ))}
@@ -1145,7 +1145,7 @@ const Dashboard = () => {
                           <div className="w-32 h-32 mx-auto bg-white/5 border border-white/10 flex items-center justify-center mb-4">
                             <p className="text-[9px] text-slate-500 uppercase">QR Code</p>
                           </div>
-                          <p className="text-[9px] text-slate-500">Scan with your authenticator app</p>
+                          <p className="text-[9px] text-slate-500">{t('dashboard.kyc.scanAuthenticator')}</p>
                         </div>
 
                         <Input placeholder={t('dashboard.verificationCodePlaceholder')} className="bg-white/5 border-white/10 rounded-none h-14 text-center text-[18px] font-mono tracking-[0.5em] text-white" />
@@ -1162,13 +1162,13 @@ const Dashboard = () => {
                             <KeyRound size={24} className="text-slate-400" />
                           </div>
                           <div>
-                            <h4 className="text-[11px] font-bold uppercase tracking-widest">Change Password</h4>
-                            <p className="text-[9px] text-slate-500 uppercase tracking-widest">Update your credentials</p>
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest">{t('dashboard.kyc.changePassword')}</h4>
+                            <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('dashboard.kyc.updateCredentials')}</p>
                           </div>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">New Password</label>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.kyc.newPassword')}</label>
                           <div className="relative">
                             <Input
                               type={showNewPassword ? 'text' : 'password'}
@@ -1188,7 +1188,7 @@ const Dashboard = () => {
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Confirm New Password</label>
+                          <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.kyc.confirmNewPassword')}</label>
                           <Input
                             type="password"
                             value={confirmNewPassword}
@@ -1216,25 +1216,25 @@ const Dashboard = () => {
                           <CheckCircle2 size={24} className="text-emerald-500" />
                         </div>
                         <div>
-                          <h4 className="text-[11px] font-bold uppercase tracking-widest">Email Verification</h4>
-                          <p className="text-[9px] text-emerald-500 uppercase tracking-widest">Verified</p>
+                          <h4 className="text-[11px] font-bold uppercase tracking-widest">{t('dashboard.kyc.emailVerification')}</h4>
+                          <p className="text-[9px] text-emerald-500 uppercase tracking-widest">{t('dashboard.kyc.verified')}</p>
                         </div>
                       </div>
 
                       <div className="p-4 bg-white/[0.02] border border-white/5">
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">Verified Email</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-1">{t('dashboard.kyc.verifiedEmail')}</p>
                         <p className="text-[12px] text-white">{user?.email}</p>
                       </div>
                     </div>
 
                     {/* Security Log */}
                     <div className="bg-[#1A1A1A] border border-white/10 p-8">
-                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">Security Activity Log</h3>
+                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">{t('dashboard.kyc.securityActivityLog')}</h3>
                       <div className="space-y-3">
                         {mockSecurityLog.map((log, i) => (
                           <div key={i} className="flex justify-between items-center p-4 bg-white/[0.02] border border-white/5">
-                            <span className="text-[10px] text-slate-300">{log.event}</span>
-                            <span className="text-[9px] text-slate-500">{log.time}</span>
+                            <span className="text-[10px] text-slate-300">{t(log.eventKey)}</span>
+                            <span className="text-[9px] text-slate-500">{t(log.timeKey, { count: log.count })}</span>
                           </div>
                         ))}
                       </div>
