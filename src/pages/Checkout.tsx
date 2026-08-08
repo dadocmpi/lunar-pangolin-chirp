@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { LogoVisa, LogoMastercard } from '@/components/LogoVault';
 import { getCurrencyByCountry, convertFromUSD, formatCurrency, countryCurrencyMap } from '@/services/currencyService';
+import { useCurrency } from '@/hooks/useCurrency';
 
 // Lista completa de países do mundo com DDI e traduções
 const countries = [
@@ -276,6 +277,7 @@ const Checkout = () => {
 
   // Moeda Wise detetada pelo país do cliente (via IP) — fallback USD
   const [wiseCurrency, setWiseCurrency] = useState('USD');
+  const { currency: userCurrency } = useCurrency();
   const wiseAccount = wiseAccountsByCurrency[wiseCurrency] || wiseAccountsByCurrency.USD;
   const wiseCurrencySymbol = (() => {
     const info = Object.values(countryCurrencyMap).find(c => c.currency === wiseCurrency);
@@ -318,7 +320,7 @@ const Checkout = () => {
     }
   };
 
-  const numericPrice = plan.price.replace(/[^0-9.]/g, '');
+  const numericPrice = String(plan.priceUSD ?? plan.price.replace(/[^0-9.]/g, ''));
 
   // Países filtrados pela busca (por nome ou DDI)
   const filteredCountries = useMemo(() => {
@@ -531,7 +533,7 @@ const Checkout = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t('checkout.managedCapital')}</span>
-                      <span className="text-white">{plan.accountSize} USD</span>
+                      <span className="text-white">{plan.accountSize} {userCurrency}</span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t('checkout.setupFee')}</span>
@@ -838,6 +840,7 @@ const Checkout = () => {
                         {wiseCurrency !== 'USD' && (
                           <p className="text-[8px] text-slate-600 mt-1">≈ {plan.price} USD</p>
                         )}
+                        <p className="text-[9px] text-[#12B488] font-bold mt-2">{t('checkout.sendExactAmount')}</p>
                         <p className="text-[8px] text-slate-600 mt-1">{t('checkout.paymentReference')}</p>
                       </div>
 

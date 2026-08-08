@@ -46,9 +46,11 @@ import { showError, showSuccess } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { countriesData, getCountryByCode } from '@/data/kycData';
+import { useCurrency } from '@/hooks/useCurrency';
 
 const Dashboard = () => {
   const { t } = useTranslation();
+  const { convertPrice, currency } = useCurrency();
   const [activeView, setActiveView] = useState('services');
   const [settingsTab, setSettingsTab] = useState('profile');
   const [loading, setLoading] = useState(true);
@@ -496,7 +498,7 @@ const Dashboard = () => {
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.balance')}</p>
                     <p className="text-xl md:text-2xl font-serif font-bold text-white">
-                      ${services.reduce((acc, s) => acc + parseFloat(s.balance || 0), 0).toLocaleString()}
+                      {convertPrice(services.reduce((acc, s) => acc + parseFloat(s.balance || 0), 0))}
                     </p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
@@ -535,7 +537,7 @@ const Dashboard = () => {
                         </div>
                         <div className="space-y-1">
                           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.balance')}</p>
-                          <p className="text-2xl font-serif font-bold text-[#D4AF37]">${parseFloat(service.balance).toLocaleString()}</p>
+                          <p className="text-2xl font-serif font-bold text-[#D4AF37]">{convertPrice(parseFloat(service.balance))}</p>
                         </div>
                       </div>
                     ))}
@@ -555,14 +557,14 @@ const Dashboard = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.balance')}</p>
-                    <p className="text-xl font-serif font-bold text-white">${services.reduce((acc, s) => acc + parseFloat(s.balance || 0), 0).toLocaleString()}</p>
+                    <p className="text-xl font-serif font-bold text-white">{convertPrice(services.reduce((acc, s) => acc + parseFloat(s.balance || 0), 0))}</p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingUp size={12} className="text-emerald-500" />
                       <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.totalProfit')}</p>
                     </div>
-                    <p className="text-xl font-serif font-bold text-emerald-500">+$3,240.00</p>
+                    <p className="text-xl font-serif font-bold text-emerald-500">+{convertPrice(3240)}</p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <div className="flex items-center gap-2 mb-2">
@@ -664,7 +666,7 @@ const Dashboard = () => {
                           </div>
                           <div className="text-right">
                             <p className={cn("text-sm font-bold", tx.type === 'withdrawal' ? "text-red-400" : "text-emerald-500")}>
-                              {tx.type === 'withdrawal' ? '-' : '+'}${tx.amount.toLocaleString()}
+                              {tx.type === 'withdrawal' ? '-' : '+'}{convertPrice(tx.amount)}
                             </p>
                             {tx.hash && (
                               <div className="flex items-center gap-1 text-[8px] text-slate-500 mt-1">
