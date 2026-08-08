@@ -226,17 +226,38 @@ export function formatCurrency(amount: number, currency: string, symbol: string)
   return `${symbol}${formatted}`;
 }
 
-// Get user's country from IP
+// Get user's country from IP (uses HTTPS-compatible APIs since the site runs on HTTPS)
 export async function getUserCountry(): Promise<string> {
+  // Check cache first
   try {
-    // Use a free IP geolocation API
-    const response = await fetch('https://ip-api.com/json/?fields=countryCode');
-    const data = await response.json();
-    return data.countryCode || 'US';
-  } catch (error) {
-    console.error('Error fetching user country:', error);
-    return 'US'; // Default to US if there's an error
+    const cached = sessionStorage.getItem('userCountry_v2');
+    if (cached) return cached;
+  } catch {
+    // ignore
   }
+
+  // Try multiple HTTPS-compatible geolocation APIs (free, no key)
+  const apis = [
+    'https://ipwho.is/?fields=country_code',
+    'https://ipapi.co/json/',
+  ];
+
+  for (const url of apis) {
+    try {
+      const response = await fetch(url);
+      if (!response.ok) continue;
+      const data = await response.json();
+      // ipwho.is returns country_code; ipapi.co returns country_code too
+      const code = data.country_code || data.countryCode;
+      if (code && /^[A-Z]{2}$/.test(code)) {
+        return code;
+      }
+    } catch {
+      // try next API
+    }
+  }
+
+  return 'US'; // Default to US if all APIs fail
 }
 
 // Convert price based on user's country

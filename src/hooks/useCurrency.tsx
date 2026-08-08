@@ -40,8 +40,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         setCurrencyInfo(info);
         
         // Store in session for persistence
-        sessionStorage.setItem('userCountry', country);
-        sessionStorage.setItem('userCurrency', JSON.stringify(info));
+        sessionStorage.setItem('userCountry_v2', country);
+        sessionStorage.setItem('userCurrency_v2', JSON.stringify(info));
       } catch (error) {
         console.error('Error detecting country:', error);
       } finally {
@@ -54,8 +54,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     fetchLiveExchangeRates().then(() => setRatesReady(true)).catch(() => setRatesReady(true));
 
     // Check if we already have cached country info
-    const cachedCountry = sessionStorage.getItem('userCountry');
-    const cachedInfo = sessionStorage.getItem('userCurrency');
+    const cachedCountry = sessionStorage.getItem('userCountry_v2');
+    const cachedInfo = sessionStorage.getItem('userCurrency_v2');
 
     if (cachedCountry && cachedInfo) {
       setCountryCode(cachedCountry);
