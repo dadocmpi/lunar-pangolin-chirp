@@ -30,6 +30,7 @@ const Pricing = () => {
       id: "starter",
       name: t('plans.starter'),
       price: convertPrice(PRICES_USD.starter.monthly),
+      priceUSD: PRICES_USD.starter.monthly,
       accountSize: convertPrice(PRICES_USD.starter.account),
       iconType: "zap",
       features: [
@@ -43,6 +44,7 @@ const Pricing = () => {
       id: "pro",
       name: t('plans.pro'),
       price: convertPrice(PRICES_USD.pro.monthly),
+      priceUSD: PRICES_USD.pro.monthly,
       accountSize: convertPrice(PRICES_USD.pro.account),
       iconType: "award",
       features: [
@@ -56,6 +58,7 @@ const Pricing = () => {
       id: "advanced",
       name: t('plans.advanced'),
       price: convertPrice(PRICES_USD.advanced.monthly),
+      priceUSD: PRICES_USD.advanced.monthly,
       accountSize: convertPrice(PRICES_USD.advanced.account),
       iconType: "shield",
       features: [
@@ -68,6 +71,7 @@ const Pricing = () => {
       id: "elite",
       name: t('plans.elite'),
       price: convertPrice(PRICES_USD.elite.monthly),
+      priceUSD: PRICES_USD.elite.monthly,
       accountSize: convertPrice(PRICES_USD.elite.account),
       iconType: "crown",
       features: [
