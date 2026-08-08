@@ -28,6 +28,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { LogoVisa, LogoMastercard } from '@/components/LogoVault';
+import { getCurrencyByCountry, convertFromUSD, formatCurrency, countryCurrencyMap } from '@/services/currencyService';
 
 // Lista completa de países do mundo com DDI e traduções
 const countries = [
@@ -97,18 +98,151 @@ const getCountryName = (country: any, lang: string): string => {
   return country[nameKey] || country.name;
 };
 
-// Dados bancários Wise para receber transferências
-const wiseAccount = {
-  holderName: "YOUR_NAME_HERE",
-  email: "your-wise-email@example.com",
-  bankName: "Community Federal Savings Bank",
-  accountType: "Checking",
-  routingNumber: "XXXXXXXXX",
-  accountNumber: "XXXXXXXXXXXX",
-  iban: "XXXXXXXXXXXXXXXXXX",
-  swift: "XXXXXX",
-  address: "1045 Avenue of the Americas, New York, NY 10018",
-  currency: "USD"
+// Dados bancários Wise por moeda (detetada via IP do cliente)
+// Cada conta tem: holder, bankName, address, swift, e campos variáveis conforme a moeda
+interface WiseAccount {
+  currency: string;
+  holderName: string;
+  bankName: string;
+  address: string;
+  swift: string;
+  iban?: string;
+  accountNumber?: string;
+  sortCode?: string;      // GBP
+  routingNumber?: string; // USD
+  bsbCode?: string;       // AUD
+  institutionNumber?: string; // CAD
+  transitNumber?: string;     // CAD
+  bankCode?: string;          // SGD
+}
+
+const WISE_HOLDER = "Jorge Antonio Soares de Moura Sedeh";
+
+const wiseAccountsByCurrency: Record<string, WiseAccount> = {
+  EUR: {
+    currency: 'EUR',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise',
+    address: 'Rue du Trône 100, 3rd floor, Brussels, 1050, Belgium',
+    swift: 'TRWIBEB1XXX',
+    iban: 'BE37905875902428',
+    accountNumber: 'BE37905875902428',
+  },
+  GBP: {
+    currency: 'GBP',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise Payments Limited',
+    address: 'Worship Square, 65 Clifton Street, London, EC2A 4JE, United Kingdom',
+    swift: 'TRWIGB2LXXX',
+    iban: 'GB39TRWI60846485814873',
+    accountNumber: '85814873',
+    sortCode: '608464',
+  },
+  USD: {
+    currency: 'USD',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise US Inc',
+    address: '108 W 13th St, Wilmington, DE, 19801, United States',
+    swift: 'TRWIUS35XXX',
+    accountNumber: '217790292926',
+    routingNumber: '101019628',
+  },
+  AED: {
+    currency: 'AED',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise Payments Limited',
+    address: 'Worship Square, 65 Clifton Street, London, EC2A 4JE, United Kingdom',
+    swift: 'TRWIGB2LXXX',
+    iban: 'GB39TRWI60846485814873',
+    accountNumber: 'GB39TRWI60846485814873',
+  },
+  AUD: {
+    currency: 'AUD',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise Australia Pty Ltd',
+    address: 'Suite 1, Level 11, 66 Goulburn Street, Sydney, NSW, 2000, Australia',
+    swift: 'TRWIAUS1XXX',
+    accountNumber: '246629038',
+    bsbCode: '774001',
+  },
+  CAD: {
+    currency: 'CAD',
+    holderName: WISE_HOLDER,
+    bankName: 'Peoples Trust',
+    address: '595 Burrard Street, Vancouver, BC, V7X 1L7, Canada',
+    swift: 'TRWICAW1XXX',
+    accountNumber: '200117768144',
+    institutionNumber: '621',
+    transitNumber: '16001',
+  },
+  HUF: {
+    currency: 'HUF',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise',
+    address: 'Rue du Trône 100, 3rd floor, Brussels, 1050, Belgium',
+    swift: 'TRWIBEBBXXX',
+    iban: 'HU04126000161862148556298706',
+    accountNumber: '12600016-18621485-56298706',
+  },
+  ILS: {
+    currency: 'ILS',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise Payments Limited',
+    address: 'Worship Square, 65 Clifton Street, London, EC2A 4JE, United Kingdom',
+    swift: 'TRWIGB2LXXX',
+    iban: 'GB39TRWI60846485814873',
+    accountNumber: 'GB39TRWI60846485814873',
+  },
+  JPY: {
+    currency: 'JPY',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise Payments Limited',
+    address: 'Worship Square, 65 Clifton Street, London, EC2A 4JE, United Kingdom',
+    swift: 'TRWIGB2LXXX',
+    iban: 'GB39TRWI60846485814873',
+    accountNumber: 'GB39TRWI60846485814873',
+  },
+  NZD: {
+    currency: 'NZD',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise Payments New Zealand Ltd.',
+    address: 'Level 11, 41 Shortland Street, Auckland, 1010, New Zealand',
+    swift: 'TRWINZ21XXX',
+    accountNumber: '04-2021-0415212-83',
+  },
+  SGD: {
+    currency: 'SGD',
+    holderName: WISE_HOLDER,
+    bankName: 'Wise Asia-Pacific Pte. Ltd.',
+    address: '2 Tanjong Katong Road, #07-01, PLQ3, Singapore, 437161, Singapore',
+    swift: 'TRWISGSGXXX',
+    accountNumber: '307-529-27',
+    bankCode: '0516',
+  },
+};
+
+// Lista de moedas disponíveis para o cliente escolher (se a detetada não servir)
+const wiseCurrencyOptions = Object.keys(wiseAccountsByCurrency);
+
+// Campo de dados bancários reutilizável (label + valor + botão copiar)
+const BankField = ({ label, value, mono, onCopy }: {
+  label: string;
+  value?: string;
+  mono: boolean;
+  onCopy: (text: string) => void;
+}) => {
+  if (!value) return null;
+  return (
+    <div className="space-y-1">
+      <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{label}</label>
+      <div className="flex items-center justify-between">
+        <p className={`text-[10px] text-white break-all ${mono ? 'font-mono' : ''}`}>{value}</p>
+        <button onClick={() => onCopy(value)} className="text-slate-500 hover:text-[#12B488] transition-colors shrink-0 ml-2">
+          <Copy size={12} />
+        </button>
+      </div>
+    </div>
+  );
 };
 
 const Checkout = () => {
@@ -140,6 +274,14 @@ const Checkout = () => {
   // Dados da cripto
   const [selectedCrypto, setSelectedCrypto] = useState(cryptoNetworks[0]);
 
+  // Moeda Wise detetada pelo país do cliente (via IP) — fallback USD
+  const [wiseCurrency, setWiseCurrency] = useState('USD');
+  const wiseAccount = wiseAccountsByCurrency[wiseCurrency] || wiseAccountsByCurrency.USD;
+  const wiseCurrencySymbol = (() => {
+    const info = Object.values(countryCurrencyMap).find(c => c.currency === wiseCurrency);
+    return info?.symbol || '';
+  })();
+
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -153,7 +295,7 @@ const Checkout = () => {
     detectUserCountry();
   }, [plan, navigate]);
 
-  // Detectar país do usuário por IP
+  // Detectar país do usuário por IP e ligar à moeda da conta Wise
   const detectUserCountry = async () => {
     try {
       const response = await fetch('https://ipapi.co/json/');
@@ -162,6 +304,13 @@ const Checkout = () => {
         const userCountry = countries.find(c => c.code === data.country_code);
         if (userCountry) {
           setSelectedCountry(userCountry);
+        }
+        // Determina a moeda Wise consoante o país do cliente
+        const detectedCurrency = getCurrencyByCountry(data.country_code).currency;
+        if (wiseAccountsByCurrency[detectedCurrency]) {
+          setWiseCurrency(detectedCurrency);
+        } else {
+          setWiseCurrency('USD');
         }
       }
     } catch (error) {
@@ -310,13 +459,14 @@ const Checkout = () => {
           planName: plan.name,
           accountSize: plan.accountSize,
           amount: plan.price,
+          currency: wiseCurrency,
           paymentMethod: 'Wise Transfer'
         })
       });
 
       const result = await response.json();
       
-      if (result.status === 'success') {
+      if (result.status === 'success' || result.status === 'pending') {
         showSuccess(t('checkout.wisePaymentSuccess') || "Payment confirmed! Your account is being set up.");
         setTimeout(() => navigate('/dashboard'), 2000);
       } else {
@@ -591,8 +741,6 @@ const Checkout = () => {
                         </a>
                       </div>
 
-                      <div className="space-y-2">
-
                       <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30">
                         <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]">{t('checkout.important')}</p>
                         <p className="text-[8px] text-slate-500 mt-1">{t('checkout.cryptoNote')}</p>
@@ -626,95 +774,70 @@ const Checkout = () => {
                         </ol>
                       </div>
 
-                      {/* Dados Bancários */}
+                      {/* Dados Bancários — dinâmicos consoante a moeda do cliente */}
                       <div className="p-4 bg-white/[0.02] border border-white/10 space-y-4">
                         <div className="flex items-center justify-between pb-3 border-b border-white/5">
                           <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('checkout.bankDetails')}</span>
-                          <span className="text-[8px] text-[#12B488] font-bold bg-[#12B488]/10 px-2 py-1">{wiseAccount.currency}</span>
+                          {/* Seletor de moeda — detetado por IP, mas o cliente pode trocar */}
+                          <select
+                            value={wiseCurrency}
+                            onChange={(e) => setWiseCurrency(e.target.value)}
+                            className="text-[8px] text-[#12B488] font-bold bg-[#12B488]/10 px-2 py-1 border-none outline-none cursor-pointer rounded"
+                          >
+                            {wiseCurrencyOptions.map((cur) => (
+                              <option key={cur} value={cur} className="bg-[#05070A] text-white">{cur}</option>
+                            ))}
+                          </select>
                         </div>
 
                         {/* Account Holder */}
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.accountHolder')}</label>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[10px] text-white">{wiseAccount.holderName}</p>
-                            <button onClick={() => copyToClipboard(wiseAccount.holderName)} className="text-slate-500 hover:text-[#12B488] transition-colors">
-                              <Copy size={12} />
-                            </button>
-                          </div>
-                        </div>
-
+                        <BankField label={t('checkout.accountHolder')} value={wiseAccount.holderName} mono={false} onCopy={copyToClipboard} />
                         {/* Bank Name */}
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.bankName')}</label>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[10px] text-white">{wiseAccount.bankName}</p>
-                            <button onClick={() => copyToClipboard(wiseAccount.bankName)} className="text-slate-500 hover:text-[#12B488] transition-colors">
-                              <Copy size={12} />
-                            </button>
-                          </div>
-                        </div>
+                        <BankField label={t('checkout.bankName')} value={wiseAccount.bankName} mono={false} onCopy={copyToClipboard} />
 
-                        {/* Routing Number */}
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.routingNumber')}</label>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-mono text-white">{wiseAccount.routingNumber}</p>
-                            <button onClick={() => copyToClipboard(wiseAccount.routingNumber)} className="text-slate-500 hover:text-[#12B488] transition-colors">
-                              <Copy size={12} />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Account Number */}
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.accountNumber')}</label>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-mono text-white">{wiseAccount.accountNumber}</p>
-                            <button onClick={() => copyToClipboard(wiseAccount.accountNumber)} className="text-slate-500 hover:text-[#12B488] transition-colors">
-                              <Copy size={12} />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* IBAN */}
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">IBAN</label>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-mono text-white">{wiseAccount.iban}</p>
-                            <button onClick={() => copyToClipboard(wiseAccount.iban)} className="text-slate-500 hover:text-[#12B488] transition-colors">
-                              <Copy size={12} />
-                            </button>
-                          </div>
-                        </div>
+                        {/* Campos específicos por moeda */}
+                        {wiseAccount.iban && (
+                          <BankField label="IBAN" value={wiseAccount.iban} mono onCopy={copyToClipboard} />
+                        )}
+                        {wiseAccount.sortCode && (
+                          <BankField label={t('checkout.sortCode') || 'Sort Code'} value={wiseAccount.sortCode} mono onCopy={copyToClipboard} />
+                        )}
+                        {wiseAccount.routingNumber && (
+                          <BankField label={t('checkout.routingNumber')} value={wiseAccount.routingNumber} mono onCopy={copyToClipboard} />
+                        )}
+                        {wiseAccount.bsbCode && (
+                          <BankField label={t('checkout.bsbCode') || 'BSB Code'} value={wiseAccount.bsbCode} mono onCopy={copyToClipboard} />
+                        )}
+                        {wiseAccount.institutionNumber && (
+                          <BankField label={t('checkout.institutionNumber') || 'Institution Number'} value={wiseAccount.institutionNumber} mono onCopy={copyToClipboard} />
+                        )}
+                        {wiseAccount.transitNumber && (
+                          <BankField label={t('checkout.transitNumber') || 'Transit Number'} value={wiseAccount.transitNumber} mono onCopy={copyToClipboard} />
+                        )}
+                        {wiseAccount.bankCode && (
+                          <BankField label={t('checkout.bankCode') || 'Bank Code'} value={wiseAccount.bankCode} mono onCopy={copyToClipboard} />
+                        )}
+                        {wiseAccount.accountNumber && (
+                          <BankField label={t('checkout.accountNumber')} value={wiseAccount.accountNumber} mono onCopy={copyToClipboard} />
+                        )}
 
                         {/* SWIFT/BIC */}
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">SWIFT / BIC</label>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-mono text-white">{wiseAccount.swift}</p>
-                            <button onClick={() => copyToClipboard(wiseAccount.swift)} className="text-slate-500 hover:text-[#12B488] transition-colors">
-                              <Copy size={12} />
-                            </button>
-                          </div>
-                        </div>
-
+                        <BankField label="SWIFT / BIC" value={wiseAccount.swift} mono onCopy={copyToClipboard} />
                         {/* Address */}
-                        <div className="space-y-1">
-                          <label className="text-[8px] font-bold uppercase tracking-widest text-slate-600">{t('checkout.bankAddress')}</label>
-                          <div className="flex items-center justify-between">
-                            <p className="text-[10px] text-white">{wiseAccount.address}</p>
-                            <button onClick={() => copyToClipboard(wiseAccount.address)} className="text-slate-500 hover:text-[#12B488] transition-colors">
-                              <Copy size={12} />
-                            </button>
-                          </div>
-                        </div>
+                        <BankField label={t('checkout.bankAddress')} value={wiseAccount.address} mono={false} onCopy={copyToClipboard} />
                       </div>
 
-                      {/* Montante */}
+                      {/* Montante — convertido para a moeda selecionada */}
                       <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
                         <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.amountToSend')}</p>
-                        <p className="text-2xl font-bold text-[#12B488]">{plan.price}</p>
+                        <p className="text-2xl font-bold text-[#12B488]">
+                          {wiseCurrency === 'USD'
+                            ? plan.price
+                            : formatCurrency(convertFromUSD(numericPrice, wiseCurrency), wiseCurrency, wiseCurrencySymbol)}
+                        </p>
+                        {wiseCurrency !== 'USD' && (
+                          <p className="text-[8px] text-slate-600 mt-1">≈ {plan.price} USD</p>
+                        )}
                         <p className="text-[8px] text-slate-600 mt-1">{t('checkout.paymentReference')}</p>
                       </div>
 
