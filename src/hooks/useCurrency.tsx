@@ -4,6 +4,7 @@ import {
   getCurrencyByCountry,
   convertFromUSD,
   formatCurrency,
+  fetchLiveExchangeRates,
   countryCurrencyMap
 } from '@/services/currencyService';
 
@@ -13,6 +14,7 @@ interface CurrencyContextType {
   symbol: string;
   currencyName: string;
   isLoading: boolean;
+  ratesReady: boolean;
   convertPrice: (amountUSD: number) => string;
   convertPriceValue: (amountUSD: number) => number;
 }
@@ -27,6 +29,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     name: 'US Dollar'
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [ratesReady, setRatesReady] = useState(false);
 
   useEffect(() => {
     const detectCountry = async () => {
@@ -45,6 +48,10 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         setIsLoading(false);
       }
     };
+
+    // Fetch live exchange rates (cached 1h). Triggers a re-render once loaded
+    // so prices recompute with real-time rates.
+    fetchLiveExchangeRates().then(() => setRatesReady(true)).catch(() => setRatesReady(true));
 
     // Check if we already have cached country info
     const cachedCountry = sessionStorage.getItem('userCountry');
@@ -76,6 +83,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         symbol: currencyInfo.symbol,
         currencyName: currencyInfo.name,
         isLoading,
+        ratesReady,
         convertPrice,
         convertPriceValue,
       }}
