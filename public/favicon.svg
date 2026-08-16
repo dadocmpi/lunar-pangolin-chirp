@@ -1,17 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
-  <!-- Dark Solid Background for visibility on all browser themes -->
-  <rect width="512" height="512" rx="96" fill="#0A0A0A"/>
-  
-  <!-- Outer Hexagon -->
-  <polygon points="256,45 445,154 445,358 256,467 67,358 67,154" stroke="#FFFFFF" stroke-width="16" stroke-linejoin="round" stroke-linecap="round"/>
-  
-  <!-- Inner Hexagon -->
-  <polygon points="256,98 395,178 395,334 256,414 117,334 117,178" stroke="#FFFFFF" stroke-width="11" stroke-linejoin="round" stroke-linecap="round"/>
-  
-  <!-- Stylized Letter B with cutouts -->
-  <path d="M 188 175 L 288 175 Q 336 175 336 215 Q 336 242 308 251 Q 342 260 342 298 Q 342 337 288 337 L 188 337 Z 
-           M 228 206 L 228 240 L 278 240 Q 298 240 298 223 Q 298 206 278 206 Z 
-           M 228 272 L 228 306 L 282 306 Q 302 306 302 289 Q 302 272 282 272 Z" 
-        fill="#FFFFFF" 
-        fill-rule="evenodd"/>
+  <path
+    fill="#FFFFFF"
+    fill-rule="evenodd"
+    clip-rule="evenodd"
+    d="M256 16L465 136.6V375.4L256 496L47 375.4V136.6L256 16ZM256 70.8L418 164.3V347.7L256 441.2L94 347.7V164.3L256 70.8Z"
+  />
+  <path
+    fill="#FFFFFF"
+    fill-rule="evenodd"
+    clip-rule="evenodd"
+    d="M182 158H296L334 196V234L306 256L334 278V316L296 354H182V158ZM224 198V236H270L290 217L270 198H224ZM224 276V314H270L290 295L270 276H224Z"
+  />
 </svg>
