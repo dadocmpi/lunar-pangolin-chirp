@@ -72,29 +72,24 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
-  const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
-  const [logoError, setLogoError] = useState(false);
-
   return (
     <header className="fixed top-0 left-0 w-full h-24 bg-black/90 backdrop-blur-xl border-b border-white/5 z-[1000] px-6 md:px-12 flex items-center justify-between">
       <Link 
         to="/" 
         onClick={handleLogoClick}
-        className="flex items-center group"
+        className="flex items-center gap-3.5 group"
       >
-        {logoError ? (
-          <div className="h-14 md:h-16 w-auto flex items-center">
-            <span className="text-[#D4AF37] text-3xl md:text-4xl font-black tracking-tight">B</span>
-            <span className="text-white text-lg md:text-xl font-bold ml-2 tracking-wide">RAXEL</span>
-          </div>
-        ) : (
-          <img 
-            src={logoUrl} 
-            alt="Braxel Markets" 
-            className="h-14 md:h-16 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
-            onError={() => setLogoError(true)}
-          />
-        )}
+        <img 
+          src="/logo-white.svg" 
+          alt="Braxel Markets" 
+          className="h-10 md:h-12 w-auto object-contain transition-transform duration-500 group-hover:scale-105"
+        />
+        <div className="flex flex-col leading-none">
+          <span className="text-[18px] md:text-[20px] font-black text-white tracking-tighter font-sans">
+            BRAXEL
+          </span>
+          <span className="text-[#D4AF37] text-[8px] md:text-[9px] font-bold tracking-[0.3em]">MARKETS</span>
+        </div>
       </Link>
 
       <nav className="hidden lg:flex items-center gap-10">

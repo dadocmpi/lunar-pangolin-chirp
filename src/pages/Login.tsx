@@ -21,10 +21,7 @@ const Login = () => {
 
   const from = location.state?.from || '/dashboard';
   const plan = location.state?.plan;
-  const logoUrl = "https://image2url.com/r2/default/images/1773617984273-e9d2f7a5-3691-45a6-81e2-12c734f51a8f.png";
 
-  // On mount: if a valid Supabase session exists, go straight to dashboard.
-  // Sessions persist indefinitely via localStorage until the user clicks logout.
   useEffect(() => {
     const checkSession = async () => {
       try {
@@ -33,7 +30,6 @@ const Login = () => {
           navigate(from, { replace: true });
           return;
         }
-        // Pre-fill email if the user had "Remember Me" checked previously
         const savedEmail = localStorage.getItem('rememberedEmail');
         if (savedEmail) {
           setEmail(savedEmail);
@@ -67,14 +63,11 @@ const Login = () => {
         throw error;
       }
 
-      // Remember Me — just saves the email for next visit pre-fill.
-      // The session itself always persists until logout.
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);
       } else {
         localStorage.removeItem('rememberedEmail');
       }
-
 
       navigate(from, { state: { plan } });
     } catch (error: any) {
@@ -97,8 +90,8 @@ const Login = () => {
       <div className="hidden md:flex md:w-1/2 bg-black p-12 flex-col justify-between relative overflow-hidden border-r border-white/5">
         <div className="absolute inset-0 bg-gradient-to-br from-[#C5A059]/10 to-transparent opacity-50" />
         
-        <Link to="/" className="flex items-center gap-4 relative z-10">
-          <img src={logoUrl} alt="Braxel Markets" className="h-16 w-auto object-contain" />
+        <Link to="/" className="flex items-center gap-3.5 relative z-10">
+          <img src="/logo-white.svg" alt="Braxel Markets" className="h-12 w-auto object-contain" />
           <div className="flex flex-col leading-none">
             <span className="text-xl font-black tracking-tighter text-white">BRAXEL</span>
             <span className="text-[#C5A059] text-[8px] font-bold tracking-[0.2em]">MARKETS</span>
@@ -160,7 +153,6 @@ const Login = () => {
               </div>
             </div>
 
-            {/* Remember Me — saves email for pre-fill; session always persists until logout */}
             <div className="flex items-center gap-3">
               <button
                 type="button"

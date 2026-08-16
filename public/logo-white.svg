@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" fill="none">
+  <!-- Outer Hexagon -->
+  <polygon points="250,15 465,139 465,361 250,485 35,361 35,139" stroke="#FFFFFF" stroke-width="14" stroke-linejoin="round" stroke-linecap="round"/>
+  
+  <!-- Inner Hexagon -->
+  <polygon points="250,70 410,162 410,338 250,430 90,338 90,162" stroke="#FFFFFF" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
+  
+  <!-- Stylized Letter B with counters -->
+  <path d="M 175 160 L 285 160 Q 335 160 335 205 Q 335 235 305 245 Q 340 255 340 295 Q 340 340 285 340 L 175 340 Z 
+           M 218 195 L 218 232 L 275 232 Q 295 232 295 213.5 Q 295 195 275 195 Z 
+           M 218 268 L 218 305 L 280 305 Q 300 305 300 286.5 Q 300 268 280 268 Z" 
+        fill="#FFFFFF" 
+        fill-rule="evenodd"/>
+</svg>
