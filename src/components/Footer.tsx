@@ -2,8 +2,15 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, X, MapPin, AlertTriangle } from 'lucide-react';
+import { Mail, MapPin, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+// Logo oficial do X (antigo Twitter)
+const XIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -31,11 +38,21 @@ const Footer = () => {
               {t('footer.desc')}
             </p>
             <div className="flex items-center gap-4">
-              <a href="mailto:marketsbraxel@ouvidor.net" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
+              <a 
+                href="mailto:marketsbraxel@ouvidor.net" 
+                aria-label="Email"
+                className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all"
+              >
                 <Mail size={16} />
               </a>
-              <a href="#" className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all">
-                <X size={16} />
+              <a 
+                href="https://x.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                aria-label="X (Twitter)"
+                className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all"
+              >
+                <XIcon className="w-3.5 h-3.5" />
               </a>
             </div>
           </div>
