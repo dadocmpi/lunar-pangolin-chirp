@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
+import TeamCard from '@/components/TeamCard';
 
 const About = () => {
   const { t } = useTranslation();
@@ -84,31 +85,13 @@ const About = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5">
             {teamMembers.map((member, i) => (
-              <div key={i} className="p-12 bg-[#080B12] flex flex-col items-center text-center hover:bg-white/[0.02] transition-all group">
-                <div className="w-40 h-40 mb-8 rounded-full overflow-hidden bg-white/5 border border-white/10 group-hover:border-[#D4AF37]/40 transition-all">
-                  {member.photo ? (
-                    <img 
-                      src={member.photo} 
-                      alt={member.name} 
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Fallback if image fails to load
-                        const target = e.currentTarget;
-                        target.style.display = 'none';
-                        target.parentElement?.classList.add('flex', 'items-center', 'justify-center');
-                        const fallback = target.parentElement?.querySelector('.avatar-fallback');
-                        if (fallback) fallback.classList.remove('hidden');
-                      }}
-                    />
-                  ) : null}
-                  <div className="avatar-fallback hidden w-full h-full flex items-center justify-center text-[#D4AF37] text-4xl font-serif font-bold">
-                    {member.name.split(' ').map(n => n[0]).join('')}
-                  </div>
-                </div>
-                <h3 className="text-[14px] font-bold uppercase tracking-[0.15em] mb-2 text-white">{member.name}</h3>
-                <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#D4AF37] mb-6">{member.role}</p>
-                <p className="text-slate-500 text-[12px] leading-relaxed max-w-xs">{member.bio}</p>
-              </div>
+              <TeamCard 
+                key={i} 
+                name={member.name} 
+                role={member.role} 
+                bio={member.bio} 
+                photo={member.photo} 
+              />
             ))}
           </div>
         </section>
