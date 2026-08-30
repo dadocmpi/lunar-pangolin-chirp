@@ -39,7 +39,7 @@ const About = () => {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-px bg-white/5">
-            [{ label: t('about.stats.founded'), value: "2026", icon: <Landmark size={20} /> },
+            {[{ label: t('about.stats.founded'), value: "2026", icon: <Landmark size={20} /> },
             { label: t('about.stats.users'), value: "500+", icon: <Users size={20} /> },
             { label: t('about.stats.uptime'), value: "99.9%", icon: <Zap size={20} /> },
             { label: t('about.stats.support'), value: "24/7", icon: <Globe size={20} /> }].map((stat, i) => (
@@ -53,7 +53,7 @@ const About = () => {
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
-          [{ icon: <Target size={32} />, title: t('about.values.mission'), desc: t('about.values.missionDesc') },
+          {[{ icon: <Target size={32} />, title: t('about.values.mission'), desc: t('about.values.missionDesc') },
           { icon: <Eye size={32} />, title: t('about.values.vision'), desc: t('about.values.visionDesc') },
           { icon: <Shield size={32} />, title: t('about.values.values'), desc: t('about.values.valuesDesc') }].map((item, i) => (
             <div key={i} className="p-12 bg-[#080B12] flex flex-col items-center text-center hover:bg-white/[0.02] transition-all group">
