@@ -98,9 +98,9 @@ const enTranslation = {
   },
   stats: {
     volume: "Strategic Capital Management",
-    traders: "Active Accounts",
-    uptime: "Infrastructure Uptime",
-    latency: "Execution Precision"
+    traders: "500+ Active Accounts (unverified)",
+    uptime: "99.97% uptime (unverified)",
+    latency: "<1.8ms execution precision (unverified)"
   },
   methodology: {
     badge: "METHODOLOGY",
@@ -172,19 +172,19 @@ const enTranslation = {
   },
   plans: {
     starter: "STARTER 5K",
-    starterFeatures: "Automation, Account Management, Email Support, Controlled Risk",
+    starterFeatures: "Automation, account management, email support, and risk management protocols (not a guarantee of safety)",
     pro: "PRO 10K",
-    proFeatures: "Starter Features, Priority Support, Detailed Logs",
+    proFeatures: "Starter features, priority support, detailed logs (illustrative)",
     advanced: "ADVANCED 25K",
-    advancedFeatures: "Pro Features, Multi-Account, Weekly Reports",
+    advancedFeatures: "Pro features, multi-account support, weekly reports (illustrative)",
     elite: "ELITE 100K",
-    eliteFeatures: "Advanced Features, 24/7 Support, Dedicated Manager",
+    eliteFeatures: "Advanced features, support available 24/7 (response times may vary), access to a dedicated account manager (availability may vary)",
     managedCapital: "Managed Capital",
     features: {
       automation: "Automation",
       accountManagement: "Account Management",
       emailSupport: "Email Support",
-      controlledRisk: "Controlled Risk",
+      controlledRisk: "Risk management protocols (not a guarantee of safety)",
       starterFeatures: "Starter Features",
       prioritySupport: "Priority Support",
       detailedLogs: "Detailed Logs",
@@ -202,12 +202,12 @@ const enTranslation = {
     subtitle: "ARCHITECTURE",
     desc: "Our proprietary ecosystem is built for speed, security, and consistent performance.",
     steps: [
-      { title: "REGISTRATION", desc: "Create your institutional profile." },
-      { title: "DASHBOARD", desc: "Access your private management terminal." },
-      { title: "PLAN SELECTION", desc: "Choose your capital allocation tier." },
-      { title: "API DEPLOYMENT", desc: "Automated connection to global markets." },
-      { title: "EXECUTION", desc: "Millisecond algorithmic trade processing." },
-      { title: "REPORTING", desc: "Detailed weekly performance analytics." }
+      { title: "REGISTRATION", desc: "Create your profile (intended for institutional use)" },
+      { title: "DASHBOARD", desc: "Access your management terminal (intended for institutional use)" },
+      { title: "PLAN SELECTION", desc: "Choose your capital allocation tier (illustrative)" },
+      { title: "API DEPLOYMENT", desc: "Automated connection to global markets (unverified)" },
+      { title: "EXECUTION", desc: "Algorithmic trade processing with low latency (unverified)" },
+      { title: "REPORTING", desc: "Detailed weekly performance analytics (illustrative)" }
     ],
     cta: "READY TO DEPLOY?",
     ctaBtn: "JOIN THE NETWORK"
@@ -288,21 +288,21 @@ const enTranslation = {
   transparency: {
     badge: "RISK MANAGEMENT",
     title: "FULL TRANSPARENCY",
-    desc: "Our infrastructure combines monitoring, risk controls, and strict compliance standards to keep operations stable and capital protection protocols active.",
+    desc: "Our infrastructure combines monitoring, risk management protocols designed to reduce (not eliminate) risk — capital remains at risk, and strict compliance standards to keep operations stable.",
     warning: "Markets are volatile. Returns are never guaranteed and losses may occur even with robust safeguards.",
-    protocolTitle: "Institutional Protocol",
-    protocolDesc: "Our infrastructure follows strict compliance and risk management standards to ensure the highest level of operational security.",
+    protocolTitle: "Protocol designed for institutional use",
+    protocolDesc: "Our infrastructure follows strict compliance and risk management standards to aim for operational security (no guarantee).",
     connectivity: {
       title: "CONNECTIVITY",
-      desc: "Direct market access via Equinix data centers (NY5, LD4, TY3) with sub-millisecond connectivity to major exchanges."
+      desc: "Direct market access via Equinix data centers (NY5, LD4, TY3) with low-latency connectivity to major exchanges (unverified)."
     },
     cloud: {
       title: "CLOUD EXECUTION",
-      desc: "Redundant execution engines on AWS (us-east-1, eu-west-1) and Azure for failover resilience."
+      desc: "Redundant execution engines on AWS (us-east-1, eu-west-1) and Azure for failover resilience (unverified)."
     },
     security: {
       title: "SECURITY",
-      desc: "End-to-end encryption, SOC 2 Type II compliance and multi-layer authentication for all operations."
+      desc: "End-to-end encryption, SOC 2 Type II compliance and multi-layer authentication for all operations (unverified)."
     }
   },
   faq: {
@@ -321,13 +321,13 @@ const enTranslation = {
     title: "WHY BRAXEL MARKETS?",
     badge: "DIFFERENTIALS",
     t1: "Proprietary Tech",
-    d1: "Neural networks engineered for institutional-grade execution.",
+    d1: "Neural networks engineered for execution designed for institutional use (no guarantee of performance).",
     t2: "Full Automation",
     d2: "24/7 algorithmic management without human emotional bias.",
     t3: "Simplified Access",
-    d3: "Institutional infrastructure accessible through a retail-friendly terminal.",
+    d3: "Infrastructure designed for institutional use, accessible through a retail-friendly terminal (no guarantee of performance).",
     t4: "Professional Grade",
-    d4: "Direct connection to global liquidity pools with ultra-low latency."
+    d4: "Direct connection to global liquidity pools with low latency (unverified)."
   },
   signals: {
     title: "LIVE ALGORITHMIC",
