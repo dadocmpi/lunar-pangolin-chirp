@@ -58,28 +58,28 @@ const countries = [
   { code: 'CH', name: 'Switzerland', name_pt: 'Suíça', name_es: 'Suiza', name_it: 'Svizzera', name_fr: 'Suisse', name_de: 'Schweiz', name_ru: 'Швейцария', name_zh: '瑞士', name_ja: 'スイス', name_ar: 'سويسرا', name_he: 'שווייץ', ddi: '+41', flag: '🇨🇶' },
   { code: 'AT', name: 'Austria', name_pt: 'Áustria', name_es: 'Austria', name_it: 'Austria', name_fr: 'Autriche', name_de: 'Österreich', name_ru: 'Австрия', name_zh: '奥地利', name_ja: 'オーストリア', name_ar: 'النمسا', name_he: 'אוסטריה', ddi: '+43', flag: '🇦🇹' },
   { code: 'PL', name: 'Poland', name_pt: 'Polônia', name_es: 'Polonia', name_it: 'Polonia', name_fr: 'Pologne', name_de: 'Polen', name_ru: 'Польша', name_zh: '波兰', name_ja: 'ポーランド', name_ar: 'بولندا', name_he: 'פולין', ddi: '+48', flag: '🇵🇱' },
-  { code: 'SE', name: 'Sweden', name_pt: 'Suécia', name_es: 'Suecia', name_it: 'Svezia', name_fr: 'Suède', name_de: 'Schweden', name_ru: 'Швеция', name_zh: '瑞典', name_ja: 'スウェーデン', name_ar: 'السويد', name_he: 'שוודיה', ddi: '+46', flag: '🇸🇪' },
-  { code: 'NO', name: 'Norway', name_pt: 'Noruega', name_es: 'Noruega', name_it: 'Norvegia', name_fr: 'Norvège', name_de: 'Norwegen', name_ru: 'Норвегия', name_zh: '挪威', name_ja: 'ノルウェー', name_ar: 'النرويج', name_he: 'נורווגיה', ddi: '+47', flag: '🇳🇴' },
-  { code: 'DK', name: 'Denmark', name_pt: 'Dinamarca', name_es: 'Dinamarca', name_it: 'Danimarca', name_fr: 'Danemark', name_de: 'Dänemark', name_ru: 'Дания', name_zh: '丹麦', name_ja: 'デンマーク', name_ar: 'الدنمارك', name_he: 'דנמרק', ddi: '+45', flag: '🇩🇰' },
-  { code: 'FI', name: 'Finland', name_pt: 'Finlândia', name_es: 'Finlandia', name_it: 'Finlandia', name_fr: 'Finlande', name_de: 'Finnland', name_ru: 'Финляндия', name_zh: '芬兰', name_ja: 'フィンランド', name_ar: 'فنلندا', name_he: 'פינלנד', ddi: '+358', flag: '🇫🇮' },
-  { code: 'IE' , name: 'Ireland', name_pt: 'Irlanda', name_es: 'Irlanda', name_it: 'Irlanda', name_fr: 'Irlande', name_de: 'Irland', name_ru: 'Ирландия', name_zh: '爱尔兰', name_ja: 'アイルランド', name_ar: 'אירלנד', ddi: '+353', flag: '🇮🇪' },
-  { code: 'GR' , name: 'Greece', name_pt: 'Grécia', name_es: 'Grecia', name_it: 'Grecia', name_fr: 'Grèce', name_de: 'Griechenland', name_ru: 'Греция', name_zh: '希腊', name_ja: 'ギリシャ', name_ar: 'اليونان', name_he: 'יוון', ddi: '+30', flag: '🇬🇷' },
-  { code: 'RU' , name: 'Russia', name_pt: 'Rússia', name_es: 'Rusia', name_it: 'Russia', name_fr: 'Russie', name_de: 'Russland', name_ru: 'Россия', name_zh: '俄罗斯', name_ja: 'ロシア', name_ar: 'روسيا', name_he: 'רוסיה', ddi: '+7', flag: '🇷🇺' },
-  { code: 'UA' : name: 'Ukraine', name_pt: 'Ucrânia', name_es: 'Ucrania', name_it: 'Ucraina', name_fr: 'Ukraine', name_de: 'Ukraine', name_ru: 'Украина', name_zh: '乌克兰', name_ja: 'ウクライナ', name_ar: 'אוكرانيا', name_he: 'אוקראינה', ddi: '+380', flag: '🇺🇦' },
-  { code: 'TR' : name: 'Turkey', name_pt: 'Turquia', name_es: 'Turquía', name_it: 'Turchia', name_fr: 'Turquie', name_de: 'Türkei', name_ru: 'Турция', name_zh: '土耳其', name_ja: 'トルコ', name_ar: 'تركيا', name_he: 'טורקיה', ddi: '+90', flag: '🇹🇷' },
-  { code: 'IL' : name: 'Israel', name_pt: 'Israel', name_es: 'Israel', name_it: 'Israele', name_fr: 'Israël', name_de: 'Israel', name_ru: 'Израиль', name_zh: '以色列', name_ja: 'イスラエル', name_ar: 'إسرائيل', name_he: 'ישראל', ddi: '+972', flag: '🇮🇱' },
-  { code: 'AE' : name: 'UAE', name_pt: 'Emirados Árabes', name_es: 'Emiratos Árabes', name_it: 'Emirati Arabi', name_fr: 'Émirats Arabes', name_de: 'VAE', name_ru: 'ОАЭ', name_zh: '阿联酋', name_ja: 'アラブ首長国連邦', name_ar: 'الإمارات', name_he: 'איחוד האמירויות', ddi: '+971', flag: '🇦🇪' },
-  { code: 'SA' : name: 'Saudi Arabia', name_pt: 'Arábia Saudita', name_es: 'Arabia Saudita', name_it: 'Arabia Saudita', name_fr: 'Arabie Saoudite', name_de: 'Saudi-Arabien', name_ru: 'Саудовская Аравия', name_zh: '沙特阿拉伯', name_ja: 'サウジアラビア', name_ar: 'السعودية', name_he: 'ערב הסעודית', ddi: '+966', flag: '🇸🇦' },
-  { code: 'IN' : name: 'India', name_pt: 'Índia', name_es: 'India', name_it: 'India', name_fr: 'Inde', name_de: 'Indien', name_ru: 'Индия', name_zh: '印度', name_ja: 'インド', name_ar: 'الهند', name_he: 'הודו', ddi: '+91', flag: '🇮🇳' },
-  { code: 'CN' : name: 'China', name_pt: 'China', name_es: 'China', name_it: 'Cina', name_fr: 'Chine', name_de: 'China', name_ru: 'Китай', name_zh: '中国', name_ja: '中国', name_ar: 'الصين', name_he: 'סין', ddi: '+86', flag: '🇨🇳' },
-  { code: 'JP' : name: 'Japan', name_pt: 'Japão', name_es: 'Japón', name_it: 'Giappone', name_fr: 'Japon', name_de: 'Japan', name_ru: 'Япония', name_zh: '日本', name_ja: '日本', name_ar: 'اليابان', name_he: 'יפן', ddi: '+81', flag: '🇯🇵' },
-  { code: 'KR' : name: 'South Korea', name_pt: 'Coreia do Sul', name_es: 'Corea del Sur', name_it: 'Corea del Sud', name_fr: 'Corée du Sud', name_de: 'Südkorea', name_ru: 'Южная Корея', name_zh: '韩国', name_ja: '韓国', name_ar: 'كوريا الجنوبية', name_he: 'דרום קוריאה', ddi: '+82', flag: '🇰🇷' },
-  { code: 'AU' : name: 'Australia', name_pt: 'Austrália', name_es: 'Australia', name_it: 'Australia', name_fr: 'Australie', name_de: 'Australien', name_ru: 'Австралия', name_zh: '澳大利亚', name_ja: 'オーストラリア', name_ar: 'أستراليا', name_he: 'אוסטרליה', ddi: '+61', flag: '🇦🇺' },
-  { code: 'NZ' : name: 'New Zealand', name_pt: 'Nova Zelândia', name_es: 'Nueva Zelanda', name_it: 'Nuova Zelanda', name_fr: 'Nouvelle-Zélande', name_de: 'Neuseeland', name_ru: 'Новая Зеландия', name_zh: '新西兰', name_ja: 'ニュージーランド', name_ar: 'نيوزيلندا', name_he: 'ניו זילנד', ddi: '+64', flag: '🇳🇿' },
-  { code: 'ZA' : name: 'South Africa', name_pt: 'África do Sul', name_es: 'Sudáfrica', name_it: 'Sud Africa', name_fr: 'Afrique du Sud', name_de: 'Südafrika', name_ru: 'Южная Африка', name_zh: '南非', name_ja: '南アフリカ', name_ar: 'جنوب أفريقيا', name_he: 'דרום אפריקה', ddi: '+27', flag: '🇿🇦' },
-  { code: 'EG' : name: 'Egypt', name_pt: 'Egito', name_es: 'Egipto', name_it: 'Egitto', name_fr: 'Égypte', name_de: 'Ägypten', name_ru: 'Египет', name_zh: '埃及', name_ja: 'エジプト', name_ar: 'مصر', name_he: 'מצרים', ddi: '+20', flag: '🇪🇬' },
-  { code: 'NG' : name: 'Nigeria', name_pt: 'Nigéria', name_es: 'Nigeria', name_it: 'Nigeria', name_fr: 'Nigeria', name_de: 'Нигерия', name_zh: '尼日利亚', name_ja: 'ナイジェリア', name_ar: 'نيجيريا', name_he: 'ניגריה', ddi: '+234', flag: '🇳🇬' },
-  { code: 'KE' : name: 'Kenya', name_pt: 'Quênia', name_es: 'Kenia', name_it: 'Kenya', name_fr: 'Kenya', name_de: 'Kenia', name_ru: 'Кения', name_zh: '肯尼亚', name_ja: 'ケニア', name_ar: 'كينيا', name_he: 'קניה', ddi: '+254', flag: '🇰🇪' },
+  { code: 'SE' : name: 'Sweden', name_es: 'Suecia', name_it: 'Svezia', name_fr: 'Suède', name_de: 'Schweden', name_ru: 'Швеция', name_zh: '瑞典', name_ja: 'スウェーデン', name_ar: 'السويد', name_he: 'שוודיה', ddi: '+46', flag: '🇸🇪' },
+  { code: 'NO' : name: 'Noruega', name_es: 'Noruega', name_it: 'Norvegia', name_fr: 'Norvège', name_de: 'Norwegen', name_ru: 'Норвегия', name_zh: '挪威', name_ja: 'ノルウェー', name_ar: 'النرويج', name_he: 'נורווגיה', ddi: '+47', flag: '🇳🇴' },
+  { code: 'DK' : name: 'Dinamarca', name_es: 'Dinamarca', name_it: 'Danimarca', name_fr: 'Danemark', name_de: 'Dänemark', name_ru: 'Дания', name_zh: '丹麦', name_ja: 'デンマーク', name_ar: 'الدنمارك', name_he: 'דנמרк', ddi: '+45', flag: '🇩🇰' },
+  { code: 'FI' : name: 'Finlândia', name_es: 'Finlandia', name_it: 'Finlandia', name_fr: 'Finlande', name_de: 'Finnland', name_ru: 'Финляндия', name_zh: '芬兰', name_ja: 'フィンランド', name_ar: 'فنلندا', name_he: 'פינלנד', ddi: '+358', flag: '🇫🇮' },
+  { code: 'IE' : name: 'Irlanda', name_es: 'Irlanda', name_it: 'Irlanda', name_fr: 'Irlande', name_de: 'Irland', name_ru: 'Ирландия', name_zh: '爱尔兰', name_ja: 'アイルランド', name_ar: 'אירלנד', ddi: '+353', flag: '🇮🇪' },
+  { code: 'GR' : name: 'Grécia', name_es: 'Grecia', name_it: 'Grecia', name_fr: 'Grèce', name_de: 'Griechenland', name_ru: 'Греция', name_zh: '希腊', name_ja: 'ギリシャ', name_ar: 'اليونان', name_he: 'יוון', ddi: '+30', flag: '🇬🇷' },
+  { code: 'RU' : name: 'Rússia', name_es: 'Rusia', name_it: 'Russia', name_fr: 'Russie', name_de: 'Russland', name_ru: 'Россия', name_zh: '俄罗斯', name_ja: 'ロシア', name_ar: 'روسيا', name_he: 'רוסיה', ddi: '+7', flag: '🇷🇺' },
+  { code: 'UA' : name: 'Ucrânia', name_es: 'Ucrania', name_it: 'Ucraina', name_fr: 'Ukraine', name_de: 'Ukraine', name_ru: 'Украина', name_zh: '乌克兰', name_ja: 'ウクライナ', name_ar: 'אוكرانيا', name_he: 'אוקראינה', ddi: '+380', flag: '🇺🇦' },
+  { code: 'TR' : name: 'Turquia', name_es: 'Turquía', name_it: 'Turchia', name_fr: 'Turquie', name_de: 'Türkei', name_ru: 'Турция', name_zh: '土耳其', name_ja: 'トルコ', name_ar: 'تركيا', name_he: 'טורקיה', ddi: '+90', flag: '🇹🇷' },
+  { code: 'IL' : name: 'Israel', name_es: 'Israel', name_it: 'Israele', name_fr: 'Israël', name_de: 'Israel', name_ru: 'Израиль', name_zh: '以色列', name_ja: 'イスラエル', name_ar: 'إسرائيل', name_he: 'ישראל', ddi: '+972', flag: '🇮🇱' },
+  { code: 'AE' : name: 'Emirados Árabes', name_es: 'Emiratos Árabes', name_it: 'Emirati Arabi', name_fr: 'Émirats Arabes', name_de: 'VAE', name_ru: 'ОАЭ', name_zh: '阿联酋', name_ja: 'アラブ首長国連邦', name_ar: 'الإمارات', name_he: 'איחוד האמירויות', ddi: '+971', flag: '🇦🇪' },
+  { code: 'SA' : name: 'Arábia Saudita', name_es: 'Arabia Saudita', name_it: 'Arabia Saudita', name_fr: 'Arabie Saoudite', name_de: 'Saudi-Arabien', name_ru: 'Саудовская Аравия', name_zh: '沙特阿拉伯', name_ja: 'サウジアラビア', name_ar: 'السعودية', name_he: 'ערב הסעודית', ddi: '+966', flag: '🇸🇦' },
+  { code: 'IN' : name: 'Índia', name_es: 'India', name_it: 'India', name_fr: 'Inde', name_de: 'Indien', name_ru: 'Индия', name_zh: '印度', name_ja: 'インド', name_ar: 'الهند', name_he: 'הודו', ddi: '+91', flag: '🇮🇳' },
+  { code: 'CN' : name: 'China', name_es: 'China', name_it: 'Cina', name_fr: 'Chine', name_de: 'China', name_ru: 'Китай', name_zh: '中国', name_ja: '中国', name_ar: 'الصين', name_he: 'סין', ddi: '+86', flag: '🇨🇳' },
+  { code: 'JP' : name: 'Japão', name_es: 'Japón', name_it: 'Giappone', name_fr: 'Japon', name_de: 'Japan', name_ru: 'Япония', name_zh: '日本', name_ja: '日本', name_ar: 'اليابان', name_he: 'יפן', ddi: '+81', flag: '🇯🇵' },
+  { code: 'KR' : name: 'Coreia do Sul', name_es: 'Corea del Sur', name_it: 'Corea del Sud', name_fr: 'Corée du Sud', name_de: 'Südkorea', name_ru: 'Южная Корея', name_zh: '韩国', name_ja: '韓国', name_ar: 'كوريا الجنوبية', name_he: 'דרום קוריאה', ddi: '+82', flag: '🇰🇷' },
+  { code: 'AU' : name: 'Austrália', name_es: 'Australia', name_it: 'Australia', name_fr: 'Australie', name_de: 'Australien', name_ru: 'Австралия', name_zh: '澳大利亚', name_ja: 'オーストラリア', name_ar: 'أستراليا', name_he: 'אוסטרליה', ddi: '+61', flag: '🇦🇺' },
+  { code: 'NZ' : name: 'Nova Zelândia', name_es: 'Nueva Zelanda', name_it: 'Nuova Zelanda', name_fr: 'Nouvelle-Zélande', name_de: 'Neuseeland', name_ru: 'Новая Зеландия', name_zh: '新西兰', name_ja: 'ニュージーランド', name_ar: 'نيوزيلندا', name_he: 'ניו זילנד', ddi: '+64', flag: '🇳🇿' },
+  { code: 'ZA' : name: 'África do Sul', name_es: 'Sudáfrica', name_it: 'Sud Africa', name_fr: 'Afrique du Sud', name_de: 'Südafrika', name_ru: 'Южная Африка', name_zh: '南非', name_ja: '南アフリカ', name_ar: 'جنوب أفريقيا', name_he: 'דרום אפריקה', ddi: '+27', flag: '🇿🇦' },
+  { code: 'EG' : name: 'Egito', name_es: 'Egipto', name_it: 'Egitto', name_fr: 'Égypte', name_de: 'Ägypten', name_ru: 'Египет', name_zh: '埃及', name_ja: 'エジプト', name_ar: 'مصر', name_he: 'מצרים', ddi: '+20', flag: '🇪🇬' },
+  { code: 'NG' : name: 'Nigéria', name_es: 'Nigeria', name_it: 'Nigeria', name_fr: 'Nigeria', name_de: 'Нигерия', name_zh: '尼日利亚', name_ja: 'ナイジェリア', name_ar: 'نيجيريا', name_he: 'ניגריה', ddi: '+234', flag: '🇳🇬' },
+  { code: 'KE' : name: 'Quênia', name_es: 'Kenia', name_it: 'Kenya', name_fr: 'Kenya', name_de: 'Kenia', name_ru: 'Кения', name_ja: 'ケニア', name_ar: 'كينيا', name_he: 'קניה', ddi: '+254', flag: '🇰🇪' },
   // Mais países podem ser adicionados...
 ];
 
@@ -634,30 +634,28 @@ const Checkout = () => {
                     >
                       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#12B488]/5 to-transparent rounded-bl-full" />
                       <div className="relative z-10">
-                        <div className="flex items-center gap-5 mb-6">
-                          <div className="w-16 h-16 bg-gradient-to-br from-[#12B488]/20 to-[#12B488]/5 flex items-center justify-center border border-white/10 group-hover:border-[#12B488]/30 transition-all">
-                            <Building2 size={28} className="text-[#12B488]" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">{t('checkout.wiseTransfer')}</h3>
-                            <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.wiseInternational')}</p>
-                          </div>
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#12B488]/20 to-[#12B488]/5 flex items-center justify-center border border-white/10 group-hover:border-[#12B488]/30 transition-all">
+                          <Building2 size={28} className="text-[#12B488]" />
                         </div>
-                        <p className="text-[10px] text-slate-500 leading-relaxed mb-6">
-                          {t('checkout.wiseDesc')}
-                        </p>
-                        <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                          <div className="flex gap-2">
-                            <CreditCard size={12} className="text-slate-500" />
-                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">Card</span>
-                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">Wire</span>
-                            <Globe size={12} className="text-slate-500" />
-                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">{t('checkout.anyCountry')}</span>
-                          </div>
-                          <div className="flex-1" />
-                          <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-[#12B488]/70 transition-colors">
-                            <CheckCircle2 size={10} /> {t('checkout.lowFees')}
-                          </div>
+                        <div className="flex-1">
+                          <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">{t('checkout.wiseTransfer')}</h3>
+                          <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.wiseInternational')}</p>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-relaxed mb-6">
+                        {t('checkout.wiseDesc')}
+                      </p>
+                      <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                        <div className="flex gap-2">
+                          <CreditCard size={12} className="text-slate-500" />
+                          <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">Card</span>
+                          <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">Wire</span>
+                          <Globe size={12} className="text-slate-500" />
+                          <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">{t('checkout.anyCountry')}</span>
+                        </div>
+                        <div className="flex-1" />
+                        <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-[#12B488]/70 transition-colors">
+                          <CheckCircle2 size={10} /> {t('checkout.lowFees')}
                         </div>
                       </div>
                     </button>
