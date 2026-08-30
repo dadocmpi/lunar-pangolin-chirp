@@ -28,7 +28,6 @@ import { LogoVisa, LogoMastercard } from '@/components/LogoVault';
 import { getCurrencyByCountry, convertFromUSD, formatCurrency, countryCurrencyMap } from '@/services/currencyService';
 import { useCurrency } from '@/hooks/useCurrency';
 
-// Lista completa de países do mundo com DDI e traduções
 const countries = [
   { code: 'BR', name: 'Brazil', name_pt: 'Brasil', ddi: '+55', flag: '🇧🇷' },
   { code: 'AR', name: 'Argentina', name_pt: 'Argentina', ddi: '+54', flag: '🇦🇷' },
@@ -78,7 +77,6 @@ const countries = [
   { code: 'KE', name: 'Kenya', name_pt: 'Quênia', ddi: '+254', flag: '🇰🇪' },
 ];
 
-// Redes de criptomoedas suportadas com suas carteiras
 const cryptoNetworks = [
   { id: 'TRC20', name: 'TRON (TRC20)', symbol: 'USDT', address: 'TJZARrDbBjTjjUvEb7BwqD3AoFsVNyShtm', explorer: 'https://tronscan.org' },
   { id: 'BTC', name: 'Bitcoin (BTC)', symbol: 'BTC', address: 'bc1qfhkwc02k58h0q8yq9tqcyvja7cnrq57hwygm76', explorer: 'https://blockstream.info' },
@@ -88,7 +86,6 @@ const cryptoNetworks = [
   { id: 'SOL', name: 'Solana (SOL)', symbol: 'SOL', address: '6Hj6JfMDhSBJuPcX7keB6pPcVXsojEwqdgPt7HKcwxjQ', explorer: 'https://solscan.io' },
 ];
 
-// Wise holder
 const WISE_HOLDER = "Jorge Antonio Soares de Moura Sedeh";
 
 interface WiseAccount {
@@ -170,7 +167,6 @@ const Checkout = () => {
     return info?.symbol || '';
   })();
 
-  // Function to go back to payment selection
   const handleBackToPaymentMethods = () => {
     setShowCrypto(false);
     setShowWise(false);
@@ -179,7 +175,6 @@ const Checkout = () => {
   };
 
   useEffect(() => {
-    // Check if plan exists, if not redirect to pricing
     if (!plan) {
       navigate('/pricing');
       return;
@@ -216,7 +211,6 @@ const Checkout = () => {
     }
   };
 
-  // Calculate numeric price safely
   const numericPrice = useMemo(() => {
     if (!plan) return '0';
     return String(plan.priceUSD ?? plan.price?.replace(/[^0-9.]/g, '') ?? '0');
@@ -252,7 +246,7 @@ const Checkout = () => {
 
   const handleCardSubmit = async () => {
     if (!cardData.number || !cardData.expiry || !cardData.cvc || !cardData.name || !phoneNumber) {
-      showError(t('checkout.fillAllFields') || "Fill all card fields");
+      showError(t('checkout.fillAllFields'));
       return;
     }
 
@@ -281,7 +275,7 @@ const Checkout = () => {
       const result = await response.json();
       
       if (result.status === 'success') {
-        showSuccess(t('checkout.paymentSuccess') || "Payment approved!");
+        showSuccess(t('checkout.paymentSuccess'));
         navigate('/dashboard');
       } else {
         throw new Error(result.error || t('checkout.paymentFailed'));
@@ -315,7 +309,7 @@ const Checkout = () => {
       const result = await response.json();
       
       if (result.status === 'success' || result.status === 'pending') {
-        showSuccess(t('checkout.cryptoPending') || "Payment registered!");
+        showSuccess(t('checkout.cryptoPending'));
       } else {
         throw new Error(result.error || t('checkout.paymentError'));
       }
@@ -328,12 +322,12 @@ const Checkout = () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    showSuccess(t('checkout.copied') || "Copied!");
+    showSuccess(t('checkout.copied'));
   };
 
   const handleWiseSubmit = async () => {
     if (!wiseConfirmed) {
-      showError(t('checkout.wiseConfirmRequired') || "Please confirm you made the transfer");
+      showError(t('checkout.wiseConfirmRequired'));
       return;
     }
     
@@ -376,7 +370,7 @@ const Checkout = () => {
       const result = await response.json();
       
       if (result.status === 'success' || result.status === 'pending') {
-        showSuccess(t('checkout.wisePaymentSuccess') || "Payment confirmed! Your account is being set up.");
+        showSuccess(t('checkout.wisePaymentSuccess'));
         setTimeout(() => navigate('/dashboard'), 2000);
       } else {
         throw new Error(result.error || t('checkout.paymentError'));
@@ -388,7 +382,6 @@ const Checkout = () => {
     }
   };
 
-  // Don't render if no plan
   if (!plan) {
     return (
       <div className="min-h-screen bg-[#05070A] flex flex-col items-center justify-center gap-6">
@@ -405,7 +398,7 @@ const Checkout = () => {
       <div className="min-h-screen bg-[#05070A] flex flex-col items-center justify-center gap-6">
         <Loader2 className="animate-spin text-[#C5A059]" size={48} />
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">
-          {processing ? (t('checkout.processing') || "Processing...") : (t('checkout.loading') || "Loading...")}
+          {processing ? t('checkout.processing') : t('checkout.loading')}
         </p>
       </div>
     );
@@ -415,13 +408,12 @@ const Checkout = () => {
     <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       
-      <div className="container mx-auto px-8 pt-[140px] pb-20">
+      <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
         <Link to="/pricing" className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-[#C5A059] mb-12 transition-colors">
           <ArrowLeft size={14} /> {t('nav.pricing')}
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Coluna Esquerda - Resumo */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           <div className="lg:col-span-5 space-y-8">
             <div className="animate-fadeInUp">
               <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('checkout.summary')}</span>
@@ -500,7 +492,6 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Coluna Direita - Pagamento */}
           <div className="lg:col-span-7 space-y-8">
             <div className="bg-[#080B12] border border-white/10 p-8 space-y-8">
               {user && (
@@ -517,7 +508,6 @@ const Checkout = () => {
                 </div>
               )}
 
-              {/* SELEÇÃO DE FORMA DE PAGAMENTO */}
               {!showWise && !showCrypto ? (
                 <div className="space-y-8 animate-fadeInUp">
                   <div className="space-y-4">
@@ -528,7 +518,6 @@ const Checkout = () => {
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
-                    {/* Wise Transfer */}
                     <button
                       onClick={() => setShowWise(true)}
                       className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-emerald-500 hover:shadow-[0_0_40px_rgba(18,180,136,0.1)] transition-all text-left group overflow-hidden"
@@ -561,7 +550,6 @@ const Checkout = () => {
                       </div>
                     </button>
 
-                    {/* Criptomoedas */}
                     <button
                       onClick={() => setShowCrypto(true)}
                       className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-orange-500 hover:shadow-[0_0_40px_rgba(212,175,55,0.1)] transition-all text-left group overflow-hidden"
@@ -601,10 +589,8 @@ const Checkout = () => {
                   </div>
                 </div>
               ) : (
-                /* FORMULÁRIOS DE PAGAMENTO */
                 <div className="space-y-6 animate-fadeInUp">
                   
-                  {/* BOTÃO VOLTAR - MAIS VISÍVEL */}
                   <div className="border border-white/10 bg-white/[0.02] p-4">
                     <button 
                       onClick={handleBackToPaymentMethods}
@@ -612,12 +598,11 @@ const Checkout = () => {
                     >
                       <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
                       <span className="text-[11px] font-bold uppercase tracking-widest">
-                        {t('checkout.back') || '← Voltar para formas de pagamento'}
+                        {t('checkout.back')}
                       </span>
                     </button>
                   </div>
 
-                  {/* CRIPTOMOEDAS */}
                   {showCrypto && (
                     <div className="space-y-6">
                       <div className="flex items-center gap-2">
@@ -633,7 +618,7 @@ const Checkout = () => {
 
                       <div className="space-y-2">
                         <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.selectNetwork')}</p>
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                           {cryptoNetworks.map((network) => (
                             <button
                               key={network.id}
@@ -683,7 +668,6 @@ const Checkout = () => {
                     </div>
                   )}
 
-                  {/* WISE TRANSFER */}
                   {showWise && (
                     <div className="space-y-6">
                       <div className="flex items-center gap-2">

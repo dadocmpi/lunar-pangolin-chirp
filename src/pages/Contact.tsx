@@ -30,7 +30,6 @@ const Contact = () => {
     website: '' // Honeypot field
   });
 
-  // Generate a simple math challenge on mount
   useEffect(() => {
     generateCaptcha();
   }, []);
@@ -45,20 +44,17 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // 1. Honeypot check
     if (formData.website) {
       console.warn("Spam detected via honeypot.");
       return;
     }
 
-    // 2. Captcha check
     if (parseInt(userAnswer) !== captcha.a) {
       showError(t('contact.incorrectAnswer'));
       generateCaptcha();
       return;
     }
 
-    // 3. Rate limiting check
     if (cooldown) {
       showError(t('contact.waitMessage'));
       return;
@@ -67,7 +63,6 @@ const Contact = () => {
     setLoading(true);
     
     try {
-      // Call the Supabase Edge Function to send email via Resend
       const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
         method: 'POST',
         headers: {
@@ -78,14 +73,14 @@ const Contact = () => {
           to: 'marketsbraxel@ouvidor.net',
           subject: `[Contact Form] ${formData.subject} - from ${formData.name}`,
           html: `
-            <h2>${t('contactEmail.newSubmission')}</h2>
-            <p><strong>${t('contactEmail.name')}:</strong> ${formData.name}</p>
-            <p><strong>${t('contactEmail.email')}:</strong> ${formData.email}</p>
-            <p><strong>${t('contactEmail.subject')}:</strong> ${formData.subject}</p>
-            <p><strong>${t('contactEmail.message')}:</strong></p>
+            <h2>New Contact Form Submission</h2>
+            <p><strong>Name:</strong> ${formData.name}</p>
+            <p><strong>Email:</strong> ${formData.email}</p>
+            <p><strong>Subject:</strong> ${formData.subject}</p>
+            <p><strong>Message:</strong></p>
             <p>${formData.message.replace(/\n/g, '<br>')}</p>
             <hr>
-            <p><small>${t('contactEmail.sentFrom')} braxelmarkets.vercel.app</small></p>
+            <p><small>Sent from braxelmarkets.vercel.app</small></p>
           `,
           replyTo: formData.email
         })
@@ -154,7 +149,6 @@ const Contact = () => {
           <div className="p-12 md:p-16 bg-[#080B12]">
             <h2 className="text-[20px] font-serif font-bold uppercase tracking-tighter mb-10">{t('contact.formTitle')}</h2>
             <form className="space-y-6" onSubmit={handleSubmit}>
-              {/* Honeypot field - hidden from users */}
               <div className="hidden">
                 <Input 
                   type="text" 
@@ -198,7 +192,6 @@ const Contact = () => {
                 className="bg-white/[0.03] border-white/10 rounded-none min-h-[160px] text-[11px] font-bold uppercase tracking-[2px] placeholder:text-slate-700 focus:border-[#D4AF37] transition-colors" 
               />
 
-              {/* Simple Math Captcha */}
               <div className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/10">
                 <ShieldCheck className="text-[#D4AF37]" size={20} />
                 <div className="flex-1">
@@ -214,12 +207,11 @@ const Contact = () => {
                 </div>
               </div>
 
-              {/* Consent notice */}
               <div className="text-[9px] text-slate-500 italic">
                 By submitting this form, you agree to our{' '}
                 <Link to="/privacy" className="underline hover:text-[#D4AF37]">
-                  Privacy Policy
-                </Link>{' '}. We use your data only to respond to your inquiry and retain it for [RETENTION_PERIOD]. You can request access to or deletion of your data by contacting marketsbraxel@ouvidor.net.
+                  {t('footer.privacy')}
+                </Link>{' '}. We use your data only to respond to your inquiry.
               </div>
 
               <Button 

@@ -13,16 +13,12 @@ interface TickerItem {
 
 const MarketTicker = () => {
   const [prices, setPrices] = useState<TickerItem[]>([
-    // Crypto
     { pair: "BTC/USD", value: 0, change: 0, up: true, decimals: 2 },
     { pair: "ETH/USD", value: 0, change: 0, up: true, decimals: 2 },
     { pair: "GOLD", value: 0, change: 0, up: true, decimals: 2 },
-    // Indices
     { pair: "NASDAQ", value: 0, change: 0, up: true, decimals: 2 },
-    // Commodities
     { pair: "SILVER", value: 0, change: 0, up: true, decimals: 2 },
     { pair: "OIL (WTI)", value: 0, change: 0, up: true, decimals: 2 },
-    // Forex
     { pair: "EUR/USD", value: 0, change: 0, up: true, decimals: 4 },
     { pair: "GBP/USD", value: 0, change: 0, up: true, decimals: 4 },
     { pair: "GBP/JPY", value: 0, change: 0, up: true, decimals: 3 },
@@ -53,7 +49,6 @@ const MarketTicker = () => {
         let newValue = p.value;
         let newChange = p.change;
 
-        // Crypto via Binance
         if (p.pair === "BTC/USD" && marketData.current.crypto.BTCUSDT) {
           const data = marketData.current.crypto.BTCUSDT;
           newValue = data.price + (Math.random() - 0.5) * (data.price * 0.0002);
@@ -66,9 +61,7 @@ const MarketTicker = () => {
           const data = marketData.current.crypto.PAXGUSDT;
           newValue = data.price + (Math.random() - 0.5) * (data.price * 0.0002);
           newChange = data.changePercent;
-        }
-        // Indices & Commodities via Twelves Data
-        else if (p.pair === "NASDAQ" && marketData.current.twelves.IXIC) {
+        } else if (p.pair === "NASDAQ" && marketData.current.twelves.IXIC) {
           const data = marketData.current.twelves.IXIC;
           newValue = data.price + (Math.random() - 0.5) * (data.price * 0.00005);
           newChange = data.changePercent;
@@ -80,9 +73,7 @@ const MarketTicker = () => {
           const data = marketData.current.twelves.WTI;
           newValue = data.price + (Math.random() - 0.5) * (data.price * 0.0001);
           newChange = data.changePercent;
-        }
-        // Forex via Twelves Data
-        else if (p.pair === "EUR/USD" && marketData.current.twelves['EUR/USD']) {
+        } else if (p.pair === "EUR/USD" && marketData.current.twelves['EUR/USD']) {
           const data = marketData.current.twelves['EUR/USD'];
           newValue = data.price + (Math.random() - 0.5) * (data.price * 0.00005);
           newChange = data.changePercent;
@@ -121,7 +112,7 @@ const MarketTicker = () => {
     <div className="fixed top-24 left-0 w-full h-[50px] bg-black/80 backdrop-blur-md border-b border-white/5 z-[900] overflow-hidden flex items-center">
       <div className="flex gap-16 px-8 whitespace-nowrap ticker-scroll">
         {tickerItems.map((item, i) => (
-          <div key={i} className="flex items-center gap-3 font-tech text-[11px] font-bold">
+          <div key={i} className="flex items-center gap-3 text-[11px] font-bold" style={{ letterSpacing: '0.1em' }}>
             <span className="text-slate-500 uppercase tracking-widest">{item.pair}</span>
             <span className="text-white tabular-nums">
               {item.value === 0 ? "---" : item.value.toLocaleString(undefined, { minimumFractionDigits: item.decimals, maximumFractionDigits: item.decimals })}

@@ -4,10 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-html {
-  zoom: 0.8;
-}
-
 :root {
   --color-black: #000000;
   --color-dark-blue: #0a0e27;
@@ -91,6 +87,15 @@ body {
   50% { opacity: 0.8; transform: scale(0.98); }
 }
 
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .animate-fadeInUp {
   animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -101,6 +106,10 @@ body {
 
 .ticker-scroll {
   animation: scroll-ticker 60s linear infinite;
+}
+
+.page-enter {
+  animation: pageEnter 0.3s ease-out;
 }
 
 /* Refinamentos de Tipografia */

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, X, Send, Bot, User, Minimize2, Headphones } from 'lucide-react';
+import { X, Send, Bot, User, Minimize2, Headphones } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import LogoBraxel from '@/components/LogoBraxel';
 
@@ -12,73 +12,53 @@ interface Message {
   timestamp: Date;
 }
 
-// Complete Language detection map - supports all website languages
 const languageMap: Record<string, string> = {
-  // Portuguese
   'pt': 'Portuguese',
   'pt-BR': 'Portuguese',
   'pt-PT': 'Portuguese',
-  // Spanish
   'es': 'Spanish',
   'es-ES': 'Spanish',
   'es-MX': 'Spanish',
   'es-AR': 'Spanish',
-  // Italian
   'it': 'Italian',
   'it-IT': 'Italian',
-  // French
   'fr': 'French',
   'fr-FR': 'French',
   'fr-CA': 'French',
-  // German
   'de': 'German',
   'de-DE': 'German',
   'de-AT': 'German',
   'de-CH': 'German',
-  // Russian
   'ru': 'Russian',
   'ru-RU': 'Russian',
-  // Chinese
   'zh': 'Chinese',
   'zh-CN': 'Chinese',
   'zh-TW': 'Chinese',
   'zh-HK': 'Chinese',
-  // Japanese
   'ja': 'Japanese',
   'ja-JP': 'Japanese',
-  // Arabic
   'ar': 'Arabic',
   'ar-SA': 'Arabic',
   'ar-AE': 'Arabic',
   'ar-EG': 'Arabic',
-  // Hebrew
   'he': 'Hebrew',
   'he-IL': 'Hebrew',
-  // Korean
   'ko': 'Korean',
   'ko-KR': 'Korean',
-  // Hindi
   'hi': 'Hindi',
   'hi-IN': 'Hindi',
-  // Turkish
   'tr': 'Turkish',
   'tr-TR': 'Turkish',
-  // Dutch
   'nl': 'Dutch',
   'nl-NL': 'Dutch',
-  // Polish
   'pl': 'Polish',
   'pl-PL': 'Polish',
-  // Indonesian
   'id': 'Indonesian',
   'id-ID': 'Indonesian',
-  // Thai
   'th': 'Thai',
   'th-TH': 'Thai',
-  // Vietnamese
   'vi': 'Vietnamese',
   'vi-VN': 'Vietnamese',
-  // English (default)
   'en': 'English',
   'en-US': 'English',
   'en-GB': 'English',
@@ -103,7 +83,6 @@ const SupportChatbot = () => {
   const getSystemPrompt = (): string => {
     const lang = getCurrentLanguage();
     
-    // Translations for plan names and descriptions
     const planNames: Record<string, { starter: string; pro: string; advanced: string; elite: string; starterDesc: string; proDesc: string; advancedDesc: string; eliteDesc: string; tiersTitle: string }> = {
       'Portuguese': { starter: 'Iniciante', pro: 'Profissional', advanced: 'Avançado', elite: 'Elite', starterDesc: 'Negociação gerenciada de nível inicial', proDesc: 'Recursos e limites aprimorados', advancedDesc: 'Para traders e fundos profissionais', eliteDesc: 'Soluções personalizadas para grandes instituições', tiersTitle: 'Níveis de Capital Gerenciado' },
       'Spanish': { starter: 'Inicial', pro: 'Profesional', advanced: 'Avanzado', elite: 'Élite', starterDesc: 'Negociação gerenciada de nivel inicial', proDesc: 'Funciones y límites mejorados', advancedDesc: 'Para comerciantes e fondos profesionales', eliteDesc: 'Soluciones personalizadas para grandes instituciones', tiersTitle: 'Niveles de Capital Gestionado' },
@@ -328,11 +307,10 @@ IMPORTANT RULES:
   return (
     <div 
       className={`fixed bottom-8 right-8 z-[999] transition-all duration-300 ${
-        isMinimized ? 'w-[360px]' : 'w-[400px]'
+        isMinimized ? 'w-[360px]' : 'w-[400px] max-w-[calc(100vw-2rem)]'
       }`}
     >
       <div className="bg-[#0a0e27] border border-white/10 shadow-2xl overflow-hidden">
-        {/* Header */}
         <div className="bg-gradient-to-r from-[#0a0e27] to-[#0f1430] p-4 border-b border-white/5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -366,7 +344,6 @@ IMPORTANT RULES:
 
         {!isMinimized && (
           <>
-            {/* Messages Area */}
             <div className="h-[400px] overflow-y-auto p-4 space-y-4 bg-[#05070a]">
               {messages.map((message) => (
                 <div
@@ -429,7 +406,6 @@ IMPORTANT RULES:
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area */}
             <div className="p-4 bg-[#0a0e27] border-t border-white/5">
               <div className="flex gap-2">
                 <input

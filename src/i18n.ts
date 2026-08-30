@@ -220,6 +220,7 @@ const enTranslation = {
     historyTitle: "OUR HISTORY",
     historyDesc1: "Founded by a team of quantitative analysts and software engineers, Braxel was built to bridge the gap between retail capital and institutional technology.",
     historyDesc2: "Today, we focus on risk-adjusted returns and infrastructure stability, providing cutting-edge algorithmic strategies for the modern investor.",
+    teamBadge: "LEADERSHIP",
     stats: {
       founded: "Founded",
       users: "Active Users",
@@ -280,6 +281,14 @@ const enTranslation = {
     messageSent: "Message sent successfully! Our team will contact you soon.",
     messageFailed: "Failed to send message. Please try again or email us directly at marketsbraxel@ouvidor.net",
     cooldown: "PLEASE WAIT"
+  },
+  contactEmail: {
+    newSubmission: "New Contact Form Submission",
+    name: "Name",
+    email: "Email",
+    subject: "Subject",
+    message: "Message",
+    sentFrom: "Sent from"
   },
   legal: {
     badgeLegal: "LEGAL",
@@ -590,7 +599,6 @@ const enTranslation = {
     useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
     securityTitle: "Security",
     securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
-    // Additional sections for draft
     legalBasisTitle: "Legal Basis for Processing",
     legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
     retentionTitle: "Data Retention Period",
@@ -613,7 +621,6 @@ const enTranslation = {
     noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
     limitationTitle: "Limitation of Liability",
     limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
-    // Additional sections for draft
     capitalAtRiskTitle: "Capital at Risk",
     capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
@@ -629,7 +636,6 @@ const enTranslation = {
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
     jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
   },
-  // New section for Terms of Service
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
@@ -653,7 +659,6 @@ const enTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  // Banner for draft pages
   legalDraftBanner: "This page is a draft under legal review and is not yet final."
 };
 
@@ -685,7 +690,6 @@ i18n
     interpolation: {
       escapeValue: false
     },
-    // Return empty string for missing keys instead of the key itself
     returnEmptyString: true
   }, (err) => {
     if (err) return console.error(err);
