@@ -11,8 +11,6 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '@/hooks/useCurrency';
 
-// Prices in USD (will be converted to user's local currency)
-// New pricing: 5K-80€, 10K-120€, 25K-430€, 100K-850€
 const PRICES_USD = {
   starter: { monthly: 87, account: 5000 },
   pro: { monthly: 131, account: 10000 },
@@ -23,7 +21,7 @@ const PRICES_USD = {
 const Pricing = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { convertPrice, currency, isLoading, countryCode } = useCurrency();
+  const { convertPrice, currency, isLoading } = useCurrency();
 
   const plans = [
     {
@@ -32,7 +30,7 @@ const Pricing = () => {
       price: convertPrice(PRICES_USD.starter.monthly),
       priceUSD: PRICES_USD.starter.monthly,
       accountSize: convertPrice(PRICES_USD.starter.account),
-      accountSizeUsd: PRICES_USD.starter.account, // <-- Added USD account size
+      accountSizeUsd: PRICES_USD.starter.account,
       iconType: "zap",
       features: [
         t('plans.features.automation'),
@@ -47,7 +45,7 @@ const Pricing = () => {
       price: convertPrice(PRICES_USD.pro.monthly),
       priceUSD: PRICES_USD.pro.monthly,
       accountSize: convertPrice(PRICES_USD.pro.account),
-      accountSizeUsd: PRICES_USD.pro.account, // <-- Added USD account size
+      accountSizeUsd: PRICES_USD.pro.account,
       iconType: "award",
       features: [
         t('plans.features.starterFeatures'),
@@ -62,7 +60,7 @@ const Pricing = () => {
       price: convertPrice(PRICES_USD.advanced.monthly),
       priceUSD: PRICES_USD.advanced.monthly,
       accountSize: convertPrice(PRICES_USD.advanced.account),
-      accountSizeUsd: PRICES_USD.advanced.account, // <-- Added USD account size
+      accountSizeUsd: PRICES_USD.advanced.account,
       iconType: "shield",
       features: [
         t('plans.features.proFeatures'),
@@ -76,7 +74,7 @@ const Pricing = () => {
       price: convertPrice(PRICES_USD.elite.monthly),
       priceUSD: PRICES_USD.elite.monthly,
       accountSize: convertPrice(PRICES_USD.elite.account),
-      accountSizeUsd: PRICES_USD.elite.account, // <-- Added USD account size
+      accountSizeUsd: PRICES_USD.elite.account,
       iconType: "crown",
       features: [
         t('plans.features.advancedFeatures'),
@@ -104,7 +102,7 @@ const Pricing = () => {
     <div className="min-h-screen bg-black text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       <MarketTicker />
-      
+
       <section className="relative pt-[200px] pb-20 border-b border-white/5 bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.05)_0%,transparent_70%)] pointer-events-none" />
         <div className="container mx-auto px-8">
@@ -151,15 +149,15 @@ const Pricing = () => {
                     <li key={j} className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                       <Check className="text-[#D4AF37]" size={14} />
                       {f}
-                    }
+                    </li>
                   ))}
                 </ul>
-                <Button 
+                <Button
                   onClick={() => handleSelectPlan(plan)}
                   className={cn(
                     "w-full rounded-none h-14 text-[11px] font-black uppercase tracking-[2px] transition-all",
                     plan.popular ? "bg-[#D4AF37] text-black hover:bg-[#C9A227]" : "bg-white/5 text-white hover:bg-white/10 border border-white/10"
-                  )} 
+                  )}
                 >
                   {t('pricing.select')}
                 </Button>
