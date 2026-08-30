@@ -1,12 +1,12 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import {
   getUserCountry,
   getCurrencyByCountry,
   convertFromUSD,
   formatCurrency,
   fetchLiveExchangeRates,
-  countryCurrencyMap
-} from '@/services/currencyService';
+  countryCurrencyMap,
+} from "@/services/currencyService";
 
 interface CurrencyContextType {
   countryCode: string;
@@ -22,12 +22,12 @@ interface CurrencyContextType {
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
-  const [countryCode, setCountryCode] = useState<string>('US');
-  const [currencyInfo, setCurrencyInfo] = useState<{ currency: string; symbol: string; name: string }>({
-    currency: 'USD',
-    symbol: '$',
-    name: 'US Dollar'
-  });
+  const [countryCode, setCountryCode] = useState<string>("US");
+  const [currencyInfo, setCurrencyInfo] = useState<{
+    currency: string;
+    symbol: string;
+    name: string;
+  }>({ currency: "USD", symbol: "$", name: "US Dollar" });
   const [isLoading, setIsLoading] = useState(true);
   const [ratesReady, setRatesReady] = useState(false);
 
@@ -38,24 +38,28 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         setCountryCode(country);
         const info = getCurrencyByCountry(country);
         setCurrencyInfo(info);
-        
-        // Store in session for persistence
-        sessionStorage.setItem('userCountry_v2', country);
-        sessionStorage.setItem('userCurrency_v2', JSON.stringify(info));
+        try {
+          sessionStorage.setItem("userCountry_v2", country);
+          sessionStorage.setItem(
+            "userCurrency_v2",
+            JSON.stringify(info),
+          );
+        } catch { /* ignore */ }
       } catch (error) {
-        console.error('Error detecting country:', error);
+        console.error("Error detecting country:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    // Fetch live exchange rates (cached 1h). Triggers a re-render once loaded
-    // so prices recompute with real-time rates.
-    fetchLiveExchangeRates().then(() => setRatesReady(true)).catch(() => setRatesReady(true));
+    // fetchLiveExchangeRates is a no-op in Option A.
+    // To enable live rates, deploy a server-side fx-rates Edge Function.
+    fetchLiveExchangeRates()
+      .then(() => setRatesReady(true))
+      .catch(() => setRatesReady(true));
 
-    // Check if we already have cached country info
-    const cachedCountry = sessionStorage.getItem('userCountry_v2');
-    const cachedInfo = sessionStorage.getItem('userCurrency_v2');
+    const cachedCountry = sessionStorage.getItem("userCountry_v2");
+    const cachedInfo = sessionStorage.getItem("userCurrency_v2");
 
     if (cachedCountry && cachedInfo) {
       setCountryCode(cachedCountry);
@@ -96,17 +100,9 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 export function useCurrency() {
   const context = useContext(CurrencyContext);
   if (context === undefined) {
-    throw new Error('useCurrency must be used within a CurrencyProvider');
+    throw new Error("useCurrency must be used within a CurrencyProvider");
   }
   return context;
 }
-
-// List of all supported currencies with country info
-export const supportedCurrencies = Object.entries(countryCurrencyMap).map(([code, info]) => ({
-  countryCode: code,
-  ...info
-})).filter((item, index, self) => 
-  index === self.findIndex((t) => t.currency === item.currency)
-);
 
 export default useCurrency;

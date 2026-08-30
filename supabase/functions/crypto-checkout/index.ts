@@ -1,108 +1,195 @@
+// ============================================================================
+// Crypto Checkout — OPTION A
+//
+// Behavior contract:
+//   1. Never trusts plan/amount/currency/network from the browser.
+//   2. Rejects invalid input with HTTP 400.
+//   3. Honors PAYMENTS_ENABLED (fail-closed: missing/not-"true" → test response,
+//      no row inserted).
+//   4. Writes to pending_payments with status_enum = 'pending'.
+//      The row is NOT inserted when PAYMENTS_ENABLED is not "true".
+//   5. Idempotent on (user_id, idempotency_key).
+//   6. NEVER creates a services row. Service activation requires a separate,
+//      authorized server-side path (crypto-confirmation or future auto-confirm).
+//   7. The returned deposit address is a test placeholder. Production wallet
+//      addresses must be configured via Deno env variables.
+//   8. Activation is triggered ONLY by:
+//        (a) crypto-confirmation (admin, requires ADMIN_SECRET)
+//        (b) (future) crypto-auto-confirm (service-role only, not scheduled)
+// ============================================================================
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
   PaymentError,
-  createPendingPayment,
-  makeServiceClient,
   validateCheckoutInput,
-} from "../_shared/payments.ts";
-import { CRYPTO_NETWORKS, TEST_PLACEHOLDER_WALLET } from "../_shared/plans.ts";
+  upsertPendingPayment,
+  makeServiceClient,
+} from "../_shared/option_a/payments.ts";
+import { TEST_PLACEHOLDER_WALLET } from "../_shared/option_a/plans.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
-/**
- * Crypto checkout — TEST MODE.
- *
- * Behavior contract:
- *  1. Never trust plan/amount/currency/network from the browser.
- *  2. Reject invalid input with HTTP 400.
- *  3. Create a payments row with status = 'pending'.
- *  4. Idempotent on (user_id, idempotency_key).
- *  5. NEVER activate a service from the browser click.
- *  6. Activation is the responsibility of crypto-auto-confirm (server-side
- *     blockchain verification) — which is itself not wired to a scheduler
- *     yet. See docs.
- *  7. The returned payment row reflects canonical values, not browser values.
- */
+// ---------------------------------------------------------------------------
+// PAYMENTS_ENABLED gate
+// ---------------------------------------------------------------------------
+
+function isPaymentsEnabled(): boolean {
+  const val = Deno.env.get("PAYMENTS_ENABLED");
+  return val === "true";
+}
+
+// ---------------------------------------------------------------------------
+// Main handler
+// ---------------------------------------------------------------------------
+
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "method_not_allowed" }), {
-      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 405,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
-  try {
-    const auth = req.headers.get("Authorization");
-    if (!auth) throw new PaymentError("unauthorized");
-    const token = auth.replace("Bearer ", "");
-
-    const admin = makeServiceClient();
-    const { data: userData, error: userErr } = await admin.auth.getUser(token);
-    if (userErr || !userData?.user) throw new PaymentError("unauthorized");
-    const user = userData.user;
-
-    let body: unknown;
-    try { body = await req.json(); } catch { throw new PaymentError("invalid_json"); }
-
-    const validated = validateCheckoutInput({
-      planId: (body as any)?.planId,
-      clientAmountCents: (body as any)?.amountCents, // ignored
-      clientCurrency: (body as any)?.currency,        // ignored
-      network: (body as any)?.network,                // looked up in canonical table
-      idempotencyKey: (body as any)?.idempotencyKey,
-      metadata: { method: "crypto" },
-    });
-    if (!validated.network) throw new PaymentError("network_required");
-    validated.userId = user.id;
-    validated.userEmail = user.email ?? null;
-
-    const { payment, created } = await createPendingPayment(admin, {
-      userId: validated.userId,
-      planId: validated.planId,
-      amountCents: validated.amountCents,
-      currency: validated.currency,
-      network: validated.network.id,
-      method: "crypto",
-      idempotencyKey: validated.idempotencyKey,
-      metadata: validated.metadata,
-    });
-
-    // Return a test placeholder address. The real address must be set via
-    // Deno env (CRYPTO_DESTINATION_<NETWORK>) — never in this response.
+  // -------------------------------------------------------------------------
+  // PAYMENTS_ENABLED gate — fail-closed
+  // -------------------------------------------------------------------------
+  if (!isPaymentsEnabled()) {
     return new Response(
       JSON.stringify({
-        ok: true,
-        mode: "test",
-        message: "Crypto payments are in TEST MODE. The address below is a safe placeholder. Real wallet monitoring is not yet configured.",
-        payment: {
-          id: payment.id,
-          status: payment.status,
-          planId: payment.plan_id,
-          amountCents: payment.amount_cents,
-          currency: payment.currency,
-          network: payment.network,
-          created: created,
-        },
+        ok:             true,
+        mode:           "test",
+        reason:         "PAYMENTS_ENABLED is not set to 'true'",
+        payment:        null,
         depositAddress: TEST_PLACEHOLDER_WALLET,
         warnings: [
-          "This is a test placeholder address. Sending real funds will not result in service activation.",
-          "Activation requires independent server-side blockchain verification (auto-confirm) which is not yet scheduled.",
+          "Payments are disabled. No row was inserted.",
+          "This is a safe test placeholder. No real crypto required.",
+          "Set PAYMENTS_ENABLED='true' in Supabase Edge Function Secrets to enable.",
         ],
       }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
+  }
+
+  // -------------------------------------------------------------------------
+  // Auth
+  // -------------------------------------------------------------------------
+  const auth = req.headers.get("Authorization");
+  if (!auth) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const token = auth.replace("Bearer ", "");
+
+  const admin = makeServiceClient();
+  const { data: userData, error: authErr } = await admin.auth.getUser(token);
+  if (authErr || !userData?.user) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const user = userData.user;
+
+  // -------------------------------------------------------------------------
+  // Parse body
+  // -------------------------------------------------------------------------
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: "invalid_json" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Validate (server-only — browser values are never trusted)
+  // -------------------------------------------------------------------------
+  let validated: ReturnType<typeof validateCheckoutInput>;
+  try {
+    validated = validateCheckoutInput({
+      planId:          (body as any)?.planId,
+      clientCurrency:   (body as any)?.currency,
+      network:         (body as any)?.network,
+      idempotencyKey:   (body as any)?.idempotencyKey,
+      metadata:         { method: "crypto" },
+    });
+    validated.userId    = user.id;
+    validated.userEmail = user.email ?? null;
   } catch (err) {
     if (err instanceof PaymentError) {
       return new Response(JSON.stringify({ error: err.code }), {
-        status: err.code === "unauthorized" ? 401 : 400,
+        status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
-    return new Response(JSON.stringify({ error: "internal_error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    throw err;
   }
+
+  // -------------------------------------------------------------------------
+  // Insert (or return existing) pending_payments row
+  // -------------------------------------------------------------------------
+  const { getPlan } = await import("../_shared/option_a/plans.ts");
+  const plan = getPlan(validated.planId);
+
+  const networkId = validated.network?.id ?? null;
+
+  const { payment, created } = await upsertPendingPayment(admin, {
+    userId:      validated.userId,
+    planId:      validated.planId,
+    planName:    plan.name,
+    amountCents:  validated.amountCents,
+    currency:     validated.currency,
+    network:      networkId,
+    method:       "crypto",
+    idempotencyKey: validated.idempotencyKey,
+    metadata:     validated.metadata,
+  });
+
+  // -------------------------------------------------------------------------
+  // NEVER create a services row here.
+  // Service activation requires a separate, authorized server-side path.
+  // -------------------------------------------------------------------------
+
+  return new Response(
+    JSON.stringify({
+      ok:             true,
+      mode:           isPaymentsEnabled() ? "production" : "test",
+      payment: {
+        id:           payment.id,
+        status:       payment.status_enum,
+        planId:       validated.planId,
+        planName:     plan.name,
+        amountCents:  payment.amount_cents,
+        currency:     payment.amount_cents != null ? "USD" : null,
+        network:      networkId,
+        created,
+      },
+      depositAddress: TEST_PLACEHOLDER_WALLET,
+      warnings: [
+        "This is a test placeholder address. No real crypto required.",
+        "Sending real funds to this address will not result in service activation.",
+        "Service activation requires an authorized server-side confirmation.",
+      ],
+    }),
+    {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
 });

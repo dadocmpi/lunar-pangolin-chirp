@@ -1,223 +1,292 @@
-// Crypto Confirmation Edge Function
-// Called by admin when crypto payment is verified on blockchain
-// Creates service account and sends confirmation email to user
+// ============================================================================
+// Crypto Confirmation — OPTION A
+//
+// Called by an admin when a crypto payment is verified on-chain.
+// Called with a JSON body: { paymentId, txHash, adminSecret }
+//
+// Behavior contract:
+//   1. Fails closed on missing ADMIN_SECRET (HTTP 500, no row mutation).
+//   2. Fails closed on PAYMENTS_ENABLED not "true" (HTTP 503, no mutation).
+//   3. Fails closed on mismatched adminSecret (HTTP 401, no mutation).
+//   4. Updates pending_payments:
+//        - legacy: status = 'confirmed', confirmed_at, tx_hash, account_id
+//        - new:     status_enum = 'confirmed', verified_tx_hash, verified_network,
+//                   verified_amount_cents
+//   5. Inserts a services row with plan_name (canonical column).
+//   6. Logs every action to payment_audit_log via log_payment_event RPC.
+//   7. Idempotent via the unique partial index on services.
+//   8. NOT scheduled. No wallet monitor. No cron. Requires manual admin call.
+//   9. Hard-coded ADMIN_SECRET fallback is REMOVED.
+// ============================================================================
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import {
+  makeServiceClient,
+  transitionPayment,
+  activateServiceForPayment,
+  readPendingPaymentForUser,
+} from "../_shared/option_a/payments.ts";
+import { logPaymentEvent } from "../_shared/option_a/audit.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 const COMPANY_EMAIL = "marketsbraxel@ouvidor.net";
 
-function escapeHtml(text: string): string {
-  const map: Record<string, string> = {
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
-  };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
+// ---------------------------------------------------------------------------
+// Gate helpers — fail-closed
+// ---------------------------------------------------------------------------
+
+function isPaymentsEnabled(): boolean {
+  return Deno.env.get("PAYMENTS_ENABLED") === "true";
 }
 
-async function sendUserCryptoConfirmedEmail(
-  userEmail: string, 
-  fullName: string, 
-  planName: string, 
-  amount: string, 
-  accountId: string,
-  network: string
-) {
-  const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  
-  if (!resendApiKey) {
-    console.log("CRYPTO PAYMENT CONFIRMED (Resend not configured):", { to: userEmail, planName, amount });
-    return;
+function getAdminSecret(): string {
+  const val = Deno.env.get("ADMIN_SECRET");
+  if (!val) {
+    throw new Error("ADMIN_SECRET environment variable is not set");
   }
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <style>
-    body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:20px}
-    .wrap{max-width:600px;margin:0 auto;background:#fff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-    .header{background:#0a0e27;padding:40px;text-align:center}
-    .header h1{color:#D4AF37;font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0}
-    .success{padding:20px;background:#d4edda;border-left:4px solid #28a745;margin:20px 0}
-    .details{padding:20px;background:#f9f9f9;border-radius:4px;margin:20px 0}
-    .body{padding:40px}
-    .title{font-size:20px;font-weight:bold;color:#222;margin-bottom:20px}
-    .text{font-size:15px;color:#555;line-height:1.7;margin-bottom:20px}
-    .btn{display:inline-block;padding:16px 40px;background:#D4AF37;color:#000;text-decoration:none;font-weight:bold;text-transform:uppercase;letter-spacing:1px;border-radius:3px}
-    .footer{padding:20px 40px;text-align:center;font-size:11px;color:#999;border-top:1px solid #eee}
-  </style>
-</head>
-<body>
-<div class="wrap">
-  <div class="header">
-    <h1>Braxel Markets</h1>
-  </div>
-  <div class="body">
-    <div class="success">
-      <strong>✓ Payment Confirmed!</strong>
-      <p style="margin:10px 0 0;font-size:14px">Your crypto payment has been verified on the blockchain. Your account is now active!</p>
-    </div>
-    <div class="title">Welcome, ${escapeHtml(fullName || "User")}!</div>
-    <p class="text">Great news! Your crypto payment has been confirmed on the ${escapeHtml(network)}. Your trading account is now fully active. Here are your account details:</p>
-    <div class="details">
-      <p style="margin:5px 0;font-size:14px"><strong>Account ID:</strong> ${escapeHtml(accountId)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Plan:</strong> ${escapeHtml(planName)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Amount Paid:</strong> ${escapeHtml(amount)} USD</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Network:</strong> ${escapeHtml(network)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Status:</strong> Active</p>
-    </div>
-    <p class="text">Your infrastructure deployment is in progress. Within the next few minutes, your algorithmic trading system will be operational.</p>
-    <p style="text-align:center;margin:30px 0">
-      <a href="#" class="btn">Access Your Dashboard</a>
-    </p>
-    <p class="text">If you have any questions, our institutional support team is available 24/7.</p>
-    <p class="text">Best regards,<br/>Braxel Markets Team</p>
-  </div>
-  <div class="footer">© 2026 Braxel Markets — Institutional Trading Infrastructure</div>
-</div>
-</body>
-</html>`;
-
-  const text = `Payment Confirmed — Braxel Markets
-
-Dear ${fullName || "User"},
-
-Great news! Your crypto payment has been confirmed on the ${network}. Your trading account is now fully active!
-
-Account Details:
-- Account ID: ${accountId}
-- Plan: ${planName}
-- Amount Paid: ${amount} USD
-- Network: ${network}
-- Status: Active
-
-Your infrastructure deployment is in progress. Within the next few minutes, your algorithmic trading system will be operational.
-
-Access your dashboard to monitor your account.
-
-Best regards,
-Braxel Markets Team`;
-
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: "Braxel Markets <noreply@braxelmarkets.com>",
-        to: userEmail,
-        subject: `✓ Payment Confirmed — ${planName}`,
-        html,
-        text,
-      }),
-    });
-
-    if (!res.ok) {
-      const err = await res.text();
-      console.error("Resend crypto confirmation email error:", err);
-    } else {
-      const result = await res.json();
-      console.log("Crypto confirmation email sent:", { to: userEmail, emailId: result.id });
-    }
-  } catch (error) {
-    console.error("Error sending crypto confirmation email:", error);
-  }
+  return val;
 }
+
+// ---------------------------------------------------------------------------
+// Main handler
+// ---------------------------------------------------------------------------
 
 serve(async (req) => {
-  try {
-    const { paymentId, txHash, adminSecret } = await req.json();
-
-    // Simple admin verification (in production, use proper auth)
-    const ADMIN_SECRET = Deno.env.get("ADMIN_SECRET") || "braxel-admin-2026";
-    if (adminSecret !== ADMIN_SECRET) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? '';
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '';
-    
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
-
-    // Get pending payment
-    const { data: pendingPayment, error: fetchError } = await supabaseClient
-      .from('pending_payments')
-      .select('*')
-      .eq('payment_id', paymentId)
-      .eq('status', 'pending')
-      .single();
-
-    if (fetchError || !pendingPayment) {
-      return new Response(JSON.stringify({ error: 'Payment not found or already processed' }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
-
-    // Get user profile
-    const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('email, full_name')
-      .eq('id', pendingPayment.user_id)
-      .single();
-
-    // Create service account
-    const accountId = `ACC-${Math.floor(100000 + Math.random() * 900000)}`
-    const { error: serviceError } = await supabaseClient
-      .from('services')
-      .insert([{
-        user_id: pendingPayment.user_id,
-        plan_name: pendingPayment.plan_name,
-        account_id: accountId,
-        status: 'Active',
-        balance: parseFloat(pendingPayment.amount_usd)
-      }]);
-
-    if (serviceError) {
-      console.error("[crypto-confirmation] Service creation error:", serviceError);
-      throw serviceError;
-    }
-
-    // Update pending payment status
-    await supabaseClient
-      .from('pending_payments')
-      .update({ 
-        status: 'confirmed', 
-        confirmed_at: new Date().toISOString(),
-        tx_hash: txHash,
-        account_id: accountId
-      })
-      .eq('payment_id', paymentId);
-
-    // Send confirmation email to user
-    await sendUserCryptoConfirmedEmail(
-      profile?.email || '',
-      profile?.full_name || '',
-      pendingPayment.plan_name,
-      pendingPayment.amount_usd,
-      accountId,
-      pendingPayment.network
-    );
-
-    console.log(`[crypto-confirmation] SUCCESS: Payment ${paymentId} confirmed, account ${accountId} created`);
-    return new Response(JSON.stringify({ 
-      success: true, 
-      accountId,
-      message: 'Payment confirmed and user notified'
-    }), {
-      headers: { "Content-Type": "application/json" }
-    });
-
-  } catch (error: any) {
-    console.error("[crypto-confirmation] Error:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "method_not_allowed" }), {
+      status: 405,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-})
+
+  // -------------------------------------------------------------------------
+  // PAYMENTS_ENABLED gate — fail-closed
+  // -------------------------------------------------------------------------
+  if (!isPaymentsEnabled()) {
+    return new Response(
+      JSON.stringify({
+        error:   "payments_disabled",
+        message:  "PAYMENTS_ENABLED is not set to 'true'. No payment was modified.",
+      }),
+      {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Parse body
+  // -------------------------------------------------------------------------
+  let body: {
+    paymentId?: string;
+    txHash?: string;
+    adminSecret?: string;
+    network?: string;
+    amountCents?: number;
+  };
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(JSON.stringify({ error: "invalid_json" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const { paymentId, txHash, adminSecret, network, amountCents } = body;
+
+  if (!paymentId || !txHash || !adminSecret) {
+    return new Response(
+      JSON.stringify({ error: "missing_required_fields" }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // ADMIN_SECRET gate — fail-closed (no fallback secret)
+  // -------------------------------------------------------------------------
+  let adminSecretValue: string;
+  try {
+    adminSecretValue = getAdminSecret();
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error("[crypto-confirmation] ADMIN_SECRET not configured:", err);
+    return new Response(
+      JSON.stringify({ error: "server_misconfigured" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  if (adminSecret !== adminSecretValue) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Read the payment (service role, bypasses RLS)
+  // -------------------------------------------------------------------------
+  const admin = makeServiceClient();
+
+  // Find the payment by its legacy 'id' column
+  const { data: paymentRaw, error: fetchErr } = await admin
+    .from("pending_payments")
+    .select("*")
+    .eq("id", paymentId)
+    .maybeSingle();
+
+  if (fetchErr || !paymentRaw) {
+    return new Response(JSON.stringify({ error: "payment_not_found" }), {
+      status: 404,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const payment = paymentRaw as any;
+  const currentStatus: any = payment.status_enum ?? "pending";
+
+  // -------------------------------------------------------------------------
+  // Idempotency: if already confirmed, return success
+  // -------------------------------------------------------------------------
+  if (currentStatus === "confirmed") {
+    return new Response(
+      JSON.stringify({
+        ok:          true,
+        idempotent:  true,
+        message:     "Payment already confirmed.",
+        paymentId,
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
+  // -------------------------------------------------------------------------
+  // Transition pending → processing → confirmed
+  // -------------------------------------------------------------------------
+  let confirmed = await transitionPayment(admin, {
+    paymentId:     payment.id,
+    previousStatus: currentStatus,
+    newStatus:     "processing",
+    actor:         "admin",
+    source:        "crypto",
+    eventId:       `confirm:${txHash}:processing`,
+    reason:        "admin_manual_confirmation_started",
+  });
+
+  confirmed = await transitionPayment(admin, {
+    paymentId:     confirmed.id,
+    previousStatus: "processing",
+    newStatus:     "confirmed",
+    actor:         "admin",
+    source:        "crypto",
+    eventId:       `confirm:${txHash}:confirmed`,
+    reason:        "admin_verified_on_chain",
+    verifiedAmountCents: amountCents ?? confirmed.amount_cents,
+    verifiedNetwork:    network ?? confirmed.network,
+    verifiedTxHash:     txHash,
+  });
+
+  // Also update the legacy text columns (for backward compatibility)
+  await admin
+    .from("pending_payments")
+    .update({
+      status:        "confirmed",
+      confirmed_at:   new Date().toISOString(),
+      tx_hash:       txHash,
+      account_id:    `ACC-${Math.floor(100000 + Math.random() * 900000)}`,
+    })
+    .eq("id", confirmed.id);
+
+  // -------------------------------------------------------------------------
+  // Activate service (idempotent via unique partial index)
+  // -------------------------------------------------------------------------
+  const activation = await activateServiceForPayment(
+    admin,
+    confirmed as any,
+    "admin",
+    "crypto",
+    `confirm:${txHash}:activated`,
+  );
+
+  // -------------------------------------------------------------------------
+  // Log to audit
+  // -------------------------------------------------------------------------
+  await logPaymentEvent(admin, {
+    paymentId: confirmed.id,
+    actor:     "admin",
+    source:    "crypto",
+    eventId:    `confirm:${txHash}:admin_action`,
+    previousStatus: currentStatus,
+    newStatus: "confirmed",
+    reason:    `admin confirmed payment: tx=${txHash}, activated=${activation.activated}`,
+  });
+
+  // -------------------------------------------------------------------------
+  // Email notification to user (Resend, optional)
+  // -------------------------------------------------------------------------
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  if (resendApiKey && payment.user_id) {
+    // Fetch user email
+    const { data: profile } = await admin
+      .from("profiles")
+      .select("email, full_name")
+      .eq("id", payment.user_id)
+      .single();
+
+    const userEmail = profile?.email;
+    if (userEmail) {
+      await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${resendApiKey}`,
+        },
+        body: JSON.stringify({
+          from:    "Braxel Markets <noreply@braxelmarkets.com>",
+          to:      userEmail,
+          subject: "Payment Confirmed — Braxel Markets",
+          html:    `<p>Your crypto payment has been confirmed. Your trading account is now active.</p>`,
+          text:    "Your crypto payment has been confirmed. Your trading account is now active.",
+        }),
+      }).catch((e) =>
+        // eslint-disable-next-line no-console
+        console.error("[crypto-confirmation] email send failed:", e)
+      );
+    }
+  }
+
+  return new Response(
+    JSON.stringify({
+      ok:          true,
+      paymentId:   confirmed.id,
+      status:      confirmed.status_enum,
+      activated:   activation.activated,
+      serviceId:   activation.serviceId,
+      reason:      activation.reason,
+    }),
+    {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+});
