@@ -1,5 +1,3 @@
-"use client";
-
 import React from 'react';
 import { Shield, Target, Eye, Users, Award, Globe, Landmark, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -14,7 +12,6 @@ const About = () => {
     <div className="min-h-screen bg-black text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       <MarketTicker />
-      
       <section className="relative pt-[200px] pb-20 border-b border-white/5 bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
         <div className="container mx-auto px-8">
           <div className="max-w-3xl animate-fadeInUp">
