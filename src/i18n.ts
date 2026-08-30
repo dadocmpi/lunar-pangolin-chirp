@@ -603,6 +603,18 @@ const enTranslation = {
   }
 };
 
+// Placeholder translations for other languages (using English as fallback)
+const ptTranslation = enTranslation;
+const itTranslation = enTranslation;
+const esTranslation = enTranslation;
+const frTranslation = enTranslation;
+const deTranslation = enTranslation;
+const ruTranslation = enTranslation;
+const zhTranslation = enTranslation;
+const jaTranslation = enTranslation;
+const arTranslation = enTranslation;
+const heTranslation = enTranslation;
+
 const resources = {
   en: { translation: enTranslation },
   pt: { translation: ptTranslation },
