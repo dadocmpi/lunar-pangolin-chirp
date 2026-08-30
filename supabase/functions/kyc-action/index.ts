@@ -10,6 +10,12 @@ const corsHeaders = {
 const APPROVE_STATUS = "approved";
 const DENY_STATUS    = "rejected";
 
+/**
+ * Read KYC_ACTION_SECRET from the Edge Function env.
+ * Throws if it is not set. There is intentionally no hard-coded fallback
+ * so a misconfigured environment can never accidentally authorize a KYC
+ * action with a default secret.
+ */
 function getKycActionSecret(): string {
   const val = Deno.env.get("KYC_ACTION_SECRET");
   if (!val) {
@@ -22,6 +28,7 @@ function makeToken(userId: string, action: string, secret: string): string {
   return btoa(`${userId}:${action}:${secret}`);
 }
 
+/** Constant-time string compare to prevent token timing attacks. */
 function timingSafeEqual(a: string, b: string): boolean {
   if (a.length !== b.length) return false;
   let mismatch = 0;
@@ -96,7 +103,7 @@ serve(async (req) => {
     );
   }
 
-  // KYC_ACTION_SECRET — fail-closed
+  // KYC_ACTION_SECRET — fail closed if missing.
   let secret: string;
   try {
     secret = getKycActionSecret();

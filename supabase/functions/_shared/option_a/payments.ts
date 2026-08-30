@@ -1,9 +1,3 @@
-// ============================================================================
-// Payment validation, idempotency, transitions, and activation.
-// All imports are from the local option_a/ directory or Deno stdlib only.
-// This file runs on Deno (Edge Functions) only. Never bundled into browser.
-// ============================================================================
-
 import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import type { PaymentStatus } from "./plans.ts";
 import {
@@ -15,10 +9,6 @@ import {
   canTransition,
 } from "./plans.ts";
 import { logPaymentEvent } from "./audit.ts";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 export interface CheckoutInput {
   planId?: unknown;
@@ -40,17 +30,12 @@ export interface ValidatedRequest {
   metadata: Record<string, unknown>;
 }
 
-/** Thrown on validation or state-machine failures. */
 export class PaymentError extends Error {
   constructor(public code: string, message?: string) {
     super(message ?? code);
     this.name = "PaymentError";
   }
 }
-
-// ---------------------------------------------------------------------------
-// Service-client factory (service role, bypasses RLS)
-// ---------------------------------------------------------------------------
 
 export function makeServiceClient(): SupabaseClient {
   const url = Deno.env.get("SUPABASE_URL");
@@ -61,28 +46,19 @@ export function makeServiceClient(): SupabaseClient {
   });
 }
 
-// ---------------------------------------------------------------------------
-// Validation (server-only — never trusts the browser)
-// ---------------------------------------------------------------------------
-
-/** Throws PaymentError on any invalid input. Returns ValidatedRequest on success. */
 export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
   if (!input || typeof input !== "object") {
     throw new PaymentError("invalid_request");
   }
 
-  // Plan — must resolve from the canonical table.
   const plan = getPlan(input.planId);
 
-  // Currency — only USD is supported.
   if (!isSupportedCurrency(input.clientCurrency)) {
     throw new PaymentError("invalid_currency");
   }
 
-  // Network — optional, but if present must be in the allow-list.
   let network: ReturnType<typeof getCryptoNetwork> | null = null;
   if (input.network !== undefined && input.network !== null) {
-    // Throws on unknown network id. Caught and rethrown as PaymentError.
     try {
       network = getCryptoNetwork(input.network);
     } catch {
@@ -90,7 +66,6 @@ export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
     }
   }
 
-  // Idempotency key — required, min 8 chars, max 200.
   if (
     typeof input.idempotencyKey !== "string" ||
     input.idempotencyKey.length < 8
@@ -101,10 +76,8 @@ export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
     throw new PaymentError("idempotency_key_too_long");
   }
 
-  // Server-derives the amount. Browser amount is always ignored.
   const amountCents = plan.priceCents;
 
-  // Strip metadata to safe primitives only (strings ≤200 chars, numbers, booleans).
   const metadata: Record<string, unknown> = {};
   if (input.metadata && typeof input.metadata === "object") {
     for (const [k, v] of Object.entries(input.metadata)) {
@@ -115,7 +88,7 @@ export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
   }
 
   return {
-    userId: "",      // filled by caller after JWT verification
+    userId: "",
     userEmail: null,
     planId: plan.id,
     amountCents,
@@ -126,15 +99,11 @@ export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Pending payment CRUD
-// ---------------------------------------------------------------------------
-
 export interface PendingPaymentRow {
   id: string;
   user_id: string;
   plan_name: string;
-  status: string;           // legacy text column (still written by legacy code)
+  status: string;
   status_enum: PaymentStatus | null;
   amount_cents: number | null;
   network: string | null;
@@ -146,10 +115,6 @@ export interface PendingPaymentRow {
   updated_at: string;
 }
 
-/**
- * Insert a pending payment with idempotency.
- * Returns { payment, created } where created is false on duplicate.
- */
 export async function upsertPendingPayment(
   client: SupabaseClient,
   params: {
@@ -164,7 +129,6 @@ export async function upsertPendingPayment(
     metadata: Record<string, unknown>;
   },
 ): Promise<{ payment: PendingPaymentRow; created: boolean }> {
-  // Idempotency pre-check
   const { data: existing } = await client
     .from("pending_payments")
     .select("*")
@@ -186,15 +150,14 @@ export async function upsertPendingPayment(
       network:         params.network,
       method:          params.method,
       idempotency_key: params.idempotencyKey,
-      status:         "pending",           // legacy text column
-      status_enum:     "pending",          // new enum column
+      status:         "pending",
+      status_enum:     "pending",
       metadata:        params.metadata,
     })
     .select("*")
     .single();
 
   if (error) {
-    // Race: another concurrent insert won the unique index.
     if (error.code === "23505") {
       const { data: raced } = await client
         .from("pending_payments")
@@ -220,10 +183,6 @@ export async function upsertPendingPayment(
   return { payment: data as PendingPaymentRow, created: true };
 }
 
-/**
- * Update status_enum on pending_payments.
- * Throws PaymentError if the transition is not allowed.
- */
 export async function transitionPayment(
   client: SupabaseClient,
   params: {
@@ -248,7 +207,7 @@ export async function transitionPayment(
 
   const updatePayload: Record<string, unknown> = {
     status_enum:    params.newStatus,
-    status:        params.newStatus,  // keep legacy text column in sync
+    status:        params.newStatus,
     updated_at:    new Date().toISOString(),
   };
   if (params.verifiedAmountCents !== undefined) {
@@ -265,7 +224,7 @@ export async function transitionPayment(
     .from("pending_payments")
     .update(updatePayload)
     .eq("id", params.paymentId)
-    .eq("status_enum", params.previousStatus)  // optimistic concurrency
+    .eq("status_enum", params.previousStatus)
     .select("*")
     .single();
 
@@ -286,9 +245,6 @@ export async function transitionPayment(
   return data as PendingPaymentRow;
 }
 
-/**
- * Read a pending payment by id, asserting ownership.
- */
 export async function readPendingPaymentForUser(
   client: SupabaseClient,
   paymentId: string,
@@ -304,15 +260,6 @@ export async function readPendingPaymentForUser(
   return data as PendingPaymentRow;
 }
 
-// ---------------------------------------------------------------------------
-// Service activation (only after confirmed payment)
-// ---------------------------------------------------------------------------
-
-/**
- * Insert a services row after a confirmed payment.
- * Idempotent via the unique partial index on (user_id, plan_name) WHERE activated = true.
- * Returns { activated, serviceId }.
- */
 export async function activateServiceForPayment(
   client: SupabaseClient,
   payment: PendingPaymentRow,
@@ -331,7 +278,7 @@ export async function activateServiceForPayment(
     .from("services")
     .insert({
       user_id:           payment.user_id,
-      plan_name:         payment.plan_name,   // canonical column
+      plan_name:         payment.plan_name,
       account_id:       accountId,
       status:           "Active",
       balance,
@@ -343,7 +290,6 @@ export async function activateServiceForPayment(
 
   if (error) {
     if (error.code === "23505") {
-      // Unique index violation — already activated. Idempotent.
       return { activated: false, serviceId: null, reason: "already_activated" };
     }
     throw new PaymentError("db_error", error.message);
