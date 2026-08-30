@@ -10,8 +10,6 @@ import MarketTicker from '@/components/MarketTicker';
 const About = () => {
   const { t } = useTranslation();
 
-  const team = t('about.team', { returnObjects: true }) as Array<{ name: string; role: string; bio: string; photo: string }>;
-
   return (
     <div className="min-h-screen bg-black text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
@@ -44,12 +42,26 @@ const About = () => {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-px bg-white/5">
-            {[
-              { label: t('about.stats.founded'), value: "2026", icon: <Landmark size={20} /> },
-              { label: t('about.stats.users'), value: "500+", icon: <Users size={20} /> },
-              { label: t('about.stats.uptime'), value: "99.9%", icon: <Zap size={20} /> },
-              { label: t('about.stats.support'), value: "24/7", icon: <Globe size={20} /> }
-            ].map((stat, i) => (
+            {[{
+              label: t('about.stats.founded'),
+              value: "2026",
+              icon: <Landmark size={20} />
+            },
+            {
+              label: t('about.stats.users'),
+              value: "500+",
+              icon: <Users size={20} />
+            },
+            {
+              label: t('about.stats.uptime'),
+              value: "99.9%",
+              icon: <Zap size={20} />
+            },
+            {
+              label: t('about.stats.support'),
+              value: "24/7",
+              icon: <Globe size={20} />
+            }].map((stat, i) => (
               <div key={i} className="p-10 bg-[#080B12] flex flex-col items-center justify-center text-center hover:bg-white/[0.02] transition-all group">
                 <div className="text-[#D4AF37] mb-4 group-hover:scale-110 transition-transform">{stat.icon}</div>
                 <p className="text-[24px] font-serif font-bold text-white mb-1">{stat.value}</p>
@@ -60,11 +72,21 @@ const About = () => {
         </section>
 
         <section className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
-          {[
-            { icon: <Target size={32} />, title: t('about.values.mission'), desc: t('about.values.missionDesc') },
-            { icon: <Eye size={32} />, title: t('about.values.vision'), desc: t('about.values.visionDesc') },
-            { icon: <Shield size={32} />, title: t('about.values.values'), desc: t('about.values.valuesDesc') }
-          ].map((item, i) => (
+          [{
+            icon: <Target size={32} />,
+            title: t('about.values.mission'),
+            desc: t('about.values.missionDesc')
+          },
+          {
+            icon: <Eye size={32} />,
+            title: t('about.values.vision'),
+            desc: t('about.values.visionDesc')
+          },
+          {
+            icon: <Shield size={32} />,
+            title: t('about.values.values'),
+            desc: t('about.values.valuesDesc')
+          }].map((item, i) => (
             <div key={i} className="p-12 bg-[#080B12] flex flex-col items-center text-center hover:bg-white/[0.02] transition-all group">
               <div className="text-[#D4AF37] mb-8 group-hover:scale-110 transition-transform">{item.icon}</div>
               <h3 className="text-[11px] font-bold uppercase tracking-[3px] mb-4 text-white">{item.title}</h3>
@@ -73,35 +95,7 @@ const About = () => {
           ))}
         </section>
 
-        {/* Leadership Team Section */}
-        <section>
-          <div className="text-center mb-16">
-            <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.5em] mb-4 block">{t('about.badge')}</span>
-            <h2 className="text-[20px] md:text-[28px] font-serif font-bold tracking-tighter uppercase">{t('about.teamTitle')}</h2>
-            <p className="text-slate-400 text-[14px] mt-4 max-w-[500px] mx-auto leading-relaxed">{t('about.teamDesc')}</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
-            {Array.isArray(team) && team.map((member, i) => (
-              <div key={i} className="p-12 bg-[#080B12] flex flex-col items-center text-center hover:bg-white/[0.02] transition-all group">
-                {member.photo ? (
-                  <img 
-                    src={member.photo} 
-                    alt={member.name} 
-                    className="w-24 h-24 rounded-full object-cover border-2 border-[#D4AF37]/20 mb-8 group-hover:border-[#D4AF37]/50 transition-all"
-                  />
-                ) : (
-                  <div className="w-24 h-24 bg-[#D4AF37]/10 border border-[#D4AF37]/20 rounded-full flex items-center justify-center mb-8 group-hover:border-[#D4AF37]/50 transition-all">
-                    <Users className="text-[#D4AF37]" size={28} />
-                  </div>
-                )}
-                <h3 className="text-[13px] font-bold uppercase tracking-[0.15em] mb-2 text-white">{member.name}</h3>
-                <p className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.2em] mb-6">{member.role}</p>
-                <p className="text-slate-500 text-[12px] leading-relaxed">{member.bio}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* TODO: re-add team section once real bios/photos are provided */}
       </div>
 
       <Footer />
