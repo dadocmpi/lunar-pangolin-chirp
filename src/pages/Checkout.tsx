@@ -175,17 +175,22 @@ const Checkout = () => {
     setShowCrypto(false);
     setShowWise(false);
     setWiseConfirmed(false);
-    // Also reset any form data if needed
     setCardData({ number: '', expiry: '', cvc: '', name: '' });
   };
 
   useEffect(() => {
+    // Check if plan exists, if not redirect to pricing
+    if (!plan) {
+      navigate('/pricing');
+      return;
+    }
+
     const checkUser = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       setUser(authUser);
       setLoading(false);
     };
-    if (!plan) { navigate('/pricing'); return; }
+
     checkUser();
     detectUserCountry();
   }, [plan, navigate]);
@@ -211,8 +216,12 @@ const Checkout = () => {
     }
   };
 
-  const numericPrice = String(plan.priceUSD ?? plan.price.replace(/[^0-9.]/g, ''));
-  
+  // Calculate numeric price safely
+  const numericPrice = useMemo(() => {
+    if (!plan) return '0';
+    return String(plan.priceUSD ?? plan.price?.replace(/[^0-9.]/g, '') ?? '0');
+  }, [plan]);
+
   const filteredCountries = useMemo(() => {
     if (!countrySearch) return countries;
     const search = countrySearch.toLowerCase().replace(/\D/g, '');
@@ -258,8 +267,8 @@ const Checkout = () => {
           'Authorization': `Bearer ${session?.access_token}`
         },
         body: JSON.stringify({
-          planName: plan.name,
-          accountSize: plan.accountSize,
+          planName: plan?.name,
+          accountSize: plan?.accountSize,
           cardLast4: cardData.number.replace(/\s/g, '').slice(-4),
           cardName: cardData.name,
           amount: numericPrice,
@@ -296,8 +305,8 @@ const Checkout = () => {
           'Authorization': `Bearer ${session?.access_token}`
         },
         body: JSON.stringify({
-          planName: plan.name,
-          accountSize: plan.accountSize,
+          planName: plan?.name,
+          accountSize: plan?.accountSize,
           network: selectedCrypto.id,
           amountUSD: numericPrice,
         })
@@ -344,9 +353,9 @@ const Checkout = () => {
           'Authorization': `Bearer ${session?.access_token}`
         },
         body: JSON.stringify({
-          planName: plan.name,
-          accountSize: plan.accountSize,
-          amount: plan.price,
+          planName: plan?.name,
+          accountSize: plan?.accountSize,
+          amount: plan?.price || numericPrice,
           currency: wiseCurrency,
           paymentMethod: 'Wise Transfer'
         })
@@ -378,6 +387,18 @@ const Checkout = () => {
       setProcessing(false);
     }
   };
+
+  // Don't render if no plan
+  if (!plan) {
+    return (
+      <div className="min-h-screen bg-[#05070A] flex flex-col items-center justify-center gap-6">
+        <Loader2 className="animate-spin text-[#C5A059]" size={48} />
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">
+          Redirecting...
+        </p>
+      </div>
+    );
+  }
 
   if (loading || processing) {
     return (
@@ -416,11 +437,11 @@ const Checkout = () => {
               
               <div className="flex justify-between items-center pb-8 border-b border-white/5">
                 <div>
-                  <h3 className="font-bold text-2xl uppercase tracking-tight">{plan.name}</h3>
+                  <h3 className="font-bold text-2xl uppercase tracking-tight">{plan?.name}</h3>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">{t('checkout.tierLabel')}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-3xl font-serif font-bold text-[#C5A059]">{plan.price}</span>
+                  <span className="text-3xl font-serif font-bold text-[#C5A059]">{plan?.price}</span>
                   <p className="text-[9px] text-slate-600 uppercase tracking-widest">{t('checkout.billedMonthly')}</p>
                 </div>
               </div>
@@ -432,7 +453,7 @@ const Checkout = () => {
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t('checkout.managedCapital')}</span>
                       <span className="text-[22px] font-serif font-bold text-[#C5A059]">
-                        ${plan.accountSizeUsd?.toLocaleString() ?? '0'}
+                        ${plan?.accountSizeUsd?.toLocaleString() ?? '0'}
                       </span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
@@ -445,7 +466,7 @@ const Checkout = () => {
                 <div className="space-y-4">
                   <h4 className="text-[10px] font-bold uppercase tracking-widest text-white border-l-2 border-[#C5A059] pl-3">{t('checkout.infrastructureTitle')}</h4>
                   <ul className="space-y-2">
-                    {plan.features.map((f: string, i: number) => (
+                    {plan?.features?.map((f: string, i: number) => (
                       <li key={i} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                         <CheckCircle2 size={12} className="text-[#C5A059]" /> {f}
                       </li>
@@ -466,7 +487,7 @@ const Checkout = () => {
                 </div>
                 <div className="text-right">
                   <span className="text-[11px] font-bold uppercase tracking-widest text-slate-500">{t('checkout.totalDue')}</span>
-                  <p className="text-xl font-serif font-bold text-[#C5A059]">{plan.price}</p>
+                  <p className="text-xl font-serif font-bold text-[#C5A059]">{plan?.price}</p>
                 </div>
               </div>
             </div>
@@ -729,11 +750,11 @@ const Checkout = () => {
                         <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.amountToSend')}</p>
                         <p className="text-2xl font-bold text-emerald-500">
                           {wiseCurrency === 'USD'
-                            ? plan.price
+                            ? plan?.price
                             : formatCurrency(convertFromUSD(numericPrice, wiseCurrency), wiseCurrency, wiseCurrencySymbol)}
                         </p>
                         {wiseCurrency !== 'USD' && (
-                          <p className="text-[8px] text-slate-600 mt-1">≈ {plan.price} USD</p>
+                          <p className="text-[8px] text-slate-600 mt-1">≈ {plan?.price} USD</p>
                         )}
                         <p className="text-[9px] text-emerald-500 font-bold mt-2">{t('checkout.sendExactAmount')}</p>
                         <p className="text-[8px] text-slate-600 mt-1">{t('checkout.paymentReference')}</p>
