@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 export type CheckoutPaymentStatus =
@@ -36,17 +36,27 @@ export interface PaymentStatusView {
 export function usePaymentStatus(paymentId: string | null, intervalMs = 5000) {
   const [view, setView] = useState<PaymentStatusView | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [stopped, setStopped] = useState(false);
+
+  // The "stopped" flag is a ref so flipping it does not retrigger the effect.
+  // A useState would cause the effect to re-run on every state change, which
+  // would clear and re-create the interval, which would stop polling after
+  // the first tick.
+  const stoppedRef = useRef<boolean>(false);
 
   useEffect(() => {
-    setStopped(false);
+    // Reset the ref on each new paymentId / intervalMs.
+    stoppedRef.current = false;
+    setView(null);
+    setError(null);
+
     if (!paymentId) {
-      setView(null);
       return;
     }
 
+    let intervalId: number | undefined;
+
     const tick = async () => {
-      if (stopped) return;
+      if (stoppedRef.current) return;
 
       // Check the real gate first
       const gate = import.meta.env.VITE_PAYMENTS_ENABLED;
@@ -81,13 +91,17 @@ export function usePaymentStatus(paymentId: string | null, intervalMs = 5000) {
       }
     };
 
+    // Fire one tick immediately, then schedule.
     tick();
-    const id = setInterval(tick, intervalMs);
+    intervalId = setInterval(tick, intervalMs) as unknown as number;
+
     return () => {
-      setStopped(true);
-      clearInterval(id);
+      stoppedRef.current = true;
+      if (intervalId !== undefined) {
+        clearInterval(intervalId);
+      }
     };
-  }, [paymentId, intervalMs, stopped]);
+  }, [paymentId, intervalMs]);
 
   return { view, error };
 }

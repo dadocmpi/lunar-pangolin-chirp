@@ -8,6 +8,7 @@ import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-
 import type { PaymentStatus } from "./plans.ts";
 import {
   getPlan,
+  getCryptoNetwork,
   isSupportedCurrency,
   PLANS,
   PLAN_IDS,
@@ -34,7 +35,7 @@ export interface ValidatedRequest {
   planId: import("./plans.ts").PlanId;
   amountCents: number;   // server-derived, never from the browser
   currency: "USD";
-  network: ReturnType<typeof import("./plans.ts").getCryptoNetwork> | null;
+  network: ReturnType<typeof getCryptoNetwork> | null;
   idempotencyKey: string;
   metadata: Record<string, unknown>;
 }
@@ -79,12 +80,10 @@ export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
   }
 
   // Network — optional, but if present must be in the allow-list.
-  let network: ReturnType<typeof import("./plans.ts").getCryptoNetwork> | null = null;
+  let network: ReturnType<typeof getCryptoNetwork> | null = null;
   if (input.network !== undefined && input.network !== null) {
-    network = (input.network as unknown) as ReturnType<typeof import("./plans.ts").getCryptoNetwork>;
-    // Validate it is a known network
+    // Throws on unknown network id. Caught and rethrown as PaymentError.
     try {
-      const { getCryptoNetwork } = require("./plans.ts");
       network = getCryptoNetwork(input.network);
     } catch {
       throw new PaymentError("invalid_network");
