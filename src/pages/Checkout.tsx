@@ -62,24 +62,24 @@ const countries = [
   { code: 'NO', name: 'Norway', name_pt: 'Noruega', name_es: 'Noruega', name_it: 'Norvegia', name_fr: 'Norvège', name_de: 'Norwegen', name_ru: 'Норвегия', name_zh: '挪威', name_ja: 'ノルウェー', name_ar: 'النرويج', name_he: 'נורווגיה', ddi: '+47', flag: '🇳🇴' },
   { code: 'DK', name: 'Denmark', name_pt: 'Dinamarca', name_es: 'Dinamarca', name_it: 'Danimarca', name_fr: 'Danemark', name_de: 'Dänemark', name_ru: 'Дания', name_zh: '丹麦', name_ja: 'デンマーク', name_ar: 'الدنمارك', name_he: 'דנמרק', ddi: '+45', flag: '🇩🇰' },
   { code: 'FI', name: 'Finland', name_pt: 'Finlândia', name_es: 'Finlandia', name_it: 'Finlandia', name_fr: 'Finlande', name_de: 'Finnland', name_ru: 'Финляндия', name_zh: '芬兰', name_ja: 'フィンランド', name_ar: 'فنلندا', name_he: 'פינלנד', ddi: '+358', flag: '🇫🇮' },
-  { code: 'IE', name: 'Ireland', name_pt: 'Irlanda', name_es: 'Irlanda', name_it: 'Irlanda', name_fr: 'Irlande', name_de: 'Irland', name_ru: 'Ирландия', name_zh: '爱尔兰', name_ja: 'アイルランド', name_ar: 'אירלנד', ddi: '+353', flag: '🇮🇪' },
-  { code: 'GR', name: 'Greece', name_pt: 'Grécia', name_es: 'Grecia', name_it: 'Grecia', name_fr: 'Grèce', name_de: 'Griechenland', name_ru: 'Греция', name_zh: '希腊', name_ja: 'ギリシャ', name_ar: 'اليونان', name_he: 'יוון', ddi: '+30', flag: '🇬🇷' },
-  { code: 'RU', name: 'Russia', name_pt: 'Rússia', name_es: 'Rusia', name_it: 'Russia', name_fr: 'Russie', name_de: 'Russland', name_ru: 'Россия', name_zh: '俄罗斯', name_ja: 'ロシア', name_ar: 'روسيا', name_he: 'רוסיה', ddi: '+7', flag: '🇷🇺' },
-  { code: 'UA', name: 'Ukraine', name_pt: 'Ucrânia', name_es: 'Ucrania', name_it: 'Ucraina', name_fr: 'Ukraine', name_de: 'Ukraine', name_ru: 'Украина', name_zh: '乌克兰', name_ja: 'ウクライナ', name_ar: 'אוكرانيا', name_he: 'אוקראינה', ddi: '+380', flag: '🇺🇦' },
-  { code: 'TR', name: 'Turkey', name_pt: 'Turquia', name_es: 'Turquía', name_it: 'Turchia', name_fr: 'Turquie', name_de: 'Türkei', name_ru: 'Турция', name_zh: '土耳其', name_ja: 'トルコ', name_ar: 'تركيا', name_he: 'טורקיה', ddi: '+90', flag: '🇹🇷' },
-  { code: 'IL', name: 'Israel', name_pt: 'Israel', name_es: 'Israel', name_it: 'Israele', name_fr: 'Israël', name_de: 'Israel', name_ru: 'Израиль', name_zh: '以色列', name_ja: 'イスラエル', name_ar: 'إسرائيل', name_he: 'ישראל', ddi: '+972', flag: '🇮🇱' },
-  { code: 'AE', name: 'UAE', name_pt: 'Emirados Árabes', name_es: 'Emiratos Árabes', name_it: 'Emirati Arabi', name_fr: 'Émirats Arabes', name_de: 'VAE', name_ru: 'ОАЭ', name_zh: '阿联酋', name_ja: 'アラブ首長国連邦', name_ar: 'الإمارات', name_he: 'איחוד האמירויות', ddi: '+971', flag: '🇦🇪' },
-  { code: 'SA', name: 'Saudi Arabia', name_pt: 'Arábia Saudita', name_es: 'Arabia Saudita', name_it: 'Arabia Saudita', name_fr: 'Arabie Saoudite', name_de: 'Saudi-Arabien', name_ru: 'Саудовская Аравия', name_zh: '沙特阿拉伯', name_ja: 'サウジアラビア', name_ar: 'السعودية', name_he: 'ערב הסעודית', ddi: '+966', flag: '🇸🇦' },
-  { code: 'IN', name: 'India', name_pt: 'Índia', name_es: 'India', name_it: 'India', name_fr: 'Inde', name_de: 'Indien', name_ru: 'Индия', name_zh: '印度', name_ja: 'インド', name_ar: 'الهند', name_he: 'הודו', ddi: '+91', flag: '🇮🇳' },
-  { code: 'CN', name: 'China', name_pt: 'China', name_es: 'China', name_it: 'Cina', name_fr: 'Chine', name_de: 'China', name_ru: 'Китай', name_zh: '中国', name_ja: '中国', name_ar: 'الصين', name_he: 'סין', ddi: '+86', flag: '🇨🇳' },
-  { code: 'JP', name: 'Japan', name_pt: 'Japão', name_es: 'Japón', name_it: 'Giappone', name_fr: 'Japon', name_de: 'Japan', name_ru: 'Япония', name_zh: '日本', name_ja: '日本', name_ar: 'اليابان', name_he: 'יפן', ddi: '+81', flag: '🇯🇵' },
-  { code: 'KR', name: 'South Korea', name_pt: 'Coreia do Sul', name_es: 'Corea del Sur', name_it: 'Corea del Sud', name_fr: 'Corée du Sud', name_de: 'Südkorea', name_ru: 'Южная Корея', name_zh: '韩国', name_ja: '韓国', name_ar: 'كوريا الجنوبية', name_he: 'דרום קוריאה', ddi: '+82', flag: '🇰🇷' },
-  { code: 'AU', name: 'Australia', name_pt: 'Austrália', name_es: 'Australia', name_it: 'Australia', name_fr: 'Australie', name_de: 'Australien', name_ru: 'Австралия', name_zh: '澳大利亚', name_ja: 'オーストラリア', name_ar: 'أستراليا', name_he: 'אוסטרליה', ddi: '+61', flag: '🇦🇺' },
-  { code: 'NZ', name: 'New Zealand', name_pt: 'Nova Zelândia', name_es: 'Nueva Zelanda', name_it: 'Nuova Zelanda', name_fr: 'Nouvelle-Zélande', name_de: 'Neuseeland', name_ru: 'Новая Зеландия', name_zh: '新西兰', name_ja: 'ニュージーランド', name_ar: 'نيوزيلندا', name_he: 'ניו זילנד', ddi: '+64', flag: '🇳🇿' },
-  { code: 'ZA', name: 'South Africa', name_pt: 'África do Sul', name_es: 'Sudáfrica', name_it: 'Sud Africa', name_fr: 'Afrique du Sud', name_de: 'Südafrika', name_ru: 'Южная Африка', name_zh: '南非', name_ja: '南アフリカ', name_ar: 'جنوب أفريقيا', name_he: 'דרום אפריקה', ddi: '+27', flag: '🇿🇦' },
-  { code: 'EG', name: 'Egypt', name_pt: 'Egito', name_es: 'Egipto', name_it: 'Egitto', name_fr: 'Égypte', name_de: 'Ägypten', name_ru: 'Египет', name_zh: '埃及', name_ja: 'エジプト', name_ar: 'مصر', name_he: 'מצרים', ddi: '+20', flag: '🇪🇬' },
-  { code: 'NG', name: 'Nigeria', name_pt: 'Nigéria', name_es: 'Nigeria', name_it: 'Nigeria', name_fr: 'Nigeria', name_de: 'Нигерия', name_zh: '尼日利亚', name_ja: 'ナイジェリア', name_ar: 'نيجيريا', name_he: 'ניגריה', ddi: '+234', flag: '🇳🇬' },
-  { code: 'KE', name: 'Kenya', name_pt: 'Quênia', name_es: 'Kenia', name_it: 'Kenya', name_fr: 'Kenya', name_de: 'Kenia', name_ru: 'Кения', name_ja: 'ケニア', name_ar: 'كينيا', name_he: 'קניה', ddi: '+254', flag: '🇰🇪' },
+  { code: 'IE' , name: 'Ireland', name_pt: 'Irlanda', name_es: 'Irlanda', name_it: 'Irlanda', name_fr: 'Irlande', name_de: 'Irland', name_ru: 'Ирландия', name_zh: '爱尔兰', name_ja: 'アイルランド', name_ar: 'אירלנד', ddi: '+353', flag: '🇮🇪' },
+  { code: 'GR' , name: 'Greece', name_pt: 'Grécia', name_es: 'Grecia', name_it: 'Grecia', name_fr: 'Grèce', name_de: 'Griechenland', name_ru: 'Греция', name_zh: '希腊', name_ja: 'ギリシャ', name_ar: 'اليونان', name_he: 'יוון', ddi: '+30', flag: '🇬🇷' },
+  { code: 'RU' , name: 'Russia', name_pt: 'Rússia', name_es: 'Rusia', name_it: 'Russia', name_fr: 'Russie', name_de: 'Russland', name_ru: 'Россия', name_zh: '俄罗斯', name_ja: 'ロシア', name_ar: 'روسيا', name_he: 'רוסיה', ddi: '+7', flag: '🇷🇺' },
+  { code: 'UA' : name: 'Ukraine', name_pt: 'Ucrânia', name_es: 'Ucrania', name_it: 'Ucraina', name_fr: 'Ukraine', name_de: 'Ukraine', name_ru: 'Украина', name_zh: '乌克兰', name_ja: 'ウクライナ', name_ar: 'אוكرانيا', name_he: 'אוקראינה', ddi: '+380', flag: '🇺🇦' },
+  { code: 'TR' : name: 'Turkey', name_pt: 'Turquia', name_es: 'Turquía', name_it: 'Turchia', name_fr: 'Turquie', name_de: 'Türkei', name_ru: 'Турция', name_zh: '土耳其', name_ja: 'トルコ', name_ar: 'تركيا', name_he: 'טורקיה', ddi: '+90', flag: '🇹🇷' },
+  { code: 'IL' : name: 'Israel', name_pt: 'Israel', name_es: 'Israel', name_it: 'Israele', name_fr: 'Israël', name_de: 'Israel', name_ru: 'Израиль', name_zh: '以色列', name_ja: 'イスラエル', name_ar: 'إسرائيل', name_he: 'ישראל', ddi: '+972', flag: '🇮🇱' },
+  { code: 'AE' : name: 'UAE', name_pt: 'Emirados Árabes', name_es: 'Emiratos Árabes', name_it: 'Emirati Arabi', name_fr: 'Émirats Arabes', name_de: 'VAE', name_ru: 'ОАЭ', name_zh: '阿联酋', name_ja: 'アラブ首長国連邦', name_ar: 'الإمارات', name_he: 'איחוד האמירויות', ddi: '+971', flag: '🇦🇪' },
+  { code: 'SA' : name: 'Saudi Arabia', name_pt: 'Arábia Saudita', name_es: 'Arabia Saudita', name_it: 'Arabia Saudita', name_fr: 'Arabie Saoudite', name_de: 'Saudi-Arabien', name_ru: 'Саудовская Аравия', name_zh: '沙特阿拉伯', name_ja: 'サウジアラビア', name_ar: 'السعودية', name_he: 'ערב הסעודית', ddi: '+966', flag: '🇸🇦' },
+  { code: 'IN' : name: 'India', name_pt: 'Índia', name_es: 'India', name_it: 'India', name_fr: 'Inde', name_de: 'Indien', name_ru: 'Индия', name_zh: '印度', name_ja: 'インド', name_ar: 'الهند', name_he: 'הודו', ddi: '+91', flag: '🇮🇳' },
+  { code: 'CN' : name: 'China', name_pt: 'China', name_es: 'China', name_it: 'Cina', name_fr: 'Chine', name_de: 'China', name_ru: 'Китай', name_zh: '中国', name_ja: '中国', name_ar: 'الصين', name_he: 'סין', ddi: '+86', flag: '🇨🇳' },
+  { code: 'JP' : name: 'Japan', name_pt: 'Japão', name_es: 'Japón', name_it: 'Giappone', name_fr: 'Japon', name_de: 'Japan', name_ru: 'Япония', name_zh: '日本', name_ja: '日本', name_ar: 'اليابان', name_he: 'יפן', ddi: '+81', flag: '🇯🇵' },
+  { code: 'KR' : name: 'South Korea', name_pt: 'Coreia do Sul', name_es: 'Corea del Sur', name_it: 'Corea del Sud', name_fr: 'Corée du Sud', name_de: 'Südkorea', name_ru: 'Южная Корея', name_zh: '韩国', name_ja: '韓国', name_ar: 'كوريا الجنوبية', name_he: 'דרום קוריאה', ddi: '+82', flag: '🇰🇷' },
+  { code: 'AU' : name: 'Australia', name_pt: 'Austrália', name_es: 'Australia', name_it: 'Australia', name_fr: 'Australie', name_de: 'Australien', name_ru: 'Австралия', name_zh: '澳大利亚', name_ja: 'オーストラリア', name_ar: 'أستراليا', name_he: 'אוסטרליה', ddi: '+61', flag: '🇦🇺' },
+  { code: 'NZ' : name: 'New Zealand', name_pt: 'Nova Zelândia', name_es: 'Nueva Zelanda', name_it: 'Nuova Zelanda', name_fr: 'Nouvelle-Zélande', name_de: 'Neuseeland', name_ru: 'Новая Зеландия', name_zh: '新西兰', name_ja: 'ニュージーランド', name_ar: 'نيوزيلندا', name_he: 'ניו זילנד', ddi: '+64', flag: '🇳🇿' },
+  { code: 'ZA' : name: 'South Africa', name_pt: 'África do Sul', name_es: 'Sudáfrica', name_it: 'Sud Africa', name_fr: 'Afrique du Sud', name_de: 'Südafrika', name_ru: 'Южная Африка', name_zh: '南非', name_ja: '南アフリカ', name_ar: 'جنوب أفريقيا', name_he: 'דרום אפריקה', ddi: '+27', flag: '🇿🇦' },
+  { code: 'EG' : name: 'Egypt', name_pt: 'Egito', name_es: 'Egipto', name_it: 'Egitto', name_fr: 'Égypte', name_de: 'Ägypten', name_ru: 'Египет', name_zh: '埃及', name_ja: 'エジプト', name_ar: 'مصر', name_he: 'מצרים', ddi: '+20', flag: '🇪🇬' },
+  { code: 'NG' : name: 'Nigeria', name_pt: 'Nigéria', name_es: 'Nigeria', name_it: 'Nigeria', name_fr: 'Nigeria', name_de: 'Нигерия', name_zh: '尼日利亚', name_ja: 'ナイジェリア', name_ar: 'نيجيريا', name_he: 'ניגריה', ddi: '+234', flag: '🇳🇬' },
+  { code: 'KE' : name: 'Kenya', name_pt: 'Quênia', name_es: 'Kenia', name_it: 'Kenya', name_fr: 'Kenya', name_de: 'Kenia', name_ru: 'Кения', name_zh: '肯尼亚', name_ja: 'ケニア', name_ar: 'كينيا', name_he: 'קניה', ddi: '+254', flag: '🇰🇪' },
   // Mais países podem ser adicionados...
 ];
 
@@ -292,8 +292,6 @@ const Checkout = () => {
     };
     if (!plan) { navigate('/pricing'); return; }
     checkUser();
-    
-    // Detectar país por IP
     detectUserCountry();
   }, [plan, navigate]);
 
@@ -321,7 +319,7 @@ const Checkout = () => {
   };
 
   const numericPrice = String(plan.priceUSD ?? plan.price.replace(/[^0-9.]/g, ''));
-
+  
   // Países filtrados pela busca (por nome ou DDI)
   const filteredCountries = useMemo(() => {
     if (!countrySearch) return countries;
