@@ -34,20 +34,20 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <Routes>
-            <Route path="/" element={<Suspense fallback={<div>Loading...</div>}><Index /></Suspense />} />
-            <Route path="/pricing" element={<Suspense fallback={<div>Loading...</div>}><Pricing /></Suspense />} />
-            <Route path="/how-it-works" element={<Suspense fallback={<div>Loading...</div>}><HowItWorks /></Suspense />} />
-            <Route path="/about" element={<Suspense fallback={<div>Loading...</div>}><About /></Suspense />} />
-            <Route path="/contact" element={<Suspense fallback={<div>Loading...</div>}><Contact /></Suspense />} />
-            <Route path="/login" element={<Suspense fallback={<div>Loading...</div>}><Login /></Suspense />} />
-            <Route path="/register" element={<Suspense fallback={<div>Loading...</div>}><Register /></Suspense />} />
-            <Route path="/auth-callback" element={<Suspense fallback={<div>Loading...</div>}><AuthCallback /></Suspense />} />
-            <Route path="/terms" element={<Suspense fallback={<div>Loading...</div>}><Terms /></Suspense />} />
-            <Route path="/privacy" element={<Suspense fallback={<div>Loading...</div>}><Privacy /></Suspense />} />
-            <Route path="/disclaimer" element={<Suspense fallback={<div>Loading...</div>}><Disclaimer /></Suspense />} />
-            <Route path="/dashboard" element={<Suspense fallback={<div>Loading...</div>}><Dashboard /></Suspense />} />
-            <Route path="/checkout" element={<Suspense fallback={<div>Loading...</div>}><Checkout /></Suspense />} />
-            <Route path="*" element={<Suspense fallback={<div>Loading...</div>}><NotFound /></Suspense />} />
+            <Route path="/" element={<Suspense fallback={<div>Loading...</div>}><Index /></Suspense>} />
+            <Route path="/pricing" element={<Suspense fallback={<div>Loading...</div>}><Pricing /></Suspense>} />
+            <Route path="/how-it-works" element={<Suspense fallback={<div>Loading...</div>}><HowItWorks /></Suspense>} />
+            <Route path="/about" element={<Suspense fallback={<div>Loading...</div>}><About /></Suspense>} />
+            <Route path="/contact" element={<Suspense fallback={<div>Loading...</div>}><Contact /></Suspense>} />
+            <Route path="/login" element={<Suspense fallback={<div>Loading...</div>}><Login /></Suspense>} />
+            <Route path="/register" element={<Suspense fallback={<div>Loading...</div>}><Register /></Suspense>} />
+            <Route path="/auth-callback" element={<Suspense fallback={<div>Loading...</div>}><AuthCallback /></Suspense>} />
+            <Route path="/terms" element={<Suspense fallback={<div>Loading...</div>}><Terms /></Suspense>} />
+            <Route path="/privacy" element={<Suspense fallback={<div>Loading...</div>}><Privacy /></Suspense>} />
+            <Route path="/disclaimer" element={<Suspense fallback={<div>Loading...</div>}><Disclaimer /></Suspense>} />
+            <Route path="/dashboard" element={<Suspense fallback={<div>Loading...</div>}><Dashboard /></Suspense>} />
+            <Route path="/checkout" element={<Suspense fallback={<div>Loading...</div>}><Checkout /></Suspense>} />
+            <Route path="*" element={<Suspense fallback={<div>Loading...</div>}><NotFound /></Suspense>} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
