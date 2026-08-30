@@ -41,9 +41,9 @@ const countries = [
   { code: 'PE', name: 'Peru', name_pt: 'Peru', name_es: 'Perú', name_it: 'Perù', name_fr: 'Pérou', name_de: 'Peru', name_ru: 'Перу', name_zh: '秘鲁', name_ja: 'ペルー', name_ar: 'بيرو', name_he: 'פרו', ddi: '+51', flag: '🇵🇪' },
   { code: 'VE', name: 'Venezuela', name_pt: 'Venezuela', name_es: 'Venezuela', name_it: 'Venezuela', name_fr: 'Venezuela', name_de: 'Venezuela', name_ru: 'Венесуэла', name_zh: '委内瑞拉', name_ja: 'ベネズエラ', name_ar: 'فنزويلا', name_he: 'ונצואלה', ddi: '+58', flag: '🇻🇪' },
   { code: 'EC' , name: 'Ecuador', name_pt: 'Equador', name_es: 'Ecuador', name_it: 'Ecuador', name_fr: 'Équateur', name_de: 'Ecuador', name_ru: 'Эквадор', name_zh: '厄瓜多尔', name_ja: 'エクアドル', name_ar: 'الإكوادور', name_he: 'אקוודור', ddi: '+593', flag: '🇪🇨' },
-  { code: 'UY' : name: 'Uruguay', name_pt: 'Uruguai', name_es: 'Uruguay', name_it: 'Uruguay', name_fr: 'Uruguay', name_de: 'Uruguay', name_ru: 'Уругвай', name_zh: '乌拉圭', name_ja: 'ウルグアイ', name_ar: 'أوروغواي', name_he: 'אורוגוואי', ddi: '+598', flag: '🇺🇾' },
-  { code: 'PY' : name: 'Paraguay', name_pt: 'Paraguai', name_es: 'Paraguay', name_it: 'Paraguay', name_fr: 'Paraguay', name_de: 'Paraguay', name_ru: 'Парагвай', name_zh: '巴拉圭', name_ja: 'パラグアイ', name_ar: 'باراغواي', name_he: 'פרגוואי', ddi: '+595', flag: '🇵🇾' },
-  { code: 'BO' : name: 'Bolivia', name_pt: 'Bolívia', name_es: 'Bolivia', name_it: 'Bolivia', name_fr: 'Bolivie', name_de: 'Bolivien', name_ru: 'Боливия', name_zh: '玻利维я', name_ja: 'ボリビア', name_ar: 'بوليفيا', name_he: 'בוליביה', ddi: '+591', flag: '🇧🇴' },
+  { code: 'UY', name: 'Uruguay', name_pt: 'Uruguai', name_es: 'Uruguay', name_it: 'Uruguay', name_fr: 'Uruguay', name_de: 'Uruguay', name_ru: 'Уругвай', name_zh: '乌拉圭', name_ja: 'ウルグアイ', name_ar: 'أوروغواي', name_he: 'אורוגוואי', ddi: '+598', flag: '🇺🇾' },
+  { code: 'PY', name: 'Paraguay', name_pt: 'Paraguai', name_es: 'Paraguay', name_it: 'Paraguay', name_fr: 'Paraguay', name_de: 'Paraguay', name_ru: 'Парагвай', name_zh: '巴拉圭', name_ja: 'パラグアイ', name_ar: 'باراغواي', name_he: 'פרגוואי', ddi: '+595', flag: '🇵🇾' },
+  { code: 'BO', name: 'Bolivia', name_pt: 'Bolívia', name_es: 'Bolivia', name_it: 'Bolivia', name_fr: 'Bolivie', name_de: 'Bolivien', name_ru: 'Боливия', name_zh: '玻利维я', name_ja: 'ボリビア', name_ar: 'بوليفيا', name_he: 'בוליביה', ddi: '+591', flag: '🇧🇴' },
   { code: 'US' , name: 'United States', name_pt: 'Estados Unidos', name_es: 'Estados Unidos', name_it: 'Stati Uniti', name_fr: 'États-Unis', name_de: 'Vereinigte Staaten', name_ru: 'Соединенные Штаты', name_zh: '美国', name_ja: 'アメリカ', name_ar: 'الولايات المتحدة', name_he: 'ארצות הברית', ddi: '+1', flag: '🇺🇸' },
   { code: 'CA' : name: 'Canada', name_pt: 'Canadá', name_es: 'Canadá', name_it: 'Canada', name_fr: 'Canada', name_de: 'Kanada', name_ru: 'Канада', name_zh: '加拿大', name_ja: 'カナダ', name_ar: 'كندا', name_he: 'קנדה', ddi: '+1', flag: '🇨🇦' },
   { code: 'MX' : name: 'Mexico', name_pt: 'México', name_es: 'México', name_it: 'Messico', name_fr: 'Mexique', name_de: 'Mexiko', name_ru: 'Мексика', name_zh: '墨西哥', name_ja: 'メキシコ', name_ar: 'المكسيك', name_he: 'מקסיקו', ddi: '+52', flag: '🇲🇽' },
@@ -694,223 +694,223 @@ const Checkout = () => {
                         </div>
                       </div>
                     </button>
-                  </div>
 
-                  <div className="p-4 bg-white/[0.02] border border-white/5">
-                    <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
-                      <Lock size={12} /> {t('checkout.securePayment')}
+                    <div className="p-4 bg-white/[0.02] border border-white/5">
+                      <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
+                        <Lock size={12} /> {t('checkout.securePayment')}
+                      </div>
+                      <p className="text-[8px] text-slate-600 mt-2>{t('checkout.encryptionNote')}</p>
                     </div>
-                    <p className="text-[8px] text-slate-600 mt-2>{t('checkout.encryptionNote')}</p>
                   </div>
-                </div>
-              ) : (
-                <div className="space-y-6 animate-fadeInUp">
-                  <button 
-                    onClick={() => { setShowCard(false); setShowCrypto(false); setShowWise(false); setWiseConfirmed(false); }}
-                    className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
-                  >
-                    ← {t('checkout.back')}
-                  </button>
+                ) : (
+                  <div className="space-y-6 animate-fadeInUp">
+                    <button 
+                      onClick={() => { setShowCard(false); setShowCrypto(false); setShowWise(false); setWiseConfirmed(false); }}
+                      className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
+                    >
+                      ← {t('checkout.back')}
+                    </button>
 
-                  {/* CRIPTOMOEDAS */}
-                  {showCrypto && (
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2">
-                        <Bitcoin size={16} className="text-[#F7931A]" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.crypto')}</span>
-                      </div>
-
-                      <div className="p-4 bg-white/[0.02] border border-white/5">
-                        <p className="text-[9px] text-slate-500 uppercase tracking-widest>{t('checkout.amountToPay')}</p>
-                        <p className="text-2xl font-bold text-[#C5A059]>{numericPrice} USD</p>
-                        <p className="text-[9px] text-slate-600 mt-1>≈ {numericPrice} USDT</p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400>{t('checkout.selectNetwork')}</label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {cryptoNetworks.map((network) => (
-                            <button
-                              key={network.id}
-                              onClick={() => setSelectedCrypto(network)}
-                              className={`p-3 border ${selectedCrypto.id === network.id ? 'border-[#C5A059] bg-[#C5A059]/10' : 'border-white/10 bg-white/[0.02]'} text-left transition-all`}
-                            >
-                              <span className="text-[9px] font-bold uppercase tracking-widest block>{network.symbol}</span>
-                              <span className="text-[8px] text-slate-500>{network.id}</span>
-                            </button>
-                          ))} 
+                    {/* CRIPTOMOEDAS */}
+                    {showCrypto && (
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-2">
+                          <Bitcoin size={16} className="text-[#F7931A]" />
+                          <span className="text-[11px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.crypto')}</span>
                         </div>
-                      </div>
 
-                      <div className="p-4 bg-[#C5A059]/10 border border-[#C5A059]/30">
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059]>{t('checkout.yourAddress')}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <p className="text-[9px] font-mono text-slate-400 break-all flex-1>{selectedCrypto.address}</p>
-                          <button 
-                            onClick={() => copyToClipboard(selectedCrypto.address)}
-                            className="text-[#C5A059] hover:text-white transition-colors"
-                          >
-                            <Copy size={12} />
-                          </button>
+                        <div className="p-4 bg-white/[0.02] border border-white/5">
+                          <p className="text-[9px] text-slate-500 uppercase tracking-widest>{t('checkout.amountToPay')}</p>
+                          <p className="text-2xl font-bold text-[#C5A059]>{numericPrice} USD</p>
+                          <p className="text-[9px] text-slate-600 mt-1>≈ {numericPrice} USDT</p>
                         </div>
-                        <a 
-                          href={`${selectedCrypto.explorer}/address/${selectedCrypto.address}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-[8px] text-slate-500 hover:text-[#C5A059] transition-colors flex items-center gap-1 mt-2"
-                        >
-                          <ExternalLink size={8} /> {selectedCrypto.explorer.replace('https://', '')}
-                        </a>
-                      </div>
 
-                      <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30">
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.important')}</p>
-                        <p className="text-[8px] text-slate-500 mt-1>{t('checkout.cryptoNote')}</p>
-                      </div>
-
-                      <Button 
-                        onClick={handleCryptoSubmit}
-                        className="w-full bg-[#F7931A] hover:bg-[#e08613] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all"
-                      >
-                        <Wallet size={16} className="mr-2" />
-                        {t('checkout.confirmCrypto')}
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* WISE TRANSFER */}
-                  {showWise && (
-                    <div className="space-y-6">
-                      <div className="flex items-center gap-2">
-                        <Building2 size={16} className="text-[#12B488]" />
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-[#12B488]>{t('checkout.wiseTransfer')}</span>
-                      </div>
-
-                      {/* Instruções */}
-                      <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#12B488]>{t('checkout.transferInstructions')}</p>
-                        <ol className="text-[8px] text-slate-400 mt-2 space-y-1 list-decimal list-inside">
-                          <li>{t('checkout.wiseStep1')}</li>
-                          <li>{t('checkout.wiseStep2')}</li>
-                          <li>{t('checkout.wiseStep3')}</li>
-                        </ol>
-                      </div>
-
-                      {/* Dados Bancários — dinâmicos consoante a moeda do cliente */}
-                      <div className="p-4 bg-white/[0.02] border border-white/10 space-y-4">
-                        <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                          <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500>{t('checkout.bankDetails')}</span>
-                          {/* Seletor de moeda — detetado por IP, mas o cliente pode trocar */}
-                          <select
-                            value={wiseCurrency}
-                            onChange={(e) => setWiseCurrency(e.target.value)}
-                            className="text-[8px] text-[#12B488] font-bold bg-[#12B488]/10 px-2 py-1 border-none outline-none cursor-pointer rounded"
-                          >
-                            {wiseCurrencyOptions.map((cur) => (
-                              <option key={cur} value={cur} className="bg-[#05070A] text-white">{cur}
+                        <div className="space-y-2">
+                          <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400>{t('checkout.selectNetwork')}</label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {cryptoNetworks.map((network) => (
+                              <button
+                                key={network.id}
+                                onClick={() => setSelectedCrypto(network)}
+                                className={`p-3 border ${selectedCrypto.id === network.id ? 'border-[#C5A059] bg-[#C5A059]/10' : 'border-white/10 bg-white/[0.02]'} text-left transition-all`}
+                              >
+                                <span className="text-[9px] font-bold uppercase tracking-widest block>{network.symbol}</span>
+                                <span className="text-[8px] text-slate-500>{network.id}</span>
+                              </button>
                             ))} 
-                          </select>
+                          </div>
                         </div>
 
-                        {/* Account Holder */}
-                        <BankField label={t('checkout.accountHolder')} value={wiseAccount.holderName} mono={false} onCopy={copyToClipboard} />
-                        {/* Bank Name */}
-                        <BankField label={t('checkout.bankName')} value={wiseAccount.bankName} mono={false} onCopy={copyToClipboard} />
+                        <div className="p-4 bg-[#C5A059]/10 border border-[#C5A059]/30">
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059]>{t('checkout.yourAddress')}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <p className="text-[9px] font-mono text-slate-400 break-all flex-1>{selectedCrypto.address}</p>
+                            <button 
+                              onClick={() => copyToClipboard(selectedCrypto.address)}
+                              className="text-[#C5A059] hover:text-white transition-colors"
+                            >
+                              <Copy size={12} />
+                            </button>
+                          </div>
+                          <a 
+                            href={`${selectedCrypto.explorer}/address/${selectedCrypto.address}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[8px] text-slate-500 hover:text-[#C5A059] transition-colors flex items-center gap-1 mt-2"
+                          >
+                            <ExternalLink size={8} /> {selectedCrypto.explorer.replace('https://', '')}
+                          </a>
+                        </div>
 
-                        {/* Campos específicos por moeda */}
-                        {wiseAccount.iban && (
-                          <BankField label="IBAN" value={wiseAccount.iban} mono onCopy={copyToClipboard} />
-                        )}
-                        {wiseAccount.sortCode && (
-                          <BankField label={t('checkout.sortCode') || 'Sort Code'} value={wiseAccount.sortCode} mono onCopy={copyToClipboard} />
-                        )}
-                        {wiseAccount.routingNumber && (
-                          <BankField label={t('checkout.routingNumber')} value={wiseAccount.routingNumber} mono onCopy={copyToClipboard} />
-                        )}
-                        {wiseAccount.bsbCode && (
-                          <BankField label={t('checkout.bsbCode') || 'BSB Code'} value={wiseAccount.bsbCode} mono onCopy={copyToClipboard} />
-                        )}
-                        {wiseAccount.institutionNumber && (
-                          <BankField label={t('checkout.institutionNumber') || 'Institution Number'} value={wiseAccount.institutionNumber} mono onCopy={copyToClipboard} />
-                        )}
-                        {wiseAccount.transitNumber && (
-                          <BankField label={t('checkout.transitNumber') || 'Transit Number'} value={wiseAccount.transitNumber} mono onCopy={copyToClipboard} />
-                        )}
-                        {wiseAccount.bankCode && (
-                          <BankField label={t('checkout.bankCode') || 'Bank Code'} value={wiseAccount.bankCode} mono onCopy={copyToClipboard} />
-                        )}
-                        {wiseAccount.accountNumber && (
-                          <BankField label={t('checkout.accountNumber')} value={wiseAccount.accountNumber} mono onCopy={copyToClipboard} />
-                        )}
+                        <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30">
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.important')}</p>
+                          <p className="text-[8px] text-slate-500 mt-1>{t('checkout.cryptoNote')}</p>
+                        </div>
 
-                        {/* SWIFT/BIC */}
-                        <BankField label="SWIFT / BIC" value={wiseAccount.swift} mono onCopy={copyToClipboard} />
-                        {/* Address */}
-                        <BankField label={t('checkout.bankAddress')} value={wiseAccount.address} mono={false} onCopy={copyToClipboard} />
-                      </div>
-
-                      {/* Montante — convertido para a moeda selecionada */}
-                      <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
-                        <p className="text-[9px] text-slate-500 uppercase tracking-widest>{t('checkout.amountToSend')}</p>
-                        <p className="text-2xl font-bold text-[#12B488]>
-                          {wiseCurrency === 'USD'
-                            ? plan.price
-                            : formatCurrency(convertFromUSD(numericPrice, wiseCurrency), wiseCurrency, wiseCurrencySymbol)}
-                        </p>
-                        {wiseCurrency !== 'USD' && (
-                          <p className="text-[8px] text-slate-600 mt-1>≈ {plan.price} USD</p>
-                        )}
-                        <p className="text-[9px] text-[#12B488] font-bold mt-2>{t('checkout.sendExactAmount')}</p>
-                        <p className="text-[8px] text-slate-600 mt-1>{t('checkout.paymentReference')}</p>
-                      </div>
-
-                      {/* Confirmação */}
-                      <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30>
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.important')}</p>
-                        <p className="text-[8px] text-slate-500 mt-1>{t('checkout.wiseNote')}</p>
-                      </div>
-
-                      {/* Checkbox de confirmação */}
-                      <label className="flex items-start gap-3 cursor-pointer p-4 bg-white/[0.02] border border-white/10 hover:border-[#12B488]/30 transition-colors">
-                        <input
-                          type="checkbox"
-                          checked={wiseConfirmed}
-                          onChange={(e) => setWiseConfirmed(e.target.checked)}
-                          className="mt-1 w-4 h-4 accent-[#12B488]"
-                        />
-                        <span className="text-[9px] text-slate-400 leading-relaxed">
-                          {t('checkout.wiseConfirmText')}
-                        </span>
-                      </label>
-
-                      <Button 
-                        onClick={handleWiseSubmit}
-                        disabled={!wiseConfirmed}
-                        className={`w-full rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all ${
-                          wiseConfirmed 
-                            ? 'bg-[#12B488] hover:bg-[#0e9978] text-white' 
-                            : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-                        }`} 
-                      >
-                        <Building2 size={16} className="mr-2" />
-                        {t('checkout.confirmWise')}
-                      </Button>
-
-                      {/* Link para Wise */}
-                      <div className="text-center">
-                        <a 
-                          href="https://wise.com" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="text-[8px] text-slate-500 hover:text-[#12B488] transition-colors inline-flex items-center gap-1"
+                        <Button 
+                          onClick={handleCryptoSubmit}
+                          className="w-full bg-[#F7931A] hover:bg-[#e08613] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all"
                         >
-                          <Globe size={10} /> {t('checkout.openWise')}
-                        </a>
+                          <Wallet size={16} className="mr-2" />
+                          {t('checkout.confirmCrypto')}
+                        </button>
                       </div>
-                    </div>
-                  )}
-                </div>
-              )}
+                    )}
+
+                    {/* WISE TRANSFER */}
+                    {showWise && (
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-2">
+                          <Building2 size={16} className="text-[#12B488]" />
+                          <span className="text-[11px] font-bold uppercase tracking-widest text-[#12B488]>{t('checkout.wiseTransfer')}</span>
+                        </div>
+
+                        {/* Instruções */}
+                        <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#12B488]>{t('checkout.transferInstructions')}</p>
+                          <ol className="text-[8px] text-slate-400 mt-2 space-y-1 list-decimal list-inside">
+                            <li>{t('checkout.wiseStep1')}</li>
+                            <li>{t('checkout.wiseStep2')}</li>
+                            <li>{t('checkout.wiseStep3')}</li>
+                          </ol>
+                        </div>
+
+                        {/* Dados Bancários — dinâmicos consoante a moeda do cliente */}
+                        <div className="p-4 bg-white/[0.02] border border-white/10 space-y-4">
+                          <div className="flex items-center justify-between pb-3 border-b border-white/5">
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500>{t('checkout.bankDetails')}</span>
+                            {/* Seletor de moeda — detetado por IP, mas o cliente pode trocar */}
+                            <select
+                              value={wiseCurrency}
+                              onChange={(e) => setWiseCurrency(e.target.value)}
+                              className="text-[8px] text-[#12B488] font-bold bg-[#12B488]/10 px-2 py-1 border-none outline-none cursor-pointer rounded"
+                            >
+                              {wiseCurrencyOptions.map((cur) => (
+                                <option key={cur} value={cur} className="bg-[#05070A] text-white">{cur}
+                              ))} 
+                            </select>
+                          </div>
+
+                          {/* Account Holder */}
+                          <BankField label={t('checkout.accountHolder')} value={wiseAccount.holderName} mono={false} onCopy={copyToClipboard} />
+                          {/* Bank Name */}
+                          <BankField label={t('checkout.bankName')} value={wiseAccount.bankName} mono={false} onCopy={copyToClipboard} />
+
+                          {/* Campos específicos por moeda */}
+                          {wiseAccount.iban && (
+                            <BankField label="IBAN" value={wiseAccount.iban} mono onCopy={copyToClipboard} />
+                          )}
+                          {wiseAccount.sortCode && (
+                            <BankField label={t('checkout.sortCode') || 'Sort Code'} value={wiseAccount.sortCode} mono onCopy={copyToClipboard} />
+                          )}
+                          {wiseAccount.routingNumber && (
+                            <BankField label={t('checkout.routingNumber')} value={wiseAccount.routingNumber} mono onCopy={copyToClipboard} />
+                          )}
+                          {wiseAccount.bsbCode && (
+                            <BankField label={t('checkout.bsbCode') || 'BSB Code'} value={wiseAccount.bsbCode} mono onCopy={copyToClipboard} />
+                          )}
+                          {wiseAccount.institutionNumber && (
+                            <BankField label={t('checkout.institutionNumber') || 'Institution Number'} value={wiseAccount.institutionNumber} mono onCopy={copyToClipboard} />
+                          )}
+                          {wiseAccount.transitNumber && (
+                            <BankField label={t('checkout.transitNumber') || 'Transit Number'} value={wiseAccount.transitNumber} mono onCopy={copyToClipboard} />
+                          )}
+                          {wiseAccount.bankCode && (
+                            <BankField label={t('checkout.bankCode') || 'Bank Code'} value={wiseAccount.bankCode} mono onCopy={copyToClipboard} />
+                          )}
+                          {wiseAccount.accountNumber && (
+                            <BankField label={t('checkout.accountNumber')} value={wiseAccount.accountNumber} mono onCopy={copyToClipboard} />
+                          )}
+
+                          {/* SWIFT/BIC */}
+                          <BankField label="SWIFT / BIC" value={wiseAccount.swift} mono onCopy={copyToClipboard} />
+                          {/* Address */}
+                          <BankField label={t('checkout.bankAddress')} value={wiseAccount.address} mono={false} onCopy={copyToClipboard} />
+                        </div>
+
+                        {/* Montante — convertido para a moeda selecionada */}
+                        <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
+                          <p className="text-[9px] text-slate-500 uppercase tracking-widest>{t('checkout.amountToSend')}</p>
+                          <p className="text-2xl font-bold text-[#12B488]>
+                            {wiseCurrency === 'USD'
+                              ? plan.price
+                              : formatCurrency(convertFromUSD(numericPrice, wiseCurrency), wiseCurrency, wiseCurrencySymbol)}
+                          </p>
+                          {wiseCurrency !== 'USD' && (
+                            <p className="text-[8px] text-slate-600 mt-1>≈ {plan.price} USD</p>
+                          )}
+                          <p className="text-[9px] text-[#12B488] font-bold mt-2>{t('checkout.sendExactAmount')}</p>
+                          <p className="text-[8px] text-slate-600 mt-1>{t('checkout.paymentReference')}</p>
+                        </div>
+
+                        {/* Confirmação */}
+                        <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.important')}</p>
+                          <p className="text-[8px] text-slate-500 mt-1>{t('checkout.wiseNote')}</p>
+                        </div>
+
+                        {/* Checkbox de confirmação */}
+                        <label className="flex items-start gap-3 cursor-pointer p-4 bg-white/[0.02] border border-white/10 hover:border-[#12B488]/30 transition-colors">
+                          <input
+                            type="checkbox"
+                            checked={wiseConfirmed}
+                            onChange={(e) => setWiseConfirmed(e.target.checked)}
+                            className="mt-1 w-4 h-4 accent-[#12B488]"
+                          />
+                          <span className="text-[9px] text-slate-400 leading-relaxed">
+                            {t('checkout.wiseConfirmText')}
+                          </span>
+                        </label>
+
+                        <Button 
+                          onClick={handleWiseSubmit}
+                          disabled={!wiseConfirmed}
+                          className={`w-full rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all ${
+                            wiseConfirmed 
+                              ? 'bg-[#12B488] hover:bg-[#0e9978] text-white' 
+                              : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+                          }`} 
+                        >
+                          <Building2 size={16} className="mr-2" />
+                          {t('checkout.confirmWise')}
+                        </button>
+
+                        {/* Link para Wise */}
+                        <div className="text-center">
+                          <a 
+                            href="https://wise.com" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-[8px] text-slate-500 hover:text-[#12B488] transition-colors inline-flex items-center gap-1"
+                          >
+                            <Globe size={10} /> {t('checkout.openWise')}
+                          </a>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
