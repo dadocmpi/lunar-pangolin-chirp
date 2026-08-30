@@ -17,6 +17,7 @@ import MarketTicker from '@/components/MarketTicker';
 import Differentiators from '@/components/Differentiators';
 import FAQ from '@/components/FAQ';
 import SupportChatbot from '@/components/SupportChatbot';
+import SupportChatbotBoundary from '@/components/SupportChatbotBoundary';
 
 
 const Index = () => {
@@ -32,7 +33,9 @@ const Index = () => {
     <div className="min-h-screen bg-black font-sans text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       <MarketTicker />
-      <SupportChatbot />
+      <SupportChatbotBoundary>
+        <SupportChatbot />
+      </SupportChatbotBoundary>
 
       {/* Hero Section */}
       <section className="relative mt-[180px] min-h-[80vh] flex items-center justify-center overflow-hidden bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
