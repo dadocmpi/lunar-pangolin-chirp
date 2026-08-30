@@ -7,9 +7,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import { CurrencyProvider } from "./hooks/useCurrency";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
-// Lazy load page components
+// Lazy load page components with no suspense delay
 const Index = lazy(() => import("./pages/Index"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
@@ -25,6 +32,13 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
+// Instant page transition wrapper - no loading delay
+const PageTransition = ({ children }: { children: React.ReactNode }) => (
+  <div className="page-enter">
+    {children}
+  </div>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <CurrencyProvider>
@@ -34,20 +48,20 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <Routes>
-            <Route path="/" element={<Suspense fallback={<div>Loading...</div>}><Index /></Suspense>} />
-            <Route path="/pricing" element={<Suspense fallback={<div>Loading...</div>}><Pricing /></Suspense>} />
-            <Route path="/how-it-works" element={<Suspense fallback={<div>Loading...</div>}><HowItWorks /></Suspense>} />
-            <Route path="/about" element={<Suspense fallback={<div>Loading...</div>}><About /></Suspense>} />
-            <Route path="/contact" element={<Suspense fallback={<div>Loading...</div>}><Contact /></Suspense>} />
-            <Route path="/login" element={<Suspense fallback={<div>Loading...</div>}><Login /></Suspense>} />
-            <Route path="/register" element={<Suspense fallback={<div>Loading...</div>}><Register /></Suspense>} />
-            <Route path="/auth-callback" element={<Suspense fallback={<div>Loading...</div>}><AuthCallback /></Suspense>} />
-            <Route path="/terms" element={<Suspense fallback={<div>Loading...</div>}><Terms /></Suspense>} />
-            <Route path="/privacy" element={<Suspense fallback={<div>Loading...</div>}><Privacy /></Suspense>} />
-            <Route path="/disclaimer" element={<Suspense fallback={<div>Loading...</div>}><Disclaimer /></Suspense>} />
-            <Route path="/dashboard" element={<Suspense fallback={<div>Loading...</div>}><Dashboard /></Suspense>} />
-            <Route path="/checkout" element={<Suspense fallback={<div>Loading...</div>}><Checkout /></Suspense>} />
-            <Route path="*" element={<Suspense fallback={<div>Loading...</div>}><NotFound /></Suspense>} />
+            <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+            <Route path="/pricing" element={<PageTransition><Pricing /></PageTransition>} />
+            <Route path="/how-it-works" element={<PageTransition><HowItWorks /></PageTransition>} />
+            <Route path="/about" element={<PageTransition><About /></PageTransition>} />
+            <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
+            <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+            <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+            <Route path="/auth-callback" element={<PageTransition><AuthCallback /></PageTransition>} />
+            <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
+            <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
+            <Route path="/disclaimer" element={<PageTransition><Disclaimer /></PageTransition>} />
+            <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
+            <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
+            <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
