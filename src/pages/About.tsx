@@ -39,26 +39,10 @@ const About = () => {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-px bg-white/5">
-            {[{
-              label: t('about.stats.founded'),
-              value: "2026",
-              icon: <Landmark size={20} />
-            },
-            {
-              label: t('about.stats.users'),
-              value: "500+",
-              icon: <Users size={20} />
-            },
-            {
-              label: t('about.stats.uptime'),
-              value: "99.9%",
-              icon: <Zap size={20} />
-            },
-            {
-              label: t('about.stats.support'),
-              value: "24/7",
-              icon: <Globe size={20} />
-            }].map((stat, i) => (
+            [{ label: t('about.stats.founded'), value: "2026", icon: <Landmark size={20} /> },
+            { label: t('about.stats.users'), value: "500+", icon: <Users size={20} /> },
+            { label: t('about.stats.uptime'), value: "99.9%", icon: <Zap size={20} /> },
+            { label: t('about.stats.support'), value: "24/7", icon: <Globe size={20} /> }].map((stat, i) => (
               <div key={i} className="p-10 bg-[#080B12] flex flex-col items-center justify-center text-center hover:bg-white/[0.02] transition-all group">
                 <div className="text-[#D4AF37] mb-4 group-hover:scale-110 transition-transform">{stat.icon}</div>
                 <p className="text-[24px] font-serif font-bold text-white mb-1">{stat.value}</p>
