@@ -32,6 +32,7 @@ const Pricing = () => {
       price: convertPrice(PRICES_USD.starter.monthly),
       priceUSD: PRICES_USD.starter.monthly,
       accountSize: convertPrice(PRICES_USD.starter.account),
+      accountSizeUsd: PRICES_USD.starter.account, // <-- Added USD account size
       iconType: "zap",
       features: [
         t('plans.features.automation'),
@@ -46,6 +47,7 @@ const Pricing = () => {
       price: convertPrice(PRICES_USD.pro.monthly),
       priceUSD: PRICES_USD.pro.monthly,
       accountSize: convertPrice(PRICES_USD.pro.account),
+      accountSizeUsd: PRICES_USD.pro.account, // <-- Added USD account size
       iconType: "award",
       features: [
         t('plans.features.starterFeatures'),
@@ -60,6 +62,7 @@ const Pricing = () => {
       price: convertPrice(PRICES_USD.advanced.monthly),
       priceUSD: PRICES_USD.advanced.monthly,
       accountSize: convertPrice(PRICES_USD.advanced.account),
+      accountSizeUsd: PRICES_USD.advanced.account, // <-- Added USD account size
       iconType: "shield",
       features: [
         t('plans.features.proFeatures'),
@@ -73,6 +76,7 @@ const Pricing = () => {
       price: convertPrice(PRICES_USD.elite.monthly),
       priceUSD: PRICES_USD.elite.monthly,
       accountSize: convertPrice(PRICES_USD.elite.account),
+      accountSizeUsd: PRICES_USD.elite.account, // <-- Added USD account size
       iconType: "crown",
       features: [
         t('plans.features.advancedFeatures'),
@@ -147,7 +151,7 @@ const Pricing = () => {
                     <li key={j} className="flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-slate-400">
                       <Check className="text-[#D4AF37]" size={14} />
                       {f}
-                    </li>
+                    }
                   ))}
                 </ul>
                 <Button 
@@ -155,7 +159,7 @@ const Pricing = () => {
                   className={cn(
                     "w-full rounded-none h-14 text-[11px] font-black uppercase tracking-[2px] transition-all",
                     plan.popular ? "bg-[#D4AF37] text-black hover:bg-[#C9A227]" : "bg-white/5 text-white hover:bg-white/10 border border-white/10"
-                  )}
+                  )} 
                 >
                   {t('pricing.select')}
                 </Button>

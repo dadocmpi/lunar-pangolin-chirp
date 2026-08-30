@@ -38,21 +38,21 @@ const countries = [
   { code: 'AR', name: 'Argentina', name_pt: 'Argentina', name_es: 'Argentina', name_it: 'Argentina', name_fr: 'Argentine', name_de: 'Argentinien', name_ru: 'Аргентина', name_zh: '阿根廷', name_ja: 'アルゼンチン', name_ar: 'الأرجنتين', name_he: 'ארגנטינה', ddi: '+54', flag: '🇦🇷' },
   { code: 'CL', name: 'Chile', name_pt: 'Chile', name_es: 'Chile', name_it: 'Cile', name_fr: 'Chili', name_de: 'Chile', name_ru: 'Чили', name_zh: '智利', name_ja: 'チリ', name_ar: 'تشيلي', name_he: 'צ\'ילה', ddi: '+56', flag: '🇨🇱' },
   { code: 'CO', name: 'Colombia', name_pt: 'Colômbia', name_es: 'Colombia', name_it: 'Colombia', name_fr: 'Colombie', name_de: 'Kolumbien', name_ru: 'Колумбия', name_zh: '哥伦比亚', name_ja: 'コロンビア', name_ar: 'كولومبيا', name_he: 'קולומביה', ddi: '+57', flag: '🇨🇴' },
-  { code: 'PE', name: 'Peru', name_pt: 'Peru', name_es: 'Perú', name_it: 'Perù', name_fr: 'Pérou', name_de: 'Peru', name_ru: 'Перу', name_zh: '秘鲁', name_ja: 'ペルー', name_ar: 'بيرو', name_he: 'פרو', ddi: '+51', flag: '🇵🇪' },
+  { code: 'PE', name: 'Peru', name_pt: 'Peru', name_es: 'Perú', name_it: 'Perù', name_fr: 'Pérou', name_de: 'Peru', name_ru: 'Перу', name_zh: '秘鲁', name_ja: 'ペルー', name_ar: 'بيرو', name_he: 'פרו', ddi: '+51', flag: '🇵🇪' },
   { code: 'VE', name: 'Venezuela', name_pt: 'Venezuela', name_es: 'Venezuela', name_it: 'Venezuela', name_fr: 'Venezuela', name_de: 'Venezuela', name_ru: 'Венесуэла', name_zh: '委内瑞拉', name_ja: 'ベネズエラ', name_ar: 'فنزويلا', name_he: 'ונצואלה', ddi: '+58', flag: '🇻🇪' },
   { code: 'EC' , name: 'Ecuador', name_pt: 'Equador', name_es: 'Ecuador', name_it: 'Ecuador', name_fr: 'Équateur', name_de: 'Ecuador', name_ru: 'Эквадор', name_zh: '厄瓜多尔', name_ja: 'エクアドル', name_ar: 'الإكوادور', name_he: 'אקוודור', ddi: '+593', flag: '🇪🇨' },
-  { code: 'UY' , name: 'Uruguay', name_pt: 'Uruguai', name_es: 'Uruguay', name_it: 'Uruguay', name_fr: 'Uruguay', name_de: 'Uruguay', name_ru: 'Уругвай', name_zh: '乌拉圭', name_ja: 'ウルグアイ', name_ar: 'أوروغواي', name_he: 'אורוגוואי', ddi: '+598', flag: '🇺🇾' },
-  { code: 'PY' , name: 'Paraguay', name_pt: 'Paraguai', name_es: 'Paraguay', name_it: 'Paraguay', name_fr: 'Paraguay', name_de: 'Paraguay', name_ru: 'Парагвай', name_zh: '巴拉圭', name_ja: 'パラグアイ', name_ar: 'باراغواي', name_he: 'פרגוואי', ddi: '+595', flag: '🇵🇾' },
-  { code: 'BO' , name: 'Bolivia', name_pt: 'Bolívia', name_es: 'Bolivia', name_it: 'Bolivia', name_fr: 'Bolivie', name_de: 'Bolivien', name_ru: 'Боливия', name_zh: '玻利维亚', name_ja: 'ボリビア', name_ar: 'بوليفيا', name_he: 'בוליביה', ddi: '+591', flag: '🇧🇴' },
+  { code: 'UY' : name: 'Uruguay', name_pt: 'Uruguai', name_es: 'Uruguay', name_it: 'Uruguay', name_fr: 'Uruguay', name_de: 'Uruguay', name_ru: 'Уругвай', name_zh: '乌拉圭', name_ja: 'ウルグアイ', name_ar: 'أوروغواي', name_he: 'אורוגוואי', ddi: '+598', flag: '🇺🇾' },
+  { code: 'PY' : name: 'Paraguay', name_pt: 'Paraguai', name_es: 'Paraguay', name_it: 'Paraguay', name_fr: 'Paraguay', name_de: 'Paraguay', name_ru: 'Парагвай', name_zh: '巴拉圭', name_ja: 'パラグアイ', name_ar: 'باراغواي', name_he: 'פרגוואי', ddi: '+595', flag: '🇵🇾' },
+  { code: 'BO' : name: 'Bolivia', name_pt: 'Bolívia', name_es: 'Bolivia', name_it: 'Bolivia', name_fr: 'Bolivie', name_de: 'Bolivien', name_ru: 'Боливия', name_zh: '玻利维я', name_ja: 'ボリビア', name_ar: 'بوليفيا', name_he: 'בוליביה', ddi: '+591', flag: '🇧🇴' },
   { code: 'US' , name: 'United States', name_pt: 'Estados Unidos', name_es: 'Estados Unidos', name_it: 'Stati Uniti', name_fr: 'États-Unis', name_de: 'Vereinigte Staaten', name_ru: 'Соединенные Штаты', name_zh: '美国', name_ja: 'アメリカ', name_ar: 'الولايات المتحدة', name_he: 'ארצות הברית', ddi: '+1', flag: '🇺🇸' },
-  { code: 'CA' , name: 'Canada', name_pt: 'Canadá', name_es: 'Canadá', name_it: 'Canada', name_fr: 'Canada', name_de: 'Kanada', name_ru: 'Канада', name_zh: '加拿大', name_ja: 'カナダ', name_ar: 'كندا', name_he: 'קנדה', ddi: '+1', flag: '🇨🇦' },
-  { code: 'MX' , name: 'Mexico', name_pt: 'México', name_es: 'México', name_it: 'Messico', name_fr: 'Mexique', name_de: 'Mexiko', name_ru: 'Мексика', name_zh: '墨西哥', name_ja: 'メキシコ', name_ar: 'المكسيك', name_he: 'מקסיקו', ddi: '+52', flag: '🇲🇽' },
-  { code: 'GB' , name: 'United Kingdom', name_pt: 'Reino Unido', name_es: 'Reino Unido', name_it: 'Regno Unito', name_fr: 'Royaume-Uni', name_de: 'Vereinigtes Königreich', name_ru: 'Великобритания', name_zh: '英国', name_ja: 'イギリス', name_ar: 'المملكة المتحدة', name_he: 'בריטניה', ddi: '+44', flag: '🇬🇧' },
-  { code: 'DE' , name: 'Germany', name_pt: 'Alemanha', name_es: 'Alemania', name_it: 'Germania', name_fr: 'Allemagne', name_de: 'Deutschland', name_ru: 'Германия', name_zh: '德国', name_ja: 'ドイツ', name_ar: 'ألمانيا', name_he: 'גרמניה', ddi: '+49', flag: '🇩🇪' },
-  { code: 'FR' , name: 'France', name_pt: 'França', name_es: 'Francia', name_it: 'Francia', name_fr: 'France', name_de: 'Frankreich', name_ru: 'Франция', name_zh: '法国', name_ja: 'フランス', name_ar: 'فرنسا', name_he: 'צרפת', ddi: '+33', flag: '🇫🇷' },
-  { code: 'IT' , name: 'Italy', name_pt: 'Itália', name_es: 'Italia', name_it: 'Italia', name_fr: 'Italie', name_de: 'Italien', name_ru: 'Италия', name_zh: '意大利', name_ja: 'イタリア', name_ar: 'إيطاليا', name_he: 'איטליה', ddi: '+39', flag: '🇮🇹' },
-  { code: 'ES' , name: 'Spain', name_pt: 'Espanha', name_es: 'España', name_it: 'Spagna', name_fr: 'Espagne', name_de: 'Spanien', name_ru: 'Испания', name_zh: '西班牙', name_ja: 'スペイン', name_ar: 'إسبانيا', name_he: 'ספרד', ddi: '+34', flag: '🇪🇸' },
-  { code: 'PT' , name: 'Portugal', name_pt: 'Portugal', name_es: 'Portugal', name_it: 'Portogallo', name_fr: 'Portugal', name_de: 'Portugal', name_ru: 'Португалия', name_zh: '葡萄牙', name_ja: 'ポルトガル', name_ar: 'البرتغال', name_he: 'פורטוגל', ddi: '+351', flag: '🇵🇹' },
+  { code: 'CA' : name: 'Canada', name_pt: 'Canadá', name_es: 'Canadá', name_it: 'Canada', name_fr: 'Canada', name_de: 'Kanada', name_ru: 'Канада', name_zh: '加拿大', name_ja: 'カナダ', name_ar: 'كندا', name_he: 'קנדה', ddi: '+1', flag: '🇨🇦' },
+  { code: 'MX' : name: 'Mexico', name_pt: 'México', name_es: 'México', name_it: 'Messico', name_fr: 'Mexique', name_de: 'Mexiko', name_ru: 'Мексика', name_zh: '墨西哥', name_ja: 'メキシコ', name_ar: 'المكسيك', name_he: 'מקסיקו', ddi: '+52', flag: '🇲🇽' },
+  { code: 'GB' : name: 'United Kingdom', name_pt: 'Reino Unido', name_es: 'Reino Unido', name_it: 'Regno Unito', name_fr: 'Royaume-Uni', name_de: 'Vereinigtes Königreich', name_ru: 'Великобритания', name_zh: '英国', name_ja: 'イギリス', name_ar: 'المملكة المتحدة', name_he: 'בריטניה', ddi: '+44', flag: '🇬🇧' },
+  { code: 'DE' : name: 'Germany', name_pt: 'Alemanha', name_es: 'Alemania', name_it: 'Germania', name_fr: 'Allemagne', name_de: 'Deutschland', name_ru: 'Германия', name_zh: '德国', name_ja: 'ドイツ', name_ar: 'ألمانيا', name_he: 'גרמניה', ddi: '+49', flag: '🇩🇪' },
+  { code: 'FR' : name: 'France', name_pt: 'França', name_es: 'Francia', name_it: 'Francia', name_fr: 'France', name_de: 'Frankreich', name_ru: 'Франция', name_zh: '法国', name_ja: 'フランス', name_ar: 'فرنسا', name_he: 'צרפת', ddi: '+33', flag: '🇫🇷' },
+  { code: 'IT' : name: 'Italy', name_pt: 'Itália', name_es: 'Italia', name_it: 'Italia', name_fr: 'Italie', name_de: 'Italien', name_ru: 'Италия', name_zh: '意大利', name_ja: 'イタリア', name_ar: 'إيطاليا', name_he: 'איטליה', ddi: '+39', flag: '🇮🇹' },
+  { code: 'ES' : name: 'Spain', name_pt: 'Espanha', name_es: 'España', name_it: 'Spagna', name_fr: 'Espagne', name_de: 'Spanien', name_ru: 'Испания', name_zh: '西班牙', name_ja: 'スペイン', name_ar: 'إسبانيا', name_he: 'ספרד', ddi: '+34', flag: '🇪🇸' },
+  { code: 'PT' : name: 'Portugal', name_pt: 'Portugal', name_es: 'Portugal', name_it: 'Portogallo', name_fr: 'Portugal', name_de: 'Portugal', name_ru: 'Португалия', name_zh: '葡萄牙', name_ja: 'ポルトガル', name_ar: 'البرتغال', name_he: 'פורטוגל', ddi: '+351', flag: '🇵🇹' },
   { code: 'NL' : name: 'Netherlands', name_pt: 'Países Baixos', name_es: 'Países Bajos', name_it: 'Paesi Bassi', name_fr: 'Pays-Bas', name_de: 'Niederlande', name_ru: 'Нидерланды', name_zh: '荷兰', name_ja: 'オランダ', name_ar: 'هولندا', name_he: 'הולנד', ddi: '+31', flag: '🇳🇱' },
   { code: 'BE' : name: 'Bélgica', name_es: 'Bélgica', name_it: 'Belgio', name_fr: 'Belgique', name_de: 'Belgien', name_ru: 'Бельгия', name_zh: '比利时', name_ja: 'ベルギー', name_he: 'בלגיה', ddi: '+32', flag: '🇧🇪' },
   { code: 'CH' : name: 'Switzerland', name_pt: 'Suíça', name_es: 'Suiza', name_it: 'Svizzera', name_fr: 'Suisse', name_de: 'Schweiz', name_ru: 'Швейцария', name_zh: '瑞士', name_ja: 'スイス', name_ar: 'سويسرا', name_he: 'שווייץ', ddi: '+41', flag: '🇨🇭' },
@@ -553,7 +553,10 @@ const Checkout = () => {
                   <div className="space-y-3">
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t('checkout.managedCapital')}</span>
-                      <span className="text-white">{plan.accountSize} {userCurrency}</span>
+                      {/* Display USD account size instead of local currency */}
+                      <span className="text-[22px] font-serif font-bold text-[#D4AF37]">
+                        ${plan.accountSizeUsd?.toLocaleString() ?? '0'}
+                      </span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t('checkout.setupFee')}</span>
@@ -567,7 +570,7 @@ const Checkout = () => {
                   <ul className="space-y-2">
                     {plan.features.map((f: string, i: number) => (
                       <li key={i} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        <CheckCircle2 size={12} className="text-[#C5A059]" /> {f}
+                        <CheckCircle2 size={12} className="text-[#D4AF37]" /> {f}
                       }
                     ))}
                   </ul>
@@ -806,7 +809,7 @@ const Checkout = () => {
                             className="text-[8px] text-[#12B488] font-bold bg-[#12B488]/10 px-2 py-1 border-none outline-none cursor-pointer rounded"
                           >
                             {wiseCurrencyOptions.map((cur) => (
-                              <option key={cur} value={cur} className="bg-[#05070A] text-white">{cur}</option>
+                              <option key={cur} value={cur} className="bg-[#05070A] text-white">{cur}
                             ))} 
                           </select>
                         </div>
