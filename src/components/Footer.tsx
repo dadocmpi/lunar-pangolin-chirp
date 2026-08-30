@@ -96,6 +96,21 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Legal Entity Placeholder - DRAFT */}
+        {/* TODO: Replace with actual legal entity info after lawyer review */}
+        <div className="mb-12 py-8 border-t border-white/5">
+          <div className="flex items-start gap-4">
+            <AlertTriangle className="text-[#D4AF37] shrink-0 mt-1" size={16} />
+            <div>
+              <h5 className="text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-2">Legal Entity</h5>
+              <p className="text-slate-500 text-[11px] leading-relaxed">
+                <span className="bg-[#D4AF37]/20 text-[#D4AF37] px-2 py-0.5 rounded">DRAFT</span> 
+                [Legal Entity Name] — [Registration Number] — Registered in [Jurisdiction] — Regulatory status: [PLACEHOLDER: not currently a licensed financial institution / licensed under X — confirm before publishing]
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Risk Disclaimer */}
         <div className="mb-10 p-6 border border-yellow-900/30 bg-yellow-950/10 rounded-sm">
           <div className="flex items-start gap-4">
