@@ -1,20 +1,3 @@
-// ============================================================================
-// Currency service — Option A
-//
-// REMOVED: Hard-coded EXCHANGERATE_API_KEY (was: 0e9388aa224e78afc957e2c9)
-// REMOVED: Direct third-party https://v6.exchangerate-api.com call from browser
-//
-// Behavior after change:
-//   - getCurrencyByCountry returns the currency for a country code.
-//   - convertFromUSD converts USD to target currency using static rates only.
-//   - formatCurrency formats for display.
-//   - fetchLiveExchangeRates() is a no-op (returns empty object).
-//   - getUserCountry() calls ipwho.is (HTTPS, no key required).
-//
-// To enable live exchange rates, deploy a server-side fx-rates Edge Function
-// that reads EXCHANGERATE_API_KEY from Deno env (never in the browser bundle).
-// ============================================================================
-
 export interface CountryInfo {
   country: string;
   countryCode: string;
@@ -24,7 +7,6 @@ export interface CountryInfo {
 
 // Map of ALL world countries (ISO 3166-1 alpha-2) to their currencies
 export const countryCurrencyMap: Record<string, { currency: string; symbol: string; name: string }> = {
-  // Eurozone
   DE: { currency: "EUR", symbol: "€", name: "Euro" },
   FR: { currency: "EUR", symbol: "€", name: "Euro" },
   IT: { currency: "EUR", symbol: "€", name: "Euro" },
@@ -36,7 +18,6 @@ export const countryCurrencyMap: Record<string, { currency: string; symbol: stri
   IE: { currency: "EUR", symbol: "€", name: "Euro" },
   FI: { currency: "EUR", symbol: "€", name: "Euro" },
   GR: { currency: "EUR", symbol: "€", name: "Euro" },
-  // Americas
   US: { currency: "USD", symbol: "$", name: "US Dollar" },
   BR: { currency: "BRL", symbol: "R$", name: "Brazilian Real" },
   CA: { currency: "CAD", symbol: "C$", name: "Canadian Dollar" },
@@ -46,10 +27,9 @@ export const countryCurrencyMap: Record<string, { currency: string; symbol: stri
   CN: { currency: "CNY", symbol: "¥", name: "Chinese Yuan" },
   AU: { currency: "AUD", symbol: "A$", name: "Australian Dollar" },
   IN: { currency: "INR", symbol: "₹", name: "Indian Rupee" },
-  // ... (abbreviated — full map in prior version)
 };
 
-// Static fallback rates (used when no live data is available)
+// Static fallback rates. Only used when no server-provided rates are available.
 export const exchangeRates: Record<string, number> = {
   USD: 1,
   EUR: 0.92,
@@ -63,23 +43,20 @@ export const exchangeRates: Record<string, number> = {
   MXN: 17.15,
 };
 
-/** Live rates cache. Set by fetchLiveExchangeRates (no-op in this version). */
+/** Live rates cache. Set by fetchLiveExchangeRates (no-op in test mode). */
 let liveRates: Record<string, number> | null = null;
 
-// ---------------------------------------------------------------------------
-// Live exchange rates — NO-OP
-// In a future pass, deploy an fx-rates Edge Function that reads
-// EXCHANGERATE_API_KEY from Deno env and calls the third-party API server-side.
-// The key is never placed in the browser bundle.
-// ---------------------------------------------------------------------------
+/**
+ * Live exchange rates — NO-OP in the browser bundle.
+ *
+ * In production, the canonical path is a server-side fx-rates Edge Function
+ * that reads EXCHANGERATE_API_KEY from Deno env. The browser never holds
+ * the key. This function is a placeholder that always returns the static
+ * fallback rates.
+ */
 export async function fetchLiveExchangeRates(): Promise<Record<string, number>> {
-  // No-op. Returns static rates only.
   return exchangeRates;
 }
-
-// ---------------------------------------------------------------------------
-// Lookup helpers
-// ---------------------------------------------------------------------------
 
 export function getCurrencyByCountry(
   countryCode: string,
@@ -110,10 +87,9 @@ export function formatCurrency(
   return `${symbol}${formatted}`;
 }
 
-// ---------------------------------------------------------------------------
-// Country detection (HTTPS, no key required)
-// ---------------------------------------------------------------------------
-
+/**
+ * Country detection. Uses ipwho.is (HTTPS, no key required). Cache TTL 1 day.
+ */
 export async function getUserCountry(): Promise<string> {
   try {
     const cached = sessionStorage.getItem("userCountry_v2");

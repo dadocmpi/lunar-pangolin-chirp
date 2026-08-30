@@ -1,32 +1,3 @@
-// ============================================================================
-// KYC Action — Deno Edge Function
-//
-// Called when an operator clicks the Approve or Deny link in the KYC
-// notification email. URL contract:
-//
-//   GET /functions/v1/kyc-action?userId=<uuid>&action=approve|deny&token=<base64>
-//
-// Token format (base64url-safe):
-//   base64(`${userId}:${action}:${KYC_ACTION_SECRET}`)
-//
-// Behavior contract:
-//   1. Fails closed on missing KYC_ACTION_SECRET (HTTP 500, no row mutation).
-//   2. Fails closed on a mismatched or malformed token (HTTP 401, no mutation).
-//   3. On approve: writes profiles.kyc_status = 'approved' for the target user.
-//   4. On deny:    writes profiles.kyc_status = 'rejected' for the target user.
-//   5. Responds with a small HTML page so the operator's browser shows a result.
-//      No email is sent from this handler. No third-party call is made.
-//   6. Hard-coded KYC_ACTION_SECRET fallback is REMOVED.
-//
-// ASSUMPTION (operator must verify before deploy):
-//   - profiles has a column named kyc_status (text or enum).
-//   - kyc_status accepts the string values 'approved' and 'rejected'.
-//   - profiles.id is the auth.users(id) uuid (which is the value passed as userId).
-//
-// If profiles.kyc_status is named differently, or accepts different values,
-// change the APPROVE_STATUS / DENY_STATUS constants below.
-// ============================================================================
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
@@ -38,10 +9,6 @@ const corsHeaders = {
 
 const APPROVE_STATUS = "approved";
 const DENY_STATUS    = "rejected";
-
-// ---------------------------------------------------------------------------
-// Gate helpers — fail-closed
-// ---------------------------------------------------------------------------
 
 function getKycActionSecret(): string {
   const val = Deno.env.get("KYC_ACTION_SECRET");
@@ -62,6 +29,19 @@ function timingSafeEqual(a: string, b: string): boolean {
     mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
   }
   return mismatch === 0;
+}
+
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => {
+    switch (c) {
+      case "&": return "&";
+      case "<": return "<";
+      case ">": return ">";
+      case '"': return "&quot;";
+      case "'": return "&#39;";
+      default:  return c;
+    }
+  });
 }
 
 function htmlResponse(title: string, body: string, status = 200): Response {
@@ -104,23 +84,6 @@ function htmlResponse(title: string, body: string, status = 200): Response {
   });
 }
 
-function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => {
-    switch (c) {
-      case "&": return "&";
-      case "<": return "<";
-      case ">": return ">";
-      case '"': return "&quot;";
-      case "'": return "&#39;";
-      default:  return c;
-    }
-  });
-}
-
-// ---------------------------------------------------------------------------
-// Main handler
-// ---------------------------------------------------------------------------
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -133,15 +96,11 @@ serve(async (req) => {
     );
   }
 
-  // -----------------------------------------------------------------------
-  // KYC_ACTION_SECRET gate — fail-closed (no fallback secret)
-  // -----------------------------------------------------------------------
+  // KYC_ACTION_SECRET — fail-closed
   let secret: string;
   try {
     secret = getKycActionSecret();
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("[kyc-action] KYC_ACTION_SECRET not configured:", err);
     return htmlResponse(
       "Server misconfigured",
       `KYC_ACTION_SECRET is not set in the Edge Function environment. No row was modified.`,
@@ -149,9 +108,6 @@ serve(async (req) => {
     );
   }
 
-  // -----------------------------------------------------------------------
-  // Parse query parameters
-  // -----------------------------------------------------------------------
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");
   const action = url.searchParams.get("action");
@@ -164,7 +120,6 @@ serve(async (req) => {
       400,
     );
   }
-
   if (action !== "approve" && action !== "deny") {
     return htmlResponse(
       "Invalid action",
@@ -173,9 +128,6 @@ serve(async (req) => {
     );
   }
 
-  // -----------------------------------------------------------------------
-  // Token gate — fail-closed
-  // -----------------------------------------------------------------------
   const expected = makeToken(userId, action, secret);
   if (!timingSafeEqual(token, expected)) {
     return htmlResponse(
@@ -185,9 +137,6 @@ serve(async (req) => {
     );
   }
 
-  // -----------------------------------------------------------------------
-  // Service-role client (bypasses RLS for the controlled write below)
-  // -----------------------------------------------------------------------
   const url_ = Deno.env.get("SUPABASE_URL");
   const key  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url_ || !key) {
@@ -201,11 +150,7 @@ serve(async (req) => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  // -----------------------------------------------------------------------
-  // Apply the KYC decision
-  // -----------------------------------------------------------------------
   const newStatus = action === "approve" ? APPROVE_STATUS : DENY_STATUS;
-
   const { data, error } = await admin
     .from("profiles")
     .update({ kyc_status: newStatus })
@@ -214,15 +159,12 @@ serve(async (req) => {
     .maybeSingle();
 
   if (error) {
-    // eslint-disable-next-line no-console
-    console.error("[kyc-action] profiles.update failed:", error);
     return htmlResponse(
       "Update failed",
       `The database rejected the update: <code>${escapeHtml(error.message)}</code>`,
       500,
     );
   }
-
   if (!data) {
     return htmlResponse(
       "Profile not found",

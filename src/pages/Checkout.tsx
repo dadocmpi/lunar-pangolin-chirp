@@ -1,12 +1,3 @@
-// ============================================================================
-// Checkout — OPTION A
-//
-// Production gate: VITE_PAYMENTS_ENABLED must be the string "true".
-// When missing or not "true", PaymentsDisabledNotice is rendered.
-// No test-mode attribute. No TEST_MODE constant.
-// The wire payload never contains amountCents: 1.
-// ============================================================================
-
 "use client";
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
@@ -35,25 +26,27 @@ interface CheckoutResponse {
   ok: boolean;
   mode?: string;
   reason?: string;
+  test_mode?: boolean;
   payment: {
     id: string;
     status: string;
-    planId: string;
-    planName: string;
-    amountCents: number;
+    plan_id: string;
+    plan_name: string;
+    amount_cents: number;
     currency: string | null;
     network?: string | null;
-    created: boolean;
+    created?: boolean;
+    is_test?: boolean;
   } | null;
-  bankDetails?: {
-    holderName: string;
-    bankName: string;
-    accountNumber: string;
-    routingNumber: string;
+  bank_details?: {
+    holder_name: string;
+    bank_name: string;
+    account_number: string;
+    routing_number: string;
     swift: string;
     reference: string;
   };
-  depositAddress?: string;
+  deposit_address?: string;
   warnings?: string[];
 }
 
@@ -94,14 +87,14 @@ const Checkout = () => {
 
   const plan = location.state?.plan;
 
-  // Real gate: VITE_PAYMENTS_ENABLED must be "true"
-  const paymentsEnabled = import.meta.env.VITE_PAYMENTS_ENABLED === "true";
+  // Production gate. When neither is on, render PaymentsDisabledNotice.
+  const testMode = import.meta.env.VITE_TEST_PAYMENT_MODE === "true";
+  const prodMode = import.meta.env.VITE_PAYMENTS_ENABLED === "true";
 
   const { view: serverStatus } = usePaymentStatus(
-    paymentsEnabled ? paymentId : null,
+    (testMode || prodMode) ? paymentId : null,
     4000,
   );
-  const userCanSeeConfirmed = serverStatus?.status === "confirmed";
 
   useEffect(() => {
     if (!plan) {
@@ -165,8 +158,9 @@ const Checkout = () => {
     try {
       if (!wiseKeyRef.current) wiseKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("wise-checkout", {
-        planId:  plan.id,
+        planId: plan.id,
         idempotencyKey: wiseKeyRef.current,
+        isTest: testMode,
       });
       setWiseResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
@@ -184,9 +178,10 @@ const Checkout = () => {
     try {
       if (!cryptoKeyRef.current) cryptoKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("crypto-checkout", {
-        planId:  plan.id,
+        planId: plan.id,
         network: selectedCryptoIdRef.current,
         idempotencyKey: cryptoKeyRef.current,
+        isTest: testMode,
       });
       setCryptoResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
@@ -216,10 +211,8 @@ const Checkout = () => {
     );
   }
 
-  // -----------------------------------------------------------------------
-  // REAL GATE: PaymentsDisabledNotice when not enabled
-  // -----------------------------------------------------------------------
-  if (!paymentsEnabled) {
+  // Fail-closed gate
+  if (!testMode && !prodMode) {
     return (
       <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
         <Navbar />
@@ -248,6 +241,13 @@ const Checkout = () => {
         >
           <ArrowLeft size={14} /> {t("nav.pricing")}
         </Link>
+
+        {testMode && (
+          <div className="mb-8 p-4 border-2 border-yellow-500/60 bg-yellow-500/10 text-yellow-300 text-[10px] font-bold uppercase tracking-widest flex items-center gap-3">
+            <ShieldAlert size={18} />
+            TEST MODE — No real money. No real bank. No real wallet. No real activation.
+          </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           {/* Summary */}
@@ -503,10 +503,6 @@ const Checkout = () => {
   );
 };
 
-// ---------------------------------------------------------------------------
-// Server-driven awaiting views
-// ---------------------------------------------------------------------------
-
 function WiseAwaitingView({ response }: { response: CheckoutResponse }) {
   return (
     <div className="space-y-4">
@@ -520,14 +516,14 @@ function WiseAwaitingView({ response }: { response: CheckoutResponse }) {
           ⚠️ {w}
         </p>
       ))}
-      {response.bankDetails && (
+      {response.bank_details && (
         <div className="p-4 bg-white/[0.02] border border-white/10 text-[10px] text-slate-300 font-mono space-y-1">
-          <p>Holder: {response.bankDetails.holderName}</p>
-          <p>Bank: {response.bankDetails.bankName}</p>
-          <p>Account: {response.bankDetails.accountNumber}</p>
-          <p>Routing: {response.bankDetails.routingNumber}</p>
-          <p>SWIFT: {response.bankDetails.swift}</p>
-          <p>Reference: {response.bankDetails.reference}</p>
+          <p>Holder: {response.bank_details.holder_name}</p>
+          <p>Bank: {response.bank_details.bank_name}</p>
+          <p>Account: {response.bank_details.account_number}</p>
+          <p>Routing: {response.bank_details.routing_number}</p>
+          <p>SWIFT: {response.bank_details.swift}</p>
+          <p>Reference: {response.bank_details.reference}</p>
         </div>
       )}
     </div>
@@ -545,9 +541,9 @@ function CryptoAwaitingView({ response }: { response: CheckoutResponse }) {
           ⚠️ {w}
         </p>
       ))}
-      {response.depositAddress && (
+      {response.deposit_address && (
         <div className="p-4 bg-white/[0.02] border border-white/10 text-[10px] text-slate-300 font-mono break-all">
-          {response.depositAddress}
+          {response.deposit_address}
         </div>
       )}
     </div>

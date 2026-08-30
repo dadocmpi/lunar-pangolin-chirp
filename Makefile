@@ -1,39 +1,22 @@
-# ============================================================================
-# Braxel Markets — Option A Makefile
-#
-# Test:
-#   make test-option-a
-#     Runs the Deno test harness for Option A.
-#     STATUS: NOT EXECUTED until this command is run.
-#
-# Migration (operator action required):
-#   1. Run the pre-checks in: tests/payment-foundation-option-a.md
-#   2. Apply the migration in the Supabase SQL editor:
-#      supabase/migrations/20260201000000_payment_foundation_option_a.sql
-#   3. Do NOT run "make migrate" — it is not implemented.
-#
-# Deploy (operator action required):
-#   supabase functions deploy wise-checkout
-#   supabase functions deploy crypto-checkout
-#   supabase functions deploy crypto-confirmation
-#   supabase functions deploy payment-status
-#
-# Environment variables (operator action required in Supabase Edge Function Secrets):
-#   PAYMENTS_ENABLED         = "true"  (to enable payments)
-#   ADMIN_SECRET            = <your-secret>
-#   KYC_ACTION_SECRET       = <your-secret>
-#   EXCHANGERATE_API_KEY   = <your-key>  (optional, for live FX rates)
-#   RESEND_API_KEY         = <your-key>  (for email)
-# ============================================================================
+.PHONY: test test-payment test-payment-option-a typecheck build
 
-.PHONY: test-option-a
+# ---------------------------------------------------------------------------
+# Local validation only. No deploy. No migration. No secrets.
+# ---------------------------------------------------------------------------
 
-test-option-a:
-	@echo "Running Option A test harness..."
-	@echo "STATUS: NOT EXECUTED until this command is run."
+# Deno test harness for the Option A payment foundation.
+# Run:    make test
+test:
+	deno run -A supabase/functions/_test/run-tests.ts
+
+# Alternative test harness (Option A explicitly named).
+test-payment-option-a:
 	deno run -A supabase/functions/_test/run-tests-option-a.ts
 
-# Doc target (static — no execution)
-docs:
-	@echo "See tests/payment-foundation-option-a.md for test report."
-	@echo "See tests/payment-foundation.md for Option B report (not executed)."
+# Front-end type check.
+typecheck:
+	npx tsc --noEmit
+
+# Front-end production build.
+build:
+	npm run build
