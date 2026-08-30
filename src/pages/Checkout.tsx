@@ -43,7 +43,7 @@ const countries = [
   { code: 'EC' , name: 'Ecuador', name_pt: 'Equador', name_es: 'Ecuador', name_it: 'Ecuador', name_fr: 'Équateur', name_de: 'Ecuador', name_ru: 'Эквадор', name_zh: '厄瓜多尔', name_ja: 'エクアドル', name_ar: 'الإكوادور', name_he: 'אקוודור', ddi: '+593', flag: '🇪🇨' },
   { code: 'UY', name: 'Uruguay', name_pt: 'Uruguai', name_es: 'Uruguay', name_it: 'Uruguay', name_fr: 'Uruguay', name_de: 'Uruguay', name_ru: 'Уругвай', name_zh: '乌拉圭', name_ja: 'ウルグアイ', name_ar: 'أوروغواي', name_he: 'אורוגוואי', ddi: '+598', flag: '🇺🇾' },
   { code: 'PY', name: 'Paraguay', name_pt: 'Paraguai', name_es: 'Paraguay', name_it: 'Paraguay', name_fr: 'Paraguay', name_de: 'Paraguay', name_ru: 'Парагвай', name_zh: '巴拉圭', name_ja: 'パラグアイ', name_ar: 'باراغواي', name_he: 'פרגוואי', ddi: '+595', flag: '🇵🇾' },
-  { code: 'BO', name: 'Bolivia', name_pt: 'Bolívia', name_es: 'Bolivia', name_it: 'Bolivia', name_fr: 'Bolivie', name_de: 'Bolivien', name_ru: 'Боливия', name_zh: '玻利维я', name_ja: 'ボリビア', name_ar: 'بوليفيا', name_he: 'בוליביה', ddi: '+591', flag: '🇧🇴' },
+  { code: 'BO', name: 'Bolivia', name_pt: 'Bolívia', name_es: 'Bolivia', name_it: 'Bolivia', name_fr: 'Bolivie', name_de: 'Bolivien', name_ru: 'Боливия', name_zh: '玻利维亚', name_ja: 'ボリビア', name_ar: 'بوليفيا', name_he: 'בוליביה', ddi: '+591', flag: '🇧🇴' },
   { code: 'US', name: 'United States', name_pt: 'Estados Unidos', name_es: 'Estados Unidos', name_it: 'Stati Uniti', name_fr: 'États-Unis', name_de: 'Vereinigte Staaten', name_ru: 'Соединенные Штаты', name_zh: '美国', name_ja: 'アメリカ', name_ar: 'الولايات المتحدة', name_he: 'ארצות הברית', ddi: '+1', flag: '🇺🇸' },
   { code: 'CA', name: 'Canada', name_pt: 'Canadá', name_es: 'Canadá', name_it: 'Canada', name_fr: 'Canada', name_de: 'Kanada', name_ru: 'Канада', name_zh: '加拿大', name_ja: 'カナダ', name_ar: 'كندا', name_he: 'קנדה', ddi: '+1', flag: '🇨🇦' },
   { code: 'MX', name: 'Mexico', name_pt: 'México', name_es: 'México', name_it: 'Messico', name_fr: 'Mexique', name_de: 'Mexiko', name_ru: 'Мексика', name_zh: '墨西哥', name_ja: 'メキシコ', name_ar: 'المكسيك', name_he: 'מקסיקו', ddi: '+52', flag: '🇲🇽' },
@@ -554,7 +554,7 @@ const Checkout = () => {
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t('checkout.managedCapital')}</span>
                       {/* Display USD account size instead of local currency */}
-                      <span className="text-[22px] font-serif font-bold text-[#D4AF37]">
+                      <span className="text-[22px] font-serif font-bold text-[#C5A059]">
                         ${plan.accountSizeUsd?.toLocaleString() ?? '0'}
                       </span>
                     </div>
@@ -570,8 +570,8 @@ const Checkout = () => {
                   <ul className="space-y-2">
                     {plan.features.map((f: string, i: number) => (
                       <li key={i} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                        <CheckCircle2 size={12} className="text-[#D4AF37]" /> {f}
-                      }
+                        <CheckCircle2 size={12} className="text-[#C5A059]" /> {f}
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -699,13 +699,13 @@ const Checkout = () => {
                       <div className="flex items-center gap-2 text-[9px] font-bold text-slate-500 uppercase tracking-widest">
                         <Lock size={12} /> {t('checkout.securePayment')}
                       </div>
-                      <p className="text-[8px] text-slate-600 mt-2>{t('checkout.encryptionNote')}</p>
+                      <p className="text-[8px] text-slate-600 mt-2">{t('checkout.encryptionNote')}</p>
                     </div>
                   </div>
                 ) : (
                   <div className="space-y-6 animate-fadeInUp">
                     <button 
-                      onClick={() => { setShowCard(false); setShowCrypto(false); setShowWise(false); setWiseConfirmed(false); }}
+                      onClick={() => { setShowCrypto(false); setShowWise(false); setWiseConfirmed(false); }}
                       className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
                     >
                       ← {t('checkout.back')}
@@ -716,17 +716,17 @@ const Checkout = () => {
                       <div className="space-y-6">
                         <div className="flex items-center gap-2">
                           <Bitcoin size={16} className="text-[#F7931A]" />
-                          <span className="text-[11px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.crypto')}</span>
+                          <span className="text-[11px] font-bold uppercase tracking-widest text-[#F7931A]">{t('checkout.crypto')}</span>
                         </div>
 
                         <div className="p-4 bg-white/[0.02] border border-white/5">
-                          <p className="text-[9px] text-slate-500 uppercase tracking-widest>{t('checkout.amountToPay')}</p>
-                          <p className="text-2xl font-bold text-[#C5A059]>{numericPrice} USD</p>
-                          <p className="text-[9px] text-slate-600 mt-1>≈ {numericPrice} USDT</p>
+                          <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.amountToPay')}</p>
+                          <p className="text-2xl font-bold text-[#C5A059]">{numericPrice} USD</p>
+                          <p className="text-[9px] text-slate-600 mt-1">≈ {numericPrice} USDT</p>
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400>{t('checkout.selectNetwork')}</label>
+                          <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.selectNetwork')}</label>
                           <div className="grid grid-cols-3 gap-2">
                             {cryptoNetworks.map((network) => (
                               <button
@@ -734,17 +734,17 @@ const Checkout = () => {
                                 onClick={() => setSelectedCrypto(network)}
                                 className={`p-3 border ${selectedCrypto.id === network.id ? 'border-[#C5A059] bg-[#C5A059]/10' : 'border-white/10 bg-white/[0.02]'} text-left transition-all`}
                               >
-                                <span className="text-[9px] font-bold uppercase tracking-widest block>{network.symbol}</span>
-                                <span className="text-[8px] text-slate-500>{network.id}</span>
+                                <span className="text-[9px] font-bold uppercase tracking-widest block">{network.symbol}</span>
+                                <span className="text-[8px] text-slate-500">{network.id}</span>
                               </button>
-                            ))} 
+                            ))}
                           </div>
                         </div>
 
                         <div className="p-4 bg-[#C5A059]/10 border border-[#C5A059]/30">
-                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059]>{t('checkout.yourAddress')}</p>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#C5A059]">{t('checkout.yourAddress')}</p>
                           <div className="flex items-center gap-2 mt-2">
-                            <p className="text-[9px] font-mono text-slate-400 break-all flex-1>{selectedCrypto.address}</p>
+                            <p className="text-[9px] font-mono text-slate-400 break-all flex-1">{selectedCrypto.address}</p>
                             <button 
                               onClick={() => copyToClipboard(selectedCrypto.address)}
                               className="text-[#C5A059] hover:text-white transition-colors"
@@ -763,8 +763,8 @@ const Checkout = () => {
                         </div>
 
                         <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30">
-                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.important')}</p>
-                          <p className="text-[8px] text-slate-500 mt-1>{t('checkout.cryptoNote')}</p>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]">{t('checkout.important')}</p>
+                          <p className="text-[8px] text-slate-500 mt-1">{t('checkout.cryptoNote')}</p>
                         </div>
 
                         <Button 
@@ -782,12 +782,12 @@ const Checkout = () => {
                       <div className="space-y-6">
                         <div className="flex items-center gap-2">
                           <Building2 size={16} className="text-[#12B488]" />
-                          <span className="text-[11px] font-bold uppercase tracking-widest text-[#12B488]>{t('checkout.wiseTransfer')}</span>
+                          <span className="text-[11px] font-bold uppercase tracking-widest text-[#12B488]">{t('checkout.wiseTransfer')}</span>
                         </div>
 
                         {/* Instruções */}
                         <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
-                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#12B488]>{t('checkout.transferInstructions')}</p>
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#12B488]">{t('checkout.transferInstructions')}</p>
                           <ol className="text-[8px] text-slate-400 mt-2 space-y-1 list-decimal list-inside">
                             <li>{t('checkout.wiseStep1')}</li>
                             <li>{t('checkout.wiseStep2')}</li>
@@ -798,7 +798,7 @@ const Checkout = () => {
                         {/* Dados Bancários — dinâmicos consoante a moeda do cliente */}
                         <div className="p-4 bg-white/[0.02] border border-white/10 space-y-4">
                           <div className="flex items-center justify-between pb-3 border-b border-white/5">
-                            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500>{t('checkout.bankDetails')}</span>
+                            <span className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('checkout.bankDetails')}</span>
                             {/* Seletor de moeda — detetado por IP, mas o cliente pode trocar */}
                             <select
                               value={wiseCurrency}
@@ -806,8 +806,8 @@ const Checkout = () => {
                               className="text-[8px] text-[#12B488] font-bold bg-[#12B488]/10 px-2 py-1 border-none outline-none cursor-pointer rounded"
                             >
                               {wiseCurrencyOptions.map((cur) => (
-                                <option key={cur} value={cur} className="bg-[#05070A] text-white">{cur}
-                              ))} 
+                                <option key={cur} value={cur} className="bg-[#05070A] text-white">{cur}</option>
+                              ))}
                             </select>
                           </div>
 
@@ -850,23 +850,23 @@ const Checkout = () => {
 
                         {/* Montante — convertido para a moeda selecionada */}
                         <div className="p-4 bg-[#12B488]/10 border border-[#12B488]/30">
-                          <p className="text-[9px] text-slate-500 uppercase tracking-widest>{t('checkout.amountToSend')}</p>
-                          <p className="text-2xl font-bold text-[#12B488]>
+                          <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.amountToSend')}</p>
+                          <p className="text-2xl font-bold text-[#12B488]">
                             {wiseCurrency === 'USD'
                               ? plan.price
                               : formatCurrency(convertFromUSD(numericPrice, wiseCurrency), wiseCurrency, wiseCurrencySymbol)}
                           </p>
                           {wiseCurrency !== 'USD' && (
-                            <p className="text-[8px] text-slate-600 mt-1>≈ {plan.price} USD</p>
+                            <p className="text-[8px] text-slate-600 mt-1">≈ {plan.price} USD</p>
                           )}
-                          <p className="text-[9px] text-[#12B488] font-bold mt-2>{t('checkout.sendExactAmount')}</p>
-                          <p className="text-[8px] text-slate-600 mt-1>{t('checkout.paymentReference')}</p>
+                          <p className="text-[9px] text-[#12B488] font-bold mt-2">{t('checkout.sendExactAmount')}</p>
+                          <p className="text-[8px] text-slate-600 mt-1">{t('checkout.paymentReference')}</p>
                         </div>
 
                         {/* Confirmação */}
-                        <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30>
-                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]>{t('checkout.important')}</p>
-                          <p className="text-[8px] text-slate-500 mt-1>{t('checkout.wiseNote')}</p>
+                        <div className="p-4 bg-[#F7931A]/10 border border-[#F7931A]/30">
+                          <p className="text-[9px] font-bold uppercase tracking-widest text-[#F7931A]">{t('checkout.important')}</p>
+                          <p className="text-[8px] text-slate-500 mt-1">{t('checkout.wiseNote')}</p>
                         </div>
 
                         {/* Checkbox de confirmação */}
