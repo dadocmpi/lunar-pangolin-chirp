@@ -671,28 +671,26 @@ const Checkout = () => {
                     >
                       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#F7931A]/5 to-transparent rounded-bl-full" />
                       <div className="relative z-10">
-                        <div className="flex items-center gap-5 mb-6">
-                          <div className="w-16 h-16 bg-gradient-to-br from-[#F7931A]/20 to-[#F7931A]/5 flex items-center justify-center border border-white/10 group-hover:border-[#F7931A]/30 transition-all">
-                            <Bitcoin size={28} className="text-[#F7931A]" />
-                          </div>
-                          <div className="flex-1">
-                            <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">{t('checkout.crypto')}</h3>
-                            <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.cryptoLabel')}</p>
-                          </div>
+                        <div className="w-16 h-16 bg-gradient-to-br from-[#F7931A]/20 to-[#F7931A]/5 flex items-center justify-center border border-white/10 group-hover:border-[#F7931A]/30 transition-all">
+                          <Bitcoin size={28} className="text-[#F7931A]" />
                         </div>
-                        <p className="text-[10px] text-slate-500 leading-relaxed mb-6">
-                          {t('checkout.cryptoDesc')}
-                        </p>
-                        <div className="flex items-center gap-3 pt-4 border-t border-white/5">
-                          <div className="flex gap-2">
-                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">BTC</span>
-                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">ETH</span>
-                            <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">USDT</span>
-                          </div>
-                          <div className="flex-1" />
-                          <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-[#F7931A]/70 transition-colors">
-                            <CheckCircle2 size={10} /> {t('checkout.noKyc')}
-                          </div>
+                        <div className="flex-1">
+                          <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">{t('checkout.crypto')}</h3>
+                          <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('checkout.cryptoLabel')}</p>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-slate-500 leading-relaxed mb-6">
+                        {t('checkout.cryptoDesc')}
+                      </p>
+                      <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                        <div className="flex gap-2">
+                          <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">BTC</span>
+                          <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">ETH</span>
+                          <span className="text-[8px] font-bold text-slate-600 bg-white/5 px-2 py-1">USDT</span>
+                        </div>
+                        <div className="flex-1" />
+                        <div className="flex items-center gap-1 text-[8px] font-bold text-slate-600 group-hover:text-[#F7931A]/70 transition-colors">
+                          <CheckCircle2 size={10} /> {t('checkout.noKyc')}
                         </div>
                       </div>
                     </button>
