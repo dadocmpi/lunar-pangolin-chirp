@@ -170,6 +170,15 @@ const Checkout = () => {
     return info?.symbol || '';
   })();
 
+  // Function to go back to payment selection
+  const handleBackToPaymentMethods = () => {
+    setShowCrypto(false);
+    setShowWise(false);
+    setWiseConfirmed(false);
+    // Also reset any form data if needed
+    setCardData({ number: '', expiry: '', cvc: '', name: '' });
+  };
+
   useEffect(() => {
     const checkUser = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
@@ -487,6 +496,7 @@ const Checkout = () => {
                 </div>
               )}
 
+              {/* SELEÇÃO DE FORMA DE PAGAMENTO */}
               {!showWise && !showCrypto ? (
                 <div className="space-y-8 animate-fadeInUp">
                   <div className="space-y-4">
@@ -570,13 +580,21 @@ const Checkout = () => {
                   </div>
                 </div>
               ) : (
+                /* FORMULÁRIOS DE PAGAMENTO */
                 <div className="space-y-6 animate-fadeInUp">
-                  <button 
-                    onClick={() => { setShowCrypto(false); setShowWise(false); setWiseConfirmed(false); }}
-                    className="text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white transition-colors"
-                  >
-                    ← {t('checkout.back')}
-                  </button>
+                  
+                  {/* BOTÃO VOLTAR - MAIS VISÍVEL */}
+                  <div className="border border-white/10 bg-white/[0.02] p-4">
+                    <button 
+                      onClick={handleBackToPaymentMethods}
+                      className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#C5A059]/10 border border-[#C5A059]/30 hover:bg-[#C5A059]/20 hover:border-[#C5A059]/50 transition-all text-[#C5A059] group"
+                    >
+                      <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                      <span className="text-[11px] font-bold uppercase tracking-widest">
+                        {t('checkout.back') || '← Voltar para formas de pagamento'}
+                      </span>
+                    </button>
+                  </div>
 
                   {/* CRIPTOMOEDAS */}
                   {showCrypto && (
@@ -593,7 +611,7 @@ const Checkout = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.selectNetwork')}</label>
+                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">{t('checkout.selectNetwork')}</p>
                         <div className="grid grid-cols-3 gap-2">
                           {cryptoNetworks.map((network) => (
                             <button
@@ -614,7 +632,7 @@ const Checkout = () => {
                           <p className="text-[9px] font-mono text-slate-400 break-all flex-1">{selectedCrypto.address}</p>
                           <button 
                             onClick={() => copyToClipboard(selectedCrypto.address)}
-                            className="text-[#C5A059] hover:text-white transition-colors"
+                            className="text-[#C5A059] hover:text-white transition-colors shrink-0"
                           >
                             <CreditCard size={12} />
                           </button>
