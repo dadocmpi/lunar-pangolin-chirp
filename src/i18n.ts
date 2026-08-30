@@ -589,7 +589,20 @@ const enTranslation = {
     useOfInfoTitle: "Use of Information",
     useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data."
+    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    // Additional sections for draft
+    legalBasisTitle: "Legal Basis for Processing",
+    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    retentionTitle: "Data Retention Period",
+    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    thirdPartiesTitle: "Third Parties and Processors",
+    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    userRightsTitle: "Your Rights",
+    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    cookiesTitle: "Cookies and Similar Technologies",
+    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    contactTitle: "Contact and Data Protection Officer",
+    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
   },
   disclaimerPage: {
     title: "Financial Disclaimer",
@@ -599,34 +612,63 @@ const enTranslation = {
     noAdviceTitle: "No Advice",
     noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations."
-  }
+    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    // Additional sections for draft
+    capitalAtRiskTitle: "Capital at Risk",
+    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    noGuaranteedReturnsTitle: "No Guaranteed Returns",
+    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    pastPerformanceTitle: "Past Performance Not Indicative",
+    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    notLicensedTitle: "Regulatory Status",
+    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    noCapitalProtectionTitle: "No Capital Protection Guarantee",
+    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
+    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
+    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+  },
+  // New section for Terms of Service
+  termsPage: {
+    title: "Terms of Service",
+    entityTitle: "Contracting Entity",
+    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    descriptionTitle: "Service Description",
+    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    feesTitle: "Fees and Payments",
+    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    eligibilityTitle: "Eligibility",
+    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    accountTerminationTitle: "Account Termination",
+    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    limitationOfLiabilityTitle: "Limitation of Liability",
+    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    disputeResolutionTitle: "Dispute Resolution and Governing Law",
+    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    changesToTermsTitle: "Changes to These Terms",
+    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    effectiveDateTitle: "Effective Date",
+    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    contactTitle: "Contact",
+    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+  },
+  // Banner for draft pages
+  legalDraftBanner: "This page is a draft under legal review and is not yet final."
 };
-
-// Placeholder translations for other languages (using English as fallback)
-const ptTranslation = enTranslation;
-const itTranslation = enTranslation;
-const esTranslation = enTranslation;
-const frTranslation = enTranslation;
-const deTranslation = enTranslation;
-const ruTranslation = enTranslation;
-const zhTranslation = enTranslation;
-const jaTranslation = enTranslation;
-const arTranslation = enTranslation;
-const heTranslation = enTranslation;
 
 const resources = {
   en: { translation: enTranslation },
-  pt: { translation: ptTranslation },
-  it: { translation: itTranslation },
-  es: { translation: esTranslation },
-  fr: { translation: frTranslation },
-  de: { translation: deTranslation },
-  ru: { translation: ruTranslation },
-  zh: { translation: zhTranslation },
-  ja: { translation: jaTranslation },
-  ar: { translation: arTranslation },
-  he: { translation: heTranslation }
+  pt: { translation: enTranslation },
+  it: { translation: enTranslation },
+  es: { translation: enTranslation },
+  fr: { translation: enTranslation },
+  de: { translation: enTranslation },
+  ru: { translation: enTranslation },
+  zh: { translation: enTranslation },
+  ja: { translation: enTranslation },
+  ar: { translation: enTranslation },
+  he: { translation: enTranslation }
 };
 
 i18n
