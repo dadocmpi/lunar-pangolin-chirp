@@ -10,6 +10,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import { showSuccess, showError } from '@/utils/toast';
+import { Link } from 'react-router-dom';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
@@ -213,9 +214,17 @@ const Contact = () => {
                 </div>
               </div>
 
+              {/* Consent notice */}
+              <div className="text-[9px] text-slate-500 italic">
+                By submitting this form, you agree to our{' '}
+                <Link to="/privacy" className="underline hover:text-[#D4AF37]">
+                  Privacy Policy
+                </Link>{' '}. We use your data only to respond to your inquiry and retain it for [RETENTION_PERIOD]. You can request access to or deletion of your data by contacting marketsbraxel@ouvidor.net.
+              </div>
+
               <Button 
                 disabled={loading || cooldown}
-                className="w-full bg-[#D4AF37] hover:bg-[#C9A227] text-black rounded-none h-16 text-[12px] font-black uppercase tracking-[2px] transition-all border-none"
+                className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-16 text-[12px] font-black uppercase tracking-[2px] transition-all border-none"
               >
                 {loading ? <Loader2 className="animate-spin" /> : cooldown ? t('contact.cooldown') + "..." : t('contact.sendBtn')}
               </Button>
