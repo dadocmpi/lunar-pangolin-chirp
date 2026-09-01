@@ -5,7 +5,10 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
 const COMPANY_EMAIL = "marketsbraxel@ouvidor.net";
 const SUPABASE_FUNCTIONS_URL = "https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1";
-const KYC_ACTION_SECRET = Deno.env.get("KYC_ACTION_SECRET") || "braxel-kyc-2026-secure";
+const KYC_ACTION_SECRET = Deno.env.get("KYC_ACTION_SECRET");
+if (!KYC_ACTION_SECRET) {
+  throw new Error("KYC_ACTION_SECRET environment variable is not set");
+}
 
 interface KYCNotificationPayload {
   userId: string;
