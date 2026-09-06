@@ -300,7 +300,7 @@ const Dashboard = () => {
       
       // Trigger email notification via edge function
       try {
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL || 'https://ymzdxifedtjwkxkzfwqu.supabase.co'}/functions/v1/kyc-notification`, {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/kyc-notification`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
