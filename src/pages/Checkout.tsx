@@ -11,6 +11,7 @@ import {
   Building2,
   Bitcoin,
   Lock,
+  CreditCard,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
@@ -45,9 +46,11 @@ interface CheckoutResponse {
     routing_number: string;
     swift: string;
     reference: string;
-  };
+  }?;
   deposit_address?: string;
   warnings?: string[];
+  url?: string; // For Stripe checkout
+  pending_payment_id?: string; // For Stripe checkout
 }
 
 const CRYPTO_NETWORKS = [
@@ -74,16 +77,19 @@ const Checkout = () => {
   const [user, setUser] = useState<any>(null);
   const [showCrypto, setShowCrypto] = useState(false);
   const [showWise, setShowWise] = useState(false);
+  const [showStripe, setShowStripe] = useState(false);
   const [wiseConfirmed, setWiseConfirmed] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [wiseResponse, setWiseResponse] = useState<CheckoutResponse | null>(null);
   const [cryptoResponse, setCryptoResponse] = useState<CheckoutResponse | null>(null);
+  const [stripeResponse, setStripeResponse] = useState<CheckoutResponse | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
   const selectedCryptoIdRef = useRef<string>("BTC");
   const wiseKeyRef = useRef<string | null>(null);
   const cryptoKeyRef = useRef<string | null>(null);
+  const stripeKeyRef = useRef<string | null>(null);
 
   const plan = location.state?.plan;
 
@@ -109,22 +115,43 @@ const Checkout = () => {
     checkUser();
   }, [plan, navigate]);
 
-  const numericPrice = useMemo(() => {
-    if (!plan) return "0";
-    return String(plan.priceUSD ?? 0);
-  }, [plan]);
+  // Official monthly prices in EUR
+  const OFFICIAL_PRICES_EUR: Record<string, number> = {
+    Starter: 80.04,
+    Professional: 120.52,
+    Business: 431.48,
+    Enterprise: 852.84,
+  };
+
+  // Override plan data with official EUR prices
+  const enhancedPlan = plan
+    ? {
+        ...plan,
+        priceEUR: OFFICIAL_PRICES_EUR[plan.name] ?? plan.priceUSD ?? 0,
+        priceUSD: 0, // We won't show USD
+        accountSizeEUR: OFFICIAL_PRICES_EUR[plan.name] ?? 0, // For simplicity, we'll use the same as price
+        accountSizeUSD: 0,
+      }
+    : null;
+
+  const numericPriceEUR = useMemo(() => {
+    if (!enhancedPlan) return "0";
+    return String(enhancedPlan.priceEUR ?? 0);
+  }, [enhancedPlan]);
 
   const handleBack = () => {
     setShowCrypto(false);
     setShowWise(false);
+    setShowStripe(false);
     setWiseConfirmed(false);
     setWiseResponse(null);
     setCryptoResponse(null);
+    setStripeResponse(null);
     setPaymentId(null);
   };
 
   async function callEdgeFunction(
-    fn: "wise-checkout" | "crypto-checkout",
+    fn: "wise-checkout" | "crypto-checkout" | "stripe-checkout",
     body: Record<string, unknown>,
   ): Promise<CheckoutResponse> {
     const { data: { session } } = await supabase.auth.getSession();
@@ -185,6 +212,32 @@ const Checkout = () => {
       });
       setCryptoResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
+    } catch (e: any) {
+      setSubmitError(String(e?.message ?? e));
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleStripeSubmit = async () => {
+    if (!plan) return;
+    setProcessing(true);
+    setSubmitError(null);
+    try {
+      if (!stripeKeyRef.current) stripeKeyRef.current = newIdempotencyKey();
+      const res = await callEdgeFunction("stripe-checkout", {
+        planId: plan.id,
+        idempotencyKey: stripeKeyRef.current,
+        isTest: testMode,
+      });
+      setStripeResponse(res);
+      if (res.pending_payment_id) {
+        setPaymentId(res.pending_payment_id);
+      }
+      // Redirect to Stripe Checkout
+      if (res.url) {
+        window.location.href = res.url;
+      }
     } catch (e: any) {
       setSubmitError(String(e?.message ?? e));
     } finally {
@@ -257,8 +310,7 @@ const Checkout = () => {
                 {t("checkout.summary")}
               </span>
               <h1 className="text-4xl font-black uppercase tracking-tighter">
-                {t("checkout.allocationTitle")}{" "}
-                <span className="text-[#C5A059]">{t("checkout.allocationSubtitle")}</span>
+                {t("checkout.subscriptionTitle")} <span className="text-[#C5A059]">{t("checkout.subscriptionSubtitle")}</span>
               </h1>
             </div>
 
@@ -270,7 +322,7 @@ const Checkout = () => {
               <div className="flex justify-between items-center pb-8 border-b border-white/5">
                 <div>
                   <h3 className="font-bold text-2xl uppercase tracking-tight">
-                    {plan.name}
+                    {enhancedPlan?.name}
                   </h3>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">
                     {t("checkout.tierLabel")}
@@ -278,7 +330,7 @@ const Checkout = () => {
                 </div>
                 <div className="text-right">
                   <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                    ${plan.priceUSD?.toLocaleString()}
+                    €{enhancedPlan?.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                   <p className="text-[9px] text-slate-600 uppercase tracking-widest">
                     {t("checkout.billedMonthly")}
@@ -293,9 +345,9 @@ const Checkout = () => {
                   </h4>
                   <div className="space-y-3">
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span className="text-slate-500">{t("checkout.managedCapital")}</span>
+                      <span className="text-slate-500">{t("checkout.serviceAccess")}</span>
                       <span className="text-[22px] font-serif font-bold text-[#C5A059]">
-                        ${plan.accountSizeUsd?.toLocaleString() ?? "0"}
+                        €{enhancedPlan?.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
@@ -310,7 +362,7 @@ const Checkout = () => {
                     {t("checkout.infrastructureTitle")}
                   </h4>
                   <ul className="space-y-2">
-                    {plan.features?.map((f: string, i: number) => (
+                    {enhancedPlan?.features?.map((f: string, i: number) => (
                       <li
                         key={i}
                         className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400"
@@ -359,7 +411,7 @@ const Checkout = () => {
                 </div>
               )}
 
-              {!showWise && !showCrypto ? (
+              {!showWise && !showCrypto && !showStripe ? (
                 <div className="space-y-8 animate-fadeInUp">
                   <div className="space-y-4">
                     <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">
@@ -400,6 +452,21 @@ const Checkout = () => {
                         {t("checkout.cryptoDesc")}
                       </p>
                     </button>
+
+                    <button
+                      onClick={() => setShowStripe(true)}
+                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-[#C5A059] transition-all text-left group"
+                    >
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#C5A059]/20 to-[#C5A059]/5 flex items-center justify-center border border-white/10 mb-4">
+                        <CreditCard size={28} className="text-[#C5A059]" />
+                      </div>
+                      <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">
+                        {t("checkout.card")}
+                      </h3>
+                      <p className="text-[10px] text-slate-500 leading-relaxed">
+                        {t("checkout.cardDesc")}
+                      </p>
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -421,7 +488,7 @@ const Checkout = () => {
                           {t("checkout.amountToPay")}
                         </p>
                         <p className="text-2xl font-bold text-[#C5A059]">
-                          ${numericPrice} USD
+                          €{numericPriceEUR}
                         </p>
                       </div>
 
@@ -490,6 +557,34 @@ const Checkout = () => {
 
                   {showWise && wiseResponse && (
                     <WiseAwaitingView response={wiseResponse} />
+                  )}
+
+                  {showStripe && !stripeResponse && (
+                    <div className="space-y-6">
+                      <div className="p-4 bg-white/[0.02] border border-white/5">
+                        <p className="text-[9px] text-slate-500 uppercase tracking-widest">
+                          {t("checkout.amountToPay")}
+                        </p>
+                        <p className="text-2xl font-bold text-[#C5A059]">
+                          €{numericPriceEUR}
+                        </p>
+                      </div>
+
+                      <Button
+                        onClick={handleStripeSubmit}
+                        className="w-full bg-[#C5A059] hover:bg-[#C5A059]/80 text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
+                      >
+                        {t("checkout.confirmCard")}
+                      </Button>
+                    </div>
+                  )}
+
+                  {showStripe && stripeResponse && (
+                    <div className="space-y-4">
+                      <p className="text-[10px] text-slate-500">
+                        {t("checkout.redirecting")}
+                      </p>
+                    </div>
                   )}
                 </div>
               )}
