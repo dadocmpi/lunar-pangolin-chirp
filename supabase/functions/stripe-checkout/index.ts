@@ -155,11 +155,12 @@ serve(async (req) => {
   const planKey = application.plan_key;
 
   // Map plan key to Stripe Price ID from environment variables
+  // USD only; local-currency adaptation is presentation only.
   const priceIdMap: Record<string, string> = {
-    starter: Deno.env.get("STRIPE_PRICE_STARTER_EUR") ?? "",
-    professional: Deno.env.get("STRIPE_PRICE_PROFESSIONAL_EUR") ?? "",
-    business: Deno.env.get("STRIPE_PRICE_BUSINESS_EUR") ?? "",
-    enterprise: Deno.env.get("STRIPE_PRICE_ENTERPRISE_EUR") ?? "",
+    starter: Deno.env.get("STRIPE_PRICE_STARTER_USD") ?? "",
+    professional: Deno.env.get("STRIPE_PRICE_PROFESSIONAL_USD") ?? "",
+    business: Deno.env.get("STRIPE_PRICE_BUSINESS_USD") ?? "",
+    enterprise: Deno.env.get("STRIPE_PRICE_ENTERPRISE_USD") ?? "",
   };
 
   const priceId = priceIdMap[planKey];

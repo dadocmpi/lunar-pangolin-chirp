@@ -171,14 +171,14 @@ const enTranslation = {
     detectedCurrency: "Prices shown in your local currency ({{currency}}) based on your location"
   },
   plans: {
-    starter: "STARTER 5K",
-    starterFeatures: "Automation, account management, email support, and risk management protocols (not a guarantee of safety)",
-    pro: "PRO 10K",
-    proFeatures: "Starter features, priority support, detailed logs (illustrative)",
-    advanced: "ADVANCED 25K",
-    advancedFeatures: "Pro features, multi-account support, weekly reports (illustrative)",
-    elite: "ELITE 100K",
-    eliteFeatures: "Advanced features, support available 24/7 (response times may vary), access to a dedicated account manager (availability may vary)",
+    starter: "Starter",
+    starterFeatures: "Starter Features",
+    professional: "Professional",
+    professionalFeatures: "Professional Features",
+    business: "Business",
+    businessFeatures: "Business Features",
+    enterprise: "Enterprise",
+    enterpriseFeatures: "Enterprise Features",
     managedCapital: "Managed Capital",
     features: {
       automation: "Automation",
