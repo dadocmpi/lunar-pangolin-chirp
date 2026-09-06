@@ -63,13 +63,6 @@ serve(async (req) => {
     );
   }
 
-  const priceIdMap: Record<string, string> = {
-    starter: Deno.env.get("STRIPE_PRICE_STARTER_EUR") ?? "",
-    professional: Deno.env.get("STRIPE_PRICE_PROFESSIONAL_EUR") ?? "",
-    business: Deno.env.get("STRIPE_PRICE_BUSINESS_EUR") ?? "",
-    enterprise: Deno.env.get("STRIPE_PRICE_ENTERPRISE_EUR") ?? "",
-  };
-
   const successUrl = Deno.env.get("STRIPE_SUCCESS_URL");
   const cancelUrl = Deno.env.get("STRIPE_CANCEL_URL");
   if (!successUrl || !cancelUrl) {
@@ -120,7 +113,7 @@ serve(async (req) => {
   }
 
   // Parse request body
-  let body: { plan: string };
+  let body: { planId: string; idempotencyKey: string; isTest: boolean; applicationId: string };
   try {
     body = await req.json();
   } catch {
@@ -130,13 +123,44 @@ serve(async (req) => {
     });
   }
 
-  const planKey = body.plan;
-  if (!planKey || !["starter", "professional", "business", "enterprise"].includes(planKey)) {
-    return new Response(JSON.stringify({ error: "Invalid plan" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+  const { planId, idempotencyKey, isTest, applicationId } = body;
+  if (!planId || !idempotencyKey || !applicationId) {
+    return new Response(
+      JSON.stringify({ error: "Missing required fields" }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   }
+
+  // Fetch the application to get the plan key and verify ownership
+  const { data: application, error: appError } = await supabase
+    .from("applications")
+    .select("plan_key")
+    .eq("id", applicationId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (appError || !application) {
+    return new Response(
+      JSON.stringify({ error: "Application not found or access denied" }),
+      {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const planKey = application.plan_key;
+
+  // Map plan key to Stripe Price ID from environment variables
+  const priceIdMap: Record<string, string> = {
+    starter: Deno.env.get("STRIPE_PRICE_STARTER_EUR") ?? "",
+    professional: Deno.env.get("STRIPE_PRICE_PROFESSIONAL_EUR") ?? "",
+    business: Deno.env.get("STRIPE_PRICE_BUSINESS_EUR") ?? "",
+    enterprise: Deno.env.get("STRIPE_PRICE_ENTERPRISE_EUR") ?? "",
+  };
 
   const priceId = priceIdMap[planKey];
   if (!priceId) {
@@ -150,19 +174,18 @@ serve(async (req) => {
   }
 
   // Create pending payment record
-  const idempotencyKey = crypto.randomUUID();
   const pendingPaymentData = {
     user_id: user.id,
-    plan_name: planKey, // we'll store the plan key in plan_name for now; alternatively, we could have a plan_id from a plans table, but we don't have one. We'll use plan_name to store the key.
-    amount_cents: 0, // amount is determined by Stripe price
+    plan_name: planKey, // We'll store the plan key in plan_name for now
+    amount_cents: 0, // Amount will be set by Stripe price
     currency: "eur",
     network: null,
     method: "stripe",
     idempotency_key: idempotencyKey,
     status: "pending",
     metadata: {
+      application_id: applicationId,
       plan_key: planKey,
-      stripe_price_id: priceId,
       // We'll add stripe_customer_id and stripe_subscription_id later via webhook
     },
   };
@@ -192,6 +215,7 @@ serve(async (req) => {
   sessionData.append("cancel_url", cancelUrl);
   sessionData.append("metadata[pending_payment_id]", pendingPayment.id);
   sessionData.append("metadata[idempotency_key]", idempotencyKey);
+  sessionData.append("metadata[application_id]", applicationId);
   // We can also pass customer email if we want, but we'll let Stripe collect it or use the user's email from Supabase
   sessionData.append("customer_email", user.email ?? "");
 

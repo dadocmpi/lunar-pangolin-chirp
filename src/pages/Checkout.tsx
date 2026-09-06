@@ -46,7 +46,7 @@ interface CheckoutResponse {
     routing_number: string;
     swift: string;
     reference: string;
-  }?;
+  } | null;
   deposit_address?: string;
   warnings?: string[];
   url?: string; // For Stripe checkout
@@ -85,13 +85,15 @@ const Checkout = () => {
   const [stripeResponse, setStripeResponse] = useState<CheckoutResponse | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
+  const [application, setApplication] = useState<any>(null); // Application data
 
   const selectedCryptoIdRef = useRef<string>("BTC");
   const wiseKeyRef = useRef<string | null>(null);
   const cryptoKeyRef = useRef<string | null>(null);
   const stripeKeyRef = useRef<string | null>(null);
 
-  const plan = location.state?.plan;
+  // Get applicationId from location.state (set by RegisterApplication page)
+  const applicationId = location.state?.applicationId;
 
   // Production gate. When neither is on, render PaymentsDisabledNotice.
   const testMode = import.meta.env.VITE_TEST_PAYMENT_MODE === "true";
@@ -103,17 +105,34 @@ const Checkout = () => {
   );
 
   useEffect(() => {
-    if (!plan) {
-      navigate("/pricing");
+    if (!applicationId) {
+      // If no applicationId, redirect to pre-registration page
+      navigate("/register-application", { state: { plan: location.state?.plan } });
       return;
     }
-    const checkUser = async () => {
+    const checkUserAndApplication = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       setUser(authUser);
+      
+      // Fetch the application data to verify ownership and get plan details
+      const { data: appData, error: appError } = await supabase
+        .from("applications")
+        .select("*, plan_key")
+        .eq("id", applicationId)
+        .eq("user_id", authUser?.id)
+        .single();
+
+      if (appError || !appData) {
+        // If application not found or not owned by user, redirect to pre-registration
+        navigate("/register-application");
+        return;
+      }
+      
+      setApplication(appData);
       setLoading(false);
     };
-    checkUser();
-  }, [plan, navigate]);
+    checkUserAndApplication();
+  }, [applicationId, navigate]);
 
   // Official monthly prices in EUR
   const OFFICIAL_PRICES_EUR: Record<string, number> = {
@@ -123,14 +142,21 @@ const Checkout = () => {
     Enterprise: 852.84,
   };
 
-  // Override plan data with official EUR prices
-  const enhancedPlan = plan
+  // Get the plan key from the application data
+  const planKey = application?.plan_key;
+  
+  // Override plan data with official EUR prices based on plan key
+  const enhancedPlan = planKey
     ? {
-        ...plan,
-        priceEUR: OFFICIAL_PRICES_EUR[plan.name] ?? plan.priceUSD ?? 0,
+        // We'll create a plan-like object from the application data and official prices
+        id: planKey, // Using plan_key as the plan ID for consistency
+        name: planKey.charAt(0).toUpperCase() + planKey.slice(1), // e.g., 'starter' -> 'Starter'
+        priceEUR: OFFICIAL_PRICES_EUR[planKey as keyof typeof OFFICIAL_PRICES_EUR] ?? 0,
         priceUSD: 0, // We won't show USD
-        accountSizeEUR: OFFICIAL_PRICES_EUR[plan.name] ?? 0, // For simplicity, we'll use the same as price
+        accountSizeEUR: OFFICIAL_PRICES_EUR[planKey as keyof typeof OFFICIAL_PRICES_EUR] ?? 0,
         accountSizeUSD: 0,
+        features: [], // We don't have features in the application, but we can fetch from a plans table if needed
+        // For now, we'll leave features empty and rely on the plan description in the UI
       }
     : null;
 
@@ -165,7 +191,7 @@ const Checkout = () => {
           Authorization: `Bearer ${session.access_token}`,
         },
         body: JSON.stringify(body),
-      },
+      }
     );
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -179,13 +205,13 @@ const Checkout = () => {
       showError(t("checkout.wiseConfirmRequired"));
       return;
     }
-    if (!plan) return;
+    if (!application) return;
     setProcessing(true);
     setSubmitError(null);
     try {
       if (!wiseKeyRef.current) wiseKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("wise-checkout", {
-        planId: plan.id,
+        planId: application.plan_key, // Use the plan_key from the application
         idempotencyKey: wiseKeyRef.current,
         isTest: testMode,
       });
@@ -199,13 +225,13 @@ const Checkout = () => {
   };
 
   const handleCryptoSubmit = async () => {
-    if (!plan) return;
+    if (!application) return;
     setProcessing(true);
     setSubmitError(null);
     try {
       if (!cryptoKeyRef.current) cryptoKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("crypto-checkout", {
-        planId: plan.id,
+        planId: application.plan_key,
         network: selectedCryptoIdRef.current,
         idempotencyKey: cryptoKeyRef.current,
         isTest: testMode,
@@ -220,13 +246,13 @@ const Checkout = () => {
   };
 
   const handleStripeSubmit = async () => {
-    if (!plan) return;
+    if (!application) return;
     setProcessing(true);
     setSubmitError(null);
     try {
       if (!stripeKeyRef.current) stripeKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("stripe-checkout", {
-        planId: plan.id,
+        planId: application.plan_key,
         idempotencyKey: stripeKeyRef.current,
         isTest: testMode,
       });
@@ -245,7 +271,7 @@ const Checkout = () => {
     }
   };
 
-  if (!plan) {
+  if (loading || !application) {
     return (
       <div className="min-h-screen bg-[#05070A] flex items-center justify-center">
         <Loader2 className="animate-spin text-[#C5A059]" size={48} />
@@ -322,7 +348,7 @@ const Checkout = () => {
               <div className="flex justify-between items-center pb-8 border-b border-white/5">
                 <div>
                   <h3 className="font-bold text-2xl uppercase tracking-tight">
-                    {enhancedPlan?.name}
+                    {enhancedPlan.name}
                   </h3>
                   <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">
                     {t("checkout.tierLabel")}
@@ -330,7 +356,7 @@ const Checkout = () => {
                 </div>
                 <div className="text-right">
                   <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                    €{enhancedPlan?.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    €{enhancedPlan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                   <p className="text-[9px] text-slate-600 uppercase tracking-widest">
                     {t("checkout.billedMonthly")}
@@ -347,12 +373,12 @@ const Checkout = () => {
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t("checkout.serviceAccess")}</span>
                       <span className="text-[22px] font-serif font-bold text-[#C5A059]">
-                        €{enhancedPlan?.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        €{enhancedPlan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span className="text-slate-500">{t("checkout.setupFee")}</span>
-                      <span className="text-green-500">{t("checkout.waived")}</span>
+                      <span className="text-slate-500>{t("checkout.setupFee")}</span>
+                      <span className="text-green-500>{t("checkout.waived")}</span>
                     </div>
                   </div>
                 </div>
@@ -362,7 +388,7 @@ const Checkout = () => {
                     {t("checkout.infrastructureTitle")}
                   </h4>
                   <ul className="space-y-2">
-                    {enhancedPlan?.features?.map((f: string, i: number) => (
+                    {enhancedPlan.features?.map((f: string, i: number) => (
                       <li
                         key={i}
                         className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400"
@@ -408,7 +434,7 @@ const Checkout = () => {
               {submitError && (
                 <div className="p-4 border border-red-500/30 bg-red-500/10 text-red-300 text-[10px] font-bold uppercase tracking-widest">
                   {submitError}
-                </div>
+                )
               )}
 
               {!showWise && !showCrypto && !showStripe ? (
@@ -508,7 +534,7 @@ const Checkout = () => {
                               <span className="text-[9px] font-bold uppercase tracking-widest block">
                                 {n.symbol}
                               </span>
-                              <span className="text-[8px] text-slate-500">{n.id}</span>
+                              <span className="text-[8px] text-slate-500>{n.id}</span>
                             </button>
                           ))}
                         </div>
@@ -547,7 +573,7 @@ const Checkout = () => {
                         className={`w-full rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] ${
                           wiseConfirmed
                             ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                            : "bg-slate-700 text-slate-500 cursor-not-allowed"
+                            : "bg-slate-700 text-slate-500 cursor-not-allowed"`
                         }`}
                       >
                         {t("checkout.confirmWise")}

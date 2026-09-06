@@ -59,15 +59,6 @@ serve(async (req) => {
   const rawBody = await req.text();
 
   // Verify the signature (we'll do a basic verification; in production, use the stripe library)
-  // For simplicity, we'll assume the secret is used as a shared secret to sign the body.
-  // However, Stripe uses a more complex scheme. We'll implement a basic check for now.
-  // In a real implementation, you should use the Stripe CLI or library to verify.
-  // Since we cannot add external dependencies easily, we'll skip the cryptographic verification
-  // and rely on the fact that the URL is not public? But that's not safe.
-  // Alternatively, we can use the webhook secret as a bearer token in a custom header? 
-  // But Stripe doesn't work that way.
-  // Given the constraints, we'll do a simple check: the webhook secret is passed in a header? 
-  // Actually, Stripe sends the signature in the stripe-signature header and we need to verify it.
   // We'll implement a basic verification using the secret as the key for HMAC SHA256.
   // We'll use the crypto.subtle API.
 
@@ -147,24 +138,9 @@ serve(async (req) => {
     });
   }
 
-  // Idempotency: check if we've already processed this event
-  const eventId = event.id;
-  // We'll store processed event IDs in a separate table? But we cannot create tables.
-  // Instead, we'll store them in the metadata of the pending payment record? 
-  // However, we don't know which pending payment record yet for all event types.
-  // For events that are related to a pending payment (via metadata), we can check there.
-  // For others, we might need a global list. We'll skip idempotency for now and rely on the fact
-  // that Stripe webhooks are idempotent? Actually, Stripe may retry, so we need idempotency.
-  // We'll create a simple in-memory set? Not reliable across function instances.
-  // Given the constraints, we'll store processed event IDs in the metadata of a dummy record? 
-  // Alternatively, we can add a column to pending_payments for processed events? But we cannot alter table.
-  // We'll use the metadata of the pending payment record that is associated with the event.
-  // For events that have a pending_payment_id in metadata (like checkout.session.completed), we can check there.
-  // For others (like invoice.paid), we can find the pending payment by subscription id or customer id.
-  // We'll implement a helper to get the pending payment record and check its metadata for processed event ids.
-
-  // We'll create a function to get the pending payment record from the event and check idempotency.
-  // For now, we'll skip idempotency and note that it's a limitation.
+  // Idempotency: we'll check if we've already processed this event by looking at the metadata of the pending payment
+  // We'll store processed event IDs in the metadata of the pending payment record.
+  // We'll do this for events that are related to a pending payment (via metadata).
 
   // Handle the event
   let updated = false;
@@ -173,16 +149,17 @@ serve(async (req) => {
       case "checkout.session.completed": {
         const session = event.data.object;
         const pendingPaymentId = session.metadata?.pending_payment_id;
+        const applicationId = session.metadata?.application_id;
         const idempotencyKey = session.metadata?.idempotency_key;
-        if (!pendingPaymentId) {
-          console.warn("No pending_payment_id in session metadata");
+        if (!pendingPaymentId || !applicationId) {
+          console.warn("No pending_payment_id or application_id in session metadata");
           break;
         }
 
         // Get the pending payment record
         const { data: pendingPayment, error: pendingError } = await supabase
           .from("pending_payments")
-          .select("id, metadata")
+          .select("id, metadata, status_enum")
           .eq("id", pendingPaymentId)
           .single();
 
@@ -194,22 +171,21 @@ serve(async (req) => {
         // Check idempotency: see if we've already processed this event for this pending payment
         const metadata = pendingPayment.metadata as Record<string, any> || {};
         const processedEventIds = metadata.processed_event_ids || [];
-        if (processedEventIds.includes(eventId)) {
-          console.log(`Already processed event ${eventId} for pending payment ${pendingPaymentId}`);
+        if (processedEventIds.includes(event.id)) {
+          console.log(`Already processed event ${event.id} for pending payment ${pendingPaymentId}`);
           break;
         }
 
         // Update the pending payment with stripe customer and subscription ids
         const updateData: Record<string, any> = {
+          status_enum: "confirmed", // Set payment status to confirmed
           metadata: {
             ...metadata,
             stripe_customer_id: session.customer,
             stripe_subscription_id: session.subscription,
             // Add the event id to processed list
-            processed_event_ids: [...processedEventIds, eventId],
+            processed_event_ids: [...processedEventIds, event.id],
           },
-          // We'll set status to processing; the first invoice will mark it as active
-          status: "processing",
         };
 
         const { error: updateError } = await supabase
@@ -220,6 +196,44 @@ serve(async (req) => {
         if (updateError) {
           console.error("Failed to update pending payment:", updateError);
           break;
+        }
+
+        // Update the application record
+        const { data: application, error: appError } = await supabase
+          .from("applications")
+          .update({
+            payment_status: "confirmed",
+            activation_status: "activation_pending",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", applicationId)
+          .select()
+          .single();
+
+        if (appError || !application) {
+          console.error("Failed to update application:", appError);
+          // We don't break here because the pending payment update succeeded, but we should log the error
+          console.error("Application update failed, but pending payment was updated.");
+        }
+
+        // Create an audit log entry for the payment confirmation
+        const { error: auditError } = await supabase
+          .from("payment_audit_log")
+          .insert({
+            payment_table: "pending_payments",
+            payment_id: pendingPaymentId,
+            user_id: pendingPayment.user_id,
+            actor: "system",
+            source: "stripe",
+            event_id: event.id,
+            previous_status: null, // We don't have the previous status easily; we'll set to null
+            new_status: "confirmed",
+            reason: "Payment confirmed via Stripe checkout.session.completed",
+            created_at: new Date().toISOString()
+          });
+
+        if (auditError) {
+          console.error("Audit log error:", auditError);
         }
 
         updated = true;
@@ -234,12 +248,6 @@ serve(async (req) => {
         }
 
         // Find the pending payment by stripe_subscription_id in metadata
-        // We'll have to do a filter on the metadata column. Since we cannot index on JSONB, 
-        // we'll fetch all pending payments for the user? But we don't have the user id.
-        // Alternatively, we can store the subscription id in a separate column? We cannot.
-        // We'll do a select and filter in memory? Not efficient but acceptable for low volume.
-        // We'll get all pending payments with method='stripe' and then check metadata.
-        // This is not scalable but okay for now.
         const { data: pendingPayments, error: listError } = await supabase
           .from("pending_payments")
           .select("id, metadata")
@@ -263,8 +271,8 @@ serve(async (req) => {
         // Check idempotency
         const metadata = pendingPayment.metadata as Record<string, any> || {};
         const processedEventIds = metadata.processed_event_ids || [];
-        if (processedEventIds.includes(eventId)) {
-          console.log(`Already processed event ${eventId} for pending payment ${pendingPayment.id}`);
+        if (processedEventIds.includes(event.id)) {
+          console.log(`Already processed event ${event.id} for pending payment ${pendingPayment.id}`);
           break;
         }
 
@@ -276,9 +284,10 @@ serve(async (req) => {
             stripe_latest_invoice_id: invoice.id,
             stripe_latest_payment_intent: invoice.payment_intent,
             current_period_end: periodEnd,
-            processed_event_ids: [...processedEventIds, eventId],
+            processed_event_ids: [...processedEventIds, event.id],
           },
-          status: "active",
+          // We don't change the status_enum here; it remains "confirmed" from the checkout.session.completed event
+          // We'll update the application's payment_status to "confirmed" (it should already be)
         };
 
         const { error: updateError } = await supabase
@@ -289,6 +298,41 @@ serve(async (req) => {
         if (updateError) {
           console.error("Failed to update pending payment:", updateError);
           break;
+        }
+
+        // Update the application record's payment_status to confirmed (should already be, but we'll set it)
+        const { data: application, error: appError } = await supabase
+          .from("applications")
+          .update({
+            payment_status: "confirmed",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", pendingPayment.metadata.application_id)
+          .select()
+          .single();
+
+        if (appError || !application) {
+          console.error("Failed to update application payment status:", appError);
+        }
+
+        // Create an audit log entry for the invoice paid
+        const { error: auditError } = await supabase
+          .from("payment_audit_log")
+          .insert({
+            payment_table: "pending_payments",
+            payment_id: pendingPayment.id,
+            user_id: pendingPayment.user_id,
+            actor: "system",
+            source: "stripe",
+            event_id: event.id,
+            previous_status: null,
+            new_status: "confirmed",
+            reason: "Invoice paid via Stripe",
+            created_at: new Date().toISOString()
+          });
+
+        if (auditError) {
+          console.error("Audit log error:", auditError);
         }
 
         updated = true;
@@ -319,18 +363,19 @@ serve(async (req) => {
           break;
         }
 
+        // Check idempotency
         const metadata = pendingPayment.metadata as Record<string, any> || {};
         const processedEventIds = metadata.processed_event_ids || [];
-        if (processedEventIds.includes(eventId)) {
+        if (processedEventIds.includes(event.id)) {
           break;
         }
 
         const updateData: Record<string, any> = {
           metadata: {
             ...metadata,
-            processed_event_ids: [...processedEventIds, eventId],
+            processed_event_ids: [...processedEventIds, event.id],
           },
-          status: "past_due",
+          status_enum: "past_due", // Update payment status to past_due
         };
 
         const { error: updateError } = await supabase
@@ -341,6 +386,116 @@ serve(async (req) => {
         if (updateError) {
           console.error("Failed to update pending payment:", updateError);
         }
+
+        // Update the application record's payment_status to past_due
+        const { data: application, error: appError } = await supabase
+          .from("applications")
+          .update({
+            payment_status: "past_due",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", pendingPayment.metadata.application_id)
+          .select()
+          .single();
+
+        if (appError || !application) {
+          console.error("Failed to update application payment status:", appError);
+        }
+
+        break;
+      }
+      case "customer.subscription.updated": {
+        const subscription = event.data.object;
+        const subscriptionId = subscription.id;
+        if (!subscriptionId) {
+          break;
+        }
+
+        const { data: pendingPayments, error: listError } = await supabase
+          .from("pending_payments")
+          .select("id, metadata")
+          .eq("method", "stripe");
+
+        if (listError || !pendingPayments) {
+          break;
+        }
+
+        const pendingPayment = pendingPayments.find((pp: any) => {
+          const meta = pp.metadata as Record<string, any> || {};
+          return meta.stripe_subscription_id === subscriptionId;
+        });
+
+        if (!pendingPayment) {
+          break;
+        }
+
+        // Check idempotency
+        const metadata = pendingPayment.metadata as Record<string, any> || {};
+        const processedEventIds = metadata.processed_event_ids || [];
+        if (processedEventIds.includes(event.id)) {
+          break;
+        }
+
+        // Determine the new status based on subscription status
+        let newStatus: string = "confirmed"; // Default to confirmed
+        switch (subscription.status) {
+          case "active":
+            newStatus = "confirmed";
+            break;
+          case "past_due":
+            newStatus = "past_due";
+            break;
+          case "canceled":
+            newStatus = "canceled";
+            break;
+          case "incomplete":
+            newStatus = "incomplete";
+            break;
+          case "incomplete_expired":
+            newStatus = "incomplete_expired";
+            break;
+          case "trialing":
+            newStatus = "trialing";
+            break;
+          case "paused":
+            newStatus = "paused";
+            break;
+          default:
+            newStatus = "confirmed";
+        }
+
+        const updateData: Record<string, any> = {
+          status_enum: newStatus,
+          metadata: {
+            ...(pendingPayment.metadata as Record<string, any> || {}),
+            processed_event_ids: [...(pendingPayment.metadata.processed_event_ids || []), event.id],
+          },
+        };
+
+        const { error: updateError } = await supabase
+          .from("pending_payments")
+          .update(updateData)
+          .eq("id", pendingPayment.id);
+
+        if (updateError) {
+          console.error("Failed to update pending payment:", updateError);
+        }
+
+        // Update the application record's payment_status
+        const { data: application, error: appError } = await supabase
+          .from("applications")
+          .update({
+            payment_status: newStatus,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", pendingPayment.metadata.application_id)
+          .select()
+          .single();
+
+        if (appError || !application) {
+          console.error("Failed to update application payment status:", appError);
+        }
+
         break;
       }
       case "customer.subscription.deleted": {
@@ -368,19 +523,19 @@ serve(async (req) => {
           break;
         }
 
+        // Check idempotency
         const metadata = pendingPayment.metadata as Record<string, any> || {};
         const processedEventIds = metadata.processed_event_ids || [];
-        if (processedEventIds.includes(eventId)) {
+        if (processedEventIds.includes(event.id)) {
           break;
         }
 
         const updateData: Record<string, any> = {
+          status_enum: "canceled",
           metadata: {
-            ...metadata,
-            processed_event_ids: [...processedEventIds, eventId],
-            subscription_ended_at: new Date().toISOString(),
+            ...(pendingPayment.metadata as Record<string, any> || {}),
+            processed_event_ids: [...(pendingPayment.metadata.processed_event_ids || []), event.id],
           },
-          status: "canceled",
         };
 
         const { error: updateError } = await supabase
@@ -391,55 +546,22 @@ serve(async (req) => {
         if (updateError) {
           console.error("Failed to update pending payment:", updateError);
         }
-        break;
-      }
-      case "invoice.payment_action_required": {
-        const invoice = event.data.object;
-        const subscriptionId = invoice.subscription;
-        if (!subscriptionId) {
-          break;
+
+        // Update the application record's payment_status to canceled
+        const { data: application, error: appError } = await supabase
+          .from("applications")
+          .update({
+            payment_status: "canceled",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", pendingPayment.metadata.application_id)
+          .select()
+          .single();
+
+        if (appError || !application) {
+          console.error("Failed to update application payment status:", appError);
         }
 
-        const { data: pendingPayments, error: listError } = await supabase
-          .from("pending_payments")
-          .select("id, metadata")
-          .eq("method", "stripe");
-
-        if (listError || !pendingPayments) {
-          break;
-        }
-
-        const pendingPayment = pendingPayments.find((pp: any) => {
-          const meta = pp.metadata as Record<string, any> || {};
-          return meta.stripe_subscription_id === subscriptionId;
-        });
-
-        if (!pendingPayment) {
-          break;
-        }
-
-        const metadata = pendingPayment.metadata as Record<string, any> || {};
-        const processedEventIds = metadata.processed_event_ids || [];
-        if (processedEventIds.includes(eventId)) {
-          break;
-        }
-
-        const updateData: Record<string, any> = {
-          metadata: {
-            ...metadata,
-            processed_event_ids: [...processedEventIds, eventId],
-          },
-          status: "incomplete",
-        };
-
-        const { error: updateError } = await supabase
-          .from("pending_payments")
-          .update(updateData)
-          .eq("id", pendingPayment.id);
-
-        if (updateError) {
-          console.error("Failed to update pending payment:", updateError);
-        }
         break;
       }
       case "charge.refunded": {

@@ -587,7 +587,14 @@ const enTranslation = {
     cvvPlaceholder: "123",
     cvvLabel: "CVC",
     paymentFailed: "Payment failed",
-    paymentError: "Payment error"
+    paymentError: "Payment error",
+    // New keys for the application flow
+    subscriptionTitle: "SUBSCRIPTION",
+    subscriptionSubtitle: "SERVICE PLAN",
+    serviceAccess: "Service Access",
+    cardDesc: "Visa, Mastercard and other cards",
+    confirmCard: "CONFIRM CARD",
+    redirecting: "Redirecting to payment..."
   },
   // Added missing pages
   privacyPage: {
@@ -649,7 +656,7 @@ const enTranslation = {
     accountTerminationTitle: "Account Termination",
     accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
     disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
     changesToTermsTitle: "Changes to These Terms",
