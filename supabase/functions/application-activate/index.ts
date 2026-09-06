@@ -57,9 +57,23 @@ serve(async (req) => {
     });
   }
 
-  // In a real app, we would check if the user is an operator (e.g., via a role or metadata)
-  // For now, we'll allow any authenticated user to activate for simplicity
-  // but in production, you should restrict this to operators only.
+  // Operator-only check: app_metadata.operator must be true.
+  const { data: adminUser, error: adminError } = await supabase.auth.admin.getUserById(
+    user.id
+  );
+  if (adminError || !adminUser) {
+    return new Response(JSON.stringify({ error: "Forbidden" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const isOperator = adminUser.app_metadata?.operator === true;
+  if (!isOperator) {
+    return new Response(JSON.stringify({ error: "Forbidden: insufficient permissions" }), {
+      status: 403,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
 
   // Parse request body
   let body: { applicationId: string };
@@ -83,8 +97,41 @@ serve(async (req) => {
     );
   }
 
+  // Dual-gate: require payment_status = payment_confirmed AND activation_status = activation_pending.
+  const { data: application, error: fetchError } = await supabase
+    .from("applications")
+    .select("id, payment_status, activation_status")
+    .eq("id", applicationId)
+    .single();
+
+  if (fetchError || !application) {
+    return new Response(JSON.stringify({ error: "Application not found" }), {
+      status: 404,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  if (
+    application.payment_status !== "payment_confirmed" ||
+    application.activation_status !== "activation_pending"
+  ) {
+    return new Response(
+      JSON.stringify({
+        error: "Application is not in the correct state for activation",
+        details: {
+          payment_status: application.payment_status,
+          activation_status: application.activation_status,
+        },
+      }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+
   // Update the application record
-  const { data: application, error: updateError } = await supabase
+  const { data: updatedApplication, error: updateError } = await supabase
     .from("applications")
     .update({
       activation_status: "account_active",
@@ -96,7 +143,7 @@ serve(async (req) => {
     .select()
     .single();
 
-  if (updateError || !application) {
+  if (updateError || !updatedApplication) {
     console.error("Application activation error:", updateError);
     return new Response(
       JSON.stringify({ error: "Failed to activate application" }),
@@ -108,7 +155,6 @@ serve(async (req) => {
   }
 
   // Create an audit log entry for the activation
-  // We'll use the payment_audit_log table, setting payment_table to 'applications'
   const { error: auditError } = await supabase
     .from("payment_audit_log")
     .insert({
@@ -116,12 +162,12 @@ serve(async (req) => {
       payment_id: applicationId,
       user_id: user.id,
       actor: "operator",
-      source: "admin", // We'll use 'admin' as the source for operator actions
-      event_id: crypto.randomUUID(), // Generate a simple event ID; in a real app, you might use a more robust method
-      previous_status: application.activation_status, // This is the status before update, but we don't have it easily; we'll set to null or the old status
+      source: "admin",
+      event_id: `application-activate:${applicationId}:${user.id}:${new Date().toISOString()}`,
+      previous_status: application.activation_status,
       new_status: "account_active",
-      reason: "Application activated by operator",
-      created_at: new Date().toISOString()
+      reason: `Application manually activated by operator ${user.id}`,
+      created_at: new Date().toISOString(),
     });
 
   if (auditError) {

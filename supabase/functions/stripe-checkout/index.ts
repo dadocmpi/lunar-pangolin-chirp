@@ -238,6 +238,22 @@ serve(async (req) => {
     }
 
     const session = await stripeRes.json();
+    const sessionId = session.id;
+
+    // Store stripe_session_id on the pending_payment so the success page can
+    // look up the correct row when Stripe redirects back with ?session_id={CHECKOUT_SESSION_ID}.
+    if (sessionId) {
+      await supabase
+        .from("pending_payments")
+        .update({
+          metadata: {
+            ...((pendingPayment.metadata as Record<string, any>) || {}),
+            stripe_session_id: sessionId,
+          },
+        })
+        .eq("id", pendingPayment.id);
+    }
+
     return new Response(JSON.stringify({ url: session.url }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

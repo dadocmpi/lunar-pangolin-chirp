@@ -178,11 +178,12 @@ serve(async (req) => {
 
         // Update the pending payment with stripe customer and subscription ids
         const updateData: Record<string, any> = {
-          status_enum: "confirmed", // Set payment status to confirmed
+          status_enum: "confirmed", // canonical
           metadata: {
             ...metadata,
             stripe_customer_id: session.customer,
             stripe_subscription_id: session.subscription,
+            last_applied_status: "confirmed",
             // Add the event id to processed list
             processed_event_ids: [...processedEventIds, event.id],
           },
@@ -199,15 +200,16 @@ serve(async (req) => {
         }
 
         // Update the application record
+        // payment_status uses "payment_confirmed" per spec; activation is NEVER automatic.
         const { data: application, error: appError } = await supabase
           .from("applications")
           .update({
-            payment_status: "confirmed",
+            payment_status: "payment_confirmed",
             activation_status: "activation_pending",
             updated_at: new Date().toISOString()
           })
           .eq("id", applicationId)
-          .select()
+          .select("id, user_id, plan_key, full_name, email, country")
           .single();
 
         if (appError || !application) {
@@ -227,13 +229,40 @@ serve(async (req) => {
             source: "stripe",
             event_id: event.id,
             previous_status: null, // We don't have the previous status easily; we'll set to null
-            new_status: "confirmed",
+            new_status: "payment_confirmed",
             reason: "Payment confirmed via Stripe checkout.session.completed",
             created_at: new Date().toISOString()
           });
 
         if (auditError) {
           console.error("Audit log error:", auditError);
+        }
+
+        // Notify the operator with a secure dashboard link. Fire-and-forget; never blocks the webhook.
+        // We pass the canonical USD amount and only the minimum PII required for operator action.
+        try {
+          await fetch(`${supabaseUrl}/functions/v1/operator-notification`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${supabaseServiceKey}`,
+            },
+            body: JSON.stringify({
+              paymentId: pendingPaymentId,
+              applicationId,
+              userId: pendingPayment.user_id,
+              customerName: application?.full_name ?? null,
+              customerEmail: application?.email ?? null,
+              customerCountry: application?.country ?? null,
+              plan: application?.plan_key ?? null,
+              amount: typeof session.amount_total === "number" ? session.amount_total : null,
+              currency: session.currency ?? "usd",
+              method: "stripe",
+              confirmationTimestamp: new Date().toISOString(),
+            }),
+          });
+        } catch (notifyErr) {
+          console.error("Operator notification dispatch failed:", notifyErr);
         }
 
         updated = true;
@@ -278,16 +307,19 @@ serve(async (req) => {
 
         // Update the pending payment to active and update period end
         const periodEnd = new Date(invoice.period_end * 1000).toISOString();
+        // Extract charge_id from the payment_intent to support charge.refunded / charge.dispute lookups.
+        const paymentIntentId = typeof invoice.payment_intent === "string"
+          ? invoice.payment_intent
+          : (invoice.payment_intent as any)?.id ?? null;
         const updateData: Record<string, any> = {
           metadata: {
             ...metadata,
             stripe_latest_invoice_id: invoice.id,
-            stripe_latest_payment_intent: invoice.payment_intent,
+            stripe_latest_payment_intent: paymentIntentId,
             current_period_end: periodEnd,
             processed_event_ids: [...processedEventIds, event.id],
           },
-          // We don't change the status_enum here; it remains "confirmed" from the checkout.session.completed event
-          // We'll update the application's payment_status to "confirmed" (it should already be)
+          // We don't change the status_enum here; it remains "payment_confirmed" from checkout.session.completed
         };
 
         const { error: updateError } = await supabase
@@ -300,11 +332,11 @@ serve(async (req) => {
           break;
         }
 
-        // Update the application record's payment_status to confirmed (should already be, but we'll set it)
+        // Update the application record's payment_status to payment_confirmed (idempotent)
         const { data: application, error: appError } = await supabase
           .from("applications")
           .update({
-            payment_status: "confirmed",
+            payment_status: "payment_confirmed",
             updated_at: new Date().toISOString()
           })
           .eq("id", pendingPayment.metadata.application_id)
@@ -325,9 +357,9 @@ serve(async (req) => {
             actor: "system",
             source: "stripe",
             event_id: event.id,
-            previous_status: null,
-            new_status: "confirmed",
-            reason: "Invoice paid via Stripe",
+            previous_status: "payment_confirmed",
+            new_status: "payment_confirmed",
+            reason: "Invoice paid via Stripe (recurring)",
             created_at: new Date().toISOString()
           });
 
@@ -436,38 +468,50 @@ serve(async (req) => {
           break;
         }
 
-        // Determine the new status based on subscription status
-        let newStatus: string = "confirmed"; // Default to confirmed
+        // Determine the new status based on subscription status.
+        // pending_payments.status_enum uses canonical values only.
+        // applications.payment_status uses "payment_confirmed" per spec when active.
+        let canonicalStatus: string = "confirmed";
+        let appStatus: string = "payment_confirmed";
         switch (subscription.status) {
           case "active":
-            newStatus = "confirmed";
+            canonicalStatus = "confirmed";
+            appStatus = "payment_confirmed";
             break;
           case "past_due":
-            newStatus = "past_due";
+            canonicalStatus = "past_due";
+            appStatus = "past_due";
             break;
           case "canceled":
-            newStatus = "canceled";
+            canonicalStatus = "canceled";
+            appStatus = "canceled";
             break;
           case "incomplete":
-            newStatus = "incomplete";
+            canonicalStatus = "incomplete";
+            appStatus = "incomplete";
             break;
           case "incomplete_expired":
-            newStatus = "incomplete_expired";
+            canonicalStatus = "incomplete_expired";
+            appStatus = "incomplete_expired";
             break;
           case "trialing":
-            newStatus = "trialing";
+            canonicalStatus = "trialing";
+            appStatus = "trialing";
             break;
           case "paused":
-            newStatus = "paused";
+            canonicalStatus = "paused";
+            appStatus = "paused";
             break;
           default:
-            newStatus = "confirmed";
+            canonicalStatus = "confirmed";
+            appStatus = "payment_confirmed";
         }
 
         const updateData: Record<string, any> = {
-          status_enum: newStatus,
+          status_enum: canonicalStatus,
           metadata: {
             ...(pendingPayment.metadata as Record<string, any> || {}),
+            last_applied_status: canonicalStatus,
             processed_event_ids: [...(pendingPayment.metadata.processed_event_ids || []), event.id],
           },
         };
@@ -485,7 +529,7 @@ serve(async (req) => {
         const { data: application, error: appError } = await supabase
           .from("applications")
           .update({
-            payment_status: newStatus,
+            payment_status: appStatus,
             updated_at: new Date().toISOString()
           })
           .eq("id", pendingPayment.metadata.application_id)
@@ -566,14 +610,174 @@ serve(async (req) => {
       }
       case "charge.refunded": {
         const charge = event.data.object;
-        // We'll find the pending payment by the charge id in metadata? 
-        // We don't store charge id. We'll skip for now.
+        const chargeId = charge?.id ?? null;
+        const paymentIntentId = typeof charge?.payment_intent === "string"
+          ? charge.payment_intent
+          : (charge?.payment_intent as any)?.id ?? null;
+        if (!chargeId && !paymentIntentId) {
+          break;
+        }
+
+        // Locate the pending payment by stored charge or payment_intent id in metadata.
+        const { data: pendingPayments, error: listError } = await supabase
+          .from("pending_payments")
+          .select("id, user_id, metadata, status_enum")
+          .eq("method", "stripe");
+
+        if (listError || !pendingPayments) {
+          console.error("charge.refunded: list failed", listError);
+          break;
+        }
+
+        const pendingPayment = pendingPayments.find((pp: any) => {
+          const meta = (pp.metadata as Record<string, any>) || {};
+          return (
+            meta.stripe_charge_id === chargeId ||
+            meta.stripe_latest_payment_intent === paymentIntentId
+          );
+        });
+
+        if (!pendingPayment) {
+          console.warn(`charge.refunded: no pending payment for charge ${chargeId} / pi ${paymentIntentId}`);
+          break;
+        }
+
+        // Idempotency by Stripe event id.
+        const metadata = (pendingPayment.metadata as Record<string, any>) || {};
+        const processedEventIds: string[] = metadata.processed_event_ids || [];
+        if (processedEventIds.includes(event.id)) {
+          break;
+        }
+
+        // Update the pending payment: mark refunded, store charge id, NEVER auto-activate.
+        const { error: updateError } = await supabase
+          .from("pending_payments")
+          .update({
+            status_enum: "refunded",
+            metadata: {
+              ...metadata,
+              stripe_charge_id: chargeId,
+              refunded_at: new Date().toISOString(),
+              refund_amount: typeof charge?.amount_refunded === "number" ? charge.amount_refunded : null,
+              processed_event_ids: [...processedEventIds, event.id],
+            },
+          })
+          .eq("id", pendingPayment.id);
+
+        if (updateError) {
+          console.error("charge.refunded: pending payment update failed", updateError);
+          break;
+        }
+
+        // Update the application: payment_status -> refunded, activation stays manual.
+        const { error: appError } = await supabase
+          .from("applications")
+          .update({
+            payment_status: "refunded",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", metadata.application_id);
+
+        if (appError) {
+          console.error("charge.refunded: application update failed", appError);
+        }
+
+        // Audit log (no auto-activation).
+        await supabase.from("payment_audit_log").insert({
+          payment_table: "pending_payments",
+          payment_id: pendingPayment.id,
+          user_id: pendingPayment.user_id,
+          actor: "system",
+          source: "stripe",
+          event_id: event.id,
+          previous_status: metadata.last_applied_status ?? "payment_confirmed",
+          new_status: "refunded",
+          reason: "Charge refunded via Stripe charge.refunded",
+          created_at: new Date().toISOString(),
+        });
+
         break;
       }
       case "charge.dispute.created": {
         const dispute = event.data.object;
-        // We'll find the pending payment by the charge id in metadata? 
-        // We don't store charge id. We'll skip for now.
+        const chargeId = typeof dispute?.charge === "string" ? dispute.charge : (dispute?.charge as any)?.id ?? null;
+        if (!chargeId) {
+          break;
+        }
+
+        const { data: pendingPayments, error: listError } = await supabase
+          .from("pending_payments")
+          .select("id, user_id, metadata, status_enum")
+          .eq("method", "stripe");
+
+        if (listError || !pendingPayments) {
+          console.error("charge.dispute.created: list failed", listError);
+          break;
+        }
+
+        const pendingPayment = pendingPayments.find((pp: any) => {
+          const meta = (pp.metadata as Record<string, any>) || {};
+          return meta.stripe_charge_id === chargeId;
+        });
+
+        if (!pendingPayment) {
+          console.warn(`charge.dispute.created: no pending payment for charge ${chargeId}`);
+          break;
+        }
+
+        const metadata = (pendingPayment.metadata as Record<string, any>) || {};
+        const processedEventIds: string[] = metadata.processed_event_ids || [];
+        if (processedEventIds.includes(event.id)) {
+          break;
+        }
+
+        // Mark disputed; never auto-activate, never auto-delete.
+        const { error: updateError } = await supabase
+          .from("pending_payments")
+          .update({
+            status_enum: "disputed",
+            metadata: {
+              ...metadata,
+              dispute_id: dispute.id,
+              dispute_reason: dispute.reason ?? null,
+              dispute_amount: typeof dispute.amount === "number" ? dispute.amount : null,
+              dispute_status: dispute.status ?? "needs_response",
+              disputed_at: new Date().toISOString(),
+              processed_event_ids: [...processedEventIds, event.id],
+            },
+          })
+          .eq("id", pendingPayment.id);
+
+        if (updateError) {
+          console.error("charge.dispute.created: pending payment update failed", updateError);
+          break;
+        }
+
+        const { error: appError } = await supabase
+          .from("applications")
+          .update({
+            payment_status: "disputed",
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", metadata.application_id);
+
+        if (appError) {
+          console.error("charge.dispute.created: application update failed", appError);
+        }
+
+        await supabase.from("payment_audit_log").insert({
+          payment_table: "pending_payments",
+          payment_id: pendingPayment.id,
+          user_id: pendingPayment.user_id,
+          actor: "system",
+          source: "stripe",
+          event_id: event.id,
+          previous_status: metadata.last_applied_status ?? "payment_confirmed",
+          new_status: "disputed",
+          reason: `Dispute created via Stripe charge.dispute.created (${dispute.reason ?? "unknown"})`,
+          created_at: new Date().toISOString(),
+        });
+
         break;
       }
       default:

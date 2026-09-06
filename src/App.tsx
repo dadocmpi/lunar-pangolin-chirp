@@ -30,6 +30,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Checkout = lazy(() => import("./pages/Checkout"));
+const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Instant page transition wrapper - no loading delay
@@ -61,6 +62,7 @@ const App = () => (
             <Route path="/disclaimer" element={<PageTransition><Disclaimer /></PageTransition>} />
             <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
             <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
+            <Route path="/checkout/success" element={<PageTransition><CheckoutSuccess /></PageTransition>} />
             <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
           </Routes>
         </BrowserRouter>

@@ -102,7 +102,7 @@ serve(async (req) => {
   // Get the pending payment record to verify it exists and is in confirmed state with activation_pending
   const { data: pendingPayment, error: pendingError } = await supabase
     .from("pending_payments")
-    .select("id, user_id, plan_name, amount_cents, currency, method, metadata, status")
+    .select("id, user_id, plan_name, amount_cents, currency, method, metadata, status, status_enum")
     .eq("id", paymentId)
     .single();
 
@@ -113,18 +113,55 @@ serve(async (req) => {
     });
   }
 
-  // Check that the payment is confirmed and activation is pending
-  const metadata = pendingPayment.metadata as Record<string, any> || {};
-  if (
-    pendingPayment.status !== "confirmed" ||
-    metadata.activation_status !== "activation_pending"
-  ) {
+  // Require BOTH: pending_payments payment state = payment_confirmed AND
+  // the linked application row has activation_status = activation_pending.
+  // Activation is manual, operator-only, and double-gated.
+  const metadata = (pendingPayment.metadata as Record<string, any>) || {};
+  const applicationId: string | undefined = metadata.application_id;
+  if (!applicationId) {
+    return new Response(
+      JSON.stringify({ error: "Payment has no linked application" }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const { data: application, error: appFetchError } = await supabase
+    .from("applications")
+    .select("id, payment_status, activation_status")
+    .eq("id", applicationId)
+    .single();
+
+  if (appFetchError || !application) {
+    return new Response(
+      JSON.stringify({ error: "Linked application not found" }),
+      {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const paymentConfirmed =
+    pendingPayment.status === "confirmed" ||
+    pendingPayment.status === "payment_confirmed" ||
+    pendingPayment.status_enum === "confirmed" ||
+    pendingPayment.status_enum === "payment_confirmed";
+  const appReadyForActivation =
+    application.payment_status === "payment_confirmed" &&
+    application.activation_status === "activation_pending";
+
+  if (!paymentConfirmed || !appReadyForActivation) {
     return new Response(
       JSON.stringify({
-        error: "Payment is not in the correct state for activation",
+        error: "Payment or application is not in the correct state for activation",
         details: {
-          status: pendingPayment.status,
-          activation_status: metadata.activation_status,
+          pending_payment_status: pendingPayment.status,
+          pending_payment_status_enum: pendingPayment.status_enum,
+          application_payment_status: application.payment_status,
+          application_activation_status: application.activation_status,
         },
       }),
       {
@@ -143,7 +180,6 @@ serve(async (req) => {
       activated_at: activationTimestamp,
       activated_by: user.id, // operator's user ID
     },
-    // We can also update a dedicated column if we add one later, but for now we use metadata
   };
 
   // Update the pending payment record
@@ -160,28 +196,58 @@ serve(async (req) => {
     });
   }
 
+  // Mirror activation state onto the application row so the dashboard sees it.
+  const { error: appUpdateError } = await supabase
+    .from("applications")
+    .update({
+      activation_status: "account_active",
+      activated_at: activationTimestamp,
+      activated_by: user.id,
+      updated_at: activationTimestamp,
+    })
+    .eq("id", applicationId);
+
+  if (appUpdateError) {
+    console.error("Failed to update application activation status:", appUpdateError);
+    // Activation already happened on the payment; surface the error but do not double-activate.
+    return new Response(
+      JSON.stringify({
+        error: "Activated on payment record but failed to update application row",
+        details: appUpdateError.message,
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+
   // Insert an audit log entry for the activation
-  // We'll use the log_payment_event RPC
   const { error: logError } = await supabase.rpc("log_payment_event", {
     p_payment_table: "pending_payments",
     p_payment_id: paymentId,
-    p_operator: "operator", // We'll use a custom actor type? The RPC expects actor to be one of the enum values: system,user,admin,auto_confirm
-    // We don't have an operator enum. We'll use 'admin' as the closest, or we can extend the enum? We cannot alter enum.
-    // We'll use 'admin' and note in the reason that it was an operator action.
-    p_source: "admin", // We'll treat operator as admin for the source field
-    p_event_id: `activate-account:${paymentId}:${user.id}`,
-    p_previous_status: "confirmed",
-    p_new_status: "confirmed", // The payment status doesn't change, but we want to log the activation
-    p_reason: `Account activated by operator ${user.id} at ${activationTimestamp}`,
+    p_operator: "admin",
+    p_source: "admin",
+    p_event_id: `activate-account:${paymentId}:${user.id}:${activationTimestamp}`,
+    p_previous_status: "payment_confirmed",
+    p_new_status: "account_active",
+    p_reason: `Account manually activated by operator ${user.id} at ${activationTimestamp}`,
   });
 
   if (logError) {
     console.error("Failed to log activation event:", logError);
-    // We don't fail the activation because the payment update succeeded
   }
 
-  return new Response(JSON.stringify({ success: true, activatedAt: activationTimestamp }), {
-    status: 200,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+  return new Response(
+    JSON.stringify({
+      success: true,
+      activatedAt: activationTimestamp,
+      activatedBy: user.id,
+      applicationId,
+    }),
+    {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    }
+  );
 });
