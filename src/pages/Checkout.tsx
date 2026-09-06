@@ -534,7 +534,7 @@ const Checkout = () => {
                               <span className="text-[9px] font-bold uppercase tracking-widest block">
                                 {n.symbol}
                               </span>
-                              <span className="text-[8px] text-slate-500>{n.id}</span>
+                              <span className="text-[8px] text-slate-500">{n.id}</span>
                             </button>
                           ))}
                         </div>
