@@ -356,7 +356,7 @@ const Checkout = () => {
                 </div>
                 <div className="text-right">
                   <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                    €{enhancedPlan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {'€' + enhancedPlan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                   <p className="text-[9px] text-slate-600 uppercase tracking-widest">
                     {t("checkout.billedMonthly")}
@@ -373,12 +373,12 @@ const Checkout = () => {
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t("checkout.serviceAccess")}</span>
                       <span className="text-[22px] font-serif font-bold text-[#C5A059]">
-                        €{enhancedPlan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {'€' + enhancedPlan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span className="text-slate-500>{t("checkout.setupFee")}</span>
-                      <span className="text-green-500>{t("checkout.waived")}</span>
+                      <span className="text-slate-500">{t("checkout.setupFee")}</span>
+                      <span className="text-green-500">{t("checkout.waived")}</span>
                     </div>
                   </div>
                 </div>
@@ -514,7 +514,7 @@ const Checkout = () => {
                           {t("checkout.amountToPay")}
                         </p>
                         <p className="text-2xl font-bold text-[#C5A059]">
-                          €{numericPriceEUR}
+                          {'€' + numericPriceEUR}
                         </p>
                       </div>
 
@@ -592,7 +592,7 @@ const Checkout = () => {
                           {t("checkout.amountToPay")}
                         </p>
                         <p className="text-2xl font-bold text-[#C5A059]">
-                          €{numericPriceEUR}
+                          {'€' + numericPriceEUR}
                         </p>
                       </div>
 

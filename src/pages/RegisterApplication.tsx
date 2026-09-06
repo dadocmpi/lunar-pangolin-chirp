@@ -112,7 +112,7 @@ const RegisterApplication = () => {
             </div>
             <div className="text-right">
               <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                €{plan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {'€' + plan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
               <p className="text-[9px] text-slate-600 uppercase tracking-widest">
                 {t('application.billed_monthly')}
@@ -126,7 +126,7 @@ const RegisterApplication = () => {
             </p>
             <p className="text-[10px] text-slate-400">
               {t('application.plan_price_detail', {
-                price: €{plan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                price: `€${plan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
               })}
             </p>
           </div>
