@@ -53,7 +53,7 @@ const Register = () => {
           userMetadata: data.user?.user_metadata,
         };
         
-        await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/user-registration', {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/user-registration`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(registrationData)
@@ -63,7 +63,7 @@ const Register = () => {
       }
 
       try {
-        await fetch('https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/confirm-signup', {
+        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/confirm-signup`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
