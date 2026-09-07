@@ -434,7 +434,7 @@ const Checkout = () => {
               {submitError && (
                 <div className="p-4 border border-red-500/30 bg-red-500/10 text-red-300 text-[10px] font-bold uppercase tracking-widest">
                   {submitError}
-                )
+                </div>
               )}
 
               {!showWise && !showCrypto && !showStripe ? (
