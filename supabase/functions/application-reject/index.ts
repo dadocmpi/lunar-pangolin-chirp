@@ -28,7 +28,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -79,7 +79,7 @@ serve(async (req) => {
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
   if (!reason || !reason.trim()) {
@@ -88,7 +88,7 @@ serve(async (req) => {
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -97,7 +97,7 @@ serve(async (req) => {
     .from("applications")
     .update({
       activation_status: "rejected",
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq("id", applicationId)
     .select()
@@ -110,7 +110,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -127,7 +127,7 @@ serve(async (req) => {
       previous_status: application.activation_status, // Status before update
       new_status: "rejected",
       reason: reason,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     });
 
   if (auditError) {
@@ -140,6 +140,6 @@ serve(async (req) => {
     {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-    }
+    },
   );
 });

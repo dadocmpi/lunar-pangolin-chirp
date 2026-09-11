@@ -5,11 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PerformanceChart from '@/components/PerformanceChart';
-import { 
-  LayoutDashboard, 
-  Wallet, 
-  User, 
-  Loader2, 
+import {
+  LayoutDashboard,
+  Wallet,
+  User,
+  Loader2,
   LogOut,
   ArrowUpRight,
   AlertCircle,
@@ -54,9 +54,32 @@ const Dashboard = () => {
   const [activeView, setActiveView] = useState('services');
   const [settingsTab, setSettingsTab] = useState('profile');
   const [loading, setLoading] = useState(true);
-  const [services, setServices] = useState<any[]>([]);
-  const [profile, setProfile] = useState<any>(null);
-  const [user, setUser] = useState<any>(null);
+  interface ServiceRecord {
+    id: string;
+    name?: string | null;
+    description?: string | null;
+    price?: number | null;
+    plan_name?: string | null;
+    account_id?: string | null;
+    balance?: string | number | null;
+    status?: string | null;
+  }
+
+  interface ProfileRecord {
+    id: string;
+    first_name?: string | null;
+    last_name?: string | null;
+    email?: string | null;
+    kyc_status?: "pending" | "submitted" | "approved" | "rejected" | null;
+    kyc_country?: string | null;
+    kyc_method?: string | null;
+    kyc_document_type?: string | null;
+    kyc_document_url?: string | null;
+  }
+
+  const [services, setServices] = useState<ServiceRecord[]>([]);
+  const [profile, setProfile] = useState<ProfileRecord | null>(null);
+  const [user, setUser] = useState<{ id: string; email?: string | null; email_confirmed_at?: string | null; user_metadata?: Record<string, unknown> | null } | null>(null);
   const navigate = useNavigate();
 
   // KYC state - NEW IMPROVED FLOW
@@ -92,7 +115,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchData();
-    
+
     const setupRealtime = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -124,7 +147,7 @@ const Dashboard = () => {
             filter: `id=eq.${user.id}`
           },
           (payload) => {
-            const newKycStatus = (payload.new as any)?.kyc_status;
+            const newKycStatus = (payload.new as { kyc_status?: "pending" | "submitted" | "approved" | "rejected" | null } | null)?.kyc_status;
             if (newKycStatus) {
               setKycStatus(newKycStatus);
               if (newKycStatus === 'approved') {
@@ -160,7 +183,7 @@ const Dashboard = () => {
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-        
+
       setServices(servicesData || []);
 
       const { data: profileData } = await supabase
@@ -168,7 +191,7 @@ const Dashboard = () => {
         .select('*')
         .eq('id', user.id)
         .single();
-        
+
       const p = profileData || { first_name: user.user_metadata?.full_name || '', last_name: '' };
       setProfile(p);
       setEditFirstName(p.first_name || '');
@@ -176,13 +199,13 @@ const Dashboard = () => {
       setEditEmail(user.email || '');
 
       // Check KYC status from profile metadata
-      const kyc = (profileData as any)?.kyc_status;
+      const kyc = (profileData as { kyc_status?: string | null } | null)?.kyc_status;
       if (kyc === 'approved' || kyc === 'submitted' || kyc === 'rejected') {
         setKycStatus(kyc);
       } else {
         setKycStatus('pending');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
@@ -202,12 +225,12 @@ const Dashboard = () => {
       const { error } = await supabase
         .from('profiles')
         .upsert({ id: user.id, first_name: editFirstName, last_name: editLastName });
-      
+
       if (error) throw error;
-      
+
       setProfile({ ...profile, first_name: editFirstName, last_name: editLastName });
       showSuccess(t('dashboard.profileUpdated'));
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(t('dashboard.failedUpdateProfile'));
     } finally {
       setSavingProfile(false);
@@ -224,7 +247,7 @@ const Dashboard = () => {
       if (error) throw error;
       setEmailChangeRequested(true);
       showSuccess(t('dashboard.confirmationLinkSent'));
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(t('dashboard.failedEmail'));
     }
   };
@@ -246,7 +269,7 @@ const Dashboard = () => {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(t('dashboard.failedPassword'));
     } finally {
       setChangingPassword(false);
@@ -284,20 +307,20 @@ const Dashboard = () => {
       // Save KYC data to profile
       const { error } = await supabase
         .from('profiles')
-        .upsert({ 
-          id: user.id, 
+        .upsert({
+          id: user.id,
           kyc_status: 'submitted',
           kyc_country: selectedCountry,
           kyc_method: selectedMethod,
           kyc_document_type: selectedDocument,
           kyc_document_url: urlData?.publicUrl || '',
           kyc_submitted_at: new Date().toISOString()
-        } as any);
+        });
 
       if (error) throw error;
 
       setKycStatus('submitted');
-      
+
       // Trigger email notification via edge function
       try {
         await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/kyc-notification`, {
@@ -318,7 +341,7 @@ const Dashboard = () => {
       }
 
       showSuccess(t('dashboard.documentsSubmitted'));
-    } catch (err: any) {
+    } catch (err: unknown) {
       showError(t('dashboard.failedDocuments'));
     } finally {
       setSubmittingKyc(false);
@@ -369,7 +392,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-[#121212] text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
-      
+
       <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
         {/* KYC Required Banner */}
         {kycStatus !== 'approved' && (
@@ -498,7 +521,7 @@ const Dashboard = () => {
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.balance')}</p>
                     <p className="text-xl md:text-2xl font-serif font-bold text-white">
-                      {convertPrice(services.reduce((acc, s) => acc + parseFloat(s.balance || 0), 0))}
+                      {convertPrice(services.reduce((acc, s) => acc + parseFloat(String(s.balance ?? 0)), 0))}
                     </p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
@@ -537,7 +560,7 @@ const Dashboard = () => {
                         </div>
                         <div className="space-y-1">
                           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.balance')}</p>
-                          <p className="text-2xl font-serif font-bold text-[#D4AF37]">{convertPrice(parseFloat(service.balance))}</p>
+                          <p className="text-2xl font-serif font-bold text-[#D4AF37]">{convertPrice(parseFloat(String(service.balance ?? 0)))}</p>
                         </div>
                       </div>
                     ))}
@@ -557,7 +580,7 @@ const Dashboard = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.balance')}</p>
-                    <p className="text-xl font-serif font-bold text-white">{convertPrice(services.reduce((acc, s) => acc + parseFloat(s.balance || 0), 0))}</p>
+                    <p className="text-xl font-serif font-bold text-white">{convertPrice(services.reduce((acc, s) => acc + parseFloat(String(s.balance ?? 0)), 0))}</p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <div className="flex items-center gap-2 mb-2">
@@ -837,7 +860,7 @@ const Dashboard = () => {
                             <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-500">Confirmation Sent</p>
                           </div>
                           <p className="text-[10px] text-slate-400">
-                            A confirmation link has been sent to <span className="text-white font-bold">{editEmail}</span>. 
+                            A confirmation link has been sent to <span className="text-white font-bold">{editEmail}</span>.
                             Please check your inbox and click the link to complete the email change.
                           </p>
                           <button
@@ -903,7 +926,7 @@ const Dashboard = () => {
                                 <div className={cn(
                                   "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all",
                                   kycStep === step.id ? "border-[#D4AF37] bg-[#D4AF37]/10" :
-                                  (kycStep === 'method' && step.id === 'country') || 
+                                  (kycStep === 'method' && step.id === 'country') ||
                                   (kycStep === 'document' && (step.id === 'country' || step.id === 'method')) ||
                                   (kycStep === 'review' && (step.id === 'country' || step.id === 'method' || step.id === 'document'))
                                     ? "border-emerald-500 bg-emerald-500/10"
@@ -911,7 +934,7 @@ const Dashboard = () => {
                                 )}>
                                   <step.icon size={16} className={cn(
                                     kycStep === step.id ? "text-[#D4AF37]" :
-                                    (kycStep === 'method' && step.id === 'country') || 
+                                    (kycStep === 'method' && step.id === 'country') ||
                                     (kycStep === 'document' && (step.id === 'country' || step.id === 'method')) ||
                                     (kycStep === 'review' && (step.id === 'country' || step.id === 'method' || step.id === 'document'))
                                       ? "text-emerald-500" : "text-slate-500"
@@ -924,7 +947,7 @@ const Dashboard = () => {
                               {i < 3 && (
                                 <div className={cn(
                                   "flex-1 h-0.5 mx-2",
-                                  (kycStep === 'method' && step.id === 'country') || 
+                                  (kycStep === 'method' && step.id === 'country') ||
                                   (kycStep === 'document' && step.id === 'method') ||
                                   (kycStep === 'review' && step.id === 'document')
                                     ? "bg-emerald-500" : "bg-white/10"
@@ -1028,7 +1051,7 @@ const Dashboard = () => {
                                 <p className="text-[11px] text-slate-400">{t('dashboard.kyc.uploadDocumentDesc')}</p>
                               </div>
                             </div>
-                            
+
                             {/* Document Type Selection */}
                             <div className="space-y-3">
                               {methodData.documents.map((doc) => (

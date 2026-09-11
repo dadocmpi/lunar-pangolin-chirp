@@ -24,7 +24,7 @@ const LiveSignals = () => {
   const { t } = useTranslation();
   const [signals, setSignals] = useState<Signal[]>([]);
   const [marketData, setMarketData] = useState<MarketData>({ crypto: {}, twelves: {} });
-  
+
   // All assets for signals
   const allAssets = [
     // Crypto
@@ -60,16 +60,16 @@ const LiveSignals = () => {
     // Função de formatação estrita: Máximo 4 casas decimais, sem zeros extras
     const formatPrice = (val: number, asset: string) => {
       if (!val || isNaN(val)) return "---";
-      
+
       // Para ativos de alto valor (BTC, ETH, GOLD), usamos 2 casas decimais
       if (asset === "GOLD" || asset.includes("BTC") || asset.includes("ETH")) {
-        return val.toLocaleString('en-US', { 
-          minimumFractionDigits: 2, 
+        return val.toLocaleString('en-US', {
+          minimumFractionDigits: 2,
           maximumFractionDigits: 2,
-          useGrouping: false 
+          useGrouping: false
         });
       }
-      
+
       // Para índices (NASDAQ) - 2 decimais
       if (asset === "NASDAQ") {
         return val.toLocaleString('en-US', {
@@ -78,7 +78,7 @@ const LiveSignals = () => {
           useGrouping: true
         });
       }
-      
+
       // Para Commodities (Silver, Oil) - 2 decimais
       if (asset === "SILVER" || asset === "OIL (WTI)") {
         return val.toLocaleString('en-US', {
@@ -87,7 +87,7 @@ const LiveSignals = () => {
           useGrouping: false
         });
       }
-      
+
       // Para Forex e outros, limitamos a no máximo 4 casas decimais
       return Number(val.toFixed(4)).toString();
     };
@@ -111,10 +111,10 @@ const LiveSignals = () => {
         return {
           id: i.toString(),
           asset: asset.name,
-          type: Math.random() > 0.5 ? 'BUY' : 'SELL' as 'BUY' | 'SELL',
+          type: (Math.random() > 0.5 ? 'BUY' : 'SELL') as 'BUY' | 'SELL',
           entry: formatPrice(price, asset.name),
           profit: `+${(Math.random() * 0.9).toFixed(2)}%`,
-          status: 'COMPLETED' as 'COMPLETED'
+          status: 'COMPLETED' as const
         };
       });
       setSignals(initial);
@@ -122,7 +122,7 @@ const LiveSignals = () => {
 
     const interval = setInterval(() => {
       if (!hasMarketData) return;
-      
+
       const randomAsset = allAssets[Math.floor(Math.random() * allAssets.length)];
       const price = getPrice(randomAsset);
 

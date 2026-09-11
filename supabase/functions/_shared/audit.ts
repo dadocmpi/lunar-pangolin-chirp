@@ -36,7 +36,9 @@ export async function logPaymentEvent(
   // We do not throw on audit log failure — payment integrity comes first —
   // but we surface it to the caller so the test harness can detect it.
   if (error) {
-    // eslint-disable-next-line no-console
-    console.error("audit_log_failed", { paymentId: ev.paymentId, error: error.message });
+    console.error("audit_log_failed", {
+      paymentId: ev.paymentId,
+      error: error.message,
+    });
   }
 }

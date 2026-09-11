@@ -1,28 +1,44 @@
 // Card Checkout Edge Function
 // Processes card payments and sends email notifications via Resend
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 const COMPANY_EMAIL = "marketsbraxel@ouvidor.net";
 
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-async function sendUserPaymentEmail(userEmail: string, fullName: string, planName: string, amount: string, accountId: string, paymentMethod: string) {
+async function sendUserPaymentEmail(
+  userEmail: string,
+  fullName: string,
+  planName: string,
+  amount: string,
+  accountId: string,
+  paymentMethod: string,
+) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  
+
   if (!resendApiKey) {
-    console.log("CARD PAYMENT CONFIRMATION (Resend not configured):", { to: userEmail, planName, amount });
+    console.log("CARD PAYMENT CONFIRMATION (Resend not configured):", {
+      to: userEmail,
+      planName,
+      amount,
+    });
     return;
   }
 
@@ -57,10 +73,18 @@ async function sendUserPaymentEmail(userEmail: string, fullName: string, planNam
     <div class="title">Welcome, ${escapeHtml(fullName || "User")}!</div>
     <p class="text">Your payment has been confirmed and your trading account is now active. Here are your account details:</p>
     <div class="details">
-      <p style="margin:5px 0;font-size:14px"><strong>Account ID:</strong> ${escapeHtml(accountId)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Plan:</strong> ${escapeHtml(planName)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Amount Paid:</strong> ${escapeHtml(amount)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Payment Method:</strong> ${escapeHtml(paymentMethod)}</p>
+      <p style="margin:5px 0;font-size:14px"><strong>Account ID:</strong> ${
+    escapeHtml(accountId)
+  }</p>
+      <p style="margin:5px 0;font-size:14px"><strong>Plan:</strong> ${
+    escapeHtml(planName)
+  }</p>
+      <p style="margin:5px 0;font-size:14px"><strong>Amount Paid:</strong> ${
+    escapeHtml(amount)
+  }</p>
+      <p style="margin:5px 0;font-size:14px"><strong>Payment Method:</strong> ${
+    escapeHtml(paymentMethod)
+  }</p>
       <p style="margin:5px 0;font-size:14px"><strong>Status:</strong> Active</p>
     </div>
     <p class="text">Your infrastructure deployment is in progress. Within the next few minutes, your algorithmic trading system will be operational.</p>
@@ -116,7 +140,10 @@ Braxel Markets Team`;
       console.error("Resend payment confirmation error:", err);
     } else {
       const result = await res.json();
-      console.log("Card payment confirmation email sent:", { to: userEmail, emailId: result.id });
+      console.log("Card payment confirmation email sent:", {
+        to: userEmail,
+        emailId: result.id,
+      });
     }
   } catch (error) {
     console.error("Error sending payment confirmation email:", error);
@@ -124,23 +151,23 @@ Braxel Markets Team`;
 }
 
 async function sendCompanyNotificationEmail(
-  userEmail: string, 
-  fullName: string, 
-  planName: string, 
-  amount: string, 
+  userEmail: string,
+  fullName: string,
+  planName: string,
+  amount: string,
   accountId: string,
   cardLast4?: string,
   country?: string,
-  phone?: string
+  phone?: string,
 ) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  
+
   if (!resendApiKey) {
     console.log("NEW CARD PAYMENT NOTIFICATION (Resend not configured):", {
       to: COMPANY_EMAIL,
       userEmail,
       planName,
-      amount
+      amount,
     });
     return;
   }
@@ -174,16 +201,46 @@ async function sendCompanyNotificationEmail(
       <strong>💳 New Card Payment — COMPLETED</strong>
       <p style="margin:10px 0 0;font-size:14px">A user has completed a card payment. Account has been created.</p>
     </div>
-    <div class="field"><div class="label">User Email</div><div class="value">${escapeHtml(userEmail)}</div></div>
-    <div class="field"><div class="label">User Name</div><div class="value">${escapeHtml(fullName || "N/A")}</div></div>
-    <div class="field"><div class="label">Account ID</div><div class="value">${escapeHtml(accountId)}</div></div>
-    <div class="field"><div class="label">Plan</div><div class="value">${escapeHtml(planName)}</div></div>
-    <div class="field"><div class="label">Amount</div><div class="value">${escapeHtml(amount)}</div></div>
-    ${cardLast4 ? `<div class="field"><div class="label">Card</div><div class="value">**** ${escapeHtml(cardLast4)}</div></div>` : ''}
-    ${country ? `<div class="field"><div class="label">Country</div><div class="value">${escapeHtml(country)}</div></div>` : ''}
-    ${phone ? `<div class="field"><div class="label">Phone</div><div class="value">${escapeHtml(phone)}</div></div>` : ''}
+    <div class="field"><div class="label">User Email</div><div class="value">${
+    escapeHtml(userEmail)
+  }</div></div>
+    <div class="field"><div class="label">User Name</div><div class="value">${
+    escapeHtml(fullName || "N/A")
+  }</div></div>
+    <div class="field"><div class="label">Account ID</div><div class="value">${
+    escapeHtml(accountId)
+  }</div></div>
+    <div class="field"><div class="label">Plan</div><div class="value">${
+    escapeHtml(planName)
+  }</div></div>
+    <div class="field"><div class="label">Amount</div><div class="value">${
+    escapeHtml(amount)
+  }</div></div>
+    ${
+    cardLast4
+      ? `<div class="field"><div class="label">Card</div><div class="value">**** ${
+        escapeHtml(cardLast4)
+      }</div></div>`
+      : ""
+  }
+    ${
+    country
+      ? `<div class="field"><div class="label">Country</div><div class="value">${
+        escapeHtml(country)
+      }</div></div>`
+      : ""
+  }
+    ${
+    phone
+      ? `<div class="field"><div class="label">Phone</div><div class="value">${
+        escapeHtml(phone)
+      }</div></div>`
+      : ""
+  }
     <div class="field"><div class="label">Payment Status</div><div class="value" style="color:#28a745">COMPLETED</div></div>
-    <div class="field"><div class="label">Timestamp</div><div class="value">${new Date().toUTCString()}</div></div>
+    <div class="field"><div class="label">Timestamp</div><div class="value">${
+    new Date().toUTCString()
+  }</div></div>
   </div>
   <div class="footer">Automated notification — Braxel Markets Payment System</div>
 </div>
@@ -218,93 +275,110 @@ async function sendCompanyNotificationEmail(
 }
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const authHeader = req.headers.get('Authorization')
+    const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      console.error("[card-checkout] Unauthorized: Missing Authorization header")
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      console.error(
+        "[card-checkout] Unauthorized: Missing Authorization header",
+      );
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(authHeader.replace('Bearer ', ''))
+    const { data: { user }, error: authError } = await supabaseClient.auth
+      .getUser(authHeader.replace("Bearer ", ""));
     if (authError || !user) {
-      console.error("[card-checkout] Unauthorized: Invalid token", authError)
-      return new Response(JSON.stringify({ error: 'Invalid token' }), {
+      console.error("[card-checkout] Unauthorized: Invalid token", authError);
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('full_name')
-      .eq('id', user.id)
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
       .single();
 
-    const { planName, accountSize, cardLast4, cardName, amount, country, phone } = await req.json()
+    const {
+      planName,
+      accountSize,
+      cardLast4,
+      cardName,
+      amount,
+      country,
+      phone,
+    } = await req.json();
 
     // Create service/account
-    const accountId = `ACC-${Math.floor(100000 + Math.random() * 900000)}`
-    const balance = parseFloat(accountSize.replace(/[^0-9.]/g, ''))
+    const accountId = `ACC-${Math.floor(100000 + Math.random() * 900000)}`;
+    const balance = parseFloat(accountSize.replace(/[^0-9.]/g, ""));
 
     const { error: dbError } = await supabaseClient
-      .from('services')
+      .from("services")
       .insert([{
         user_id: user.id,
         plan_name: planName,
         account_id: accountId,
-        status: 'Active',
-        balance: balance
-      }])
+        status: "Active",
+        balance: balance,
+      }]);
 
     if (dbError) {
-      console.error("[card-checkout] Database Error:", dbError)
-      throw dbError
+      console.error("[card-checkout] Database Error:", dbError);
+      throw dbError;
     }
 
     // Send confirmation email to user
     await sendUserPaymentEmail(
-      user.email || '',
-      profile?.full_name || cardName || '',
+      user.email || "",
+      profile?.full_name || cardName || "",
       planName,
       amount,
       accountId,
-      `Card **** ${cardLast4}`
+      `Card **** ${cardLast4}`,
     );
 
     // Send notification to company
     await sendCompanyNotificationEmail(
-      user.email || '',
-      profile?.full_name || cardName || '',
+      user.email || "",
+      profile?.full_name || cardName || "",
       planName,
       amount,
       accountId,
       cardLast4,
       country,
-      phone
+      phone,
     );
 
-    console.log(`[card-checkout] SUCCESS: Payment processed for user ${user.id}`)
-    return new Response(JSON.stringify({ status: 'success', accountId }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    })
-
-  } catch (error: any) {
-    console.error("[card-checkout] Critical Error:", error)
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    })
+    console.log(
+      `[card-checkout] SUCCESS: Payment processed for user ${user.id}`,
+    );
+    return new Response(JSON.stringify({ status: "success", accountId }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (error: unknown) {
+    console.error("[card-checkout] Critical Error:", error);
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Internal error",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
-})
+});

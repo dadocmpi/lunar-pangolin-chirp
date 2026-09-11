@@ -13,8 +13,8 @@ const STRIPE_API_BASE = "https://api.stripe.com/v1";
 function stripeRequest(
   method: string,
   path: string,
-  data: URLSearchParams | object,
-  secretKey: string
+  data: URLSearchParams | Record<string, unknown> | string,
+  secretKey: string,
 ): Promise<Response> {
   const url = `${STRIPE_API_BASE}${path}`;
   const headers: HeadersInit = {
@@ -30,10 +30,12 @@ function stripeRequest(
     body = new URLSearchParams(
       Object.entries(data).flatMap(([k, v]) =>
         v === undefined || v === null ? [] : [[k, String(v)]]
-      )
+      ),
     );
-  } else {
+  } else if (typeof data === "string") {
     body = data;
+  } else {
+    body = undefined;
   }
 
   return fetch(url, { method, headers, body });
@@ -59,7 +61,7 @@ serve(async (req) => {
       {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -71,7 +73,7 @@ serve(async (req) => {
       {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -93,7 +95,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -113,7 +115,12 @@ serve(async (req) => {
   }
 
   // Parse request body
-  let body: { planId: string; idempotencyKey: string; isTest: boolean; applicationId: string };
+  let body: {
+    planId: string;
+    idempotencyKey: string;
+    isTest: boolean;
+    applicationId: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -123,14 +130,14 @@ serve(async (req) => {
     });
   }
 
-  const { planId, idempotencyKey, isTest, applicationId } = body;
+  const { planId, idempotencyKey, applicationId } = body;
   if (!planId || !idempotencyKey || !applicationId) {
     return new Response(
       JSON.stringify({ error: "Missing required fields" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -148,7 +155,7 @@ serve(async (req) => {
       {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -170,7 +177,7 @@ serve(async (req) => {
       {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -194,7 +201,9 @@ serve(async (req) => {
   const { data: pendingPayment, error: pendingError } = await supabase
     .from("pending_payments")
     .insert(pendingPaymentData)
-    .select("id, user_id, plan_name, amount_cents, currency, network, method, idempotency_key, status, metadata")
+    .select(
+      "id, user_id, plan_name, amount_cents, currency, network, method, idempotency_key, status, metadata",
+    )
     .single();
 
   if (pendingError || !pendingPayment) {
@@ -203,7 +212,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -212,7 +221,10 @@ serve(async (req) => {
   sessionData.append("mode", "subscription");
   sessionData.append("line_items[0][price]", priceId);
   sessionData.append("line_items[0][quantity]", "1");
-  sessionData.append("success_url", `${successUrl}?session_id={CHECKOUT_SESSION_ID}`);
+  sessionData.append(
+    "success_url",
+    `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
+  );
   sessionData.append("cancel_url", cancelUrl);
   sessionData.append("metadata[pending_payment_id]", pendingPayment.id);
   sessionData.append("metadata[idempotency_key]", idempotencyKey);
@@ -225,7 +237,7 @@ serve(async (req) => {
       "POST",
       "/checkout/sessions",
       sessionData,
-      stripeSecretKey
+      stripeSecretKey,
     );
 
     if (!stripeRes.ok) {
@@ -247,7 +259,8 @@ serve(async (req) => {
         .from("pending_payments")
         .update({
           metadata: {
-            ...((pendingPayment.metadata as Record<string, any>) || {}),
+            ...((pendingPayment.metadata as Record<string, unknown> | null) ??
+              {}),
             stripe_session_id: sessionId,
           },
         })
@@ -260,9 +273,12 @@ serve(async (req) => {
     });
   } catch (err) {
     console.error("Failed to create Stripe session:", err);
-    return new Response(JSON.stringify({ error: "Failed to create checkout session" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Failed to create checkout session" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 });

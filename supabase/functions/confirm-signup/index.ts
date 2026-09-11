@@ -1,16 +1,21 @@
 // Confirm Signup Edge Function
 // Sends a custom confirmation email after user registration
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
@@ -59,50 +64,59 @@ const confirmSignupEmail = (name: string, confirmLink: string) => ({
 </div>
 </body>
 </html>`,
-  text: `Confirm Your Signup — Braxel Markets\n\nDear ${name},\n\nThank you for registering with Braxel Markets.\n\nTo activate your account, click the link below:\n${confirmLink}\n\nThis link will expire in 24 hours.\n\nIf you did not create an account, please ignore this email.\n\nBest regards,\nBraxel Markets Team`
+  text:
+    `Confirm Your Signup — Braxel Markets\n\nDear ${name},\n\nThank you for registering with Braxel Markets.\n\nTo activate your account, click the link below:\n${confirmLink}\n\nThis link will expire in 24 hours.\n\nIf you did not create an account, please ignore this email.\n\nBest regards,\nBraxel Markets Team`,
 });
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
   }
 
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    })
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   try {
-    const { userId, email, name, confirmationUrl } = await req.json()
+    const { userId, email, name, confirmationUrl } = await req.json();
 
     if (!userId || !email || !confirmationUrl) {
-      return new Response(JSON.stringify({ error: 'Missing required fields: userId, email, confirmationUrl' }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
+      return new Response(
+        JSON.stringify({
+          error: "Missing required fields: userId, email, confirmationUrl",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    const resendApiKey = Deno.env.get("RESEND_API_KEY")
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
     if (!resendApiKey) {
       console.log("CONFIRM SIGNUP EMAIL (Resend not configured):", {
         to: email,
         subject: "Confirm Your Signup — Braxel Markets",
-        confirmationUrl
-      })
-      return new Response(JSON.stringify({ 
-        success: true, 
-        message: "Logged — configure RESEND_API_KEY to send emails",
-        mock: true
-      }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
+        confirmationUrl,
+      });
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Logged — configure RESEND_API_KEY to send emails",
+          mock: true,
+        }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
-    const emailContent = confirmSignupEmail(name || 'User', confirmationUrl)
+    const emailContent = confirmSignupEmail(name || "User", confirmationUrl);
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -117,34 +131,39 @@ serve(async (req) => {
         html: emailContent.html,
         text: emailContent.text,
       }),
-    })
+    });
 
     if (!res.ok) {
-      const err = await res.text()
-      console.error("Resend error:", err)
-      throw new Error(`Resend API failed: ${res.statusText}`)
+      const err = await res.text();
+      console.error("Resend error:", err);
+      throw new Error(`Resend API failed: ${res.statusText}`);
     }
 
-    const result = await res.json()
-    
+    const result = await res.json();
+
     console.log("Confirmation email sent successfully:", {
       to: email,
-      emailId: result.id
-    })
+      emailId: result.id,
+    });
 
-    return new Response(JSON.stringify({ 
-      success: true, 
-      emailId: result.id 
-    }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    })
-
+    return new Response(
+      JSON.stringify({
+        success: true,
+        emailId: result.id,
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   } catch (error) {
-    console.error("Confirm signup email error:", error)
-    return new Response(JSON.stringify({ error: "Failed to send confirmation email" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" }
-    })
+    console.error("Confirm signup email error:", error);
+    return new Response(
+      JSON.stringify({ error: "Failed to send confirmation email" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
-})
+});

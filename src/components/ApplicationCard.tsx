@@ -3,9 +3,26 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
 interface ApplicationCardProps {
-  application: any;
+  application: ApplicationRecord;
   onActivate: (applicationId: string) => void;
   onReject: (applicationId: string, reason: string) => void;
+}
+
+type RiskLevel = "low" | "medium" | "high";
+
+interface ApplicationRecord {
+  id: string;
+  user_id?: string | null;
+  full_name?: string | null;
+  email?: string | null;
+  country?: string | null;
+  customer_note?: string | null;
+  plan_key: string;
+  plan_name?: string | null;
+  status?: string | null;
+  activation_status?: string | null;
+  risk_level?: RiskLevel | null;
+  created_at?: string | null;
 }
 
 const ApplicationCard = ({ application, onActivate, onReject }: ApplicationCardProps) => {
@@ -151,7 +168,7 @@ const ApplicationCard = ({ application, onActivate, onReject }: ApplicationCardP
               value={rejectReason}
               onChange={(e) => setRejectReason(e.target.value)}
               className="w-full px-4 py-2 bg-white/[0.02] border border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-[#C5A059] text-white placeholder-slate-400 h-24"
-              placeholder={t('operator.reject_reason_placeholder)}
+              placeholder={t('operator.reject_reason_placeholder')}
             />
             <div className="mt-4 flex justify-end space-x-2">
               <Button

@@ -1,12 +1,13 @@
-import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import {
+  createClient,
+  SupabaseClient,
+} from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import type { PaymentStatus } from "./plans.ts";
 import {
-  getPlan,
-  getCryptoNetwork,
-  isSupportedCurrency,
-  PLANS,
-  PLAN_IDS,
   canTransition,
+  getCryptoNetwork,
+  getPlan,
+  isSupportedCurrency,
 } from "./plans.ts";
 import { logPaymentEvent } from "./audit.ts";
 
@@ -23,7 +24,7 @@ export interface ValidatedRequest {
   userId: string;
   userEmail: string | null;
   planId: import("./plans.ts").PlanId;
-  amountCents: number;   // server-derived, never from the browser
+  amountCents: number; // server-derived, never from the browser
   currency: "USD";
   network: ReturnType<typeof getCryptoNetwork> | null;
   idempotencyKey: string;
@@ -51,7 +52,12 @@ export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
     throw new PaymentError("invalid_request");
   }
 
-  const plan = getPlan(input.planId);
+  let plan: ReturnType<typeof getPlan>;
+  try {
+    plan = getPlan(input.planId);
+  } catch {
+    throw new PaymentError("invalid_plan_id");
+  }
 
   if (!isSupportedCurrency(input.clientCurrency)) {
     throw new PaymentError("invalid_currency");
@@ -143,16 +149,16 @@ export async function upsertPendingPayment(
   const { data, error } = await client
     .from("pending_payments")
     .insert({
-      user_id:         params.userId,
-      plan_name:       params.planName,
-      amount_cents:    params.amountCents,
-      currency:        params.currency,
-      network:         params.network,
-      method:          params.method,
+      user_id: params.userId,
+      plan_name: params.planName,
+      amount_cents: params.amountCents,
+      currency: params.currency,
+      network: params.network,
+      method: params.method,
       idempotency_key: params.idempotencyKey,
-      status:         "pending",
-      status_enum:     "pending",
-      metadata:        params.metadata,
+      status: "pending",
+      status_enum: "pending",
+      metadata: params.metadata,
     })
     .select("*")
     .single();
@@ -206,9 +212,9 @@ export async function transitionPayment(
   }
 
   const updatePayload: Record<string, unknown> = {
-    status_enum:    params.newStatus,
-    status:        params.newStatus,
-    updated_at:    new Date().toISOString(),
+    status_enum: params.newStatus,
+    status: params.newStatus,
+    updated_at: new Date().toISOString(),
   };
   if (params.verifiedAmountCents !== undefined) {
     updatePayload.verified_amount_cents = params.verifiedAmountCents;
@@ -268,7 +274,11 @@ export async function activateServiceForPayment(
   eventId: string,
 ): Promise<{ activated: boolean; serviceId: string | null; reason: string }> {
   if (payment.status_enum !== "confirmed") {
-    return { activated: false, serviceId: null, reason: "payment_not_confirmed" };
+    return {
+      activated: false,
+      serviceId: null,
+      reason: "payment_not_confirmed",
+    };
   }
 
   const accountId = `ACC-${Math.floor(100000 + Math.random() * 900000)}`;
@@ -277,13 +287,13 @@ export async function activateServiceForPayment(
   const { data, error } = await client
     .from("services")
     .insert({
-      user_id:           payment.user_id,
-      plan_name:         payment.plan_name,
-      account_id:       accountId,
-      status:           "Active",
+      user_id: payment.user_id,
+      plan_name: payment.plan_name,
+      account_id: accountId,
+      status: "Active",
       balance,
       source_payment_id: payment.id,
-      activated:        true,
+      activated: true,
     })
     .select("id")
     .single();

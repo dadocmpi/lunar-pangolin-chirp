@@ -28,7 +28,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -61,9 +61,10 @@ serve(async (req) => {
 
   // Fetch the user's app_metadata to check for operator flag
   // We need to use the admin API to get the full user record
-  const { data: adminUser, error: adminError } = await supabase.auth.admin.getUserById(
-    user.id
-  );
+  const { data: adminUser, error: adminError } = await supabase.auth.admin
+    .getUserById(
+      user.id,
+    );
   if (adminError || !adminUser) {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403,
@@ -72,12 +73,18 @@ serve(async (req) => {
   }
 
   // Check if the user is an operator (assuming app_metadata.operator === true)
-  const isOperator = adminUser.app_metadata?.operator === true;
+  const adminMeta =
+    (adminUser as { app_metadata?: Record<string, unknown> | null })
+      ?.app_metadata ?? {};
+  const isOperator = adminMeta.operator === true;
   if (!isOperator) {
-    return new Response(JSON.stringify({ error: "Forbidden: insufficient permissions" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Forbidden: insufficient permissions" }),
+      {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 
   // Parse request body
@@ -102,7 +109,9 @@ serve(async (req) => {
   // Get the pending payment record to verify it exists and is in confirmed state with activation_pending
   const { data: pendingPayment, error: pendingError } = await supabase
     .from("pending_payments")
-    .select("id, user_id, plan_name, amount_cents, currency, method, metadata, status, status_enum")
+    .select(
+      "id, user_id, plan_name, amount_cents, currency, method, metadata, status, status_enum",
+    )
     .eq("id", paymentId)
     .single();
 
@@ -116,15 +125,19 @@ serve(async (req) => {
   // Require BOTH: pending_payments payment state = payment_confirmed AND
   // the linked application row has activation_status = activation_pending.
   // Activation is manual, operator-only, and double-gated.
-  const metadata = (pendingPayment.metadata as Record<string, any>) || {};
-  const applicationId: string | undefined = metadata.application_id;
+  const metadata =
+    (pendingPayment.metadata as Record<string, unknown> | null) ?? {};
+  const applicationId: string | undefined =
+    typeof metadata.application_id === "string"
+      ? metadata.application_id
+      : undefined;
   if (!applicationId) {
     return new Response(
       JSON.stringify({ error: "Payment has no linked application" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -140,12 +153,11 @@ serve(async (req) => {
       {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
-  const paymentConfirmed =
-    pendingPayment.status === "confirmed" ||
+  const paymentConfirmed = pendingPayment.status === "confirmed" ||
     pendingPayment.status === "payment_confirmed" ||
     pendingPayment.status_enum === "confirmed" ||
     pendingPayment.status_enum === "payment_confirmed";
@@ -156,7 +168,8 @@ serve(async (req) => {
   if (!paymentConfirmed || !appReadyForActivation) {
     return new Response(
       JSON.stringify({
-        error: "Payment or application is not in the correct state for activation",
+        error:
+          "Payment or application is not in the correct state for activation",
         details: {
           pending_payment_status: pendingPayment.status,
           pending_payment_status_enum: pendingPayment.status_enum,
@@ -167,13 +180,13 @@ serve(async (req) => {
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
   // Prepare update data: set activation_status to account_active, record operator ID and timestamp
   const activationTimestamp = new Date().toISOString();
-  const updateData: Record<string, any> = {
+  const updateData: Record<string, unknown> = {
     metadata: {
       ...metadata,
       activation_status: "account_active",
@@ -189,11 +202,17 @@ serve(async (req) => {
     .eq("id", paymentId);
 
   if (updateError) {
-    console.error("Failed to update pending payment for activation:", updateError);
-    return new Response(JSON.stringify({ error: "Failed to activate account" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error(
+      "Failed to update pending payment for activation:",
+      updateError,
+    );
+    return new Response(
+      JSON.stringify({ error: "Failed to activate account" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 
   // Mirror activation state onto the application row so the dashboard sees it.
@@ -208,17 +227,21 @@ serve(async (req) => {
     .eq("id", applicationId);
 
   if (appUpdateError) {
-    console.error("Failed to update application activation status:", appUpdateError);
+    console.error(
+      "Failed to update application activation status:",
+      appUpdateError,
+    );
     // Activation already happened on the payment; surface the error but do not double-activate.
     return new Response(
       JSON.stringify({
-        error: "Activated on payment record but failed to update application row",
+        error:
+          "Activated on payment record but failed to update application row",
         details: appUpdateError.message,
       }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -228,10 +251,12 @@ serve(async (req) => {
     p_payment_id: paymentId,
     p_operator: "admin",
     p_source: "admin",
-    p_event_id: `activate-account:${paymentId}:${user.id}:${activationTimestamp}`,
+    p_event_id:
+      `activate-account:${paymentId}:${user.id}:${activationTimestamp}`,
     p_previous_status: "payment_confirmed",
     p_new_status: "account_active",
-    p_reason: `Account manually activated by operator ${user.id} at ${activationTimestamp}`,
+    p_reason:
+      `Account manually activated by operator ${user.id} at ${activationTimestamp}`,
   });
 
   if (logError) {
@@ -248,6 +273,6 @@ serve(async (req) => {
     {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-    }
+    },
   );
 });

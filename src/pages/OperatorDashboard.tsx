@@ -10,15 +10,27 @@ import { ShieldAlert, Loader2 } from 'lucide-react';
 const OperatorDashboard = () => {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
-  const [applications, setApplications] = useState<any[]>([]);
+  const [applications, setApplications] = useState<ApplicationsRow[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; email?: string | null; role?: string | null } | null>(null);
+
+interface ApplicationsRow {
+  id: string;
+  user_id: string;
+  plan_key: string;
+  full_name: string;
+  email: string;
+  country: string;
+  customer_note?: string | null;
+  activation_status?: string;
+  risk_level?: "low" | "medium" | "high" | null;
+}
 
   useEffect(() => {
     const checkUserAndLoad = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       setUser(authUser);
-      
+
       // In a real app, we would check if the user is an operator (e.g., via a role or metadata)
       // For now, we'll allow any authenticated user to access this page for simplicity
       // but in production, you should restrict this to operators only.
@@ -27,7 +39,7 @@ const OperatorDashboard = () => {
         window.location.href = '/login';
         return;
       }
-      
+
       // Fetch pending activation applications
       const { data: apps, error: appsError } = await supabase
         .from("applications")
@@ -40,11 +52,11 @@ const OperatorDashboard = () => {
         setLoading(false);
         return;
       }
-      
+
       setApplications(apps || []);
       setLoading(false);
     };
-    
+
     checkUserAndLoad();
   }, []);
 
@@ -54,7 +66,7 @@ const OperatorDashboard = () => {
       if (!session?.access_token) {
         throw new Error('Unauthorized');
       }
-      
+
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/application-activate`,
         {
@@ -66,26 +78,26 @@ const OperatorDashboard = () => {
           body: JSON.stringify({ applicationId }),
         }
       );
-      
+
       const json = await res.json();
       if (!res.ok) {
         throw new Error(json.error || `HTTP ${res.status}`);
       }
-      
+
       // Refresh the list
       const { data: apps, error: appsError } = await supabase
         .from("applications")
         .select("*")
         .eq("activation_status", "activation_pending")
         .order('created_at', { ascending: false });
-      
+
       if (!appsError) {
         setApplications(apps || []);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Activation error:', err);
       // Show error toast or update state
-      setError(err.message || t('operator.errors.activation_failed'));
+      setError(err instanceof Error ? err.message : t('operator.errors.activation_failed'));
     }
   };
 
@@ -95,7 +107,7 @@ const OperatorDashboard = () => {
       if (!session?.access_token) {
         throw new Error('Unauthorized');
       }
-      
+
       const res = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/application-reject`,
         {
@@ -107,25 +119,25 @@ const OperatorDashboard = () => {
           body: JSON.stringify({ applicationId, reason }),
         }
       );
-      
+
       const json = await res.json();
       if (!res.ok) {
         throw new Error(json.error || `HTTP ${res.status}`);
       }
-      
+
       // Refresh the list
       const { data: apps, error: appsError } = await supabase
         .from("applications")
         .select("*")
         .eq("activation_status", "activation_pending")
         .order('created_at', { ascending: false });
-      
+
       if (!appsError) {
         setApplications(apps || []);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Rejection error:', err);
-      setError(err.message || t('operator.errors.rejection_failed'));
+      setError(err instanceof Error ? err.message : t('operator.errors.rejection_failed'));
     }
   };
 

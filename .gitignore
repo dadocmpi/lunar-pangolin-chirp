@@ -17,6 +17,7 @@ build
 # Environment variables — NEVER commit real values
 # -----------------------------------------------------------------------
 .env
+.env.*
 .env.local
 .env.*.local
 .env.production

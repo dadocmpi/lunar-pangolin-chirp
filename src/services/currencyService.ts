@@ -44,7 +44,7 @@ export const exchangeRates: Record<string, number> = {
 };
 
 /** Live rates cache. Set by fetchLiveExchangeRates (no-op in test mode). */
-let liveRates: Record<string, number> | null = null;
+const liveRates: Record<string, number> | null = null;
 
 /**
  * Live exchange rates — NO-OP in the browser bundle.

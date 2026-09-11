@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import ApplicationForm from '@/components/ApplicationForm';
+import ApplicationForm, { type PlanInfo } from '@/components/ApplicationForm';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert, Loader2, CheckCircle2 } from 'lucide-react';
 
@@ -13,7 +13,7 @@ const RegisterApplication = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [plan, setPlan] = useState<any>(null);
+  const [plan, setPlan] = useState<PlanInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -29,7 +29,7 @@ const RegisterApplication = () => {
     setLoading(false);
   }, [location.state, navigate]);
 
-  const handleApplicationSubmit = async (applicationData: any) => {
+  const handleApplicationSubmit = async (applicationData: Record<string, unknown>) => {
     setSubmitError(null);
     setSubmitting(true);
     try {
@@ -49,7 +49,7 @@ const RegisterApplication = () => {
           },
           body: JSON.stringify({
             ...applicationData,
-            // We'll also send the plan ID from the location state for verification
+            // Location-state plan reference for verification only.
             plan_id_from_location: plan.id,
           }),
         }
@@ -68,9 +68,9 @@ const RegisterApplication = () => {
       } else {
         throw new Error('No application ID returned');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Application submission error:', err);
-      setSubmitError(err.message || t('application.errors.submit_failed'));
+      setSubmitError(err instanceof Error ? err.message : t('application.errors.submit_failed'));
     } finally {
       setSubmitting(false);
     }
@@ -112,7 +112,7 @@ const RegisterApplication = () => {
             </div>
             <div className="text-right">
               <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                {'€' + plan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {plan.priceUSD?.toLocaleString(undefined, { style: 'currency', currency: 'USD' })}
               </span>
               <p className="text-[9px] text-slate-600 uppercase tracking-widest">
                 {t('application.billed_monthly')}
@@ -126,7 +126,7 @@ const RegisterApplication = () => {
             </p>
             <p className="text-[10px] text-slate-400">
               {t('application.plan_price_detail', {
-                price: `€${plan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+                price: plan.priceUSD?.toLocaleString(undefined, { style: 'currency', currency: 'USD' }),
               })}
             </p>
           </div>

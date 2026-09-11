@@ -36,7 +36,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   starter: {
     id: "starter",
     name: "Starter",
-    priceCents: 200_00,    // $200.00
+    priceCents: 200_00, // $200.00
     managedCapitalUsd: 25_000,
     description: "Starter service tier.",
     tierReference: "25K",
@@ -45,7 +45,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   professional: {
     id: "professional",
     name: "Professional",
-    priceCents: 350_00,   // $350.00
+    priceCents: 350_00, // $350.00
     managedCapitalUsd: 50_000,
     description: "Professional service tier.",
     tierReference: "50K",
@@ -54,7 +54,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   business: {
     id: "business",
     name: "Business",
-    priceCents: 600_00,   // $600.00
+    priceCents: 600_00, // $600.00
     managedCapitalUsd: 100_000,
     description: "Business service tier.",
     tierReference: "100K",
@@ -63,7 +63,7 @@ export const PLANS: Record<PlanId, PlanConfig> = {
   enterprise: {
     id: "enterprise",
     name: "Enterprise",
-    priceCents: 820_00,  // $820.00
+    priceCents: 820_00, // $820.00
     managedCapitalUsd: 150_000,
     description: "Enterprise service tier.",
     tierReference: "150K",
@@ -77,7 +77,7 @@ export const PLAN_IDS = Object.keys(PLANS) as PlanId[];
 // Supported currencies
 // ---------------------------------------------------------------------------
 
-export const SUPPORTED_CURRENCIES = [\"USD\"] as const;
+export const SUPPORTED_CURRENCIES = ["USD"] as const;
 export type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
 
 // ---------------------------------------------------------------------------
@@ -85,47 +85,79 @@ export type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
 // ---------------------------------------------------------------------------
 
 export const CRYPTO_NETWORKS = [
-  { id: \"BTC\",     symbol: \"BTC\",  minConfirmations: 1,  addressEnv: \"CRYPTO_DESTINATION_BTC\"     },
-  { id: \"TRC20\",   symbol: \"USDT\", minConfirmations: 1,  addressEnv: \"CRYPTO_DESTINATION_TRC20\"  },
-  { id: \"ETH\",     symbol: \"ETH\",  minConfirmations: 12, addressEnv: \"CRYPTO_DESTINATION_ETH\"     },
-  { id: \"BNB\",     symbol: \"BNB\",  minConfirmations: 15, addressEnv: \"CRYPTO_DESTINATION_BNB\"     },
-  { id: \"POLYGON\", symbol: \"MATIC\",minConfirmations: 64, addressEnv: \"CRYPTO_DESTINATION_POLYGON\" },
-  { id: \"SOL\",     symbol: \"SOL\",  minConfirmations: 32, addressEnv: \"CRYPTO_DESTINATION_SOL\"     },
+  {
+    id: "BTC",
+    symbol: "BTC",
+    minConfirmations: 1,
+    addressEnv: "CRYPTO_DESTINATION_BTC",
+  },
+  {
+    id: "TRC20",
+    symbol: "USDT",
+    minConfirmations: 1,
+    addressEnv: "CRYPTO_DESTINATION_TRC20",
+  },
+  {
+    id: "ETH",
+    symbol: "ETH",
+    minConfirmations: 12,
+    addressEnv: "CRYPTO_DESTINATION_ETH",
+  },
+  {
+    id: "BNB",
+    symbol: "BNB",
+    minConfirmations: 15,
+    addressEnv: "CRYPTO_DESTINATION_BNB",
+  },
+  {
+    id: "POLYGON",
+    symbol: "MATIC",
+    minConfirmations: 64,
+    addressEnv: "CRYPTO_DESTINATION_POLYGON",
+  },
+  {
+    id: "SOL",
+    symbol: "SOL",
+    minConfirmations: 32,
+    addressEnv: "CRYPTO_DESTINATION_SOL",
+  },
 ] as const;
 
-export type CryptoNetworkId = (typeof CRYPTO_NETWORKS)[number][\"id\"];
+export type CryptoNetworkId = (typeof CRYPTO_NETWORKS)[number]["id"];
 
 /**
  * Test-only placeholder address. This is intentionally not a real wallet.
  * Production addresses must be set via Deno env, never in the browser bundle.
  */
-export const TEST_PLACEHOLDER_WALLET = \"tb1qtesttesttesttesttesttesttesttesttesttest\";
+export const TEST_PLACEHOLDER_WALLET =
+  "tb1qtesttesttesttesttesttesttesttesttesttest";
 
 /**
  * Test-only placeholder bank. This is intentionally not a real bank account.
  * Production bank details must be configured via Deno env, never in the browser bundle.
  */
-export const TEST_PLACEHOLDER_BANK = \"TEST-BANK-ROUTING-NOT-CONFIGURED\";
+export const TEST_PLACEHOLDER_BANK = "TEST-BANK-ROUTING-NOT-CONFIGURED";
 
 // ---------------------------------------------------------------------------
 // Lookup helpers
 // ---------------------------------------------------------------------------
 
 export function getPlan(id: unknown): PlanConfig {
-  if (typeof id !== \"string\") throw new Error(\"invalid_plan_id\");
-  if (!PLAN_IDS.includes(id as PlanId)) throw new Error(\"invalid_plan_id\");
+  if (typeof id !== "string") throw new Error("invalid_plan_id");
+  if (!PLAN_IDS.includes(id as PlanId)) throw new Error("invalid_plan_id");
   return PLANS[id as PlanId];
 }
 
 export function getCryptoNetwork(id: unknown) {
-  if (typeof id !== \"string\") throw new Error(\"invalid_network\");
+  if (typeof id !== "string") throw new Error("invalid_network");
   const found = CRYPTO_NETWORKS.find((n) => n.id === id);
-  if (!found) throw new Error(\"invalid_network\");
+  if (!found) throw new Error("invalid_network");
   return found;
 }
 
 export function isSupportedCurrency(c: unknown): c is SupportedCurrency {
-  return typeof c === \"string\" && (SUPPORTED_CURRENCIES as readonly string[]).includes(c);
+  return typeof c === "string" &&
+    (SUPPORTED_CURRENCIES as readonly string[]).includes(c);
 }
 
 // ---------------------------------------------------------------------------
@@ -133,27 +165,45 @@ export function isSupportedCurrency(c: unknown): c is SupportedCurrency {
 // ---------------------------------------------------------------------------
 
 export const PAYMENT_STATUSES = [
-  \"created\",
-  \"pending\",
-  \"processing\",
-  \"confirmed\",
-  \"failed\",
-  \"rejected\",
-  \"refunded\",
-  \"disputed\",
-  \"canceled\",
-  \"pending_manual\",
+  "created",
+  "pending",
+  "processing",
+  "confirmed",
+  "failed",
+  "rejected",
+  "refunded",
+  "disputed",
+  "canceled",
+  "pending_manual",
 ] as const;
 
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
 const ALLOWED: Record<PaymentStatus, readonly PaymentStatus[]> = {
-  created:         [\"pending\",       \"failed\",    \"canceled\"],
-  pending:         [\"processing\",   \"pending_manual\", \"failed\", \"canceled\", \"rejected\"],
-  processing:      [\"confirmed\",    \"failed\",     \"rejected\", \"pending_manual\"],
-  pending_manual:  [\"confirmed\",    \"rejected\",  \"canceled\"],
-  confirmed:       [\"refunded\",     \"disputed\"],
-  failed:          [\"pending\"],          // retry path
-  rejected:        [],                  // terminal
-  refunded:        [],                  // terminal
-  disputed:        [\"refunded\",     \"rejected\"],\n  canceled:        [],                  // terminal\n};\n\n/**\n * Returns true if a transition is allowed.\n * `failed` is NOT terminal — it can retry to `pending`.\n */\nexport function canTransition(from: PaymentStatus, to: PaymentStatus): boolean {\n  if (from === to) return false;\n  return ALLOWED[from]?.includes(to) ?? false;\n}\n\nexport const TERMINAL_STATUSES: readonly PaymentStatus[] = [\n  \"confirmed\",\n  \"rejected\",\n  \"refunded\",\n  \"canceled\",\n];\n
+  created: ["pending", "failed", "canceled"],
+  pending: ["processing", "pending_manual", "failed", "canceled", "rejected"],
+  processing: ["confirmed", "failed", "rejected", "pending_manual"],
+  pending_manual: ["confirmed", "rejected", "canceled"],
+  confirmed: ["refunded", "disputed"],
+  failed: ["pending"], // retry path
+  rejected: [], // terminal
+  refunded: [], // terminal
+  disputed: ["refunded", "rejected"],
+  canceled: [], // terminal
+};
+
+/**
+ * Returns true if a transition is allowed.
+ * `failed` is NOT terminal — it can retry to `pending`.
+ */
+export function canTransition(from: PaymentStatus, to: PaymentStatus): boolean {
+  if (from === to) return false;
+  return ALLOWED[from]?.includes(to) ?? false;
+}
+
+export const TERMINAL_STATUSES: readonly PaymentStatus[] = [
+  "confirmed",
+  "rejected",
+  "refunded",
+  "canceled",
+];

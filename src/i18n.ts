@@ -588,11 +588,10 @@ const enTranslation = {
     cvvLabel: "CVC",
     paymentFailed: "Payment failed",
     paymentError: "Payment error",
-    // New keys for the application flow
+    // New keys for the application flow (cardDesc already defined above)
     subscriptionTitle: "SUBSCRIPTION",
     subscriptionSubtitle: "SERVICE PLAN",
     serviceAccess: "Service Access",
-    cardDesc: "Visa, Mastercard and other cards",
     confirmCard: "CONFIRM CARD",
     redirecting: "Redirecting to payment..."
   },

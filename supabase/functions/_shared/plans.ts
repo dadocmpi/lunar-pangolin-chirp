@@ -13,7 +13,7 @@ export interface PlanConfig {
   managedCapitalUsd: number;
   /** Human-readable description used in audit / receipts. */
   description: string;
-  /** Plans are never \"active\" until confirmed; this field documents the
+  /** Plans are never "active" until confirmed; this field documents the
    *  intended outcome but has no execution effect. */
   isComingSoon: boolean;
   /** Service tier reference (e.g., "25K") */
@@ -72,43 +72,75 @@ export const PLANS: Record<PlanId, PlanConfig> = {
 
 export const PLAN_IDS = Object.keys(PLANS) as PlanId[];
 
-export const SUPPORTED_CURRENCIES = [\"USD\"] as const;
+export const SUPPORTED_CURRENCIES = ["USD"] as const;
 export type SupportedCurrency = (typeof SUPPORTED_CURRENCIES)[number];
 
 export const CRYPTO_NETWORKS = [
-  { id: \"BTC\", symbol: \"BTC\", minConfirmations: 1, addressEnv: \"TEST_WALLET_BTC\" },
-  { id: \"TRC20\", symbol: \"USDT\", minConfirmations: 1, addressEnv: \"TEST_WALLET_TRC20\" },
-  { id: \"ETH\", symbol: \"ETH\", minConfirmations: 12, addressEnv: \"TEST_WALLET_ETH\" },
-  { id: \"BNB\", symbol: \"BNB\", minConfirmations: 15, addressEnv: \"TEST_WALLET_BNB\" },
-  { id: \"POLYGON\", symbol: \"MATIC\", minConfirmations: 64, addressEnv: \"TEST_WALLET_POLYGON\" },
-  { id: \"SOL\", symbol: \"SOL\", minConfirmations: 32, addressEnv: \"TEST_WALLET_SOL\" },
+  {
+    id: "BTC",
+    symbol: "BTC",
+    minConfirmations: 1,
+    addressEnv: "TEST_WALLET_BTC",
+  },
+  {
+    id: "TRC20",
+    symbol: "USDT",
+    minConfirmations: 1,
+    addressEnv: "TEST_WALLET_TRC20",
+  },
+  {
+    id: "ETH",
+    symbol: "ETH",
+    minConfirmations: 12,
+    addressEnv: "TEST_WALLET_ETH",
+  },
+  {
+    id: "BNB",
+    symbol: "BNB",
+    minConfirmations: 15,
+    addressEnv: "TEST_WALLET_BNB",
+  },
+  {
+    id: "POLYGON",
+    symbol: "MATIC",
+    minConfirmations: 64,
+    addressEnv: "TEST_WALLET_POLYGON",
+  },
+  {
+    id: "SOL",
+    symbol: "SOL",
+    minConfirmations: 32,
+    addressEnv: "TEST_WALLET_SOL",
+  },
 ] as const;
 
-export type CryptoNetworkId = (typeof CRYPTO_NETWORKS)[number][\"id\"];
+export type CryptoNetworkId = (typeof CRYPTO_NETWORKS)[number]["id"];
 
 /**
  * Test-only placeholder addresses. These are intentionally not real,
  * production-style addresses. The real addresses must be configured later
  * via Deno env, never in the browser bundle.
  */
-export const TEST_PLACEHOLDER_WALLET = \"tb1qtesttesttesttesttesttesttesttesttesttest\";
-export const TEST_PLACEHOLDER_BANK = \"TEST-BANK-ROUTING-NOT-CONFIGURED\";
+export const TEST_PLACEHOLDER_WALLET =
+  "tb1qtesttesttesttesttesttesttesttesttesttest";
+export const TEST_PLACEHOLDER_BANK = "TEST-BANK-ROUTING-NOT-CONFIGURED";
 
 export function getPlan(id: unknown): PlanConfig {
-  if (typeof id !== \"string\") throw new Error(\"invalid_plan_id\");
-  if (!PLAN_IDS.includes(id as PlanId)) throw new Error(\"invalid_plan_id\");
+  if (typeof id !== "string") throw new Error("invalid_plan_id");
+  if (!PLAN_IDS.includes(id as PlanId)) throw new Error("invalid_plan_id");
   return PLANS[id as PlanId];
 }
 
 export function getCryptoNetwork(id: unknown) {
-  if (typeof id !== \"string\") throw new Error(\"invalid_network\");
+  if (typeof id !== "string") throw new Error("invalid_network");
   const found = CRYPTO_NETWORKS.find((n) => n.id === id);
-  if (!found) throw new Error(\"invalid_network\");
+  if (!found) throw new Error("invalid_network");
   return found;
 }
 
 export function isSupportedCurrency(c: unknown): c is SupportedCurrency {
-  return typeof c === \"string\" && (SUPPORTED_CURRENCIES as readonly string[]).includes(c);
+  return typeof c === "string" &&
+    (SUPPORTED_CURRENCIES as readonly string[]).includes(c);
 }
 
 // ---------------------------------------------------------------------------
@@ -116,16 +148,16 @@ export function isSupportedCurrency(c: unknown): c is SupportedCurrency {
 // ---------------------------------------------------------------------------
 
 export const PAYMENT_STATUSES = [
-  \"created\",
-  \"pending\",
-  \"processing\",
-  \"confirmed\",
-  \"failed\",
-  \"rejected\",
-  \"refunded\",
-  \"disputed\",
-  \"canceled\",
-  \"pending_manual\",
+  "created",
+  "pending",
+  "processing",
+  "confirmed",
+  "failed",
+  "rejected",
+  "refunded",
+  "disputed",
+  "canceled",
+  "pending_manual",
 ] as const;
 
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
@@ -137,15 +169,15 @@ export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
  * transition `pending -> processing -> confirmed` by the auto-confirm flow.
  */
 const ALLOWED: Record<PaymentStatus, ReadonlyArray<PaymentStatus>> = {
-  created: [\"pending\", \"failed\", \"canceled\"],
-  pending: [\"processing\", \"pending_manual\", \"failed\", \"canceled\", \"rejected\"],
-  processing: [\"confirmed\", \"failed\", \"rejected\", \"pending_manual\"],
-  pending_manual: [\"confirmed\", \"rejected\", \"canceled\"],
-  confirmed: [\"refunded\", \"disputed\"],
-  failed: [\"pending\"], // retry path
+  created: ["pending", "failed", "canceled"],
+  pending: ["processing", "pending_manual", "failed", "canceled", "rejected"],
+  processing: ["confirmed", "failed", "rejected", "pending_manual"],
+  pending_manual: ["confirmed", "rejected", "canceled"],
+  confirmed: ["refunded", "disputed"],
+  failed: ["pending"], // retry path
   rejected: [],
   refunded: [],
-  disputed: [\"refunded\", \"rejected\"],
+  disputed: ["refunded", "rejected"],
   canceled: [],
 };
 
@@ -156,9 +188,9 @@ export function canTransition(from: PaymentStatus, to: PaymentStatus): boolean {
 
 /** Terminal statuses cannot transition out. */
 export const TERMINAL_STATUSES: PaymentStatus[] = [
-  \"confirmed\",
-  \"rejected\",
-  \"refunded\",
-  \"canceled\",
-  \"failed\",
+  "confirmed",
+  "rejected",
+  "refunded",
+  "canceled",
+  "failed",
 ];

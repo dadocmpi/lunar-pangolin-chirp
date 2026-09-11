@@ -28,7 +28,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -60,9 +60,10 @@ serve(async (req) => {
   }
 
   // Fetch the user's app_metadata to check for operator flag
-  const { data: adminUser, error: adminError } = await supabase.auth.admin.getUserById(
-    user.id
-  );
+  const { data: adminUser, error: adminError } = await supabase.auth.admin
+    .getUserById(
+      user.id,
+    );
   if (adminError || !adminUser) {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403,
@@ -71,16 +72,26 @@ serve(async (req) => {
   }
 
   // Check if the user is an operator (assuming app_metadata.operator === true)
-  const isOperator = adminUser.app_metadata?.operator === true;
+  const adminMeta =
+    (adminUser as { app_metadata?: Record<string, unknown> | null })
+      ?.app_metadata ?? {};
+  const isOperator = adminMeta.operator === true;
   if (!isOperator) {
-    return new Response(JSON.stringify({ error: "Forbidden: insufficient permissions" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Forbidden: insufficient permissions" }),
+      {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 
   // Parse request body
-  let body: { paymentId: string; action: "reject" | "request_info"; message?: string };
+  let body: {
+    paymentId: string;
+    action: "reject" | "request_info";
+    message?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -92,16 +103,21 @@ serve(async (req) => {
 
   const { paymentId, action, message } = body;
   if (!paymentId || !action) {
-    return new Response(JSON.stringify({ error: "Payment ID and action are required" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Payment ID and action are required" }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 
   // Get the pending payment record to verify it exists and is in confirmed state with activation_pending
   const { data: pendingPayment, error: pendingError } = await supabase
     .from("pending_payments")
-    .select("id, user_id, plan_name, amount_cents, currency, method, metadata, status")
+    .select(
+      "id, user_id, plan_name, amount_cents, currency, method, metadata, status",
+    )
     .eq("id", paymentId)
     .single();
 
@@ -113,7 +129,8 @@ serve(async (req) => {
   }
 
   // Check that the payment is confirmed and activation is pending
-  const metadata = pendingPayment.metadata as Record<string, any> || {};
+  const metadata =
+    (pendingPayment.metadata as Record<string, unknown> | null) ?? {};
   if (
     pendingPayment.status !== "confirmed" ||
     metadata.activation_status !== "activation_pending"
@@ -129,7 +146,7 @@ serve(async (req) => {
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -140,13 +157,15 @@ serve(async (req) => {
 
   if (action === "reject") {
     newActivationStatus = "rejected";
-    logReason = `Payment rejected by operator ${user.id} at ${activationTimestamp}`;
+    logReason =
+      `Payment rejected by operator ${user.id} at ${activationTimestamp}`;
     if (message) {
       logReason += ` with message: ${message}`;
     }
   } else if (action === "request_info") {
     newActivationStatus = "info_requested";
-    logReason = `More information requested by operator ${user.id} at ${activationTimestamp}`;
+    logReason =
+      `More information requested by operator ${user.id} at ${activationTimestamp}`;
     if (message) {
       logReason += ` with message: ${message}`;
     }
@@ -157,7 +176,7 @@ serve(async (req) => {
     });
   }
 
-  const updateData: Record<string, any> = {
+  const updateData: Record<string, unknown> = {
     metadata: {
       ...metadata,
       activation_status: newActivationStatus,
@@ -174,11 +193,17 @@ serve(async (req) => {
     .eq("id", paymentId);
 
   if (updateError) {
-    console.error("Failed to update pending payment for operator action:", updateError);
-    return new Response(JSON.stringify({ error: "Failed to process operator action" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    console.error(
+      "Failed to update pending payment for operator action:",
+      updateError,
+    );
+    return new Response(
+      JSON.stringify({ error: "Failed to process operator action" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 
   // Insert an audit log entry for the action
@@ -198,8 +223,11 @@ serve(async (req) => {
     // We don't fail the action because the payment update succeeded
   }
 
-  return new Response(JSON.stringify({ success: true, processedAt: activationTimestamp }), {
-    status: 200,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+  return new Response(
+    JSON.stringify({ success: true, processedAt: activationTimestamp }),
+    {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
 });

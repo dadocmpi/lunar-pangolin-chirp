@@ -13,8 +13,8 @@ const STRIPE_API_BASE = "https://api.stripe.com/v1";
 function stripeRequest(
   method: string,
   path: string,
-  data: URLSearchParams | object,
-  secretKey: string
+  data: URLSearchParams | Record<string, unknown> | string,
+  secretKey: string,
 ): Promise<Response> {
   const url = `${STRIPE_API_BASE}${path}`;
   const headers: HeadersInit = {
@@ -30,10 +30,12 @@ function stripeRequest(
     body = new URLSearchParams(
       Object.entries(data).flatMap(([k, v]) =>
         v === undefined || v === null ? [] : [[k, String(v)]]
-      )
+      ),
     );
-  } else {
+  } else if (typeof data === "string") {
     body = data;
+  } else {
+    body = undefined;
   }
 
   return fetch(url, { method, headers, body });
@@ -59,7 +61,7 @@ serve(async (req) => {
       {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -81,7 +83,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -113,15 +115,15 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
   // Find the most recent one with a stripe_customer_id
   const pendingPayment = pendingPayments
-    .map((pp: any) => ({
+    .map((pp: { id: string; metadata: Record<string, unknown> | null }) => ({
       ...pp,
-      metadata: pp.metadata as Record<string, any> || {},
+      metadata: pp.metadata ?? {},
     }))
     .find((pp) => pp.metadata.stripe_customer_id);
 
@@ -131,18 +133,21 @@ serve(async (req) => {
       {
         status: 404,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
-  const stripeCustomerId = pendingPayment.metadata.stripe_customer_id;
+  const stripeCustomerId =
+    typeof pendingPayment.metadata.stripe_customer_id === "string"
+      ? pendingPayment.metadata.stripe_customer_id
+      : null;
   if (!stripeCustomerId) {
     return new Response(
       JSON.stringify({ error: "Stripe customer ID missing" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -154,7 +159,7 @@ serve(async (req) => {
       {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -167,7 +172,7 @@ serve(async (req) => {
       "POST",
       "/billing_portal/sessions",
       sessionData,
-      stripeSecretKey
+      stripeSecretKey,
     );
 
     if (!portalRes.ok) {
@@ -186,9 +191,12 @@ serve(async (req) => {
     });
   } catch (err) {
     console.error("Failed to create portal session:", err);
-    return new Response(JSON.stringify({ error: "Failed to create portal session" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Failed to create portal session" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 });

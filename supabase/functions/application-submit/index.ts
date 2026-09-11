@@ -28,7 +28,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -58,9 +58,12 @@ serve(async (req) => {
   }
 
   // Parse request body
-  let body: any;
+  let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    const parsed = await req.json();
+    body = typeof parsed === "object" && parsed !== null
+      ? parsed as Record<string, unknown>
+      : {};
   } catch {
     return new Response(JSON.stringify({ error: "Invalid JSON" }), {
       status: 400,
@@ -84,30 +87,35 @@ serve(async (req) => {
     customer_note,
     plan_key,
     // We'll also accept plan_name and plan_price_eur for reference, but we won't use them to determine the plan
-    plan_name,
-    plan_price_eur,
   } = body;
 
   // Basic validation (the form should have validated, but we double-check)
-  if (!full_name || !email || !country) {
+  if (
+    typeof full_name !== "string" ||
+    typeof email !== "string" ||
+    typeof country !== "string" ||
+    full_name.trim().length === 0 ||
+    email.trim().length === 0 ||
+    country.trim().length === 0
+  ) {
     return new Response(
       JSON.stringify({ error: "Missing required fields" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
   // Simple email validation
-  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+  const emailRegex = /^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/;
   if (!emailRegex.test(email)) {
     return new Response(
       JSON.stringify({ error: "Invalid email format" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -118,19 +126,19 @@ serve(async (req) => {
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
   // Limit customer note length
-  const note = customer_note || "";
+  const note = typeof customer_note === "string" ? customer_note : "";
   if (note.length > 500) {
     return new Response(
       JSON.stringify({ error: "Customer note too long" }),
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -166,7 +174,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -175,6 +183,6 @@ serve(async (req) => {
     {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-    }
+    },
   );
 });

@@ -20,12 +20,11 @@
 // ============================================================================
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import type { PaymentStatus } from "../_shared/option_a/plans.ts";
 import {
+  activateServiceForPayment,
   makeServiceClient,
   transitionPayment,
-  activateServiceForPayment,
-  readPendingPaymentForUser,
 } from "../_shared/option_a/payments.ts";
 import { logPaymentEvent } from "../_shared/option_a/audit.ts";
 
@@ -34,8 +33,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
-
-const COMPANY_EMAIL = "marketsbraxel@ouvidor.net";
 
 // ---------------------------------------------------------------------------
 // Gate helpers — fail-closed
@@ -74,8 +71,9 @@ serve(async (req) => {
   if (!isPaymentsEnabled()) {
     return new Response(
       JSON.stringify({
-        error:   "payments_disabled",
-        message:  "PAYMENTS_ENABLED is not set to 'true'. No payment was modified.",
+        error: "payments_disabled",
+        message:
+          "PAYMENTS_ENABLED is not set to 'true'. No payment was modified.",
       }),
       {
         status: 503,
@@ -122,7 +120,6 @@ serve(async (req) => {
   try {
     adminSecretValue = getAdminSecret();
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("[crypto-confirmation] ADMIN_SECRET not configured:", err);
     return new Response(
       JSON.stringify({ error: "server_misconfigured" }),
@@ -159,8 +156,12 @@ serve(async (req) => {
     });
   }
 
-  const payment = paymentRaw as any;
-  const currentStatus: any = payment.status_enum ?? "pending";
+  const payment = paymentRaw as {
+    id: string;
+    user_id: string | null;
+    status_enum: PaymentStatus | null;
+  };
+  const currentStatus: PaymentStatus = payment.status_enum ?? "pending";
 
   // -------------------------------------------------------------------------
   // Idempotency: if already confirmed, return success
@@ -168,9 +169,9 @@ serve(async (req) => {
   if (currentStatus === "confirmed") {
     return new Response(
       JSON.stringify({
-        ok:          true,
-        idempotent:  true,
-        message:     "Payment already confirmed.",
+        ok: true,
+        idempotent: true,
+        message: "Payment already confirmed.",
         paymentId,
       }),
       {
@@ -184,36 +185,36 @@ serve(async (req) => {
   // Transition pending → processing → confirmed
   // -------------------------------------------------------------------------
   let confirmed = await transitionPayment(admin, {
-    paymentId:     payment.id,
+    paymentId: payment.id,
     previousStatus: currentStatus,
-    newStatus:     "processing",
-    actor:         "admin",
-    source:        "crypto",
-    eventId:       `confirm:${txHash}:processing`,
-    reason:        "admin_manual_confirmation_started",
+    newStatus: "processing",
+    actor: "admin",
+    source: "crypto",
+    eventId: `confirm:${txHash}:processing`,
+    reason: "admin_manual_confirmation_started",
   });
 
   confirmed = await transitionPayment(admin, {
-    paymentId:     confirmed.id,
+    paymentId: confirmed.id,
     previousStatus: "processing",
-    newStatus:     "confirmed",
-    actor:         "admin",
-    source:        "crypto",
-    eventId:       `confirm:${txHash}:confirmed`,
-    reason:        "admin_verified_on_chain",
+    newStatus: "confirmed",
+    actor: "admin",
+    source: "crypto",
+    eventId: `confirm:${txHash}:confirmed`,
+    reason: "admin_verified_on_chain",
     verifiedAmountCents: amountCents ?? confirmed.amount_cents,
-    verifiedNetwork:    network ?? confirmed.network,
-    verifiedTxHash:     txHash,
+    verifiedNetwork: network ?? confirmed.network,
+    verifiedTxHash: txHash,
   });
 
   // Also update the legacy text columns (for backward compatibility)
   await admin
     .from("pending_payments")
     .update({
-      status:        "confirmed",
-      confirmed_at:   new Date().toISOString(),
-      tx_hash:       txHash,
-      account_id:    `ACC-${Math.floor(100000 + Math.random() * 900000)}`,
+      status: "confirmed",
+      confirmed_at: new Date().toISOString(),
+      tx_hash: txHash,
+      account_id: `ACC-${Math.floor(100000 + Math.random() * 900000)}`,
     })
     .eq("id", confirmed.id);
 
@@ -222,7 +223,7 @@ serve(async (req) => {
   // -------------------------------------------------------------------------
   const activation = await activateServiceForPayment(
     admin,
-    confirmed as any,
+    confirmed,
     "admin",
     "crypto",
     `confirm:${txHash}:activated`,
@@ -233,12 +234,13 @@ serve(async (req) => {
   // -------------------------------------------------------------------------
   await logPaymentEvent(admin, {
     paymentId: confirmed.id,
-    actor:     "admin",
-    source:    "crypto",
-    eventId:    `confirm:${txHash}:admin_action`,
+    actor: "admin",
+    source: "crypto",
+    eventId: `confirm:${txHash}:admin_action`,
     previousStatus: currentStatus,
     newStatus: "confirmed",
-    reason:    `admin confirmed payment: tx=${txHash}, activated=${activation.activated}`,
+    reason:
+      `admin confirmed payment: tx=${txHash}, activated=${activation.activated}`,
   });
 
   // -------------------------------------------------------------------------
@@ -262,14 +264,15 @@ serve(async (req) => {
           Authorization: `Bearer ${resendApiKey}`,
         },
         body: JSON.stringify({
-          from:    "Braxel Markets <noreply@braxelmarkets.com>",
-          to:      userEmail,
+          from: "Braxel Markets <noreply@braxelmarkets.com>",
+          to: userEmail,
           subject: "Payment Confirmed — Braxel Markets",
-          html:    `<p>Your crypto payment has been confirmed. Your trading account is now active.</p>`,
-          text:    "Your crypto payment has been confirmed. Your trading account is now active.",
+          html:
+            `<p>Your crypto payment has been confirmed. Your trading account is now active.</p>`,
+          text:
+            "Your crypto payment has been confirmed. Your trading account is now active.",
         }),
       }).catch((e) =>
-        // eslint-disable-next-line no-console
         console.error("[crypto-confirmation] email send failed:", e)
       );
     }
@@ -277,12 +280,12 @@ serve(async (req) => {
 
   return new Response(
     JSON.stringify({
-      ok:          true,
-      paymentId:   confirmed.id,
-      status:      confirmed.status_enum,
-      activated:   activation.activated,
-      serviceId:   activation.serviceId,
-      reason:      activation.reason,
+      ok: true,
+      paymentId: confirmed.id,
+      status: confirmed.status_enum,
+      activated: activation.activated,
+      serviceId: activation.serviceId,
+      reason: activation.reason,
     }),
     {
       status: 200,
