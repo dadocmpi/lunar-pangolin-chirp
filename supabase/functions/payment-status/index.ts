@@ -57,7 +57,10 @@ serve(async (req) => {
           updated_at: new Date().toISOString(),
         },
       }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 
@@ -78,7 +81,9 @@ serve(async (req) => {
     Deno.env.get("SUPABASE_ANON_KEY") ?? "",
     { global: { headers: { Authorization: auth } } },
   );
-  const { data: userData, error: authErr } = await userClient.auth.getUser(token);
+  const { data: userData, error: authErr } = await userClient.auth.getUser(
+    token,
+  );
   if (authErr || !userData?.user) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
@@ -119,16 +124,21 @@ serve(async (req) => {
 
   const { data, error } = await admin
     .from("pending_payments")
-    .select("id, status, status_enum, plan_id, plan_name, amount_cents, currency, network, method, user_id, created_at, updated_at, metadata")
+    .select(
+      "id, status, status_enum, plan_id, plan_name, amount_cents, currency, network, method, user_id, created_at, updated_at, metadata",
+    )
     .eq("id", paymentId)
     .eq("user_id", user.id)
     .maybeSingle();
 
   if (error) {
-    return new Response(JSON.stringify({ error: "db_error", message: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "db_error", message: error.message }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
   if (!data) {
     return new Response(JSON.stringify({ error: "payment_not_found" }), {
@@ -171,6 +181,9 @@ serve(async (req) => {
         updated_at: data.updated_at,
       },
     }),
-    { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
   );
 });

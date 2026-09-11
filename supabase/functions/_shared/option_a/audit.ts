@@ -31,25 +31,26 @@ export async function logPaymentEvent(
 ): Promise<void> {
   try {
     const { error } = await client.rpc("log_payment_event", {
-      p_payment_table:    "pending_payments",
-      p_payment_id:       ev.paymentId,
-      p_actor:           ev.actor,
-      p_source:          ev.source,
-      p_event_id:        ev.eventId,
+      p_payment_table: "pending_payments",
+      p_payment_id: ev.paymentId,
+      p_actor: ev.actor,
+      p_source: ev.source,
+      p_event_id: ev.eventId,
       p_previous_status: ev.previousStatus,
-      p_new_status:      ev.newStatus,
-      p_reason:          ev.reason.slice(0, 200),
+      p_new_status: ev.newStatus,
+      p_reason: ev.reason.slice(0, 200),
     });
 
     if (error) {
-      // eslint-disable-next-line no-console
       console.error("[audit] log_payment_event failed", {
         paymentId: ev.paymentId,
         error: error.message,
       });
     }
   } catch (err) {
-    // eslint-disable-next-line no-console
-    console.error("[audit] log_payment_event exception", { paymentId: ev.paymentId, err });
+    console.error("[audit] log_payment_event exception", {
+      paymentId: ev.paymentId,
+      err,
+    });
   }
 }

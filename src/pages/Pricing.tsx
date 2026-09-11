@@ -94,7 +94,12 @@ const Pricing = () => {
     }
   };
 
-  const handleSelectPlan = (plan: any) => {
+  const handleSelectPlan = (plan: {
+    id: string;
+    name: string;
+    price: string;
+    priceUSD: number;
+  }) => {
     navigate('/checkout', { state: { plan } });
   };
 

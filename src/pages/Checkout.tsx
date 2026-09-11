@@ -23,6 +23,18 @@ import { CheckoutStatusBadge } from "@/components/CheckoutStatusBadge";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
 
+export type CheckoutPaymentStatus =
+  | "created"
+  | "pending"
+  | "processing"
+  | "confirmed"
+  | "failed"
+  | "rejected"
+  | "refunded"
+  | "disputed"
+  | "canceled"
+  | "pending_manual";
+
 interface CheckoutResponse {
   ok: boolean;
   mode?: string;
@@ -30,7 +42,7 @@ interface CheckoutResponse {
   test_mode?: boolean;
   payment: {
     id: string;
-    status: string;
+    status: CheckoutPaymentStatus;
     plan_id: string;
     plan_name: string;
     amount_cents: number;
@@ -51,6 +63,16 @@ interface CheckoutResponse {
   warnings?: string[];
   url?: string; // For Stripe checkout
   pending_payment_id?: string; // For Stripe checkout
+}
+
+interface ApplicationRecord {
+  id: string;
+  user_id: string;
+  plan_key: string;
+  plan_name?: string | null;
+  status?: string | null;
+  amount_cents?: number | null;
+  currency?: string | null;
 }
 
 const CRYPTO_NETWORKS = [
@@ -74,7 +96,7 @@ const Checkout = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; email?: string | null } | null>(null);
   const [showCrypto, setShowCrypto] = useState(false);
   const [showWise, setShowWise] = useState(false);
   const [showStripe, setShowStripe] = useState(false);
@@ -85,7 +107,7 @@ const Checkout = () => {
   const [stripeResponse, setStripeResponse] = useState<CheckoutResponse | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
-  const [application, setApplication] = useState<any>(null); // Application data
+  const [application, setApplication] = useState<ApplicationRecord | null>(null); // Application data
 
   const selectedCryptoIdRef = useRef<string>("BTC");
   const wiseKeyRef = useRef<string | null>(null);
@@ -113,7 +135,7 @@ const Checkout = () => {
     const checkUserAndApplication = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       setUser(authUser);
-      
+
       // Fetch the application data to verify ownership and get plan details
       const { data: appData, error: appError } = await supabase
         .from("applications")
@@ -234,8 +256,8 @@ const Checkout = () => {
       });
       setWiseResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
-    } catch (e: any) {
-      setSubmitError(String(e?.message ?? e));
+    } catch (e: unknown) {
+      setSubmitError(e instanceof Error ? e.message : String(e));
     } finally {
       setProcessing(false);
     }
@@ -255,8 +277,8 @@ const Checkout = () => {
       });
       setCryptoResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
-    } catch (e: any) {
-      setSubmitError(String(e?.message ?? e));
+    } catch (e: unknown) {
+      setSubmitError(e instanceof Error ? e.message : String(e));
     } finally {
       setProcessing(false);
     }
@@ -281,8 +303,8 @@ const Checkout = () => {
       if (res.url) {
         window.location.href = res.url;
       }
-    } catch (e: any) {
-      setSubmitError(String(e?.message ?? e));
+    } catch (e: unknown) {
+      setSubmitError(e instanceof Error ? e.message : String(e));
     } finally {
       setProcessing(false);
     }
@@ -443,7 +465,7 @@ const Checkout = () => {
                   <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">
                     Payment Status
                   </p>
-                  <CheckoutStatusBadge status={serverStatus.status as any} />
+                  <CheckoutStatusBadge status={serverStatus.status} />
                   <p className="text-[9px] text-slate-500">ID: {paymentId}</p>
                 </div>
               )}
@@ -646,7 +668,7 @@ function WiseAwaitingView({ response }: { response: CheckoutResponse }) {
     <div className="space-y-4">
       {response.payment && (
         <CheckoutStatusBadge
-          status={(response.payment.status as any) ?? "pending_manual"}
+          status={(response.payment.status ?? "pending_manual")}
         />
       )}
       {response.warnings?.map((w, i) => (
@@ -672,7 +694,7 @@ function CryptoAwaitingView({ response }: { response: CheckoutResponse }) {
   return (
     <div className="space-y-4">
       {response.payment && (
-        <CheckoutStatusBadge status={(response.payment.status as any) ?? "pending"} />
+        <CheckoutStatusBadge status={(response.payment.status ?? "pending")} />
       )}
       {response.warnings?.map((w, i) => (
         <p key={i} className="text-[10px] text-yellow-300">

@@ -4,7 +4,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 
 const COMPANY_EMAIL = "marketsbraxel@ouvidor.net";
-const SUPABASE_FUNCTIONS_URL = "https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1";
+const SUPABASE_FUNCTIONS_URL =
+  "https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1";
 const KYC_ACTION_SECRET = Deno.env.get("KYC_ACTION_SECRET");
 if (!KYC_ACTION_SECRET) {
   throw new Error("KYC_ACTION_SECRET environment variable is not set");
@@ -26,7 +27,11 @@ function generateToken(userId: string, action: string): string {
 
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
@@ -71,20 +76,33 @@ function getDocumentName(docId: string): string {
 
 function getCountryName(code: string): string {
   const countries: Record<string, string> = {
-    BR: "Brazil", US: "United States", GB: "United Kingdom",
-    DE: "Germany", FR: "France", ES: "Spain", IT: "Italy",
-    PT: "Portugal", RU: "Russia", CN: "China", JP: "Japan",
-    IN: "India", OTHER: "Other Countries",
+    BR: "Brazil",
+    US: "United States",
+    GB: "United Kingdom",
+    DE: "Germany",
+    FR: "France",
+    ES: "Spain",
+    IT: "Italy",
+    PT: "Portugal",
+    RU: "Russia",
+    CN: "China",
+    JP: "Japan",
+    IN: "India",
+    OTHER: "Other Countries",
   };
   return countries[code] || code;
 }
 
 function getMethodName(id: string): string {
   const methods: Record<string, string> = {
-    id_card: "National ID Card", passport: "Passport",
-    drivers_license: "Driver's License", biometric: "Biometric Residence Permit",
-    residence: "Residence Permit", foreign_passport: "Foreign Passport",
-    national_id: "National ID Card", drivers: "Driver's License",
+    id_card: "National ID Card",
+    passport: "Passport",
+    drivers_license: "Driver's License",
+    biometric: "Biometric Residence Permit",
+    residence: "Residence Permit",
+    foreign_passport: "Foreign Passport",
+    national_id: "National ID Card",
+    drivers: "Driver's License",
   };
   return methods[id] || id;
 }
@@ -92,7 +110,8 @@ function getMethodName(id: string): string {
 serve(async (req) => {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405, headers: { "Content-Type": "application/json" },
+      status: 405,
+      headers: { "Content-Type": "application/json" },
     });
   }
 
@@ -100,9 +119,13 @@ serve(async (req) => {
     const payload: KYCNotificationPayload = await req.json();
 
     if (!payload.userId || !payload.email) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
-        status: 400, headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
 
     const countryName = getCountryName(payload.country);
@@ -110,8 +133,16 @@ serve(async (req) => {
     const documentName = getDocumentName(payload.documentType);
     const fullName = payload.fullName?.trim() || "N/A";
 
-    const approveUrl = `${SUPABASE_FUNCTIONS_URL}/kyc-action?userId=${encodeURIComponent(payload.userId)}&action=approve&token=${encodeURIComponent(generateToken(payload.userId, "approve"))}`;
-    const denyUrl = `${SUPABASE_FUNCTIONS_URL}/kyc-action?userId=${encodeURIComponent(payload.userId)}&action=deny&token=${encodeURIComponent(generateToken(payload.userId, "deny"))}`;
+    const approveUrl = `${SUPABASE_FUNCTIONS_URL}/kyc-action?userId=${
+      encodeURIComponent(payload.userId)
+    }&action=approve&token=${
+      encodeURIComponent(generateToken(payload.userId, "approve"))
+    }`;
+    const denyUrl = `${SUPABASE_FUNCTIONS_URL}/kyc-action?userId=${
+      encodeURIComponent(payload.userId)
+    }&action=deny&token=${
+      encodeURIComponent(generateToken(payload.userId, "deny"))
+    }`;
 
     const isImage = payload.documentUrl &&
       /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(payload.documentUrl);
@@ -149,22 +180,43 @@ serve(async (req) => {
     <p>New KYC submission requires your review</p>
   </div>
   <div class="body">
-    <div class="field"><div class="label">Full Name</div><div class="value">${escapeHtml(fullName)}</div></div>
-    <div class="field"><div class="label">User ID</div><div class="value">${escapeHtml(payload.userId)}</div></div>
-    <div class="field"><div class="label">Email Address</div><div class="value">${escapeHtml(payload.email)}</div></div>
-    <div class="field"><div class="label">Country</div><div class="value">${escapeHtml(countryName)}</div></div>
-    <div class="field"><div class="label">Verification Method</div><div class="value">${escapeHtml(methodName)}</div></div>
-    <div class="field"><div class="label">Document Type</div><div class="value">${escapeHtml(documentName)}</div></div>
+    <div class="field"><div class="label">Full Name</div><div class="value">${
+      escapeHtml(fullName)
+    }</div></div>
+    <div class="field"><div class="label">User ID</div><div class="value">${
+      escapeHtml(payload.userId)
+    }</div></div>
+    <div class="field"><div class="label">Email Address</div><div class="value">${
+      escapeHtml(payload.email)
+    }</div></div>
+    <div class="field"><div class="label">Country</div><div class="value">${
+      escapeHtml(countryName)
+    }</div></div>
+    <div class="field"><div class="label">Verification Method</div><div class="value">${
+      escapeHtml(methodName)
+    }</div></div>
+    <div class="field"><div class="label">Document Type</div><div class="value">${
+      escapeHtml(documentName)
+    }</div></div>
 
-    ${payload.documentUrl ? `
+    ${
+      payload.documentUrl
+        ? `
     <div class="doc-section">
       <div class="label">Submitted Document Photo</div>
-      ${isImage
-        ? `<img src="${escapeHtml(payload.documentUrl)}" alt="Identity Document" />`
-        : `<a href="${escapeHtml(payload.documentUrl)}" class="doc-link" target="_blank">📄 Open Document File</a>`
-      }
+      ${
+          isImage
+            ? `<img src="${
+              escapeHtml(payload.documentUrl)
+            }" alt="Identity Document" />`
+            : `<a href="${
+              escapeHtml(payload.documentUrl)
+            }" class="doc-link" target="_blank">📄 Open Document File</a>`
+        }
     </div>
-    ` : ""}
+    `
+        : ""
+    }
   </div>
 
   <div class="actions">
@@ -221,22 +273,40 @@ DENY:    ${denyUrl}`;
       }
 
       const result = await res.json();
-      return new Response(JSON.stringify({ success: true, emailId: result.id }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ success: true, emailId: result.id }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     } else {
       console.log("KYC NOTIFICATION (Resend not configured):", {
-        to: COMPANY_EMAIL, userId: payload.userId, email: payload.email,
-        approveUrl, denyUrl,
+        to: COMPANY_EMAIL,
+        userId: payload.userId,
+        email: payload.email,
+        approveUrl,
+        denyUrl,
       });
-      return new Response(JSON.stringify({ success: true, message: "Logged — configure RESEND_API_KEY to send emails" }), {
-        status: 200, headers: { "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: "Logged — configure RESEND_API_KEY to send emails",
+        }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
   } catch (error) {
     console.error("KYC notification error:", error);
-    return new Response(JSON.stringify({ error: "Failed to send notification" }), {
-      status: 500, headers: { "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Failed to send notification" }),
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      },
+    );
   }
 });

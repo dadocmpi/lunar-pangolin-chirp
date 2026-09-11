@@ -1,13 +1,16 @@
-import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
-  PAYMENT_STATUSES,
-  PaymentStatus,
-  PlanId,
-  SupportedCurrency,
+  createClient,
+  SupabaseClient,
+} from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import {
   canTransition,
   getCryptoNetwork,
   getPlan,
   isSupportedCurrency,
+  PAYMENT_STATUSES,
+  PaymentStatus,
+  PlanId,
+  SupportedCurrency,
 } from "./plans.ts";
 import { logPaymentEvent } from "./audit.ts";
 
@@ -51,7 +54,12 @@ export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
   }
 
   // Plan — must resolve from the canonical table.
-  const plan = getPlan(input.planId);
+  let plan: ReturnType<typeof getPlan>;
+  try {
+    plan = getPlan(input.planId);
+  } catch {
+    throw new PaymentError("invalid_plan_id");
+  }
 
   // Currency — only USD is supported at this stage.
   if (!isSupportedCurrency(input.clientCurrency)) {
@@ -65,7 +73,9 @@ export function validateCheckoutInput(input: CheckoutInput): ValidatedRequest {
   }
 
   // Idempotency — required, must be a non-empty string, capped length.
-  if (typeof input.idempotencyKey !== "string" || input.idempotencyKey.length < 8) {
+  if (
+    typeof input.idempotencyKey !== "string" || input.idempotencyKey.length < 8
+  ) {
     throw new PaymentError("idempotency_key_required");
   }
   if (input.idempotencyKey.length > 200) {
@@ -265,12 +275,18 @@ export async function activateServiceForPayment(
   eventId: string,
 ): Promise<{ activated: boolean; serviceId: string | null; reason: string }> {
   if (payment.status !== "confirmed") {
-    return { activated: false, serviceId: null, reason: "payment_not_confirmed" };
+    return {
+      activated: false,
+      serviceId: null,
+      reason: "payment_not_confirmed",
+    };
   }
 
   // Idempotency: a unique partial index on (user_id, plan_id) WHERE
   // activated = true means we can attempt the insert safely.
-  const accountId = `TEST-${payment.plan_id.toUpperCase()}-${payment.id.slice(0, 8)}`;
+  const accountId = `TEST-${payment.plan_id.toUpperCase()}-${
+    payment.id.slice(0, 8)
+  }`;
 
   const { data, error } = await client
     .from("services")

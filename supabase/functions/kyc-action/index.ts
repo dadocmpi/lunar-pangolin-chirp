@@ -8,7 +8,7 @@ const corsHeaders = {
 };
 
 const APPROVE_STATUS = "approved";
-const DENY_STATUS    = "rejected";
+const DENY_STATUS = "rejected";
 
 /**
  * Read KYC_ACTION_SECRET from the Edge Function env.
@@ -41,12 +41,18 @@ function timingSafeEqual(a: string, b: string): boolean {
 function escapeHtml(s: string): string {
   return s.replace(/[&<>"']/g, (c) => {
     switch (c) {
-      case "&": return "&";
-      case "<": return "<";
-      case ">": return ">";
-      case '"': return "&quot;";
-      case "'": return "&#39;";
-      default:  return c;
+      case "&":
+        return "&";
+      case "<":
+        return "<";
+      case ">":
+        return ">";
+      case '"':
+        return "&quot;";
+      case "'":
+        return "&#39;";
+      default:
+        return c;
     }
   });
 }
@@ -107,7 +113,7 @@ serve(async (req) => {
   let secret: string;
   try {
     secret = getKycActionSecret();
-  } catch (err) {
+  } catch (_err) {
     return htmlResponse(
       "Server misconfigured",
       `KYC_ACTION_SECRET is not set in the Edge Function environment. No row was modified.`,
@@ -118,7 +124,7 @@ serve(async (req) => {
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");
   const action = url.searchParams.get("action");
-  const token  = url.searchParams.get("token");
+  const token = url.searchParams.get("token");
 
   if (!userId || !action || !token) {
     return htmlResponse(
@@ -145,7 +151,7 @@ serve(async (req) => {
   }
 
   const url_ = Deno.env.get("SUPABASE_URL");
-  const key  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url_ || !key) {
     return htmlResponse(
       "Server misconfigured",
@@ -168,7 +174,9 @@ serve(async (req) => {
   if (error) {
     return htmlResponse(
       "Update failed",
-      `The database rejected the update: <code>${escapeHtml(error.message)}</code>`,
+      `The database rejected the update: <code>${
+        escapeHtml(error.message)
+      }</code>`,
       500,
     );
   }
@@ -183,7 +191,13 @@ serve(async (req) => {
   const verb = action === "approve" ? "approved" : "rejected";
   return htmlResponse(
     `KYC ${verb}`,
-    `KYC verification <span class="${action === "approve" ? "ok" : "bad"}">${verb}</span> for user <code>${escapeHtml(userId)}</code>. Status is now <code>${escapeHtml(String(data.kyc_status))}</code>.`,
+    `KYC verification <span class="${
+      action === "approve" ? "ok" : "bad"
+    }">${verb}</span> for user <code>${
+      escapeHtml(userId)
+    }</code>. Status is now <code>${
+      escapeHtml(String(data.kyc_status))
+    }</code>.`,
     200,
   );
 });

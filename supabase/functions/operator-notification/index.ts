@@ -26,7 +26,7 @@ serve(async (req) => {
       {
         status: 503,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -55,7 +55,6 @@ serve(async (req) => {
 
   const {
     paymentId,
-    userId,
     plan,
     amount,
     currency,
@@ -76,7 +75,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -86,7 +85,9 @@ serve(async (req) => {
     : `${supabaseUrl}/operator-dashboard`;
 
   // Prepare email content — deliberately omits full residential address from the email body.
-  const subject = `Payment Confirmed — Activation Required (${plan ?? "unknown plan"})`;
+  const subject = `Payment Confirmed — Activation Required (${
+    plan ?? "unknown plan"
+  })`;
   const text = `
 A new payment has been confirmed and is awaiting manual account activation.
 
@@ -96,7 +97,11 @@ ${dashboardUrl}
 Payment Details:
 - Payment ID: ${paymentId}
 - Plan: ${plan ?? "unknown"}
-- Amount: ${amount != null ? `${(amount / 100).toFixed(2)} ${(currency ?? "usd").toUpperCase()}` : "unknown"}
+- Amount: ${
+    amount != null
+      ? `${(amount / 100).toFixed(2)} ${(currency ?? "usd").toUpperCase()}`
+      : "unknown"
+  }
 - Method: ${method ?? "unknown"}
 - Confirmation Timestamp: ${confirmationTimestamp}
 
@@ -118,7 +123,11 @@ Please review the application and activate the account via the operator dashboar
 <ul>
   <li><strong>Payment ID:</strong> ${paymentId}</li>
   <li><strong>Plan:</strong> ${plan ?? "unknown"}</li>
-  <li><strong>Amount:</strong> ${amount != null ? `${(amount / 100).toFixed(2)} ${(currency ?? "usd").toUpperCase()}` : "unknown"}</li>
+  <li><strong>Amount:</strong> ${
+    amount != null
+      ? `${(amount / 100).toFixed(2)} ${(currency ?? "usd").toUpperCase()}`
+      : "unknown"
+  }</li>
   <li><strong>Method:</strong> ${method ?? "unknown"}</li>
   <li><strong>Confirmed at:</strong> ${confirmationTimestamp}</li>
 </ul>
@@ -154,22 +163,31 @@ Please review the application and activate the account via the operator dashboar
     if (!emailRes.ok) {
       const errorText = await emailRes.text();
       console.error("Send-email function error:", errorText);
-      return new Response(JSON.stringify({ error: "Failed to send notification" }), {
-        status: 502,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return new Response(
+        JSON.stringify({ error: "Failed to send notification" }),
+        {
+          status: 502,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
     const emailResult = await emailRes.json();
-    return new Response(JSON.stringify({ success: true, emailId: emailResult.id }), {
-      status: 200,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ success: true, emailId: emailResult.id }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   } catch (err) {
     console.error("Failed to call send-email function:", err);
-    return new Response(JSON.stringify({ error: "Failed to send notification" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Failed to send notification" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 });

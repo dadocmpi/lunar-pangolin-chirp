@@ -1,11 +1,10 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
-  PaymentError,
-  validateCheckoutInput,
-  upsertPendingPayment,
-  transitionPayment,
   makeServiceClient,
+  PaymentError,
+  transitionPayment,
+  upsertPendingPayment,
+  validateCheckoutInput,
 } from "../_shared/option_a/payments.ts";
 import { getPlan, TEST_PLACEHOLDER_BANK } from "../_shared/option_a/plans.ts";
 
@@ -52,7 +51,11 @@ serve(async (req) => {
   // -------------------------------------------------------------------------
   const testMode = Deno.env.get("TEST_PAYMENT_MODE") === "true";
   if (!testMode) {
-    return safeTestResponse(null, TEST_PLACEHOLDER_BANK, "TEST_PAYMENT_MODE is not 'true'");
+    return safeTestResponse(
+      null,
+      TEST_PLACEHOLDER_BANK,
+      "TEST_PAYMENT_MODE is not 'true'",
+    );
   }
 
   // -------------------------------------------------------------------------
@@ -151,7 +154,11 @@ serve(async (req) => {
   return safeTestResponse(final, TEST_PLACEHOLDER_BANK, null);
 });
 
-function safeTestResponse(payment: unknown, bank: string, reason: string | null) {
+function safeTestResponse(
+  payment: unknown,
+  bank: string,
+  reason: string | null,
+) {
   const body: Record<string, unknown> = {
     ok: true,
     mode: "test",

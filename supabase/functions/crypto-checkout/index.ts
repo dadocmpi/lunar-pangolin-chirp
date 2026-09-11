@@ -1,12 +1,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
-  PaymentError,
-  validateCheckoutInput,
-  upsertPendingPayment,
   makeServiceClient,
+  PaymentError,
+  upsertPendingPayment,
+  validateCheckoutInput,
 } from "../_shared/option_a/payments.ts";
-import { getPlan, getCryptoNetwork, TEST_PLACEHOLDER_WALLET } from "../_shared/option_a/plans.ts";
+import { getPlan, TEST_PLACEHOLDER_WALLET } from "../_shared/option_a/plans.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -52,7 +51,11 @@ serve(async (req) => {
   // -------------------------------------------------------------------------
   const testMode = Deno.env.get("TEST_PAYMENT_MODE") === "true";
   if (!testMode) {
-    return safeTestResponse(null, TEST_PLACEHOLDER_WALLET, "TEST_PAYMENT_MODE is not 'true'");
+    return safeTestResponse(
+      null,
+      TEST_PLACEHOLDER_WALLET,
+      "TEST_PAYMENT_MODE is not 'true'",
+    );
   }
 
   // -------------------------------------------------------------------------
@@ -123,7 +126,7 @@ serve(async (req) => {
   const plan = getPlan(validated.planId);
   const networkId = validated.network?.id ?? null;
 
-  const { payment, created } = await upsertPendingPayment(admin, {
+  const { payment } = await upsertPendingPayment(admin, {
     userId: validated.userId,
     planId: validated.planId,
     planName: plan.name,
@@ -138,7 +141,11 @@ serve(async (req) => {
   return safeTestResponse(payment, TEST_PLACEHOLDER_WALLET, null);
 });
 
-function safeTestResponse(payment: unknown, wallet: string, reason: string | null) {
+function safeTestResponse(
+  payment: unknown,
+  wallet: string,
+  reason: string | null,
+) {
   const body: Record<string, unknown> = {
     ok: true,
     mode: "test",

@@ -26,7 +26,7 @@ const CheckoutSuccess = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string; email?: string | null } | null>(null);
   const [loading, setLoading] = useState(true);
   const [pendingPaymentId, setPendingPaymentId] = useState<string | null>(null);
   const [applicationId, setApplicationId] = useState<string | null>(null);
@@ -78,8 +78,14 @@ const CheckoutSuccess = () => {
 
       // Prefer an exact match on session_id in metadata; fall back to the most
       // recent stripe pending payment for this user. We never trust the URL.
-      const matched = (rows ?? []).find((r: any) => {
-        const meta = (r?.metadata as Record<string, any>) || {};
+      type PendingPaymentRow = {
+        id: string;
+        metadata: Record<string, unknown> | null;
+        status?: string | null;
+        status_enum?: string | null;
+      };
+      const matched = (rows ?? [] as PendingPaymentRow[]).find((r) => {
+        const meta = r?.metadata ?? {};
         return meta.stripe_session_id === sessionId;
       });
       const chosen = matched ?? (rows ?? [])[0] ?? null;
@@ -91,8 +97,8 @@ const CheckoutSuccess = () => {
       }
 
       setPendingPaymentId(chosen.id);
-      const meta = (chosen.metadata as Record<string, any>) || {};
-      setApplicationId(meta.application_id ?? null);
+      const meta = chosen.metadata ?? {};
+      setApplicationId(typeof meta.application_id === "string" ? meta.application_id : null);
       setLoading(false);
     };
 
@@ -155,8 +161,11 @@ const CheckoutSuccess = () => {
   }
 
   // The server is the source of truth. We never mark "completed" on URL alone.
-  const isServerConfirmed = serverStatus?.status === "confirmed" ||
-    serverStatus?.status === "payment_confirmed";
+
+ // The webhook writes the canonical "confirmed" status. In test mode the
+ // payment-status function returns "confirmed" once the server verified the
+ // Stripe event; "payment_confirmed" was a legacy value and is not emitted.
+  const isServerConfirmed = serverStatus?.status === "confirmed";
 
   if (isServerConfirmed) {
     return (

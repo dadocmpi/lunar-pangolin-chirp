@@ -2,14 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/router'; // Note: We are using react-router-dom, not next/router. We'll adjust.
-
-// Since we are using react-router-dom, we'll use useNavigate
 import { useNavigate } from 'react-router-dom';
 
+export interface PlanInfo {
+  id: string; // plan key (starter|professional|business|enterprise)
+  name: string;
+  price: number;
+  priceUSD?: number;
+  accountSize?: string;
+  iconType?: string;
+  features?: readonly string[];
+  popular?: boolean;
+}
+
 interface ApplicationFormProps {
-  onSubmit: (applicationData: any) => Promise<void>;
-  plan: any; // The plan object from location.state
+  onSubmit: (applicationData: Record<string, unknown>) => Promise<void>;
+  plan: PlanInfo | null; // The plan object from location.state
 }
 
 const ApplicationForm = ({ onSubmit, plan }: ApplicationFormProps) => {
@@ -90,10 +98,10 @@ const ApplicationForm = ({ onSubmit, plan }: ApplicationFormProps) => {
       try {
         await onSubmit({
           ...formData,
-          plan_key: plan.id, // Assuming plan.id is the plan key (e.g., 'starter')
-          // We'll also include the plan name and price for reference, but the server should use the plan_key to look up the canonical plan
+          plan_key: plan.id, // key that maps to a server-side Stripe Price ID
+          // The server uses plan_key to look up the canonical plan. Include the
+          // name for reference only — never trust the price from the browser.
           plan_name: plan.name,
-          plan_price_eur: plan.priceEUR, // We'll add this to the plan object in the Checkout page
         });
         // On success, navigate to checkout with the application ID in state
         // The onSubmit function should return the application ID
@@ -105,11 +113,11 @@ const ApplicationForm = ({ onSubmit, plan }: ApplicationFormProps) => {
         // We'll pass a navigate function to the onSubmit? Or we can have the onSubmit return the app ID and then navigate here.
         // Let's change the onSubmit to return a promise that resolves to the application ID.
         // We'll adjust the call below.
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Handle error (e.g., show toast)
         console.error('Application submission failed:', err);
         // We'll set a general error
-        setErrors({ submit: t('application.errors.submit_failed') });
+        setErrors({ submit: err instanceof Error ? err.message : t('application.errors.submit_failed') });
       } finally {
         setSubmitting(false);
       }

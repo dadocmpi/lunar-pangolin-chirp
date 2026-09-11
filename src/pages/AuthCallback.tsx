@@ -16,7 +16,7 @@ const AuthCallback = () => {
         // Get the code from URL params (OAuth flow)
         const code = searchParams.get('code');
         const error = searchParams.get('error');
-        
+
         if (error) {
           setStatus('error');
           setErrorMessage(decodeURIComponent(error));
@@ -26,9 +26,9 @@ const AuthCallback = () => {
         if (code) {
           // Exchange the code for a session
           const { data, error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
-          
+
           if (sessionError) throw sessionError;
-          
+
           if (data.user) {
             setStatus('success');
             // Redirect to login after successful confirmation
@@ -45,15 +45,15 @@ const AuthCallback = () => {
           const params = new URLSearchParams(hash.substring(1)); // Remove #
           const accessToken = params.get('access_token');
           const refreshToken = params.get('refresh_token');
-          
+
           if (accessToken && refreshToken) {
             const { data, error: sessionError } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
             });
-            
+
             if (sessionError) throw sessionError;
-            
+
             if (data.user) {
               setStatus('success');
               setTimeout(() => {
@@ -67,10 +67,10 @@ const AuthCallback = () => {
         // No valid session found
         setStatus('error');
         setErrorMessage('Invalid or expired confirmation link');
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Auth callback error:', error);
         setStatus('error');
-        setErrorMessage(error.message || 'Failed to confirm email');
+        setErrorMessage(error instanceof Error ? error.message : 'Failed to confirm email');
       }
     };
 
@@ -87,7 +87,7 @@ const AuthCallback = () => {
             <p className="text-slate-400">Please wait while we verify your email.</p>
           </>
         )}
-        
+
         {status === 'success' && (
           <>
             <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -100,7 +100,7 @@ const AuthCallback = () => {
             <p className="text-[#C5A059] text-sm">Redirecting to login...</p>
           </>
         )}
-        
+
         {status === 'error' && (
           <>
             <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -110,7 +110,7 @@ const AuthCallback = () => {
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Confirmation Failed</h2>
             <p className="text-slate-400 mb-4">{errorMessage}</p>
-            <button 
+            <button
               onClick={() => navigate('/login', { replace: true })}
               className="px-6 py-3 bg-[#C5A059] text-white font-bold text-sm uppercase tracking-wider rounded-none hover:bg-[#B08D48] transition-colors"
             >

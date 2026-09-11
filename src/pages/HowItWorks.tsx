@@ -12,8 +12,14 @@ import MarketTicker from '@/components/MarketTicker';
 const HowItWorks = () => {
   const { t } = useTranslation();
   const icons = [<UserPlus size={32} />, <Layout size={32} />, <CreditCard size={32} />, <Key size={32} />, <ArrowDownCircle size={32} />, <Mail size={32} />];
-  
-  const steps = (t('howItWorks.steps', { returnObjects: true }) as any[]).map((step, i) => ({
+
+  interface HowItWorksStep {
+  title: string;
+  desc: string;
+  icon?: React.ReactNode;
+}
+
+const steps: HowItWorksStep[] = (t('howItWorks.steps', { returnObjects: true }) as unknown as HowItWorksStep[]).map((step, i) => ({
     ...step,
     icon: icons[i]
   }));
@@ -22,7 +28,7 @@ const HowItWorks = () => {
     <div className="min-h-screen bg-black text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
       <MarketTicker />
-      
+
       <section className="relative pt-[160px] pb-20 border-b border-white/5 bg-[linear-gradient(135deg,#000000_0%,#0a0e27_100%)]">
         <div className="container mx-auto px-8">
           <div className="max-w-3xl animate-fadeInUp">

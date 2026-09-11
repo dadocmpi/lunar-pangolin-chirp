@@ -1,10 +1,8 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
-  PaymentError,
   makeServiceClient,
+  PaymentError,
   transitionPayment,
-  readPendingPaymentForUser,
 } from "../_shared/option_a/payments.ts";
 import { getPlan, type PaymentStatus } from "../_shared/option_a/plans.ts";
 import { logPaymentEvent } from "../_shared/option_a/audit.ts";
@@ -55,7 +53,10 @@ serve(async (req) => {
         error: "test_mode_disabled",
         message: "TEST_PAYMENT_MODE is not 'true'. This endpoint is test-only.",
       }),
-      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 
@@ -67,9 +68,13 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         error: "server_misconfigured",
-        message: "TEST_CONFIRM_SECRET is not set. ADMIN_SECRET is never used as a fallback.",
+        message:
+          "TEST_CONFIRM_SECRET is not set. ADMIN_SECRET is never used as a fallback.",
       }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 
@@ -81,26 +86,39 @@ serve(async (req) => {
     body = await req.json();
   } catch {
     return new Response(JSON.stringify({ error: "invalid_json" }), {
-      status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
   const { paymentId, testSecret, action } = body;
   if (!paymentId || !testSecret || !action) {
     return new Response(
       JSON.stringify({ error: "missing_required_fields" }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
   if (action !== "confirm" && action !== "reject") {
     return new Response(
-      JSON.stringify({ error: "invalid_action", allowed: ["confirm", "reject"] }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({
+        error: "invalid_action",
+        allowed: ["confirm", "reject"],
+      }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
   if (testSecret !== testSecretValue) {
     return new Response(
       JSON.stringify({ error: "unauthorized" }),
-      { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 
@@ -117,46 +135,72 @@ serve(async (req) => {
   if (pErr || !payment) {
     return new Response(
       JSON.stringify({ error: "payment_not_found" }),
-      { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 
   // ---------------------------------------------------------------------
   // Gate 3 — must be a test payment
   // ---------------------------------------------------------------------
-  const isTest = (payment.metadata as Record<string, unknown> | null)?.is_test === true;
+  const isTest =
+    (payment.metadata as Record<string, unknown> | null)?.is_test === true;
   if (!isTest) {
     return new Response(
       JSON.stringify({
         error: "not_a_test_payment",
         message: "This payment is not flagged as a test payment.",
       }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 
-  const currentStatus: PaymentStatus = (payment.status_enum ?? "pending") as PaymentStatus;
+  const currentStatus: PaymentStatus =
+    (payment.status_enum ?? "pending") as PaymentStatus;
 
   // ---------------------------------------------------------------------
   // Idempotency
   // ---------------------------------------------------------------------
   if (currentStatus === "confirmed" && action === "confirm") {
     return new Response(
-      JSON.stringify({ ok: true, idempotent: true, status: "confirmed", paymentId }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({
+        ok: true,
+        idempotent: true,
+        status: "confirmed",
+        paymentId,
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
   if (currentStatus === "rejected" && action === "reject") {
     return new Response(
-      JSON.stringify({ ok: true, idempotent: true, status: "rejected", paymentId }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({
+        ok: true,
+        idempotent: true,
+        status: "rejected",
+        paymentId,
+      }),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 
   // ---------------------------------------------------------------------
   // Apply the transition
   // ---------------------------------------------------------------------
-  const newStatus: PaymentStatus = action === "confirm" ? "confirmed" : "rejected";
+  const newStatus: PaymentStatus = action === "confirm"
+    ? "confirmed"
+    : "rejected";
   const eventId = `test-confirm:${paymentId}:${action}`;
 
   let updated;
@@ -177,7 +221,7 @@ serve(async (req) => {
       });
     } else if (currentStatus === "pending") {
       // pending -> processing -> confirmed/rejected
-      let cur = await transitionPayment(admin, {
+      const first = await transitionPayment(admin, {
         paymentId: payment.id,
         previousStatus: "pending",
         newStatus: "processing",
@@ -187,7 +231,7 @@ serve(async (req) => {
         reason: `test_admin_${action}_started`,
       });
       updated = await transitionPayment(admin, {
-        paymentId: cur.id,
+        paymentId: first.id,
         previousStatus: "processing",
         newStatus,
         actor: "admin",
@@ -198,15 +242,25 @@ serve(async (req) => {
     } else {
       // Other states: blocked by the state machine in transitionPayment.
       return new Response(
-        JSON.stringify({ error: "invalid_transition", from: currentStatus, to: newStatus }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({
+          error: "invalid_transition",
+          from: currentStatus,
+          to: newStatus,
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
   } catch (err) {
     if (err instanceof PaymentError) {
       return new Response(
         JSON.stringify({ error: err.code, message: err.message }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
     throw err;
@@ -217,14 +271,20 @@ serve(async (req) => {
   // Idempotent via the unique partial index on (user_id, plan_id)
   // WHERE activated = true AND is_test = true.
   // ---------------------------------------------------------------------
-  let activation: { activated: boolean; serviceId: string | null; reason: string } = {
+  let activation: {
+    activated: boolean;
+    serviceId: string | null;
+    reason: string;
+  } = {
     activated: false,
     serviceId: null,
     reason: "not_confirmed",
   };
   if (action === "confirm" && updated.status_enum === "confirmed") {
     const plan = getPlan(updated.plan_id ?? "starter");
-    const accountId = `TEST-${updated.plan_id?.toString().toUpperCase().slice(0, 4) ?? "PLAN"}-${updated.id.slice(0, 8)}`;
+    const accountId = `TEST-${
+      updated.plan_id?.toString().toUpperCase().slice(0, 4) ?? "PLAN"
+    }-${updated.id.slice(0, 8)}`;
     const balance = (updated.amount_cents ?? 0) / 100;
 
     const { data: svc, error: svcErr } = await admin
@@ -246,9 +306,17 @@ serve(async (req) => {
 
     if (svcErr) {
       if (svcErr.code === "23505") {
-        activation = { activated: false, serviceId: null, reason: "already_activated" };
+        activation = {
+          activated: false,
+          serviceId: null,
+          reason: "already_activated",
+        };
       } else {
-        activation = { activated: false, serviceId: null, reason: `db_error:${svcErr.message}` };
+        activation = {
+          activated: false,
+          serviceId: null,
+          reason: `db_error:${svcErr.message}`,
+        };
       }
     } else {
       activation = { activated: true, serviceId: svc.id, reason: "ok" };
@@ -277,6 +345,9 @@ serve(async (req) => {
       action,
       activation,
     }),
-    { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
   );
 });

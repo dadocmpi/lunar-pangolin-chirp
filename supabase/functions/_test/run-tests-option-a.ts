@@ -18,23 +18,22 @@
 //   NOT EXECUTED = this session (all cases below)
 // ============================================================================
 
-import { assertEquals, assertThrows } from "https://deno.land/std@0.190.0/testing/asserts.ts";
 import {
+  assertEquals,
+  assertThrows,
+} from "https://deno.land/std@0.190.0/testing/asserts.ts";
+import {
+  canTransition,
+  CRYPTO_NETWORKS,
+  getCryptoNetwork,
+  isSupportedCurrency,
   PAYMENT_STATUSES,
   type PaymentStatus,
-  canTransition,
-  getPlan,
-  PLANS,
   PLAN_IDS,
-  CRYPTO_NETWORKS,
+  PLANS,
   TEST_PLACEHOLDER_WALLET,
-  isSupportedCurrency,
-  getCryptoNetwork,
 } from "../_shared/option_a/plans.ts";
-import {
-  PaymentError,
-  validateCheckoutInput,
-} from "../_shared/option_a/payments.ts";
+import { validateCheckoutInput } from "../_shared/option_a/payments.ts";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -72,7 +71,7 @@ await test("rejects unknown plan id as Error", () => {
   assertThrows(
     () =>
       validateCheckoutInput({
-        planId: "enterprise",
+        planId: "nonexistent-plan",
         clientCurrency: "USD",
         network: null,
         idempotencyKey: "abcdefgh",
@@ -100,7 +99,7 @@ await test("rejects unsupported currency", () => {
   assertThrows(
     () =>
       validateCheckoutInput({
-        planId: "pro",
+        planId: "professional",
         clientCurrency: "EUR",
         network: null,
         idempotencyKey: "abcdefgh",
@@ -112,15 +111,15 @@ await test("rejects unsupported currency", () => {
 
 await test("ignores client-supplied amount and re-derives from plan", () => {
   const v = validateCheckoutInput({
-    planId: "pro",
+    planId: "professional",
     clientAmountCents: 1, // would be 1 cent if trusted
     clientCurrency: "USD",
     network: null,
     idempotencyKey: "abcdefgh",
   });
   ok(
-    v.amountCents === PLANS.pro.priceCents,
-    `expected ${PLANS.pro.priceCents}, got ${v.amountCents}`,
+    v.amountCents === PLANS.professional.priceCents,
+    `expected ${PLANS.professional.priceCents}, got ${v.amountCents}`,
   );
 });
 
@@ -185,32 +184,32 @@ console.log("\n[2] Status state machine");
 
 const cases: Array<[PaymentStatus, PaymentStatus, boolean]> = [
   // Normal forward paths
-  ["created",         "pending",        true],
-  ["pending",         "processing",    true],
-  ["pending",         "pending_manual", true],
-  ["pending",         "failed",        true],
-  ["pending",         "canceled",      true],
-  ["pending",         "rejected",      true],
-  ["processing",      "confirmed",     true],
-  ["pending_manual",  "confirmed",    true],
-  ["pending_manual",  "rejected",      true],
-  ["pending_manual",  "canceled",      true],
-  ["confirmed",       "refunded",      true],
-  ["confirmed",       "disputed",      true],
-  ["disputed",        "refunded",      true],
-  ["disputed",        "rejected",      true],
-  ["failed",          "pending",       true],  // retry path
+  ["created", "pending", true],
+  ["pending", "processing", true],
+  ["pending", "pending_manual", true],
+  ["pending", "failed", true],
+  ["pending", "canceled", true],
+  ["pending", "rejected", true],
+  ["processing", "confirmed", true],
+  ["pending_manual", "confirmed", true],
+  ["pending_manual", "rejected", true],
+  ["pending_manual", "canceled", true],
+  ["confirmed", "refunded", true],
+  ["confirmed", "disputed", true],
+  ["disputed", "refunded", true],
+  ["disputed", "rejected", true],
+  ["failed", "pending", true], // retry path
 
   // Blocked paths
-  ["created",         "pending_manual", false],
-  ["created",         "confirmed",     false],
-  ["pending",         "confirmed",     false],  // must go through processing
-  ["pending_manual",  "processing",   false],  // manual cannot auto-progress
-  ["pending_manual",   "pending",      false],  // manual cannot revert
-  ["rejected",        "pending",      false],  // terminal
-  ["rejected",        "confirmed",    false],  // terminal
-  ["canceled",        "pending",       false],  // terminal
-  ["canceled",        "confirmed",    false],  // terminal
+  ["created", "pending_manual", false],
+  ["created", "confirmed", false],
+  ["pending", "confirmed", false], // must go through processing
+  ["pending_manual", "processing", false], // manual cannot auto-progress
+  ["pending_manual", "pending", false], // manual cannot revert
+  ["rejected", "pending", false], // terminal
+  ["rejected", "confirmed", false], // terminal
+  ["canceled", "pending", false], // terminal
+  ["canceled", "confirmed", false], // terminal
 ];
 
 for (const [from, to, expected] of cases) {
@@ -280,9 +279,18 @@ await test(
     // wise-checkout creates the row with status_enum = 'pending_manual'.
     // The unique partial index on services requires activated = true.
     // No UI click, checkbox, or user action can reach 'confirmed'.
-    ok(!canTransition("pending_manual", "processing"), "manual cannot auto-progress");
-    ok(canTransition("pending_manual", "confirmed"), "manual CAN be admin-confirmed");
-    ok(canTransition("pending_manual", "rejected"), "manual CAN be admin-rejected");
+    ok(
+      !canTransition("pending_manual", "processing"),
+      "manual cannot auto-progress",
+    );
+    ok(
+      canTransition("pending_manual", "confirmed"),
+      "manual CAN be admin-confirmed",
+    );
+    ok(
+      canTransition("pending_manual", "rejected"),
+      "manual CAN be admin-rejected",
+    );
   },
 );
 
@@ -302,7 +310,7 @@ await test("pending → processing → confirmed is the only confirmed path", ()
 });
 
 await test("Amount tolerance simulation: 10% under is rejected", () => {
-  const expected = PLANS.pro.priceCents;
+  const expected = PLANS.professional.priceCents;
   const observed = Math.floor(expected * 0.90);
   const lower = Math.floor(expected * 0.95);
   const upper = Math.ceil(expected * 1.05);
@@ -313,7 +321,7 @@ await test("Amount tolerance simulation: 10% under is rejected", () => {
 });
 
 await test("Amount tolerance simulation: exact amount is accepted", () => {
-  const expected = PLANS.pro.priceCents;
+  const expected = PLANS.professional.priceCents;
   const lower = Math.floor(expected * 0.95);
   const upper = Math.ceil(expected * 1.05);
   ok(
@@ -323,8 +331,8 @@ await test("Amount tolerance simulation: exact amount is accepted", () => {
 });
 
 await test("Network mismatch is detected", () => {
-  const declaredNetwork = "BTC";
-  const observedNetwork = "TRC20";
+  const declaredNetwork: string = "BTC";
+  const observedNetwork: string = "TRC20";
   ok(
     declaredNetwork !== observedNetwork,
     `network mismatch should be detected: ${declaredNetwork} vs ${observedNetwork}`,
@@ -391,7 +399,7 @@ await test("Non-USD currency is rejected", () => {
     let threw = false;
     try {
       validateCheckoutInput({
-        planId: "pro",
+        planId: "professional",
         clientCurrency: bad,
         network: null,
         idempotencyKey: "abcdefgh",
@@ -410,7 +418,10 @@ await test("Non-USD currency is rejected", () => {
 console.log("\n[8] Audit log invariants");
 
 await test("audit log transition from created→pending is allowed", () => {
-  ok(canTransition("created", "pending"), "created→pending is a valid transition");
+  ok(
+    canTransition("created", "pending"),
+    "created→pending is a valid transition",
+  );
 });
 
 await test("audit log transition from confirmed→refunded is allowed", () => {
@@ -437,24 +448,29 @@ await test("terminal statuses have no outbound transitions", () => {
 console.log("\n[9] Plan and status enums");
 
 await test("all 4 plan ids are present", () => {
-  for (const id of ["starter", "pro", "advanced", "elite"]) {
-    ok(PLAN_IDS.includes(id as any), `${id} should be a valid plan id`);
+  for (const id of ["starter", "professional", "business", "enterprise"]) {
+    ok(
+      PLAN_IDS.includes(id as (typeof PLAN_IDS)[number]),
+      `${id} should be a valid plan id`,
+    );
   }
 });
 
 await test("all 10 statuses are present", () => {
-  for (const s of [
-    "created",
-    "pending",
-    "processing",
-    "confirmed",
-    "failed",
-    "rejected",
-    "refunded",
-    "disputed",
-    "canceled",
-    "pending_manual",
-  ]) {
+  for (
+    const s of [
+      "created",
+      "pending",
+      "processing",
+      "confirmed",
+      "failed",
+      "rejected",
+      "refunded",
+      "disputed",
+      "canceled",
+      "pending_manual",
+    ]
+  ) {
     ok(
       (PAYMENT_STATUSES as readonly string[]).includes(s),
       `${s} should be present`,

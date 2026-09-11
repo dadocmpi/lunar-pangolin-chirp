@@ -28,7 +28,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -58,21 +58,28 @@ serve(async (req) => {
   }
 
   // Operator-only check: app_metadata.operator must be true.
-  const { data: adminUser, error: adminError } = await supabase.auth.admin.getUserById(
-    user.id
-  );
+  const { data: adminUser, error: adminError } = await supabase.auth.admin
+    .getUserById(
+      user.id,
+    );
   if (adminError || !adminUser) {
     return new Response(JSON.stringify({ error: "Forbidden" }), {
       status: 403,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-  const isOperator = adminUser.app_metadata?.operator === true;
+  const adminMeta =
+    (adminUser as { app_metadata?: Record<string, unknown> | null })
+      ?.app_metadata ?? {};
+  const isOperator = adminMeta.operator === true;
   if (!isOperator) {
-    return new Response(JSON.stringify({ error: "Forbidden: insufficient permissions" }), {
-      status: 403,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return new Response(
+      JSON.stringify({ error: "Forbidden: insufficient permissions" }),
+      {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
 
   // Parse request body
@@ -93,7 +100,7 @@ serve(async (req) => {
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -126,7 +133,7 @@ serve(async (req) => {
       {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -137,7 +144,7 @@ serve(async (req) => {
       activation_status: "account_active",
       activated_by: user.id,
       activated_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq("id", applicationId)
     .select()
@@ -150,7 +157,7 @@ serve(async (req) => {
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 
@@ -163,7 +170,9 @@ serve(async (req) => {
       user_id: user.id,
       actor: "operator",
       source: "admin",
-      event_id: `application-activate:${applicationId}:${user.id}:${new Date().toISOString()}`,
+      event_id: `application-activate:${applicationId}:${user.id}:${
+        new Date().toISOString()
+      }`,
       previous_status: application.activation_status,
       new_status: "account_active",
       reason: `Application manually activated by operator ${user.id}`,
@@ -180,6 +189,6 @@ serve(async (req) => {
     {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
-    }
+    },
   );
 });

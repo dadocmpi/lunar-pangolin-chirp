@@ -69,8 +69,6 @@ export function usePaymentStatus(
       return undefined;
     }
 
-    let intervalId: ReturnType<typeof setInterval> | undefined;
-
     const tick = async () => {
       // Skip if the effect has been torn down.
       if (stoppedRef.current) return;
@@ -107,7 +105,7 @@ export function usePaymentStatus(
 
     // Fire one immediate tick, then schedule.
     tick();
-    intervalId = setInterval(tick, intervalMs);
+    const intervalId = setInterval(tick, intervalMs);
 
     return () => {
       // Order matters: flip the flag first so any in-flight tick resolves

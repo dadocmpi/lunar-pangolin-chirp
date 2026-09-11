@@ -1,16 +1,12 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import {
-  PaymentError,
   activateServiceForPayment,
   makeServiceClient,
+  PaymentError,
   transitionPayment,
 } from "../_shared/payments.ts";
 import { PaymentRow } from "../_shared/payments.ts";
-import {
-  CRYPTO_NETWORKS,
-  CryptoNetworkId,
-  getCryptoNetwork,
-} from "../_shared/plans.ts";
+import { getCryptoNetwork } from "../_shared/plans.ts";
 
 /**
  * Crypto auto-confirm — NOT SCHEDULED.
@@ -37,10 +33,13 @@ import {
  *  - this function never trusts a value sent by an unauthenticated caller
  */
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "method_not_allowed" }), {
-      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 405,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -50,7 +49,8 @@ serve(async (req) => {
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
   if (!auth || auth !== `Bearer ${serviceKey}`) {
     return new Response(JSON.stringify({ error: "service_role_required" }), {
-      status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
@@ -61,7 +61,10 @@ serve(async (req) => {
     const observedNetwork = body?.observed_network;
     const observedTxHash = body?.observed_tx_hash;
     const confirmations = Number(body?.confirmations ?? 0);
-    const source = (body?.source ?? "auto_confirm") as "auto_confirm" | "admin" | "test";
+    const source = (body?.source ?? "auto_confirm") as
+      | "auto_confirm"
+      | "admin"
+      | "test";
 
     if (!paymentId) throw new PaymentError("payment_id_required");
     if (!Number.isFinite(observedAmountCents) || observedAmountCents <= 0) {
@@ -86,7 +89,10 @@ serve(async (req) => {
     if (!["pending", "processing"].includes(p.status)) {
       return new Response(
         JSON.stringify({ ok: false, reason: `payment_in_state_${p.status}` }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -106,7 +112,10 @@ serve(async (req) => {
       });
       return new Response(
         JSON.stringify({ ok: false, reason: "network_mismatch" }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -126,7 +135,10 @@ serve(async (req) => {
       });
       return new Response(
         JSON.stringify({ ok: false, reason: "amount_out_of_range" }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -140,7 +152,10 @@ serve(async (req) => {
           confirmations,
           minConfirmations,
         }),
-        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -186,21 +201,27 @@ serve(async (req) => {
         status: current.status,
         serviceActivation: activation,
       }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   } catch (err) {
     if (err instanceof PaymentError) {
       return new Response(JSON.stringify({ error: err.code }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
     return new Response(JSON.stringify({ error: "internal_error" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };

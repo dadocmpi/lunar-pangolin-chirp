@@ -1,31 +1,42 @@
 // Withdrawal Notification Edge Function
 // Sends email confirmation when user requests a withdrawal
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 const COMPANY_EMAIL = "marketsbraxel@ouvidor.net";
 
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-async function sendUserWithdrawalEmail(userEmail: string, fullName: string, amount: string, method: string, iban?: string) {
+async function sendUserWithdrawalEmail(
+  userEmail: string,
+  fullName: string,
+  amount: string,
+  method: string,
+  iban?: string,
+) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  
+
   if (!resendApiKey) {
     console.log("WITHDRAWAL EMAIL (Resend not configured):", {
       to: userEmail,
       amount,
-      method
+      method,
     });
     return;
   }
@@ -59,12 +70,24 @@ async function sendUserWithdrawalEmail(userEmail: string, fullName: string, amou
       <strong>⏳ Withdrawal Request Received</strong>
       <p style="margin:10px 0 0;font-size:14px">Your withdrawal request has been received and is being processed.</p>
     </div>
-    <div class="title">Withdrawal Request, ${escapeHtml(fullName || "User")}</div>
+    <div class="title">Withdrawal Request, ${
+    escapeHtml(fullName || "User")
+  }</div>
     <p class="text">We have received your withdrawal request. Here are the details:</p>
     <div class="details">
-      <p style="margin:5px 0;font-size:14px"><strong>Amount:</strong> ${escapeHtml(amount)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Method:</strong> ${escapeHtml(method)}</p>
-      ${iban ? `<p style="margin:5px 0;font-size:14px"><strong>Destination:</strong> ${escapeHtml(maskedIban)}</p>` : ''}
+      <p style="margin:5px 0;font-size:14px"><strong>Amount:</strong> ${
+    escapeHtml(amount)
+  }</p>
+      <p style="margin:5px 0;font-size:14px"><strong>Method:</strong> ${
+    escapeHtml(method)
+  }</p>
+      ${
+    iban
+      ? `<p style="margin:5px 0;font-size:14px"><strong>Destination:</strong> ${
+        escapeHtml(maskedIban)
+      }</p>`
+      : ""
+  }
       <p style="margin:5px 0;font-size:14px"><strong>Status:</strong> Processing</p>
     </div>
     <p class="text">Your withdrawal will be processed within 1-3 business days. You will receive another email once the transfer is complete.</p>
@@ -84,7 +107,7 @@ We have received your withdrawal request. Here are the details:
 
 Amount: ${amount}
 Method: ${method}
-${iban ? `Destination: ${maskedIban}` : ''}
+${iban ? `Destination: ${maskedIban}` : ""}
 Status: Processing
 
 Your withdrawal will be processed within 1-3 business days. You will receive another email once the transfer is complete.
@@ -113,22 +136,31 @@ Braxel Markets Team`;
       console.error("Resend withdrawal email error:", err);
     } else {
       const result = await res.json();
-      console.log("Withdrawal confirmation email sent:", { to: userEmail, emailId: result.id });
+      console.log("Withdrawal confirmation email sent:", {
+        to: userEmail,
+        emailId: result.id,
+      });
     }
   } catch (error) {
     console.error("Error sending withdrawal email:", error);
   }
 }
 
-async function sendCompanyNotificationEmail(amount: string, userEmail: string, fullName: string, method: string, iban?: string) {
+async function sendCompanyNotificationEmail(
+  amount: string,
+  userEmail: string,
+  fullName: string,
+  method: string,
+  iban?: string,
+) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  
+
   if (!resendApiKey) {
     console.log("WITHDRAWAL COMPANY NOTIFICATION (Resend not configured):", {
       to: COMPANY_EMAIL,
       userEmail,
       amount,
-      method
+      method,
     });
     return;
   }
@@ -165,12 +197,28 @@ async function sendCompanyNotificationEmail(amount: string, userEmail: string, f
       <strong>💰 New Withdrawal Request</strong>
       <p style="margin:10px 0 0;font-size:14px">A user has requested a withdrawal that requires processing.</p>
     </div>
-    <div class="field"><div class="label">User Email</div><div class="value">${escapeHtml(userEmail)}</div></div>
-    <div class="field"><div class="label">User Name</div><div class="value">${escapeHtml(fullName || "N/A")}</div></div>
-    <div class="field"><div class="label">Amount</div><div class="value">${escapeHtml(amount)}</div></div>
-    <div class="field"><div class="label">Method</div><div class="value">${escapeHtml(method)}</div></div>
-    ${iban ? `<div class="field"><div class="label">Destination</div><div class="value">${escapeHtml(maskedIban)}</div></div>` : ''}
-    <div class="field"><div class="label">Timestamp</div><div class="value">${new Date().toUTCString()}</div></div>
+    <div class="field"><div class="label">User Email</div><div class="value">${
+    escapeHtml(userEmail)
+  }</div></div>
+    <div class="field"><div class="label">User Name</div><div class="value">${
+    escapeHtml(fullName || "N/A")
+  }</div></div>
+    <div class="field"><div class="label">Amount</div><div class="value">${
+    escapeHtml(amount)
+  }</div></div>
+    <div class="field"><div class="label">Method</div><div class="value">${
+    escapeHtml(method)
+  }</div></div>
+    ${
+    iban
+      ? `<div class="field"><div class="label">Destination</div><div class="value">${
+        escapeHtml(maskedIban)
+      }</div></div>`
+      : ""
+  }
+    <div class="field"><div class="label">Timestamp</div><div class="value">${
+    new Date().toUTCString()
+  }</div></div>
   </div>
   <div class="footer">Automated notification — Braxel Markets Withdrawal System</div>
 </div>
@@ -203,93 +251,112 @@ async function sendCompanyNotificationEmail(amount: string, userEmail: string, f
 
 serve(async (req) => {
   // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
     // 1. Extract Authorization header
-    const authHeader = req.headers.get('Authorization')
+    const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      console.error("[withdrawal-notification] Unauthorized: Missing Authorization header")
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      console.error(
+        "[withdrawal-notification] Unauthorized: Missing Authorization header",
+      );
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // 2. Initialize Supabase client with the user's JWT
     const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
-    )
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: authHeader } } },
+    );
 
     // 3. Verify the JWT and get user data
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser()
-    
+    const { data: { user }, error: authError } = await supabaseClient.auth
+      .getUser();
+
     if (authError || !user) {
-      console.error("[withdrawal-notification] Unauthorized: Invalid or expired token", authError)
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      console.error(
+        "[withdrawal-notification] Unauthorized: Invalid or expired token",
+        authError,
+      );
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // 4. Get user profile for full name
     const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('full_name')
-      .eq('id', user.id)
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
       .single();
 
     // 5. Parse request body
-    const { accountId, amount, method, iban } = await req.json()
+    const { accountId, amount, method, iban } = await req.json();
 
     // 6. Verify account ownership in the database
     const { data: service, error: serviceError } = await supabaseClient
-      .from('services')
-      .select('id')
-      .eq('account_id', accountId)
-      .eq('user_id', user.id)
-      .single()
+      .from("services")
+      .select("id")
+      .eq("account_id", accountId)
+      .eq("user_id", user.id)
+      .single();
 
     if (serviceError || !service) {
-      console.warn(`[withdrawal-notification] Security Alert: User ${user.id} attempted to withdraw from unauthorized account ${accountId}`)
-      return new Response(JSON.stringify({ error: 'Forbidden: Account ownership not verified' }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
-      })
+      console.warn(
+        `[withdrawal-notification] Security Alert: User ${user.id} attempted to withdraw from unauthorized account ${accountId}`,
+      );
+      return new Response(
+        JSON.stringify({ error: "Forbidden: Account ownership not verified" }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
     // 7. Send confirmation email to user
     await sendUserWithdrawalEmail(
-      user.email || '',
-      profile?.full_name || '',
+      user.email || "",
+      profile?.full_name || "",
       amount,
-      method || 'Bank Transfer',
-      iban
+      method || "Bank Transfer",
+      iban,
     );
 
     // 8. Send notification to company
     await sendCompanyNotificationEmail(
       amount,
-      user.email || '',
-      profile?.full_name || '',
-      method || 'Bank Transfer',
-      iban
+      user.email || "",
+      profile?.full_name || "",
+      method || "Bank Transfer",
+      iban,
     );
 
     // Success response
     return new Response(
-      JSON.stringify({ message: "Withdrawal request received. Confirmation email sent." }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
-    )
+      JSON.stringify({
+        message: "Withdrawal request received. Confirmation email sent.",
+      }),
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      },
+    );
   } catch (error) {
-    console.error("[withdrawal-notification] Critical Error", error)
+    console.error("[withdrawal-notification] Critical Error", error);
     return new Response(
       JSON.stringify({ error: "Internal Server Error" }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-    )
+      {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      },
+    );
   }
-})
+});

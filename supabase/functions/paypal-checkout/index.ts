@@ -1,30 +1,41 @@
 // PayPal Checkout Edge Function
 // Processes PayPal payments and sends confirmation emails via Resend
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
+import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
 
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
   };
   return text.replace(/[&<>"']/g, (m) => map[m]);
 }
 
-async function sendPaymentConfirmationEmail(userEmail: string, fullName: string, planName: string, amount: string, accountId: string) {
+async function sendPaymentConfirmationEmail(
+  userEmail: string,
+  fullName: string,
+  planName: string,
+  amount: string,
+  accountId: string,
+) {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
-  
+
   if (!resendApiKey) {
     console.log("PAYMENT CONFIRMATION EMAIL (Resend not configured):", {
       to: userEmail,
       planName,
       amount,
-      accountId
+      accountId,
     });
     return;
   }
@@ -60,9 +71,15 @@ async function sendPaymentConfirmationEmail(userEmail: string, fullName: string,
     <div class="title">Welcome, ${escapeHtml(fullName || "User")}!</div>
     <p class="text">Your payment has been confirmed and your trading account is now active. Here are your account details:</p>
     <div class="details">
-      <p style="margin:5px 0;font-size:14px"><strong>Account ID:</strong> ${escapeHtml(accountId)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Plan:</strong> ${escapeHtml(planName)}</p>
-      <p style="margin:5px 0;font-size:14px"><strong>Amount Paid:</strong> ${escapeHtml(amount)}</p>
+      <p style="margin:5px 0;font-size:14px"><strong>Account ID:</strong> ${
+    escapeHtml(accountId)
+  }</p>
+      <p style="margin:5px 0;font-size:14px"><strong>Plan:</strong> ${
+    escapeHtml(planName)
+  }</p>
+      <p style="margin:5px 0;font-size:14px"><strong>Amount Paid:</strong> ${
+    escapeHtml(amount)
+  }</p>
       <p style="margin:5px 0;font-size:14px"><strong>Status:</strong> Active</p>
     </div>
     <p class="text">Your infrastructure deployment is in progress. Within the next few minutes, your algorithmic trading system will be operational.</p>
@@ -117,7 +134,10 @@ Braxel Markets Team`;
       console.error("Resend payment confirmation error:", err);
     } else {
       const result = await res.json();
-      console.log("Payment confirmation email sent:", { to: userEmail, emailId: result.id });
+      console.log("Payment confirmation email sent:", {
+        to: userEmail,
+        emailId: result.id,
+      });
     }
   } catch (error) {
     console.error("Error sending payment confirmation email:", error);
@@ -126,131 +146,151 @@ Braxel Markets Team`;
 
 serve(async (req) => {
   // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders })
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const authHeader = req.headers.get('Authorization')
+    const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      console.error("[paypal-checkout] Unauthorized: Missing Authorization header")
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
-        status: 401, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      })
+      console.error(
+        "[paypal-checkout] Unauthorized: Missing Authorization header",
+      );
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Initialize Supabase client
     const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    );
 
     // Verify user
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(authHeader.replace('Bearer ', ''))
+    const { data: { user }, error: authError } = await supabaseClient.auth
+      .getUser(authHeader.replace("Bearer ", ""));
     if (authError || !user) {
-      console.error("[paypal-checkout] Unauthorized: Invalid token", authError)
-      return new Response(JSON.stringify({ error: 'Invalid token' }), { 
-        status: 401, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      })
+      console.error("[paypal-checkout] Unauthorized: Invalid token", authError);
+      return new Response(JSON.stringify({ error: "Invalid token" }), {
+        status: 401,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Get user profile for full name
     const { data: profile } = await supabaseClient
-      .from('profiles')
-      .select('full_name')
-      .eq('id', user.id)
+      .from("profiles")
+      .select("full_name")
+      .eq("id", user.id)
       .single();
 
-    const { orderId, planName, accountSize } = await req.json()
+    const { orderId, planName, accountSize } = await req.json();
 
     // PayPal Credentials from Secrets
-    const clientId = Deno.env.get('PAYPAL_CLIENT_ID')
-    const clientSecret = Deno.env.get('PAYPAL_CLIENT_SECRET')
-    
+    const clientId = Deno.env.get("PAYPAL_CLIENT_ID");
+    const clientSecret = Deno.env.get("PAYPAL_CLIENT_SECRET");
+
     if (!clientId || !clientSecret) {
-      console.error("[paypal-checkout] Configuration Error: Missing PayPal Secrets")
-      return new Response(JSON.stringify({ error: 'Server configuration error' }), { 
-        status: 500, 
-        headers: { ...corsHeaders, "Content-Type": "application/json" } 
-      })
+      console.error(
+        "[paypal-checkout] Configuration Error: Missing PayPal Secrets",
+      );
+      return new Response(
+        JSON.stringify({ error: "Server configuration error" }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
     }
 
     // Use sandbox URL for testing, change to 'api-m.paypal.com' for production
-    const paypalBaseUrl = 'https://api-m.sandbox.paypal.com'
-    
+    const paypalBaseUrl = "https://api-m.sandbox.paypal.com";
+
     // 1. Get PayPal Access Token
-    const auth = btoa(`${clientId}:${clientSecret}`)
+    const auth = btoa(`${clientId}:${clientSecret}`);
     const tokenResponse = await fetch(`${paypalBaseUrl}/v1/oauth2/token`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded'
+        "Authorization": `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: 'grant_type=client_credentials'
-    })
-    
-    const tokenData = await tokenResponse.json()
-    const accessToken = tokenData.access_token
+      body: "grant_type=client_credentials",
+    });
+
+    const tokenData = await tokenResponse.json();
+    const accessToken = tokenData.access_token;
 
     // 2. Capture the Order
-    const captureResponse = await fetch(`${paypalBaseUrl}/v2/checkout/orders/${orderId}/capture`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'Content-Type': 'application/json'
-      }
-    })
+    const captureResponse = await fetch(
+      `${paypalBaseUrl}/v2/checkout/orders/${orderId}/capture`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
 
-    const captureData = await captureResponse.json()
+    const captureData = await captureResponse.json();
 
-    if (captureData.status === 'COMPLETED') {
+    if (captureData.status === "COMPLETED") {
       // 3. Create the service in the database
-      const accountId = `ACC-${Math.floor(100000 + Math.random() * 900000)}`
-      const balance = parseFloat(accountSize.replace(/[^0-9.]/g, ''))
+      const accountId = `ACC-${Math.floor(100000 + Math.random() * 900000)}`;
+      const balance = parseFloat(accountSize.replace(/[^0-9.]/g, ""));
 
       const { error: dbError } = await supabaseClient
-        .from('services')
+        .from("services")
         .insert([{
           user_id: user.id,
           plan_name: planName,
           account_id: accountId,
-          status: 'Active',
-          balance: balance
-        }])
+          status: "Active",
+          balance: balance,
+        }]);
 
       if (dbError) {
-        console.error("[paypal-checkout] Database Error:", dbError)
-        throw dbError
+        console.error("[paypal-checkout] Database Error:", dbError);
+        throw dbError;
       }
 
       // 4. Send payment confirmation email to user
       await sendPaymentConfirmationEmail(
-        user.email || '',
-        profile?.full_name || '',
+        user.email || "",
+        profile?.full_name || "",
         planName,
         accountSize,
-        accountId
+        accountId,
       );
 
-      console.log(`[paypal-checkout] SUCCESS: Payment verified, service created, and confirmation email sent for user ${user.id}`)
-      return new Response(JSON.stringify({ status: 'success', accountId }), { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      })
+      console.log(
+        `[paypal-checkout] SUCCESS: Payment verified, service created, and confirmation email sent for user ${user.id}`,
+      );
+      return new Response(JSON.stringify({ status: "success", accountId }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
-    console.warn("[paypal-checkout] Payment not completed", captureData)
-    return new Response(JSON.stringify({ error: 'Payment not completed', details: captureData }), { 
-      status: 400, 
-      headers: { ...corsHeaders, "Content-Type": "application/json" } 
-    })
-
-  } catch (error: any) {
-    console.error("[paypal-checkout] Critical Error:", error)
-    return new Response(JSON.stringify({ error: error.message }), { 
-      status: 500, 
-      headers: { ...corsHeaders, "Content-Type": "application/json" } 
-    })
+    console.warn("[paypal-checkout] Payment not completed", captureData);
+    return new Response(
+      JSON.stringify({ error: "Payment not completed", details: captureData }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  } catch (error: unknown) {
+    console.error("[paypal-checkout] Critical Error:", error);
+    return new Response(
+      JSON.stringify({
+        error: error instanceof Error ? error.message : "Internal error",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
   }
-})
+});

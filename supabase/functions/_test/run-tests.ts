@@ -3,19 +3,21 @@ import {
   assertThrows,
 } from "https://deno.land/std@0.190.0/testing/asserts.ts";
 import {
+  canTransition,
+  CRYPTO_NETWORKS,
+  getCryptoNetwork,
+  isSupportedCurrency,
   PAYMENT_STATUSES,
   type PaymentStatus,
-  canTransition,
-  getPlan,
-  PLANS,
   PLAN_IDS,
-  CRYPTO_NETWORKS,
-  TEST_PLACEHOLDER_WALLET,
+  PLANS,
   TEST_PLACEHOLDER_BANK,
-  isSupportedCurrency,
-  getCryptoNetwork,
+  TEST_PLACEHOLDER_WALLET,
 } from "../_shared/option_a/plans.ts";
-import { PaymentError, validateCheckoutInput } from "../_shared/option_a/payments.ts";
+import {
+  PaymentError,
+  validateCheckoutInput,
+} from "../_shared/option_a/payments.ts";
 
 let passed = 0;
 let failed = 0;
@@ -23,11 +25,20 @@ let failed = 0;
 function test(name: string, fn: () => void | Promise<void>) {
   return Promise.resolve()
     .then(fn)
-    .then(() => { console.log(`  PASS  ${name}`); passed++; })
-    .catch((e) => { console.error(`  FAIL  ${name}`); console.error(e); failed++; });
+    .then(() => {
+      console.log(`  PASS  ${name}`);
+      passed++;
+    })
+    .catch((e) => {
+      console.error(`  FAIL  ${name}`);
+      console.error(e);
+      failed++;
+    });
 }
 
-function ok(cond: boolean, msg: string) { if (!cond) throw new Error(msg); }
+function ok(cond: boolean, msg: string) {
+  if (!cond) throw new Error(msg);
+}
 
 // ============================================================================
 // 1. Canonical plan / price
@@ -36,12 +47,13 @@ console.log("\n[1] Canonical plan and price validation");
 
 await test("rejects unknown plan id", () => {
   assertThrows(
-    () => validateCheckoutInput({
-      planId: "enterprise",
-      clientCurrency: "USD",
-      network: null,
-      idempotencyKey: "abcdefgh",
-    }),
+    () =>
+      validateCheckoutInput({
+        planId: "nonexistent-plan",
+        clientCurrency: "USD",
+        network: null,
+        idempotencyKey: "abcdefgh",
+      }),
     PaymentError,
     "invalid_plan_id",
   );
@@ -49,12 +61,13 @@ await test("rejects unknown plan id", () => {
 
 await test("rejects non-string plan id", () => {
   assertThrows(
-    () => validateCheckoutInput({
-      planId: 123,
-      clientCurrency: "USD",
-      network: null,
-      idempotencyKey: "abcdefgh",
-    }),
+    () =>
+      validateCheckoutInput({
+        planId: 123,
+        clientCurrency: "USD",
+        network: null,
+        idempotencyKey: "abcdefgh",
+      }),
     PaymentError,
     "invalid_plan_id",
   );
@@ -62,12 +75,13 @@ await test("rejects non-string plan id", () => {
 
 await test("rejects unsupported currency", () => {
   assertThrows(
-    () => validateCheckoutInput({
-      planId: "pro",
-      clientCurrency: "EUR",
-      network: null,
-      idempotencyKey: "abcdefgh",
-    }),
+    () =>
+      validateCheckoutInput({
+        planId: "professional",
+        clientCurrency: "EUR",
+        network: null,
+        idempotencyKey: "abcdefgh",
+      }),
     PaymentError,
     "invalid_currency",
   );
@@ -75,13 +89,16 @@ await test("rejects unsupported currency", () => {
 
 await test("ignores client-supplied amount and re-derives from plan", () => {
   const v = validateCheckoutInput({
-    planId: "pro",
+    planId: "professional",
     clientAmountCents: 1,
     clientCurrency: "USD",
     network: null,
     idempotencyKey: "abcdefgh",
   });
-  ok(v.amountCents === PLANS.pro.priceCents, `expected ${PLANS.pro.priceCents}, got ${v.amountCents}`);
+  ok(
+    v.amountCents === PLANS.professional.priceCents,
+    `expected ${PLANS.professional.priceCents}, got ${v.amountCents}`,
+  );
 });
 
 await test("ignores client-supplied currency and forces USD", () => {
@@ -96,12 +113,13 @@ await test("ignores client-supplied currency and forces USD", () => {
 
 await test("rejects invalid network", () => {
   assertThrows(
-    () => validateCheckoutInput({
-      planId: "starter",
-      clientCurrency: "USD",
-      network: "DOGE",
-      idempotencyKey: "abcdefgh",
-    }),
+    () =>
+      validateCheckoutInput({
+        planId: "starter",
+        clientCurrency: "USD",
+        network: "DOGE",
+        idempotencyKey: "abcdefgh",
+      }),
     PaymentError,
     "invalid_network",
   );
@@ -109,12 +127,13 @@ await test("rejects invalid network", () => {
 
 await test("rejects missing idempotency key (too short)", () => {
   assertThrows(
-    () => validateCheckoutInput({
-      planId: "starter",
-      clientCurrency: "USD",
-      network: null,
-      idempotencyKey: "short",
-    }),
+    () =>
+      validateCheckoutInput({
+        planId: "starter",
+        clientCurrency: "USD",
+        network: null,
+        idempotencyKey: "short",
+      }),
     PaymentError,
     "idempotency_key_required",
   );
@@ -123,12 +142,13 @@ await test("rejects missing idempotency key (too short)", () => {
 await test("rejects oversize idempotency key (>200)", () => {
   const long = "x".repeat(201);
   assertThrows(
-    () => validateCheckoutInput({
-      planId: "starter",
-      clientCurrency: "USD",
-      network: null,
-      idempotencyKey: long,
-    }),
+    () =>
+      validateCheckoutInput({
+        planId: "starter",
+        clientCurrency: "USD",
+        network: null,
+        idempotencyKey: long,
+      }),
     PaymentError,
     "idempotency_key_too_long",
   );
@@ -140,28 +160,28 @@ await test("rejects oversize idempotency key (>200)", () => {
 console.log("\n[2] Status state machine");
 
 const cases: Array<[PaymentStatus, PaymentStatus, boolean]> = [
-  ["created",         "pending",        true],
-  ["created",         "pending_manual", false],
-  ["created",         "confirmed",     false],
-  ["pending",         "processing",    true],
-  ["pending",         "pending_manual", true],
-  ["pending",         "confirmed",     false],   // must go through processing
-  ["pending",         "failed",        true],
-  ["pending",         "rejected",      true],
-  ["pending",         "canceled",      true],
-  ["processing",      "confirmed",     true],
-  ["processing",      "rejected",      true],
-  ["pending_manual",  "processing",   false],   // manual cannot auto-progress
-  ["pending_manual",  "pending",      false],   // manual cannot revert
-  ["pending_manual",  "confirmed",    true],    // admin path
-  ["pending_manual",  "rejected",      true],
-  ["confirmed",       "refunded",      true],
-  ["confirmed",       "disputed",      true],
-  ["failed",          "pending",       true],    // retry
-  ["rejected",        "pending",       false],   // terminal
-  ["rejected",        "confirmed",    false],
-  ["canceled",        "pending",       false],
-  ["canceled",        "confirmed",    false],
+  ["created", "pending", true],
+  ["created", "pending_manual", false],
+  ["created", "confirmed", false],
+  ["pending", "processing", true],
+  ["pending", "pending_manual", true],
+  ["pending", "confirmed", false], // must go through processing
+  ["pending", "failed", true],
+  ["pending", "rejected", true],
+  ["pending", "canceled", true],
+  ["processing", "confirmed", true],
+  ["processing", "rejected", true],
+  ["pending_manual", "processing", false], // manual cannot auto-progress
+  ["pending_manual", "pending", false], // manual cannot revert
+  ["pending_manual", "confirmed", true], // admin path
+  ["pending_manual", "rejected", true],
+  ["confirmed", "refunded", true],
+  ["confirmed", "disputed", true],
+  ["failed", "pending", true], // retry
+  ["rejected", "pending", false], // terminal
+  ["rejected", "confirmed", false],
+  ["canceled", "pending", false],
+  ["canceled", "confirmed", false],
 ];
 for (const [from, to, expected] of cases) {
   await test(`${from} -> ${to} ${expected ? "ALLOWED" : "BLOCKED"}`, () => {
@@ -188,7 +208,10 @@ await test("duplicate (user_id, idempotency_key) returns same row, canonical pre
   const b = insert("u1", "click-1", 1, "elite");
   ok(a.created, "first insert created");
   ok(!b.created, "second insert idempotent");
-  ok(b.row.amount === PLANS.starter.priceCents, "idempotent row keeps canonical amount");
+  ok(
+    b.row.amount === PLANS.starter.priceCents,
+    "idempotent row keeps canonical amount",
+  );
   ok(b.row.plan === "starter", "idempotent row keeps canonical plan");
 });
 
@@ -208,10 +231,22 @@ await test("different idempotency keys create separate rows", () => {
 console.log("\n[4] Wise safety");
 
 await test("Wise is created in pending_manual, never confirmed by client", () => {
-  ok(canTransition("pending", "pending_manual"), "pending→pending_manual allowed");
-  ok(!canTransition("pending_manual", "processing"), "manual cannot auto-progress");
-  ok(canTransition("pending_manual", "confirmed"), "manual CAN be admin-confirmed");
-  ok(canTransition("pending_manual", "rejected"), "manual CAN be admin-rejected");
+  ok(
+    canTransition("pending", "pending_manual"),
+    "pending→pending_manual allowed",
+  );
+  ok(
+    !canTransition("pending_manual", "processing"),
+    "manual cannot auto-progress",
+  );
+  ok(
+    canTransition("pending_manual", "confirmed"),
+    "manual CAN be admin-confirmed",
+  );
+  ok(
+    canTransition("pending_manual", "rejected"),
+    "manual CAN be admin-rejected",
+  );
 });
 
 // ============================================================================
@@ -229,7 +264,7 @@ await test("pending → processing → confirmed is the canonical path", () => {
 });
 
 await test("Amount tolerance ±5% (under)", () => {
-  const expected = PLANS.pro.priceCents;
+  const expected = PLANS.professional.priceCents;
   const observed = Math.floor(expected * 0.90);
   const lower = Math.floor(expected * 0.95);
   const upper = Math.ceil(expected * 1.05);
@@ -237,15 +272,15 @@ await test("Amount tolerance ±5% (under)", () => {
 });
 
 await test("Amount tolerance ±5% (exact)", () => {
-  const expected = PLANS.pro.priceCents;
+  const expected = PLANS.professional.priceCents;
   const lower = Math.floor(expected * 0.95);
   const upper = Math.ceil(expected * 1.05);
   ok(expected >= lower && expected <= upper, "in range");
 });
 
 await test("Network mismatch is detected", () => {
-  const declared = "BTC";
-  const observed = "TRC20";
+  const declared: string = "BTC";
+  const observed: string = "TRC20";
   ok(declared !== observed, "mismatch detected");
 });
 
@@ -270,9 +305,12 @@ await test("test-confirm-payment must require TEST_CONFIRM_SECRET (no ADMIN_SECR
     TEST_CONFIRM_SECRET: undefined as string | undefined,
     ADMIN_SECRET: "any-admin-secret",
   };
-  const isClosed =
-    simulated.TEST_CONFIRM_SECRET === undefined && simulated.ADMIN_SECRET !== undefined;
-  ok(isClosed, "TEST_CONFIRM_SECRET missing and ADMIN_SECRET set — handler must still refuse");
+  const isClosed = simulated.TEST_CONFIRM_SECRET === undefined &&
+    simulated.ADMIN_SECRET !== undefined;
+  ok(
+    isClosed,
+    "TEST_CONFIRM_SECRET missing and ADMIN_SECRET set — handler must still refuse",
+  );
 });
 
 await test("test-confirm-payment refuses to confirm a non-test row", () => {
@@ -304,16 +342,26 @@ await test("double-reject is idempotent", () => {
 console.log("\n[7] Enum completeness");
 
 await test("all 4 plan ids are present", () => {
-  for (const id of ["starter", "pro", "advanced", "elite"]) {
-    ok(PLAN_IDS.includes(id as any), `${id} present`);
+  for (const id of ["starter", "professional", "business", "enterprise"]) {
+    ok(PLAN_IDS.includes(id as (typeof PLAN_IDS)[number]), `${id} present`);
   }
 });
 
 await test("all 10 statuses are present", () => {
-  for (const s of [
-    "created","pending","processing","confirmed","failed",
-    "rejected","refunded","disputed","canceled","pending_manual",
-  ]) {
+  for (
+    const s of [
+      "created",
+      "pending",
+      "processing",
+      "confirmed",
+      "failed",
+      "rejected",
+      "refunded",
+      "disputed",
+      "canceled",
+      "pending_manual",
+    ]
+  ) {
     ok((PAYMENT_STATUSES as readonly string[]).includes(s), `${s} present`);
   }
 });
@@ -352,5 +400,7 @@ await test("every crypto network requires > 0 confirmations", () => {
 // ============================================================================
 // Summary
 // ============================================================================
-console.log(`\nResult: ${passed} passed, ${failed} failed.  STATUS: NOT EXECUTED in this session.`);
+console.log(
+  `\nResult: ${passed} passed, ${failed} failed.  STATUS: NOT EXECUTED in this session.`,
+);
 if (failed > 0) Deno.exit(1);
