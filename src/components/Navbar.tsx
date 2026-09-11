@@ -6,7 +6,7 @@ import { Menu, X, Globe, ChevronDown, User, LayoutDashboard, LogOut } from 'luci
 import { useTranslation } from 'react-i18next';
 import { cn } from '../lib/utils';
 import { supportedLanguages } from '../i18n';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +25,13 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setIsLoggedIn(false);
+      setUserEmail('');
+      return;
+    }
+
+
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsLoggedIn(!!session);
@@ -35,14 +42,15 @@ const Navbar = () => {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const sub = supabase.auth.onAuthStateChange((_event, session) => {
       setIsLoggedIn(!!session);
       if (session?.user?.email) {
         setUserEmail(session.user.email);
       }
     });
+    const subscription = sub.data.subscription;
 
-    return () => subscription.unsubscribe();
+    return () => subscription?.unsubscribe();
   }, []);
 
   const handleLogout = async () => {
