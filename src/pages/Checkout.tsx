@@ -54,12 +54,12 @@ interface CheckoutResponse {
 }
 
 const CRYPTO_NETWORKS = [
-  { id: "BTC",     symbol: "BTC",  name: "Bitcoin (BTC)" },
-  { id: "TRC20",   symbol: "USDT", name: "TRON (TRC20)" },
-  { id: "ETH",     symbol: "ETH",  name: "Ethereum (ERC20)" },
-  { id: "BNB",     symbol: "BNB",  name: "BNB Chain (BEP20)" },
-  { id: "POLYGON", symbol: "MATIC",name: "Polygon (MATIC)" },
-  { id: "SOL",     symbol: "SOL",  name: "Solana (SOL)" },
+  { id: "BTC", symbol: "BTC", name: "Bitcoin (BTC)" },
+  { id: "TRC20", symbol: "USDT", name: "TRON (TRC20)" },
+  { id: "ETH", symbol: "ETH", name: "Ethereum (ERC20)" },
+  { id: "BNB", symbol: "BNB", name: "BNB Chain (BEP20)" },
+  { id: "POLYGON", symbol: "MATIC", name: "Polygon (MATIC)" },
+  { id: "SOL", symbol: "SOL", name: "Solana (SOL)" },
 ] as const;
 
 function newIdempotencyKey(): string {
@@ -127,7 +127,14 @@ const Checkout = () => {
         navigate("/register-application");
         return;
       }
-      
+
+      // Check if plan_key is present
+      if (!appData.plan_key) {
+        // If plan_key is missing, redirect to pre-registration
+        navigate("/register-application");
+        return;
+      }
+
       setApplication(appData);
       setLoading(false);
     };
@@ -144,16 +151,26 @@ const Checkout = () => {
 
   // Get the plan key from the application data
   const planKey = application?.plan_key;
-  
+
   // Override plan data with official EUR prices based on plan key
   const enhancedPlan = planKey
     ? {
         // We'll create a plan-like object from the application data and official prices
-        id: planKey, // Using plan_key as the plan ID for consistency
-        name: planKey.charAt(0).toUpperCase() + planKey.slice(1), // e.g., 'starter' -> 'Starter'
-        priceEUR: OFFICIAL_PRICES_EUR[planKey as keyof typeof OFFICIAL_PRICES_EUR] ?? 0,
+        id: planKey,
+        name:
+          planKey.charAt(0).toUpperCase() +
+          planKey.slice(1).toLowerCase(), // Convert the rest to lowercase
+        priceEUR:
+          OFFICIAL_PRICES_EUR[
+            (planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase()) as
+              keyof typeof OFFICIAL_PRICES_EUR
+          ] ?? 0,
         priceUSD: 0, // We won't show USD
-        accountSizeEUR: OFFICIAL_PRICES_EUR[planKey as keyof typeof OFFICIAL_PRICES_EUR] ?? 0,
+        accountSizeEUR:
+          OFFICIAL_PRICES_EUR[
+            (planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase()) as
+              keyof typeof OFFICIAL_PRICES_EUR
+          ] ?? 0,
         accountSizeUSD: 0,
         features: [], // We don't have features in the application, but we can fetch from a plans table if needed
         // For now, we'll leave features empty and rely on the plan description in the UI
@@ -573,7 +590,7 @@ const Checkout = () => {
                         className={`w-full rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] ${
                           wiseConfirmed
                             ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                            : "bg-slate-700 text-slate-500 cursor-not-allowed"`
+                            : "bg-slate-700 text-slate-500 cursor-not-allowed"
                         }`}
                       >
                         {t("checkout.confirmWise")}
