@@ -4,7 +4,7 @@ import path from "path";
 import dyadComponentTagger from '@dyad-sh/react-vite-component-tagger';
 
 export default defineConfig(() => ({
-  base: './',
+  base: '/',
   server: {
     host: "::",
     port: 8080,

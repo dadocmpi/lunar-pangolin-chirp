@@ -24,6 +24,7 @@ const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
+const RegisterApplication = lazy(() => import("./pages/RegisterApplication"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
             <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
             <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+            <Route path="/register-application" element={<PageTransition><RegisterApplication /></PageTransition>} />
             <Route path="/auth-callback" element={<PageTransition><AuthCallback /></PageTransition>} />
             <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
             <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />

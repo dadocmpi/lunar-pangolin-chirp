@@ -3,10 +3,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Loader2, ShieldCheck, CheckCircle2, ShieldAlert, ArrowLeft } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
 
@@ -22,6 +23,7 @@ import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
  * We use session_id to look up the pending payment.
  */
 const CheckoutSuccess = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
@@ -40,6 +42,13 @@ const CheckoutSuccess = () => {
 
   useEffect(() => {
     const init = async () => {
+      if (!isSupabaseConfigured()) {
+        // Fail-closed without Supabase: don't crash the page; show the
+        // "could not verify" state (matches the existing public/disabled gate).
+        setLookupError(t("checkoutSuccess.couldNotVerify"));
+        setLoading(false);
+        return;
+      }
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (!authUser) {
         if (!redirectedRef.current) {
@@ -53,7 +62,7 @@ const CheckoutSuccess = () => {
       setUser(authUser);
 
       if (!sessionId) {
-        setLookupError("Missing Stripe session id in the success URL.");
+        setLookupError(t("checkoutSuccess.couldNotVerify"));
         setLoading(false);
         return;
       }
@@ -91,7 +100,7 @@ const CheckoutSuccess = () => {
       const chosen = matched ?? (rows ?? [])[0] ?? null;
 
       if (!chosen) {
-        setLookupError("We could not find a pending payment for this session.");
+        setLookupError(t("checkoutSuccess.couldNotVerify"));
         setLoading(false);
         return;
       }
@@ -103,7 +112,7 @@ const CheckoutSuccess = () => {
     };
 
     init();
-  }, [sessionId, navigate]);
+  }, [sessionId, navigate, t]);
 
   const testMode = import.meta.env.VITE_TEST_PAYMENT_MODE === "true";
   const prodMode = import.meta.env.VITE_PAYMENTS_ENABLED === "true";
@@ -125,7 +134,7 @@ const CheckoutSuccess = () => {
       <div className="min-h-screen bg-[#05070A] flex flex-col items-center justify-center gap-6 text-white">
         <Loader2 className="animate-spin text-[#C5A059]" size={48} />
         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">
-          Verifying payment…
+          {t("checkoutSuccess.verifying")}
         </p>
       </div>
     );
@@ -140,18 +149,17 @@ const CheckoutSuccess = () => {
             to="/pricing"
             className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-[#C5A059] mb-12 transition-colors"
           >
-            <ArrowLeft size={14} /> Back to pricing
+            <ArrowLeft size={14} /> {t("checkoutSuccess.backToPricing")}
           </Link>
           <div className="bg-[#080B12] border border-white/10 p-8 max-w-2xl">
             <div className="flex items-center gap-3 mb-4 text-yellow-300">
               <ShieldAlert size={20} />
               <h1 className="text-lg font-bold uppercase tracking-widest">
-                We could not verify your payment yet
-              </h1>
+              {t("checkoutSuccess.couldNotVerify")}
+            </h1>
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed">
-              {lookupError ??
-                "If you completed checkout, do not worry — your payment is being processed and your account will be activated shortly. Please refresh this page in a moment."}
+              {lookupError ?? t("checkoutSuccess.couldNotVerifyDesc")}
             </p>
           </div>
         </div>
@@ -179,26 +187,26 @@ const CheckoutSuccess = () => {
               </div>
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-emerald-400 block">
-                  Verified
-                </span>
-                <h1 className="text-3xl font-black uppercase tracking-tighter">
-                  Payment completed
-                </h1>
+                {t("checkoutSuccess.verifiedBadge")}
+              </span>
+              <h1 className="text-3xl font-black uppercase tracking-tighter">
+                {t("checkoutSuccess.paymentCompleted")}
+              </h1>
               </div>
             </div>
 
             <p className="text-[12px] text-slate-300 leading-relaxed">
-              Your account will be activated within a few minutes.
-            </p>
+            {t("checkoutSuccess.activationNotice")}
+          </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px] font-bold uppercase tracking-widest">
               <div className="p-4 bg-white/[0.02] border border-white/10">
-                <p className="text-slate-500">Payment ID</p>
+                <p className="text-slate-500">{t("checkoutSuccess.paymentId")}</p>
                 <p className="text-slate-200 break-all mt-1">{pendingPaymentId}</p>
               </div>
               {applicationId && (
                 <div className="p-4 bg-white/[0.02] border border-white/10">
-                  <p className="text-slate-500">Application ID</p>
+                  <p className="text-slate-500">{t("checkoutSuccess.applicationId")}</p>
                   <p className="text-slate-200 break-all mt-1">{applicationId}</p>
                 </div>
               )}
@@ -207,16 +215,16 @@ const CheckoutSuccess = () => {
             <div className="p-4 bg-white/[0.02] border border-dashed border-white/10 flex items-start gap-3">
               <ShieldCheck size={18} className="text-[#C5A059] shrink-0 mt-0.5" />
               <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">
-                For your security, accounts are activated manually by an operator after payment verification. You will receive access as soon as the review is complete.
-              </p>
+              {t("checkoutSuccess.securityNotice")}
+            </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Button asChild className="bg-[#C5A059] hover:bg-[#C5A059]/80 text-white rounded-none h-12 px-6 text-[11px] font-black uppercase tracking-[0.2em]">
-                <a href="/dashboard">Go to dashboard</a>
+                <a href="/dashboard">{t("checkoutSuccess.goToDashboard")}</a>
               </Button>
               <Button asChild variant="outline" className="rounded-none h-12 px-6 text-[11px] font-black uppercase tracking-[0.2em] border-white/10 text-white hover:bg-white/5">
-                <a href="/contact">Contact support</a>
+                <a href="/contact">{t("checkoutSuccess.contactSupport")}</a>
               </Button>
             </div>
           </div>
@@ -236,22 +244,21 @@ const CheckoutSuccess = () => {
             <Loader2 className="animate-spin text-[#C5A059]" size={32} />
             <div>
               <span className="text-[10px] font-bold uppercase tracking-[0.4em] text-[#C5A059] block">
-                Verifying
-              </span>
-              <h1 className="text-3xl font-black uppercase tracking-tighter">
-                Payment received. We are verifying the payment.
-              </h1>
+              {t("checkoutSuccess.verifyingBadge")}
+            </span>
+            <h1 className="text-3xl font-black uppercase tracking-tighter">
+              {t("checkoutSuccess.paymentReceived")}
+            </h1>
             </div>
           </div>
 
           <p className="text-[12px] text-slate-300 leading-relaxed">
-            Your payment is being verified. This page will update automatically once your payment is confirmed.
-            Do not close this window.
+            {t("checkoutSuccess.beingVerified")}
           </p>
 
           {serverStatus?.status && (
             <div className="p-4 bg-white/[0.02] border border-white/10 text-[10px] font-bold uppercase tracking-widest">
-              <p className="text-slate-500">Current status</p>
+              <p className="text-slate-500">{t("checkoutSuccess.currentStatus")}</p>
               <p className="text-slate-200 mt-1">{String(serverStatus.status)}</p>
             </div>
           )}
@@ -259,7 +266,7 @@ const CheckoutSuccess = () => {
           <div className="p-4 bg-white/[0.02] border border-dashed border-white/10 flex items-start gap-3">
             <ShieldCheck size={18} className="text-[#C5A059] shrink-0 mt-0.5" />
             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">
-              For your security, this page does not mark a payment as completed based on the URL alone. We wait for server-side confirmation.
+              {t("checkoutSuccess.urlSecurityNotice")}
             </p>
           </div>
         </div>

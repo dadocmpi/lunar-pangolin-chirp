@@ -13,7 +13,7 @@ import {
   Lock,
   CreditCard,
 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -130,6 +130,13 @@ const Checkout = () => {
     if (!applicationId) {
       // If no applicationId, redirect to pre-registration page
       navigate("/register-application", { state: { plan: location.state?.plan } });
+      return;
+    }
+    if (!isSupabaseConfigured()) {
+      // Public fail-closed state: render PaymentsDisabledNotice instead of
+      // crashing on an unconfigured Supabase client (matches the existing
+      // public-pages-when-unset pattern).
+      setLoading(false);
       return;
     }
     const checkUserAndApplication = async () => {
@@ -462,9 +469,7 @@ const Checkout = () => {
 
               {paymentId && serverStatus && (
                 <div className="p-4 border border-white/10 bg-white/[0.02] space-y-2">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">
-                    Payment Status
-                  </p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{t("checkoutSuccess.currentStatus")}</p>
                   <CheckoutStatusBadge status={serverStatus.status} />
                   <p className="text-[9px] text-slate-500">ID: {paymentId}</p>
                 </div>
