@@ -8,6 +8,34 @@ import ApplicationForm, { type PlanInfo } from '@/components/ApplicationForm';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert, Loader2, CheckCircle2 } from 'lucide-react';
 
+// Canonical monthly USD prices / managed capital, mirroring
+// supabase/functions/_shared/plans.ts. The server is the source of truth for
+// amounts; these values are display-only fallbacks when no plan is passed.
+const FALLBACK_PLANS: Record<string, PlanInfo> = {
+  starter: { id: 'starter', name: 'Starter', price: 200, priceUSD: 200, accountSize: '25,000', iconType: 'zap' },
+  professional: { id: 'professional', name: 'Professional', price: 350, priceUSD: 350, accountSize: '50,000', iconType: 'award' },
+  business: { id: 'business', name: 'Business', price: 600, priceUSD: 600, accountSize: '100,000', iconType: 'shield' },
+  enterprise: { id: 'enterprise', name: 'Enterprise', price: 820, priceUSD: 820, accountSize: '150,000', iconType: 'crown' },
+};
+
+const resolvePlan = (candidate: unknown): PlanInfo | null => {
+  if (!candidate || typeof candidate !== 'object') return null;
+  const c = candidate as { id?: unknown; plan_key?: unknown };
+  const key = typeof c.id === 'string' ? c.id : typeof c.plan_key === 'string' ? c.plan_key : null;
+  if (!key || !FALLBACK_PLANS[key]) return null;
+  const base = FALLBACK_PLANS[key];
+  const src = candidate as Partial<PlanInfo>;
+  return {
+    ...base,
+    name: typeof src.name === 'string' && src.name ? src.name : base.name,
+    priceUSD: typeof src.priceUSD === 'number' ? src.priceUSD : base.priceUSD,
+    accountSize: typeof src.accountSize === 'string' ? src.accountSize : base.accountSize,
+    iconType: typeof src.iconType === 'string' ? src.iconType : base.iconType,
+    features: Array.isArray(src.features) ? src.features : base.features,
+    popular: src.popular ?? base.popular,
+  };
+};
+
 const RegisterApplication = () => {
   const { t } = useTranslation();
   const location = useLocation();
@@ -19,15 +47,18 @@ const RegisterApplication = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  // Render the real application form even when no plan was carried over from
+  // the pricing page (direct visit / refresh). Falls back to the query string,
+  // then to Starter, instead of bouncing the visitor back to /pricing.
   useEffect(() => {
-    const planFromState = location.state?.plan;
-    if (!planFromState) {
-      navigate('/pricing');
-      return;
-    }
-    setPlan(planFromState);
+    const planKeyFromQuery = new URLSearchParams(location.search).get('plan');
+    const resolved =
+      resolvePlan(location.state?.plan) ??
+      resolvePlan({ id: planKeyFromQuery }) ??
+      FALLBACK_PLANS.starter;
+    setPlan(resolved);
     setLoading(false);
-  }, [location.state, navigate]);
+  }, [location.state, location.search]);
 
   const handleApplicationSubmit = async (applicationData: Record<string, unknown>) => {
     setSubmitError(null);

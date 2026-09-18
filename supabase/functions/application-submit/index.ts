@@ -1,10 +1,12 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
+import { getPlan } from "../_shared/plans.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 serve(async (req) => {
@@ -142,12 +144,32 @@ serve(async (req) => {
     );
   }
 
+  // The browser may only declare a known plan key. The canonical price and
+  // managed-capital values always come from the server-side plan table.
+  const canonicalPlan = (() => {
+    try {
+      return getPlan(plan_key);
+    } catch {
+      return null;
+    }
+  })();
+
+  if (!canonicalPlan) {
+    return new Response(
+      JSON.stringify({ error: "Invalid plan" }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
   // Insert the application record
   const { data: application, error: insertError } = await supabase
     .from("applications")
     .insert({
       user_id: user.id,
-      plan_key,
+      plan_key: canonicalPlan.id,
       full_name,
       email,
       residential_address_line1,
