@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { functionsUrl, supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -68,7 +68,7 @@ interface ApplicationsRow {
       }
 
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/application-activate`,
+        functionsUrl('application-activate'),
         {
           method: 'POST',
           headers: {
@@ -109,7 +109,7 @@ interface ApplicationsRow {
       }
 
       const res = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/application-reject`,
+        functionsUrl('application-reject'),
         {
           method: 'POST',
           headers: {

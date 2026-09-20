@@ -126,7 +126,48 @@ ALTER TABLE pending_payments
   ADD COLUMN IF NOT EXISTS amount_usd   numeric,
   ADD COLUMN IF NOT EXISTS account_size text;
 
--- 2b. Drop the narrow legacy status CHECK if a previous migration installed it,
+-- 2b. The older chain (20260201000000) created status_enum as the narrow
+--     payment_status ENUM, which cannot hold the Stripe lifecycle values the
+--     webhook writes (past_due, incomplete, trialing, paused). Widen the column
+--     to text, preserving every existing value. No-op on a fresh database.
+--
+--     Any legacy CHECK constraint that compares this column to enum literals
+--     must be dropped FIRST: ALTER COLUMN TYPE re-parses existing constraints,
+--     so a stale `status_enum IN (...::payment_status)` check would abort the
+--     rewrite with "operator does not exist: text = payment_status".
+DO $$
+DECLARE
+  c record;
+BEGIN
+  FOR c IN
+    SELECT conname
+    FROM pg_constraint
+    WHERE conrelid = 'public.pending_payments'::regclass
+      AND contype = 'c'
+      AND conname <> 'pending_payments_status_enum_repair_check'
+      AND pg_get_constraintdef(oid) LIKE '%status_enum%'
+  LOOP
+    EXECUTE format(
+      'ALTER TABLE public.pending_payments DROP CONSTRAINT %I', c.conname
+    );
+  END LOOP;
+END $$;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'pending_payments'
+      AND column_name = 'status_enum'
+      AND data_type = 'USER-DEFINED'
+  ) THEN
+    ALTER TABLE pending_payments
+      ALTER COLUMN status_enum TYPE text USING status_enum::text;
+  END IF;
+END $$;
+
+-- 2c. Drop the narrow legacy status CHECK if a previous migration installed it,
 --     then install the wider repair CHECK (idempotent via pg_constraint check).
 ALTER TABLE pending_payments
   DROP CONSTRAINT IF EXISTS pending_payments_status_enum_check;
@@ -233,8 +274,12 @@ ALTER TABLE payment_audit_log
   DROP CONSTRAINT IF EXISTS payment_audit_log_payment_table_check;
 
 -- payment_id is text in the repair schema because writers pass either
--- pending_payments ids or applications ids. Widen it if an older migration
--- created it as uuid, and drop the FK to payments that no longer matches.
+-- pending_payments ids or applications ids. Drop the legacy FK to payments
+-- FIRST (ALTER COLUMN TYPE would otherwise try to re-implement it against the
+-- text column), then widen the column if an older migration created it as uuid.
+ALTER TABLE payment_audit_log
+  DROP CONSTRAINT IF EXISTS payment_audit_log_payment_id_fkey;
+
 DO $$
 BEGIN
   IF EXISTS (
@@ -248,8 +293,55 @@ BEGIN
       ALTER COLUMN payment_id TYPE text USING payment_id::text;
   END IF;
 END $$;
-ALTER TABLE payment_audit_log
-  DROP CONSTRAINT IF EXISTS payment_audit_log_payment_id_fkey;
+
+-- The older chain typed previous_status/new_status as the payment_status ENUM.
+-- The functions write lifecycle values the enum cannot hold (new_status =
+-- 'payment_confirmed' from the webhook, 'account_active' from the operator
+-- activation functions), so widen both to text. Any legacy CHECK that compares
+-- these columns to enum literals is dropped first for the same reason as
+-- status_enum above.
+DO $$
+DECLARE
+  c record;
+BEGIN
+  FOR c IN
+    SELECT conname
+    FROM pg_constraint
+    WHERE conrelid = 'public.payment_audit_log'::regclass
+      AND contype = 'c'
+      AND pg_get_constraintdef(oid) ~ '(new_status|previous_status)'
+      AND conname NOT LIKE 'payment_audit_log_%_repair_check'
+  LOOP
+    EXECUTE format(
+      'ALTER TABLE public.payment_audit_log DROP CONSTRAINT %I', c.conname
+    );
+  END LOOP;
+END $$;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'payment_audit_log'
+      AND column_name = 'new_status'
+      AND data_type = 'USER-DEFINED'
+  ) THEN
+    ALTER TABLE payment_audit_log
+      ALTER COLUMN new_status TYPE text USING new_status::text;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'payment_audit_log'
+      AND column_name = 'previous_status'
+      AND data_type = 'USER-DEFINED'
+  ) THEN
+    ALTER TABLE payment_audit_log
+      ALTER COLUMN previous_status TYPE text USING previous_status::text;
+  END IF;
+END $$;
 
 -- Install the repair CHECKs (idempotent via pg_constraint lookups).
 DO $$

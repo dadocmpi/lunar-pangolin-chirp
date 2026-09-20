@@ -201,7 +201,12 @@ serve(async (req) => {
   }
 
   return new Response(
-    JSON.stringify({ application_id: application.id }),
+    JSON.stringify({
+      application_id: application.id,
+      // Echo the server-canonicalised plan so the client can verify what the
+      // server accepted. The client value is never trusted for pricing.
+      plan_key: canonicalPlan.id,
+    }),
     {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
