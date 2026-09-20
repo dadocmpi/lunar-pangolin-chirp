@@ -58,6 +58,8 @@ build
 # -----------------------------------------------------------------------
 .vercel
 netlify.toml
+supabase/.temp/
+deno.lock
 dist-ssr
 *.ico
 *.webp
