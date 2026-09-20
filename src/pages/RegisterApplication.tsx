@@ -7,39 +7,15 @@ import Footer from '@/components/Footer';
 import ApplicationForm, { type PlanInfo } from '@/components/ApplicationForm';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert, Loader2, CheckCircle2 } from 'lucide-react';
-
-// Canonical monthly USD prices / managed capital, mirroring
-// supabase/functions/_shared/plans.ts. The server is the source of truth for
-// amounts; these values are display-only fallbacks when no plan is passed.
-const FALLBACK_PLANS: Record<string, PlanInfo> = {
-  starter: { id: 'starter', name: 'Starter', price: 200, priceUSD: 200, accountSize: '25,000', iconType: 'zap' },
-  professional: { id: 'professional', name: 'Professional', price: 350, priceUSD: 350, accountSize: '50,000', iconType: 'award' },
-  business: { id: 'business', name: 'Business', price: 600, priceUSD: 600, accountSize: '100,000', iconType: 'shield' },
-  enterprise: { id: 'enterprise', name: 'Enterprise', price: 820, priceUSD: 820, accountSize: '150,000', iconType: 'crown' },
-};
-
-const resolvePlan = (candidate: unknown): PlanInfo | null => {
-  if (!candidate || typeof candidate !== 'object') return null;
-  const c = candidate as { id?: unknown; plan_key?: unknown };
-  const key = typeof c.id === 'string' ? c.id : typeof c.plan_key === 'string' ? c.plan_key : null;
-  if (!key || !FALLBACK_PLANS[key]) return null;
-  const base = FALLBACK_PLANS[key];
-  const src = candidate as Partial<PlanInfo>;
-  return {
-    ...base,
-    name: typeof src.name === 'string' && src.name ? src.name : base.name,
-    priceUSD: typeof src.priceUSD === 'number' ? src.priceUSD : base.priceUSD,
-    accountSize: typeof src.accountSize === 'string' ? src.accountSize : base.accountSize,
-    iconType: typeof src.iconType === 'string' ? src.iconType : base.iconType,
-    features: Array.isArray(src.features) ? src.features : base.features,
-    popular: src.popular ?? base.popular,
-  };
-};
+import { useSupabaseSession } from '@/hooks/useSupabaseSession';
+import { PLAN_DEFAULTS, isPlanKey, planKeyFromParam, resolvePlanInfo } from '@/lib/planKeys';
+import { REGISTER_APPLICATION_ROUTE, buildLoginRedirect } from '@/lib/authRedirect';
 
 const RegisterApplication = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const { session, loading: sessionLoading } = useSupabaseSession();
 
   const [plan, setPlan] = useState<PlanInfo | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,20 +29,30 @@ const RegisterApplication = () => {
   useEffect(() => {
     const planKeyFromQuery = new URLSearchParams(location.search).get('plan');
     const resolved =
-      resolvePlan(location.state?.plan) ??
-      resolvePlan({ id: planKeyFromQuery }) ??
-      FALLBACK_PLANS.starter;
+      resolvePlanInfo(location.state?.plan) ??
+      resolvePlanInfo({ id: planKeyFromQuery }) ??
+      PLAN_DEFAULTS.starter;
     setPlan(resolved);
     setLoading(false);
   }, [location.state, location.search]);
+
+  // Unauthenticated visitors may not reach the application form: send them to
+  // /login with the plan and the intended destination preserved.
+  useEffect(() => {
+    if (sessionLoading || session) return;
+    const planKey = isPlanKey(plan?.id) ? plan.id : planKeyFromParam(new URLSearchParams(location.search).get('plan'));
+    const loginUrl = buildLoginRedirect(REGISTER_APPLICATION_ROUTE, planKey ?? null);
+    navigate(loginUrl ?? '/login', { replace: true });
+  }, [sessionLoading, session, plan, location.search, navigate]);
 
   const handleApplicationSubmit = async (applicationData: Record<string, unknown>) => {
     setSubmitError(null);
     setSubmitting(true);
     try {
-      // Call the application submission Edge Function
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
+      // Re-verify the session at submit time; never create an application for an
+      // unauthenticated visitor.
+      const { data: { session: currentSession } } = await supabase.auth.getSession();
+      if (!currentSession?.access_token) {
         throw new Error('Unauthorized');
       }
 
@@ -76,7 +62,7 @@ const RegisterApplication = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
+            Authorization: `Bearer ${currentSession.access_token}`,
           },
           body: JSON.stringify({
             ...applicationData,
@@ -107,7 +93,9 @@ const RegisterApplication = () => {
     }
   };
 
-  if (loading || !plan) {
+  // Hold the spinner while the session check runs so the form never flashes for
+  // a visitor who is about to be redirected to /login.
+  if (loading || sessionLoading || !plan || !session) {
     return (
       <div className="min-h-screen bg-[#05070A] flex items-center justify-center">
         <Loader2 className="animate-spin text-[#C5A059]" size={48} />
