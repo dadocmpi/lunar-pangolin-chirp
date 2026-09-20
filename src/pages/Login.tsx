@@ -9,6 +9,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { planKeyFromParam } from '@/lib/planKeys';
+import { buildPostLoginDestination, resolveLoginRedirect, sanitizeRedirectPath } from '@/lib/authRedirect';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -19,15 +21,22 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from || '/dashboard';
-  const plan = location.state?.plan;
+  // `/login?redirect=/register-application&plan=starter` is the contract used by
+  // the pricing CTA. Router state from existing callers is still honored, and any
+  // destination is sanitized so only in-app paths can be returned to.
+  const { target: queryTarget, plan: queryPlan } = resolveLoginRedirect(location.search);
+  const statePlan = location.state?.plan;
+  const plan =
+    planKeyFromParam(typeof statePlan === 'string' ? statePlan : statePlan?.id) ?? queryPlan;
+  const from = sanitizeRedirectPath(location.state?.from) ?? queryTarget;
+  const postLogin = buildPostLoginDestination(from, plan) ?? from;
 
   useEffect(() => {
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          navigate(from, { replace: true });
+          navigate(postLogin, { replace: true });
           return;
         }
         const savedEmail = localStorage.getItem('rememberedEmail');
@@ -42,7 +51,7 @@ const Login = () => {
       }
     };
     checkSession();
-  }, [navigate, from]);
+  }, [navigate, postLogin]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,7 +78,7 @@ const Login = () => {
         localStorage.removeItem('rememberedEmail');
       }
 
-      navigate(from, { state: { plan } });
+      navigate(postLogin, { state: { plan } });
     } catch (error: unknown) {
       showError(error instanceof Error ? error.message : t('auth.loginErrorMessage'));
     } finally {

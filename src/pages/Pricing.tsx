@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Check, Zap, Award, ShieldCheck, Crown } from 'lucide-react';
+import { Check, Zap, Award, ShieldCheck, Crown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
@@ -10,6 +10,10 @@ import MarketTicker from '@/components/MarketTicker';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useSupabaseSession } from '@/hooks/useSupabaseSession';
+import { planKeyFromParam, type PlanKey } from '@/lib/planKeys';
+import { REGISTER_APPLICATION_ROUTE, buildLoginRedirect } from '@/lib/authRedirect';
+import { showError } from '@/utils/toast';
 
 const PRICES_USD = {
   starter: { monthly: 200, account: 25000 },
@@ -22,11 +26,22 @@ const Pricing = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { convertPrice, currency, isLoading } = useCurrency();
+  const { session, loading: sessionLoading } = useSupabaseSession();
 
-  const plans = [
+  const plans: {
+    id: PlanKey;
+    name: string;
+    price: string;
+    priceUSD: number;
+    accountSize: string;
+    accountSizeUsd: number;
+    iconType: string;
+    features: string[];
+    popular?: boolean;
+  }[] = [
     {
       id: "starter",
-      name: t('plans.starter'),
+      name: t('pricing.planKeys.starter'),
       price: convertPrice(PRICES_USD.starter.monthly),
       priceUSD: PRICES_USD.starter.monthly,
       accountSize: convertPrice(PRICES_USD.starter.account),
@@ -41,7 +56,7 @@ const Pricing = () => {
     },
     {
       id: "professional",
-      name: t('plans.professional'),
+      name: t('pricing.planKeys.professional'),
       price: convertPrice(PRICES_USD.professional.monthly),
       priceUSD: PRICES_USD.professional.monthly,
       accountSize: convertPrice(PRICES_USD.professional.account),
@@ -56,7 +71,7 @@ const Pricing = () => {
     },
     {
       id: "business",
-      name: t('plans.business'),
+      name: t('pricing.planKeys.business'),
       price: convertPrice(PRICES_USD.business.monthly),
       priceUSD: PRICES_USD.business.monthly,
       accountSize: convertPrice(PRICES_USD.business.account),
@@ -70,7 +85,7 @@ const Pricing = () => {
     },
     {
       id: "enterprise",
-      name: t('plans.enterprise'),
+      name: t('pricing.planKeys.enterprise'),
       price: convertPrice(PRICES_USD.enterprise.monthly),
       priceUSD: PRICES_USD.enterprise.monthly,
       accountSize: convertPrice(PRICES_USD.enterprise.account),
@@ -100,7 +115,23 @@ const Pricing = () => {
     price: string;
     priceUSD: number;
   }) => {
-    navigate('/checkout', { state: { plan } });
+    // Validate against the server-side allowlist before doing anything else.
+    // Unknown keys fall back to starter so we never forward an arbitrary plan.
+    const planKey = planKeyFromParam(plan.id) ?? 'starter';
+
+    if (!session) {
+      // Fail closed: no checkout, no stripe-checkout, no application. Preserve
+      // the plan and intended destination for the login round-trip.
+      const loginUrl = buildLoginRedirect(REGISTER_APPLICATION_ROUTE, planKey);
+      if (!loginUrl) {
+        showError(t('auth.loginRequired'));
+        return;
+      }
+      navigate(loginUrl);
+      return;
+    }
+
+    navigate(`${REGISTER_APPLICATION_ROUTE}?plan=${planKey}`, { state: { plan: { id: planKey } } });
   };
 
   return (
@@ -159,12 +190,14 @@ const Pricing = () => {
                 </ul>
                 <Button
                   onClick={() => handleSelectPlan(plan)}
+                  disabled={sessionLoading}
+                  aria-busy={sessionLoading}
                   className={cn(
                     "w-full rounded-none h-14 text-[11px] font-black uppercase tracking-[2px] transition-all",
                     plan.popular ? "bg-[#D4AF37] text-black hover:bg-[#C9A227]" : "bg-white/5 text-white hover:bg-white/10 border border-white/10"
                   )}
                 >
-                  {t('pricing.select')}
+                  {sessionLoading ? <Loader2 className="animate-spin" size={16} /> : t('pricing.select')}
                 </Button>
               </div>
             ))}

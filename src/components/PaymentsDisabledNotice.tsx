@@ -7,11 +7,14 @@ import { Link } from 'react-router-dom';
 /**
  * Fail-closed gate for payments.
  *
- * Rendered when VITE_PAYMENTS_ENABLED is not set to the string "true".
+ * Rendered by Checkout and CheckoutSuccess when neither
+ * VITE_TEST_PAYMENT_MODE nor VITE_PAYMENTS_ENABLED is the string "true".
  * No payment buttons, forms, or checkout flow are rendered.
  *
- * This is NOT test-mode UI. It is the production default.
- * Test mode is a separate runtime concern enabled by PAYMENTS_ENABLED = "true".
+ * Both flags are build-time: Vite inlines `import.meta.env.VITE_*` during
+ * `vite build`, so enabling payments requires setting them in the build
+ * environment and redeploying. Supabase Edge Function secrets do not
+ * affect this screen.
  */
 export const PaymentsDisabledNotice = () => {
   return (
