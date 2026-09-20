@@ -785,13 +785,17 @@ i18n
     returnEmptyString: true
   }, (err) => {
     if (err) return console.error(err);
-    document.documentElement.lang = i18n.language;
+    applyDirection(i18n.language);
   });
 
-i18n.on('languageChanged', (lng) => {
+// The languageChanged handler does not fire for the initial detected language,
+// so a persisted/detected ar|he load would otherwise stay LTR until the first
+// manual switch.
+function applyDirection(lng: string) {
   document.documentElement.lang = lng;
-  const isRtl = lng === 'ar' || lng === 'he';
-  document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
-});
+  document.documentElement.dir = lng === 'ar' || lng === 'he' ? 'rtl' : 'ltr';
+}
+
+i18n.on('languageChanged', applyDirection);
 
 export default i18n;

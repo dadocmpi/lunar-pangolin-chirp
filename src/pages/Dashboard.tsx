@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
+import { functionsUrl, supabase } from '@/integrations/supabase/client';
 import { showError, showSuccess } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -323,7 +323,7 @@ const Dashboard = () => {
 
       // Trigger email notification via edge function
       try {
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/kyc-notification`, {
+        await fetch(functionsUrl('kyc-notification'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

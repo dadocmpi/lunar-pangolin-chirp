@@ -182,6 +182,15 @@ serve(async (req) => {
     metadata: Record<string, unknown> | null;
     status_enum?: string | null;
   }
+  // Safe accessor: metadata and metadata.application_id may be absent. Never
+  // pass an unchecked value to a query filter — a missing id would otherwise
+  // become an invalid `id=eq.undefined` update.
+  const getApplicationId = (
+    metadata: Record<string, unknown> | null | undefined,
+  ): string | null => {
+    const value = metadata?.application_id;
+    return typeof value === "string" && value.length > 0 ? value : null;
+  };
   let event: StripeEvent;
   try {
     const parsed = JSON.parse(rawBody) as StripeEvent;
@@ -418,21 +427,28 @@ serve(async (req) => {
         }
 
         // Update the application record's payment_status to payment_confirmed (idempotent)
-        const { data: application, error: appError } = await supabase
-          .from("applications")
-          .update({
-            payment_status: "payment_confirmed",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", pendingPayment.metadata.application_id)
-          .select()
-          .single();
-
-        if (appError || !application) {
+        const applicationId = getApplicationId(pendingPayment.metadata);
+        if (!applicationId) {
           console.error(
-            "Failed to update application payment status:",
-            appError,
+            "invoice.paid: pending payment has no application_id; skipping application update",
           );
+        } else {
+          const { data: application, error: appError } = await supabase
+            .from("applications")
+            .update({
+              payment_status: "payment_confirmed",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", applicationId)
+            .select()
+            .single();
+
+          if (appError || !application) {
+            console.error(
+              "Failed to update application payment status:",
+              appError,
+            );
+          }
         }
 
         // Create an audit log entry for the invoice paid
@@ -513,21 +529,28 @@ serve(async (req) => {
         }
 
         // Update the application record's payment_status to past_due
-        const { data: application, error: appError } = await supabase
-          .from("applications")
-          .update({
-            payment_status: "past_due",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", pendingPayment.metadata.application_id)
-          .select()
-          .single();
-
-        if (appError || !application) {
+        const applicationId = getApplicationId(pendingPayment.metadata);
+        if (!applicationId) {
           console.error(
-            "Failed to update application payment status:",
-            appError,
+            "invoice.payment_failed: pending payment has no application_id; skipping application update",
           );
+        } else {
+          const { data: application, error: appError } = await supabase
+            .from("applications")
+            .update({
+              payment_status: "past_due",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", applicationId)
+            .select()
+            .single();
+
+          if (appError || !application) {
+            console.error(
+              "Failed to update application payment status:",
+              appError,
+            );
+          }
         }
 
         break;
@@ -631,21 +654,28 @@ serve(async (req) => {
         }
 
         // Update the application record's payment_status
-        const { data: application, error: appError } = await supabase
-          .from("applications")
-          .update({
-            payment_status: appStatus,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", pendingPayment.metadata.application_id)
-          .select()
-          .single();
-
-        if (appError || !application) {
+        const applicationId = getApplicationId(pendingPayment.metadata);
+        if (!applicationId) {
           console.error(
-            "Failed to update application payment status:",
-            appError,
+            "customer.subscription.updated: pending payment has no application_id; skipping application update",
           );
+        } else {
+          const { data: application, error: appError } = await supabase
+            .from("applications")
+            .update({
+              payment_status: appStatus,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", applicationId)
+            .select()
+            .single();
+
+          if (appError || !application) {
+            console.error(
+              "Failed to update application payment status:",
+              appError,
+            );
+          }
         }
 
         break;
@@ -709,21 +739,28 @@ serve(async (req) => {
         }
 
         // Update the application record's payment_status to canceled
-        const { data: application, error: appError } = await supabase
-          .from("applications")
-          .update({
-            payment_status: "canceled",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", pendingPayment.metadata.application_id)
-          .select()
-          .single();
-
-        if (appError || !application) {
+        const applicationId = getApplicationId(pendingPayment.metadata);
+        if (!applicationId) {
           console.error(
-            "Failed to update application payment status:",
-            appError,
+            "customer.subscription.deleted: pending payment has no application_id; skipping application update",
           );
+        } else {
+          const { data: application, error: appError } = await supabase
+            .from("applications")
+            .update({
+              payment_status: "canceled",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", applicationId)
+            .select()
+            .single();
+
+          if (appError || !application) {
+            console.error(
+              "Failed to update application payment status:",
+              appError,
+            );
+          }
         }
 
         break;
@@ -801,16 +838,26 @@ serve(async (req) => {
         }
 
         // Update the application: payment_status -> refunded, activation stays manual.
-        const { error: appError } = await supabase
-          .from("applications")
-          .update({
-            payment_status: "refunded",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", metadata.application_id);
+        const refundApplicationId = getApplicationId(metadata);
+        if (!refundApplicationId) {
+          console.error(
+            "charge.refunded: pending payment has no application_id; skipping application update",
+          );
+        } else {
+          const { error: appError } = await supabase
+            .from("applications")
+            .update({
+              payment_status: "refunded",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", refundApplicationId);
 
-        if (appError) {
-          console.error("charge.refunded: application update failed", appError);
+          if (appError) {
+            console.error(
+              "charge.refunded: application update failed",
+              appError,
+            );
+          }
         }
 
         // Audit log (no auto-activation).
@@ -897,19 +944,26 @@ serve(async (req) => {
           break;
         }
 
-        const { error: appError } = await supabase
-          .from("applications")
-          .update({
-            payment_status: "disputed",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", metadata.application_id);
-
-        if (appError) {
+        const disputeApplicationId = getApplicationId(metadata);
+        if (!disputeApplicationId) {
           console.error(
-            "charge.dispute.created: application update failed",
-            appError,
+            "charge.dispute.created: pending payment has no application_id; skipping application update",
           );
+        } else {
+          const { error: appError } = await supabase
+            .from("applications")
+            .update({
+              payment_status: "disputed",
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", disputeApplicationId);
+
+          if (appError) {
+            console.error(
+              "charge.dispute.created: application update failed",
+              appError,
+            );
+          }
         }
 
         await supabase.from("payment_audit_log").insert({
@@ -948,11 +1002,11 @@ serve(async (req) => {
 });
 
 // Helper function to convert hex string to Uint8Array
-function hexToUint8Array(hex: string): Uint8Array {
+function hexToUint8Array(hex: string): Uint8Array<ArrayBuffer> {
   if (hex.length % 2 !== 0) {
     throw new Error("Invalid hex string");
   }
-  const bytes = new Uint8Array(hex.length / 2);
+  const bytes = new Uint8Array(new ArrayBuffer(hex.length / 2));
   for (let i = 0; i < hex.length; i += 2) {
     bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
   }

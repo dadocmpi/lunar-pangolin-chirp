@@ -6,7 +6,7 @@ import { User, Mail, Lock, ShieldCheck, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { supabase } from '@/integrations/supabase/client';
+import { functionsUrl, supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError } from '@/utils/toast';
 import { useTranslation } from 'react-i18next';
 
@@ -53,7 +53,7 @@ const Register = () => {
           userMetadata: data.user?.user_metadata,
         };
 
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/user-registration`, {
+        await fetch(functionsUrl('user-registration'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(registrationData)
@@ -63,7 +63,7 @@ const Register = () => {
       }
 
       try {
-        await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/confirm-signup`, {
+        await fetch(functionsUrl('confirm-signup'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

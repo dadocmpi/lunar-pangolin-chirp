@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { functionsUrl, supabase } from "@/integrations/supabase/client";
 
 export type CheckoutPaymentStatus =
   | "created"
@@ -81,7 +81,7 @@ export function usePaymentStatus(
         }
 
         const url =
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/payment-status?paymentId=${encodeURIComponent(paymentId)}`;
+          `${functionsUrl('payment-status')}?paymentId=${encodeURIComponent(paymentId)}`;
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${session.access_token}` },
         });

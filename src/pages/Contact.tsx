@@ -12,7 +12,7 @@ import MarketTicker from '@/components/MarketTicker';
 import { showSuccess, showError } from '@/utils/toast';
 import { Link } from 'react-router-dom';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || '').replace(/\s+/g, '');
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 const Contact = () => {

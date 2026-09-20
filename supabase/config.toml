@@ -1,0 +1,12 @@
+# Supabase Edge Function configuration.
+#
+# By default the platform requires an `Authorization: Bearer <jwt>` header on
+# every function invocation. That default is correct for user-facing functions
+# and is left untouched here.
+#
+# stripe-webhook is called by Stripe's servers, which cannot present a Supabase
+# JWT. Requests must reach the function so it can verify the Stripe-Signature
+# header itself. JWT verification is therefore disabled for this function only;
+# authenticity is enforced inside the function via STRIPE_WEBHOOK_SECRET.
+[functions.stripe-webhook]
+verify_jwt = false

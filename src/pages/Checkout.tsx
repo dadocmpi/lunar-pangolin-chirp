@@ -13,7 +13,7 @@ import {
   Lock,
   CreditCard,
 } from "lucide-react";
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
+import { functionsUrl, supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
 import { showError } from "@/utils/toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -229,7 +229,7 @@ const Checkout = () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session?.access_token) throw new Error("unauthorized");
     const res = await fetch(
-      `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/${fn}`,
+      functionsUrl(fn),
       {
         method: "POST",
         headers: {
