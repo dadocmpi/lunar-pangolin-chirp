@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -134,6 +135,18 @@ serve(async (req) => {
     console.error("Audit log error:", auditError);
     // We don't fail the rejection if audit log fails, but we log it
   }
+
+  notifyOwnerInBackground({
+    type: "conta",
+    subject: "Aplicação rejeitada",
+    data: {
+      application_id: applicationId,
+      motivo: reason,
+      rejeitado_por: user.id,
+      origem: "operator",
+    },
+    idempotencyKey: `application-reject:${applicationId}`,
+  });
 
   return new Response(
     JSON.stringify({ success: true }),

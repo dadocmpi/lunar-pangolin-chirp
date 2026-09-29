@@ -6,6 +6,7 @@ import {
   validateCheckoutInput,
 } from "../_shared/option_a/payments.ts";
 import { getPlan, TEST_PLACEHOLDER_WALLET } from "../_shared/option_a/plans.ts";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -136,6 +137,23 @@ serve(async (req) => {
     method: "crypto",
     idempotencyKey: validated.idempotencyKey,
     metadata: { ...validated.metadata, is_test: true },
+  });
+
+  notifyOwnerInBackground({
+    type: "compra",
+    subject: `Pedido criado (cripto) — plano ${plan.name}`,
+    replyTo: validated.userEmail,
+    data: {
+      plano: plan.name,
+      email: validated.userEmail,
+      metodo: "crypto",
+      rede: networkId,
+      valor: (validated.amountCents / 100).toFixed(2),
+      payment_id: payment.id,
+      status: "pending",
+      origem: "crypto-checkout",
+    },
+    idempotencyKey: `crypto-order:${payment.id}`,
   });
 
   return safeTestResponse(payment, TEST_PLACEHOLDER_WALLET, null);

@@ -42,6 +42,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { functionsUrl, supabase } from '@/integrations/supabase/client';
+import { notifyOwner } from '@/lib/notifyOwner';
 import { showError, showSuccess } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -229,6 +230,17 @@ const Dashboard = () => {
       if (error) throw error;
 
       setProfile({ ...profile, first_name: editFirstName, last_name: editLastName });
+      await notifyOwner({
+        type: 'conta',
+        subject: 'Dados da conta alterados (perfil)',
+        replyTo: user?.email,
+        data: {
+          email: user?.email,
+          evento: 'profile_updated',
+          nome: `${editFirstName} ${editLastName}`.trim(),
+          origem: 'dashboard',
+        },
+      });
       showSuccess(t('dashboard.profileUpdated'));
     } catch (err: unknown) {
       showError(t('dashboard.failedUpdateProfile'));
@@ -246,6 +258,17 @@ const Dashboard = () => {
       const { error } = await supabase.auth.updateUser({ email: editEmail });
       if (error) throw error;
       setEmailChangeRequested(true);
+      await notifyOwner({
+        type: 'conta',
+        subject: 'Alteração de e-mail solicitada',
+        replyTo: editEmail,
+        data: {
+          email_atual: user?.email,
+          novo_email: editEmail,
+          evento: 'email_change_requested',
+          origem: 'dashboard',
+        },
+      });
       showSuccess(t('dashboard.confirmationLinkSent'));
     } catch (err: unknown) {
       showError(t('dashboard.failedEmail'));
@@ -265,6 +288,16 @@ const Dashboard = () => {
     try {
       const { error } = await supabase.auth.updateUser({ password: newPassword });
       if (error) throw error;
+      await notifyOwner({
+        type: 'conta',
+        subject: 'Senha da conta alterada',
+        replyTo: user?.email,
+        data: {
+          email: user?.email,
+          evento: 'password_changed',
+          origem: 'dashboard',
+        },
+      });
       showSuccess(t('dashboard.passwordChanged'));
       setCurrentPassword('');
       setNewPassword('');

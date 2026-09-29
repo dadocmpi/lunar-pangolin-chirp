@@ -10,10 +10,9 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import { showSuccess, showError } from '@/utils/toast';
+import { notifyOwner } from '@/lib/notifyOwner';
 import { Link } from 'react-router-dom';
 
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || '').replace(/\s+/g, '');
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 const Contact = () => {
   const { t } = useTranslation();
@@ -61,47 +60,30 @@ const Contact = () => {
     }
 
     setLoading(true);
-    
-    try {
-      const response = await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        },
-        body: JSON.stringify({
-          to: 'marketsbraxel@ouvidor.net',
-          subject: `[Contact Form] ${formData.subject} - from ${formData.name}`,
-          html: `
-            <h2>New Contact Form Submission</h2>
-            <p><strong>Name:</strong> ${formData.name}</p>
-            <p><strong>Email:</strong> ${formData.email}</p>
-            <p><strong>Subject:</strong> ${formData.subject}</p>
-            <p><strong>Message:</strong></p>
-            <p>${formData.message.replace(/\n/g, '<br>')}</p>
-            <hr>
-            <p><small>Sent from braxelmarkets.vercel.app</small></p>
-          `,
-          replyTo: formData.email
-        })
-      });
 
-      if (!response.ok) {
-        throw new Error('Failed to send email');
-      }
+    // Single notification path: the `notify-owner` Edge Function owns the
+    // Resend key and renders/sanitizes the message. Delivery failures never
+    // surface to the visitor.
+    await notifyOwner({
+      type: 'novo_lead',
+      subject: `Formulário de contato — ${formData.subject}`,
+      replyTo: formData.email,
+      data: {
+        nome: formData.name,
+        email: formData.email,
+        assunto: formData.subject,
+        mensagem: formData.message,
+        origem: 'contact_form',
+      },
+    });
 
-      showSuccess(t('contact.messageSent'));
-      setFormData({ name: '', email: '', subject: '', message: '', website: '' });
-      generateCaptcha();
+    showSuccess(t('contact.messageSent'));
+    setFormData({ name: '', email: '', subject: '', message: '', website: '' });
+    generateCaptcha();
 
-      setCooldown(true);
-      setTimeout(() => setCooldown(false), 60000);
-    } catch (error) {
-      console.error('Email error:', error);
-      showError(t('contact.messageFailed'));
-    } finally {
-      setLoading(false);
-    }
+    setCooldown(true);
+    setTimeout(() => setCooldown(false), 60000);
+    setLoading(false);
   };
 
   return (

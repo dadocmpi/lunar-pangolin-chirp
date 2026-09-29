@@ -3,6 +3,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { notifyOwner } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,7 +11,6 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const COMPANY_EMAIL = "marketsbraxel@ouvidor.net";
 
 function escapeHtml(text: string): string {
   const map: Record<string, string> = {
@@ -153,100 +153,23 @@ async function sendCompanyNotificationEmail(
   method: string,
   iban?: string,
 ) {
-  const resendApiKey = Deno.env.get("RESEND_API_KEY");
-
-  if (!resendApiKey) {
-    console.log("WITHDRAWAL COMPANY NOTIFICATION (Resend not configured):", {
-      to: COMPANY_EMAIL,
-      userEmail,
-      amount,
-      method,
-    });
-    return;
-  }
-
+  // Owner notification routed through the single central module. The IBAN is
+  // masked (last 4 only) and never sent in full.
   const maskedIban = iban ? `****${iban.slice(-4)}` : "N/A";
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"/>
-  <style>
-    body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0;padding:20px}
-    .wrap{max-width:600px;margin:0 auto;background:#fff;border-radius:4px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.1)}
-    .header{background:#0a0e27;padding:32px;text-align:center}
-    .header h1{color:#D4AF37;font-size:20px;font-weight:900;text-transform:uppercase;letter-spacing:3px;margin:0 0 6px}
-    .header p{color:#aaa;font-size:12px;margin:0}
-    .body{padding:32px}
-    .alert{padding:20px;background:#fff3cd;border-left:4px solid #ffc107;margin:20px 0}
-    .details{padding:20px;background:#f9f9f9;border-radius:4px;margin:20px 0}
-    .field{margin-bottom:12px;padding:14px;background:#f9f9f9;border-left:4px solid #D4AF37}
-    .label{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
-    .value{font-size:15px;font-weight:700;color:#222}
-    .footer{padding:20px 32px;text-align:center;font-size:11px;color:#999;border-top:1px solid #eee}
-  </style>
-</head>
-<body>
-<div class="wrap">
-  <div class="header">
-    <h1>Braxel Markets</h1>
-    <p>Withdrawal Request Notification</p>
-  </div>
-  <div class="body">
-    <div class="alert">
-      <strong>💰 New Withdrawal Request</strong>
-      <p style="margin:10px 0 0;font-size:14px">A user has requested a withdrawal that requires processing.</p>
-    </div>
-    <div class="field"><div class="label">User Email</div><div class="value">${
-    escapeHtml(userEmail)
-  }</div></div>
-    <div class="field"><div class="label">User Name</div><div class="value">${
-    escapeHtml(fullName || "N/A")
-  }</div></div>
-    <div class="field"><div class="label">Amount</div><div class="value">${
-    escapeHtml(amount)
-  }</div></div>
-    <div class="field"><div class="label">Method</div><div class="value">${
-    escapeHtml(method)
-  }</div></div>
-    ${
-    iban
-      ? `<div class="field"><div class="label">Destination</div><div class="value">${
-        escapeHtml(maskedIban)
-      }</div></div>`
-      : ""
-  }
-    <div class="field"><div class="label">Timestamp</div><div class="value">${
-    new Date().toUTCString()
-  }</div></div>
-  </div>
-  <div class="footer">Automated notification — Braxel Markets Withdrawal System</div>
-</div>
-</body>
-</html>`;
-
-  try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${resendApiKey}`,
-      },
-      body: JSON.stringify({
-        from: "Braxel Markets <withdrawals@braxelmarkets.com>",
-        to: COMPANY_EMAIL,
-        subject: `💰 Withdrawal Request — ${amount} — ${userEmail}`,
-        html,
-      }),
-    });
-
-    if (!res.ok) {
-      const err = await res.text();
-      console.error("Resend company notification error:", err);
-    }
-  } catch (error) {
-    console.error("Error sending company notification:", error);
-  }
+  await notifyOwner({
+    type: "pagamento",
+    subject: `Solicitação de saque — ${amount}`,
+    replyTo: userEmail,
+    data: {
+      cliente: fullName || "N/A",
+      email: userEmail,
+      valor: amount,
+      metodo: method || "Bank Transfer",
+      destino: maskedIban,
+      status: "processing",
+      origem: "withdrawal-notification",
+    },
+  });
 }
 
 serve(async (req) => {

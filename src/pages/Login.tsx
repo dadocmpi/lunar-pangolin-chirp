@@ -6,6 +6,7 @@ import { Lock, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
+import { notifyOwner } from '@/lib/notifyOwner';
 import { showSuccess, showError } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
@@ -55,13 +56,34 @@ const Login = () => {
       });
 
       if (error) {
+        // Track consecutive failures to flag a suspicious login. We only
+        // notify the owner once per burst threshold — not on every typo.
         if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
+          const key = `loginFailures:${email.toLowerCase()}`;
+          const previous = parseInt(localStorage.getItem(key) || '0', 10) || 0;
+          const failures = previous + 1;
+          localStorage.setItem(key, String(failures));
+          if (failures === 3) {
+            await notifyOwner({
+              type: 'conta',
+              subject: `Login suspeito — ${failures} tentativas falhas`,
+              replyTo: email,
+              data: {
+                email,
+                evento: 'login_suspeito',
+                tentativas_falhas: failures,
+                origem: 'login',
+              },
+            });
+          }
           showError(t('auth.accountNotFound'));
           navigate('/register', { state: { from, plan } });
           return;
         }
         throw error;
       }
+
+      localStorage.removeItem(`loginFailures:${email.toLowerCase()}`);
 
       if (rememberMe) {
         localStorage.setItem('rememberedEmail', email);

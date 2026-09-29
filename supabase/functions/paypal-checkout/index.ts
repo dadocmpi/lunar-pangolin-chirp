@@ -3,6 +3,7 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { notifyOwner } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -255,6 +256,25 @@ serve(async (req) => {
         console.error("[paypal-checkout] Database Error:", dbError);
         throw dbError;
       }
+
+      // 3b. Notify the owner through the single central module.
+      await notifyOwner({
+        type: "compra",
+        subject: `Nova compra via PayPal — ${planName}`,
+        replyTo: user.email || null,
+        data: {
+          cliente: profile?.full_name || null,
+          email: user.email || null,
+          plano: planName,
+          account_size: accountSize,
+          account_id: accountId,
+          metodo: "paypal",
+          order_id: orderId,
+          status: "completed",
+          origem: "paypal-checkout",
+        },
+        idempotencyKey: `paypal:${orderId}`,
+      });
 
       // 4. Send payment confirmation email to user
       await sendPaymentConfirmationEmail(

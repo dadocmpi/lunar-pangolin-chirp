@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,6 +23,17 @@ serve(async (req) => {
   // Get environment variables
   const stripeWebhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
   if (!stripeWebhookSecret) {
+    notifyOwnerInBackground({
+      type: "erro",
+      subject: "Webhook Stripe rejeitado — segredo não configurado",
+      data: {
+        servico: "stripe-webhook",
+        mensagem: "STRIPE_WEBHOOK_SECRET ausente",
+        status_http: 503,
+        origem: "stripe-webhook",
+      },
+      idempotencyKey: `stripe-webhook:no-secret:${new Date().toISOString().slice(0, 13)}`,
+    });
     return new Response(
       JSON.stringify({ error: "Webhook secret not configured" }),
       {
@@ -125,6 +137,17 @@ serve(async (req) => {
     );
 
     if (!isValid) {
+      notifyOwnerInBackground({
+        type: "erro",
+        subject: "Assinatura de webhook Stripe inválida",
+        data: {
+          servico: "stripe-webhook",
+          mensagem: "Assinatura HMAC inválida",
+          status_http: 400,
+          origem: "stripe-webhook",
+        },
+        idempotencyKey: `stripe-webhook:bad-signature:${t}`,
+      });
       return new Response(JSON.stringify({ error: "Invalid signature" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -132,6 +155,16 @@ serve(async (req) => {
     }
   } catch (err) {
     console.error("Signature verification failed:", err);
+    notifyOwnerInBackground({
+      type: "erro",
+      subject: "Falha ao verificar assinatura do webhook Stripe",
+      data: {
+        servico: "stripe-webhook",
+        mensagem: err instanceof Error ? err.message : String(err),
+        status_http: 500,
+        origem: "stripe-webhook",
+      },
+    });
     return new Response(
       JSON.stringify({ error: "Signature verification error" }),
       {
@@ -473,6 +506,21 @@ serve(async (req) => {
           console.error("Audit log error:", auditError);
         }
 
+        notifyOwnerInBackground({
+          type: "pagamento",
+          subject: "Renovação paga (Stripe)",
+          data: {
+            payment_id: pendingPayment.id,
+            application_id: getApplicationId(pendingPayment.metadata),
+            stripe_subscription_id: invoice.subscription,
+            metodo: "stripe",
+            status: "renewed",
+            stripe_event_id: event.id,
+            origem: "stripe-webhook",
+          },
+          idempotencyKey: `stripe:${event.id}:invoice.paid`,
+        });
+
         break;
       }
       case "invoice.payment_failed": {
@@ -552,6 +600,20 @@ serve(async (req) => {
             );
           }
         }
+
+        notifyOwnerInBackground({
+          type: "pagamento",
+          subject: "Pagamento falhou (Stripe)",
+          data: {
+            payment_id: pendingPayment.id,
+            application_id: getApplicationId(pendingPayment.metadata),
+            metodo: "stripe",
+            status: "failed",
+            stripe_event_id: event.id,
+            origem: "stripe-webhook",
+          },
+          idempotencyKey: `stripe:${event.id}:invoice.payment_failed`,
+        });
 
         break;
       }
@@ -678,6 +740,20 @@ serve(async (req) => {
           }
         }
 
+        notifyOwnerInBackground({
+          type: "pagamento",
+          subject: `Assinatura atualizada (${canonicalStatus}) — Stripe`,
+          data: {
+            payment_id: pendingPayment.id,
+            application_id: getApplicationId(pendingPayment.metadata),
+            status: canonicalStatus,
+            metodo: "stripe",
+            stripe_event_id: event.id,
+            origem: "stripe-webhook",
+          },
+          idempotencyKey: `stripe:${event.id}:customer.subscription.updated`,
+        });
+
         break;
       }
       case "customer.subscription.deleted": {
@@ -762,6 +838,20 @@ serve(async (req) => {
             );
           }
         }
+
+        notifyOwnerInBackground({
+          type: "pagamento",
+          subject: "Assinatura cancelada (Stripe)",
+          data: {
+            payment_id: pendingPayment.id,
+            application_id: getApplicationId(pendingPayment.metadata),
+            status: "canceled",
+            metodo: "stripe",
+            stripe_event_id: event.id,
+            origem: "stripe-webhook",
+          },
+          idempotencyKey: `stripe:${event.id}:customer.subscription.deleted`,
+        });
 
         break;
       }
@@ -874,6 +964,23 @@ serve(async (req) => {
           created_at: new Date().toISOString(),
         });
 
+        notifyOwnerInBackground({
+          type: "pagamento",
+          subject: "Reembolso processado (Stripe)",
+          data: {
+            payment_id: pendingPayment.id,
+            application_id: getApplicationId(metadata),
+            valor_reembolsado: typeof charge?.amount_refunded === "number"
+              ? (charge.amount_refunded / 100).toFixed(2)
+              : null,
+            status: "refunded",
+            metodo: "stripe",
+            stripe_event_id: event.id,
+            origem: "stripe-webhook",
+          },
+          idempotencyKey: `stripe:${event.id}:charge.refunded`,
+        });
+
         break;
       }
       case "charge.dispute.created": {
@@ -981,14 +1088,53 @@ serve(async (req) => {
           created_at: new Date().toISOString(),
         });
 
+        notifyOwnerInBackground({
+          type: "erro",
+          subject: "Disputa/chargeback aberto (Stripe)",
+          data: {
+            payment_id: pendingPayment.id,
+            application_id: getApplicationId(metadata),
+            motivo_disputa: dispute.reason ?? null,
+            valor_disputa: typeof dispute.amount === "number"
+              ? (dispute.amount / 100).toFixed(2)
+              : null,
+            status: "disputed",
+            metodo: "stripe",
+            stripe_event_id: event.id,
+            origem: "stripe-webhook",
+          },
+          idempotencyKey: `stripe:${event.id}:charge.dispute.created`,
+        });
+
         break;
       }
       default:
-        // Ignore other events
+        // Surface every other Stripe event to the owner as a generic webhook.
+        notifyOwnerInBackground({
+          type: "webhook",
+          subject: `Webhook Stripe: ${event.type}`,
+          data: {
+            servico: "stripe",
+            tipo_evento: event.type,
+            id_evento: event.id,
+            origem: "stripe-webhook",
+          },
+          idempotencyKey: `stripe:${event.id}`,
+        });
         break;
     }
   } catch (err) {
     console.error("Error processing webhook event:", err);
+    notifyOwnerInBackground({
+      type: "erro",
+      subject: "Erro crítico ao processar webhook do Stripe",
+      data: {
+        servico: "stripe-webhook",
+        mensagem: err instanceof Error ? err.message : String(err),
+        status_http: 500,
+        origem: "stripe-webhook",
+      },
+    });
     return new Response(JSON.stringify({ error: "Internal error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

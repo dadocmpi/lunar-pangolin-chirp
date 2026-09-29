@@ -7,6 +7,7 @@ import {
   validateCheckoutInput,
 } from "../_shared/option_a/payments.ts";
 import { getPlan, TEST_PLACEHOLDER_BANK } from "../_shared/option_a/plans.ts";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -148,6 +149,24 @@ serve(async (req) => {
       source: "wise",
       eventId: `wise:${validated.idempotencyKey}:pending_manual`,
       reason: "wise_requires_manual_reconciliation",
+    });
+  }
+
+  if (created) {
+    notifyOwnerInBackground({
+      type: "compra",
+      subject: `Pedido criado (Wise) — plano ${plan.name}`,
+      replyTo: validated.userEmail,
+      data: {
+        plano: plan.name,
+        email: validated.userEmail,
+        metodo: "wise",
+        valor: (validated.amountCents / 100).toFixed(2),
+        payment_id: payment.id,
+        status: "pending_manual",
+        origem: "wise-checkout",
+      },
+      idempotencyKey: `wise-order:${payment.id}`,
     });
   }
 

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -189,6 +190,17 @@ serve(async (req) => {
   }
 
   const verb = action === "approve" ? "approved" : "rejected";
+  notifyOwnerInBackground({
+    type: "conta",
+    subject: `KYC ${action === "approve" ? "aprovado" : "recusado"}`,
+    data: {
+      user_id: userId,
+      acao: action,
+      novo_status: newStatus,
+      origem: "kyc-action",
+    },
+    idempotencyKey: `kyc-action:${userId}:${action}`,
+  });
   return htmlResponse(
     `KYC ${verb}`,
     `KYC verification <span class="${

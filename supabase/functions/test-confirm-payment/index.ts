@@ -6,6 +6,7 @@ import {
 } from "../_shared/option_a/payments.ts";
 import { getPlan, type PaymentStatus } from "../_shared/option_a/plans.ts";
 import { logPaymentEvent } from "../_shared/option_a/audit.ts";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -334,6 +335,25 @@ serve(async (req) => {
     previousStatus: currentStatus,
     newStatus: updated.status_enum ?? newStatus,
     reason: `test_admin_${action}:activation=${activation.reason}`,
+  });
+
+  notifyOwnerInBackground({
+    type: "pagamento",
+    subject: action === "confirm"
+      ? "Pagamento confirmado (teste)"
+      : "Pagamento rejeitado (teste)",
+    data: {
+      payment_id: updated.id,
+      plano: (payment as { plan_name?: string }).plan_name ?? null,
+      valor: typeof payment.amount_cents === "number"
+        ? (payment.amount_cents / 100).toFixed(2)
+        : null,
+      metodo: payment.method,
+      status: updated.status_enum ?? newStatus,
+      ambiente: "test",
+      origem: "test-confirm-payment",
+    },
+    idempotencyKey: `test-confirm:${updated.id}:${action}`,
   });
 
   return new Response(

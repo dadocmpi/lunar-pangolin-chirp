@@ -7,6 +7,7 @@ import {
 } from "../_shared/payments.ts";
 import { PaymentRow } from "../_shared/payments.ts";
 import { getCryptoNetwork } from "../_shared/plans.ts";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 /**
  * Crypto auto-confirm — NOT SCHEDULED.
@@ -110,6 +111,21 @@ serve(async (req) => {
         eventId: `crypto:${observedTxHash}:network_mismatch`,
         reason: "network_mismatch",
       });
+      notifyOwnerInBackground({
+        type: "pagamento",
+        subject: "Pagamento cripto rejeitado — rede divergente",
+        data: {
+          payment_id: p.id,
+          valor: (p.amount_cents / 100).toFixed(2),
+          rede_esperada: p.network,
+          rede_observada: network.id,
+          tx_hash: observedTxHash,
+          status: "rejected",
+          motivo: "network_mismatch",
+          origem: "crypto-auto-confirm",
+        },
+        idempotencyKey: `crypto:${observedTxHash}:network_mismatch`,
+      });
       return new Response(
         JSON.stringify({ ok: false, reason: "network_mismatch" }),
         {
@@ -132,6 +148,21 @@ serve(async (req) => {
         source: "crypto",
         eventId: `crypto:${observedTxHash}:amount_out_of_range`,
         reason: `amount_out_of_range:${observedAmountCents}:${lower}:${upper}`,
+      });
+      notifyOwnerInBackground({
+        type: "pagamento",
+        subject: "Pagamento cripto em revisão — valor divergente",
+        data: {
+          payment_id: p.id,
+          valor_esperado: (expected / 100).toFixed(2),
+          valor_observado: (observedAmountCents / 100).toFixed(2),
+          rede: network.id,
+          tx_hash: observedTxHash,
+          status: "pending_manual",
+          motivo: "amount_out_of_range",
+          origem: "crypto-auto-confirm",
+        },
+        idempotencyKey: `crypto:${observedTxHash}:amount_out_of_range`,
       });
       return new Response(
         JSON.stringify({ ok: false, reason: "amount_out_of_range" }),
@@ -194,6 +225,22 @@ serve(async (req) => {
       `crypto:${observedTxHash}:activated`,
     );
 
+    notifyOwnerInBackground({
+      type: "pagamento",
+      subject: "Pagamento cripto confirmado (automático)",
+      data: {
+        payment_id: p.id,
+        valor: (observedAmountCents / 100).toFixed(2),
+        rede: network.id,
+        tx_hash: observedTxHash,
+        confirmacoes: confirmations,
+        status: "confirmed",
+        servico_ativado: activation.activated,
+        origem: "crypto-auto-confirm",
+      },
+      idempotencyKey: `crypto:${observedTxHash}:confirmed`,
+    });
+
     return new Response(
       JSON.stringify({
         ok: true,
@@ -213,6 +260,16 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    notifyOwnerInBackground({
+      type: "erro",
+      subject: "Erro crítico na auto-confirmação cripto",
+      data: {
+        servico: "crypto-auto-confirm",
+        mensagem: err instanceof Error ? err.message : String(err),
+        status_http: 500,
+        origem: "crypto-auto-confirm",
+      },
+    });
     return new Response(JSON.stringify({ error: "internal_error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

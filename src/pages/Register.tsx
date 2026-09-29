@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { functionsUrl, supabase } from '@/integrations/supabase/client';
+import { notifyOwner } from '@/lib/notifyOwner';
 import { showSuccess, showError } from '@/utils/toast';
 import { useTranslation } from 'react-i18next';
 
@@ -42,25 +43,17 @@ const Register = () => {
 
       if (error) throw error;
 
-      try {
-        const registrationData = {
-          userId: data.user?.id,
-          email: email,
-          fullName: fullName,
-          password: password,
-          registeredAt: new Date().toISOString(),
-          emailConfirmed: data.user?.email_confirmed_at ? 'Yes' : 'No (pending confirmation)',
-          userMetadata: data.user?.user_metadata,
-        };
-
-        await fetch(functionsUrl('user-registration'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(registrationData)
-        });
-      } catch (notifError) {
-        console.error('Registration notification error:', notifError);
-      }
+      await notifyOwner({
+        type: 'novo_cliente',
+        subject: `Novo cadastro de cliente — ${fullName || email}`,
+        replyTo: email,
+        data: {
+          nome: fullName,
+          email,
+          origem: 'register',
+          email_confirmado: data.user?.email_confirmed_at ? 'sim' : 'não',
+        },
+      });
 
       try {
         await fetch(functionsUrl('confirm-signup'), {
