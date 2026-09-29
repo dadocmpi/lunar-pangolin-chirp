@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { CheckoutStatusBadge } from "@/components/CheckoutStatusBadge";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
+import { notifyOwner } from "@/lib/notifyOwner";
 
 export type CheckoutPaymentStatus =
   | "created"
@@ -73,6 +74,8 @@ interface ApplicationRecord {
   status?: string | null;
   amount_cents?: number | null;
   currency?: string | null;
+  email?: string | null;
+  full_name?: string | null;
 }
 
 const CRYPTO_NETWORKS = [
@@ -264,7 +267,19 @@ const Checkout = () => {
       setWiseResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
     } catch (e: unknown) {
-      setSubmitError(e instanceof Error ? e.message : String(e));
+      const message = e instanceof Error ? e.message : String(e);
+      await notifyOwner({
+        type: "erro",
+        subject: "Falha ao iniciar checkout",
+        replyTo: application?.email,
+        data: {
+          plano: application?.plan_key,
+          email: application?.email,
+          erro: message,
+          origem: "checkout",
+        },
+      });
+      setSubmitError(message);
     } finally {
       setProcessing(false);
     }
@@ -285,7 +300,19 @@ const Checkout = () => {
       setCryptoResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
     } catch (e: unknown) {
-      setSubmitError(e instanceof Error ? e.message : String(e));
+      const message = e instanceof Error ? e.message : String(e);
+      await notifyOwner({
+        type: "erro",
+        subject: "Falha ao iniciar checkout",
+        replyTo: application?.email,
+        data: {
+          plano: application?.plan_key,
+          email: application?.email,
+          erro: message,
+          origem: "checkout",
+        },
+      });
+      setSubmitError(message);
     } finally {
       setProcessing(false);
     }
@@ -311,7 +338,19 @@ const Checkout = () => {
         window.location.href = res.url;
       }
     } catch (e: unknown) {
-      setSubmitError(e instanceof Error ? e.message : String(e));
+      const message = e instanceof Error ? e.message : String(e);
+      await notifyOwner({
+        type: "erro",
+        subject: "Falha ao iniciar checkout",
+        replyTo: application?.email,
+        data: {
+          plano: application?.plan_key,
+          email: application?.email,
+          erro: message,
+          origem: "checkout",
+        },
+      });
+      setSubmitError(message);
     } finally {
       setProcessing(false);
     }

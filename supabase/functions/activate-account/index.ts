@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -263,6 +264,17 @@ serve(async (req) => {
     console.error("Failed to log activation event:", logError);
   }
 
+  notifyOwnerInBackground({
+    type: "conta",
+    subject: "Conta ativada manualmente",
+    data: {
+      payment_id: paymentId,
+      application_id: applicationId,
+      ativado_por: user.id,
+      origem: "activate-account",
+    },
+    idempotencyKey: `activate-account:${paymentId}`,
+  });
   return new Response(
     JSON.stringify({
       success: true,

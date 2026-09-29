@@ -27,6 +27,7 @@ import {
   transitionPayment,
 } from "../_shared/option_a/payments.ts";
 import { logPaymentEvent } from "../_shared/option_a/audit.ts";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -277,6 +278,25 @@ serve(async (req) => {
       );
     }
   }
+
+  notifyOwnerInBackground({
+    type: "pagamento",
+    subject: "Pagamento cripto confirmado",
+    data: {
+      payment_id: confirmed.id,
+      plano: confirmed.plan_name,
+      valor: confirmed.amount_cents != null
+        ? (confirmed.amount_cents / 100).toFixed(2)
+        : null,
+      rede: network ?? confirmed.network,
+      tx_hash: txHash,
+      status: "confirmed",
+      servico_ativado: activation.activated,
+      metodo: "crypto",
+      origem: "crypto-confirmation",
+    },
+    idempotencyKey: `crypto-confirm:${confirmed.id}:${txHash}`,
+  });
 
   return new Response(
     JSON.stringify({

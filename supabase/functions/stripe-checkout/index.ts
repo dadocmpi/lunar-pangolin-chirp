@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -215,6 +216,22 @@ serve(async (req) => {
       },
     );
   }
+
+  notifyOwnerInBackground({
+    type: "compra",
+    subject: `Pedido criado (Stripe) — plano ${planKey}`,
+    replyTo: user.email ?? null,
+    data: {
+      plano: planKey,
+      email: user.email ?? null,
+      metodo: "stripe",
+      payment_id: pendingPayment.id,
+      application_id: applicationId,
+      status: "pending",
+      origem: "stripe-checkout",
+    },
+    idempotencyKey: `stripe-order:${pendingPayment.id}`,
+  });
 
   // Create Stripe Checkout Session
   const sessionData = new URLSearchParams();

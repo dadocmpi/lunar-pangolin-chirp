@@ -26,6 +26,15 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - Checkout + CheckoutSuccess fail closed when `isSupabaseConfigured()` is false (render `PaymentsDisabledNotice` or "could not verify" state).
 - Do not touch Stripe price IDs, webhook signature verification, payment/activation logic, Supabase functions, migrations, or RLS.
 
+## Owner notifications (Resend)
+- ONE module sends every owner email: `supabase/functions/_shared/email.ts` → `notifyOwner({ type, subject, data, replyTo, idempotencyKey })`. Never call `api.resend.com` directly from new code; route through `notifyOwner` / `notifyOwnerInBackground`.
+- `src/lib/notifyOwner.ts` is the browser-side helper. It forwards to the `notify-owner` Edge Function (which owns the Resend key) — the key must never reach the client bundle.
+- Event types and subject prefixes: `novo_cliente` `[Novo Cliente]`, `novo_lead` `[Lead]`, `compra` `[Compra]`, `pagamento` `[Pagamento]`, `conta` `[Conta]`, `erro` `[Erro]`, `webhook` `[Webhook]`.
+- Env (Supabase Edge Function secrets, never committed): `RESEND_API_KEY`, `EMAIL_FROM`, `EMAIL_TO`, `EMAIL_TEST_SECRET`.
+- Test: `deno run -A supabase/functions/_test/email-tests.ts` (unit) and `deno run -A supabase/functions/_test/run-email-samples.ts` (one sample per type). Deployed: `POST /functions/v1/email-test` with `{"secret":"<EMAIL_TEST_SECRET>"}`.
+- Redaction is automatic by key name (password/secret/token/card/cvv/iban/...) and for card-like digit runs; HTML is escaped before rendering.
+- Owner notifications are fire-and-forget: a provider failure must never break signup, checkout, a form submit, or a webhook.
+
 ## Deployment
 - Deployment is via Vercel's GitHub integration: pushing to `main` triggers a `Production` deployment for the `braxelmarkets` project (`https://braxelmarkets.vercel.app/`).
 - No local Vercel CLI/auth; do not attempt `vercel deploy` — push to `main` instead.

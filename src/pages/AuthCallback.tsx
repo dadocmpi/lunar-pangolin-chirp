@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { notifyOwnerInBackground } from '@/lib/notifyOwner';
 
 const AuthCallback = () => {
   const navigate = useNavigate();
@@ -30,6 +31,17 @@ const AuthCallback = () => {
           if (sessionError) throw sessionError;
 
           if (data.user) {
+            notifyOwnerInBackground({
+              type: 'novo_cliente',
+              subject: `E-mail confirmado — ${data.user.email}`,
+              replyTo: data.user.email,
+              data: {
+                user_id: data.user.id,
+                email: data.user.email,
+                evento: 'email_confirmed',
+                origem: 'auth_callback',
+              },
+            });
             setStatus('success');
             // Redirect to login after successful confirmation
             setTimeout(() => {
@@ -55,6 +67,17 @@ const AuthCallback = () => {
             if (sessionError) throw sessionError;
 
             if (data.user) {
+              notifyOwnerInBackground({
+                type: 'novo_cliente',
+                subject: `E-mail confirmado — ${data.user.email}`,
+                replyTo: data.user.email,
+                data: {
+                  user_id: data.user.id,
+                  email: data.user.email,
+                  evento: 'email_confirmed',
+                  origem: 'auth_callback',
+                },
+              });
               setStatus('success');
               setTimeout(() => {
                 navigate('/login', { replace: true });

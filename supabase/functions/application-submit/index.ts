@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { getPlan } from "../_shared/plans.ts";
+import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -199,6 +200,24 @@ serve(async (req) => {
       },
     );
   }
+
+  notifyOwnerInBackground({
+    type: "novo_lead",
+    subject: `Nova pré-inscrição — plano ${canonicalPlan.name}`,
+    replyTo: email,
+    data: {
+      nome: full_name,
+      email,
+      telefone: phone,
+      pais: country,
+      cidade: city,
+      plano: canonicalPlan.name,
+      application_id: application.id,
+      nota_cliente: note,
+      origem: "register-application",
+    },
+    idempotencyKey: `application-submit:${application.id}`,
+  });
 
   return new Response(
     JSON.stringify({
