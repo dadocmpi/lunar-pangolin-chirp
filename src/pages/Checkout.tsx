@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import {
   ShieldCheck,
@@ -23,6 +23,7 @@ import { CheckoutStatusBadge } from "@/components/CheckoutStatusBadge";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
 import { notifyOwner } from "@/lib/notifyOwner";
+import { getPlanPricing, formatUsd } from "@/lib/plans";
 
 export type CheckoutPaymentStatus =
   | "created"
@@ -173,46 +174,25 @@ const Checkout = () => {
     checkUserAndApplication();
   }, [applicationId, navigate]);
 
-  // Official monthly prices in EUR
-  const OFFICIAL_PRICES_EUR: Record<string, number> = {
-    Starter: 80.04,
-    Professional: 120.52,
-    Business: 431.48,
-    Enterprise: 852.84,
-  };
-
   // Get the plan key from the application data
   const planKey = application?.plan_key;
 
-  // Override plan data with official EUR prices based on plan key
+  // The amount due is always USD and comes from the shared plan table, so the
+  // checkout total matches the pricing page exactly. The server
+  // (supabase/functions/_shared/plans.ts) is the source of truth for what is
+  // actually charged.
   const enhancedPlan = planKey
     ? {
-        // We'll create a plan-like object from the application data and official prices
         id: planKey,
         name:
           planKey.charAt(0).toUpperCase() +
-          planKey.slice(1).toLowerCase(), // Convert the rest to lowercase
-        priceEUR:
-          OFFICIAL_PRICES_EUR[
-            (planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase()) as
-              keyof typeof OFFICIAL_PRICES_EUR
-          ] ?? 0,
-        priceUSD: 0, // We won't show USD
-        accountSizeEUR:
-          OFFICIAL_PRICES_EUR[
-            (planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase()) as
-              keyof typeof OFFICIAL_PRICES_EUR
-          ] ?? 0,
-        accountSizeUSD: 0,
-        features: [], // We don't have features in the application, but we can fetch from a plans table if needed
-        // For now, we'll leave features empty and rely on the plan description in the UI
+          planKey.slice(1).toLowerCase(),
+        price: getPlanPricing(planKey).monthlyUsd,
+        features: [],
       }
     : null;
 
-  const numericPriceEUR = useMemo(() => {
-    if (!enhancedPlan) return "0";
-    return String(enhancedPlan.priceEUR ?? 0);
-  }, [enhancedPlan]);
+  const formattedPrice = formatUsd(enhancedPlan?.price ?? 0);
 
   const handleBack = () => {
     setShowCrypto(false);
@@ -441,7 +421,7 @@ const Checkout = () => {
                 </div>
                 <div className="text-right">
                   <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                    {'€' + enhancedPlan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    {formattedPrice}
                   </span>
                   <p className="text-[9px] text-slate-600 uppercase tracking-widest">
                     {t("checkout.billedMonthly")}
@@ -458,7 +438,7 @@ const Checkout = () => {
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
                       <span className="text-slate-500">{t("checkout.serviceAccess")}</span>
                       <span className="text-[22px] font-serif font-bold text-[#C5A059]">
-                        {'€' + enhancedPlan.priceEUR?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        {formattedPrice}
                       </span>
                     </div>
                     <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
@@ -597,7 +577,7 @@ const Checkout = () => {
                           {t("checkout.amountToPay")}
                         </p>
                         <p className="text-2xl font-bold text-[#C5A059]">
-                          {'€' + numericPriceEUR}
+                          {formattedPrice}
                         </p>
                       </div>
 
@@ -675,7 +655,7 @@ const Checkout = () => {
                           {t("checkout.amountToPay")}
                         </p>
                         <p className="text-2xl font-bold text-[#C5A059]">
-                          {'€' + numericPriceEUR}
+                          {formattedPrice}
                         </p>
                       </div>
 

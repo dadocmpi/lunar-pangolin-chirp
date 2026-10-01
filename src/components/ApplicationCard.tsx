@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { getPlanPricing, formatUsd } from '@/lib/plans';
 
 interface ApplicationCardProps {
   application: ApplicationRecord;
@@ -107,10 +108,7 @@ const ApplicationCard = ({ application, onActivate, onReject }: ApplicationCardP
             {t('operator.amount')}
           </p>
           <p className="text-[10px] font-bold text-[#C5A059]">
-            {'€' + ((application.plan_key === 'starter' ? 80.04 :
-                application.plan_key === 'professional' ? 120.52 :
-                application.plan_key === 'business' ? 431.48 :
-                application.plan_key === 'enterprise' ? 852.84 : 0)).toFixed(2)}
+            {formatUsd(getPlanPricing(application.plan_key).monthlyUsd)}
           </p>
         </div>
 
