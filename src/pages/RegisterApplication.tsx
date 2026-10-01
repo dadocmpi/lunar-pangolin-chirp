@@ -7,16 +7,35 @@ import Footer from '@/components/Footer';
 import ApplicationForm, { type PlanInfo } from '@/components/ApplicationForm';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert, Loader2, CheckCircle2 } from 'lucide-react';
+import { PLAN_PRICING, formatUsd } from '@/lib/plans';
 
-// Canonical monthly USD prices / managed capital, mirroring
-// supabase/functions/_shared/plans.ts. The server is the source of truth for
-// amounts; these values are display-only fallbacks when no plan is passed.
-const FALLBACK_PLANS: Record<string, PlanInfo> = {
-  starter: { id: 'starter', name: 'Starter', price: 200, priceUSD: 200, accountSize: '25,000', iconType: 'zap' },
-  professional: { id: 'professional', name: 'Professional', price: 350, priceUSD: 350, accountSize: '50,000', iconType: 'award' },
-  business: { id: 'business', name: 'Business', price: 600, priceUSD: 600, accountSize: '100,000', iconType: 'shield' },
-  enterprise: { id: 'enterprise', name: 'Enterprise', price: 820, priceUSD: 820, accountSize: '150,000', iconType: 'crown' },
-};
+// Display-only fallbacks when no plan is passed. Amounts come from the shared
+// PLAN_PRICING table so they stay identical across pricing, application, and
+// checkout. The server (supabase/functions/_shared/plans.ts) is the source of
+// truth for what is actually charged.
+const PLAN_META = [
+  { id: 'starter', name: 'Starter', iconType: 'zap' },
+  { id: 'professional', name: 'Professional', iconType: 'award' },
+  { id: 'business', name: 'Business', iconType: 'shield' },
+  { id: 'enterprise', name: 'Enterprise', iconType: 'crown' },
+] as const;
+
+const FALLBACK_PLANS: Record<string, PlanInfo> = Object.fromEntries(
+  PLAN_META.map(({ id, name, iconType }) => {
+    const pricing = PLAN_PRICING[id];
+    return [
+      id,
+      {
+        id,
+        name,
+        iconType,
+        price: pricing.monthlyUsd,
+        priceUSD: pricing.monthlyUsd,
+        accountSize: formatUsd(pricing.managedCapitalUsd),
+      } satisfies PlanInfo,
+    ];
+  }),
+);
 
 const resolvePlan = (candidate: unknown): PlanInfo | null => {
   if (!candidate || typeof candidate !== 'object') return null;
@@ -143,7 +162,7 @@ const RegisterApplication = () => {
             </div>
             <div className="text-right">
               <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                {plan.priceUSD?.toLocaleString(undefined, { style: 'currency', currency: 'USD' })}
+                {formatUsd(plan.priceUSD ?? PLAN_PRICING.starter.monthlyUsd)}
               </span>
               <p className="text-[9px] text-slate-600 uppercase tracking-widest">
                 {t('application.billed_monthly')}
@@ -157,7 +176,7 @@ const RegisterApplication = () => {
             </p>
             <p className="text-[10px] text-slate-400">
               {t('application.plan_price_detail', {
-                price: plan.priceUSD?.toLocaleString(undefined, { style: 'currency', currency: 'USD' }),
+                price: formatUsd(plan.priceUSD ?? PLAN_PRICING.starter.monthlyUsd),
               })}
             </p>
           </div>
