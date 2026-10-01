@@ -21,7 +21,7 @@ const PRICES_USD = {
 const Pricing = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { convertPrice, currency, isLoading } = useCurrency();
+  const { convertPrice, currency, isLoading, formatManagedCapital } = useCurrency();
 
   const plans = [
     {
@@ -29,8 +29,7 @@ const Pricing = () => {
       name: t('plans.starter'),
       price: convertPrice(PRICES_USD.starter.monthly),
       priceUSD: PRICES_USD.starter.monthly,
-      accountSize: convertPrice(PRICES_USD.starter.account),
-      accountSizeUsd: PRICES_USD.starter.account,
+      managedCapital: formatManagedCapital(PRICES_USD.starter.account),
       iconType: "zap",
       features: [
         t('plans.features.automation'),
@@ -44,8 +43,7 @@ const Pricing = () => {
       name: t('plans.professional'),
       price: convertPrice(PRICES_USD.professional.monthly),
       priceUSD: PRICES_USD.professional.monthly,
-      accountSize: convertPrice(PRICES_USD.professional.account),
-      accountSizeUsd: PRICES_USD.professional.account,
+      managedCapital: formatManagedCapital(PRICES_USD.professional.account),
       iconType: "award",
       features: [
         t('plans.features.starterFeatures'),
@@ -59,8 +57,7 @@ const Pricing = () => {
       name: t('plans.business'),
       price: convertPrice(PRICES_USD.business.monthly),
       priceUSD: PRICES_USD.business.monthly,
-      accountSize: convertPrice(PRICES_USD.business.account),
-      accountSizeUsd: PRICES_USD.business.account,
+      managedCapital: formatManagedCapital(PRICES_USD.business.account),
       iconType: "shield",
       features: [
         t('plans.features.proFeatures'),
@@ -73,8 +70,7 @@ const Pricing = () => {
       name: t('plans.enterprise'),
       price: convertPrice(PRICES_USD.enterprise.monthly),
       priceUSD: PRICES_USD.enterprise.monthly,
-      accountSize: convertPrice(PRICES_USD.enterprise.account),
-      accountSizeUsd: PRICES_USD.enterprise.account,
+      managedCapital: formatManagedCapital(PRICES_USD.enterprise.account),
       iconType: "crown",
       features: [
         t('plans.features.advancedFeatures'),
@@ -147,7 +143,7 @@ const Pricing = () => {
                 </div>
                 <div className="p-6 bg-white/[0.03] border border-white/5 mb-10">
                   <p className="text-[9px] text-slate-500 uppercase tracking-widest mb-2">{t('plans.managedCapital')}</p>
-                  <p className="text-[22px] font-serif font-bold text-[#D4AF37]">{plan.accountSize}</p>
+                  <p className="text-[22px] font-serif font-bold text-[#D4AF37]">{plan.managedCapital}</p>
                 </div>
                 <ul className="space-y-5 mb-12 flex-grow">
                   {plan.features.map((f, j) => (

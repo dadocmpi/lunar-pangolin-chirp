@@ -88,6 +88,19 @@ export function formatCurrency(
 }
 
 /**
+ * Formats managed capital as a fixed USD amount. Managed capital is quoted in
+ * USD (futures), so it must never be converted to the visitor's local currency.
+ */
+export function formatUsdAmount(amountUSD: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amountUSD);
+}
+
+/**
  * Country detection. Uses ipwho.is (HTTPS, no key required). Cache TTL 1 day.
  */
 export async function getUserCountry(): Promise<string> {
