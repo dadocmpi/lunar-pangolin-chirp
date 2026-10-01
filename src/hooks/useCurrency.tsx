@@ -4,6 +4,7 @@ import {
   getCurrencyByCountry,
   convertFromUSD,
   formatCurrency,
+  formatUsdAmount,
   fetchLiveExchangeRates,
   countryCurrencyMap,
 } from "@/services/currencyService";
@@ -17,6 +18,7 @@ interface CurrencyContextType {
   ratesReady: boolean;
   convertPrice: (amountUSD: number) => string;
   convertPriceValue: (amountUSD: number) => number;
+  formatManagedCapital: (amountUSD: number) => string;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
@@ -79,6 +81,10 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     return convertFromUSD(amountUSD, currencyInfo.currency);
   };
 
+  // Managed capital is always USD, regardless of the visitor's local currency.
+  const formatManagedCapital = (amountUSD: number): string =>
+    formatUsdAmount(amountUSD);
+
   return (
     <CurrencyContext.Provider
       value={{
@@ -90,6 +96,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         ratesReady,
         convertPrice,
         convertPriceValue,
+        formatManagedCapital,
       }}
     >
       {children}
