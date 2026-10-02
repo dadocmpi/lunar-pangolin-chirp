@@ -18,7 +18,7 @@ interface CurrencyContextType {
   ratesReady: boolean;
   convertPrice: (amountUSD: number) => string;
   convertPriceValue: (amountUSD: number) => number;
-  formatManagedCapital: (amountUSD: number) => string;
+  formatManagedCapital: (amountUSD: number, fractionDigits?: number) => string;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
@@ -82,8 +82,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   };
 
   // Managed capital is always USD, regardless of the visitor's local currency.
-  const formatManagedCapital = (amountUSD: number): string =>
-    formatUsdAmount(amountUSD);
+  const formatManagedCapital = (amountUSD: number, fractionDigits = 2): string =>
+    formatUsdAmount(amountUSD, fractionDigits);
 
   return (
     <CurrencyContext.Provider

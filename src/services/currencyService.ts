@@ -91,12 +91,12 @@ export function formatCurrency(
  * Formats managed capital as a fixed USD amount. Managed capital is quoted in
  * USD (futures), so it must never be converted to the visitor's local currency.
  */
-export function formatUsdAmount(amountUSD: number): string {
+export function formatUsdAmount(amountUSD: number, fractionDigits = 2): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
   }).format(amountUSD);
 }
 

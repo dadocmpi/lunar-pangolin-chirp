@@ -536,7 +536,10 @@ const enTranslation = {
     twoFactorDesc: "Add an extra layer of security to your account. Use an authenticator app like Google Authenticator or Authy.",
     qrCode: "QR Code",
     kycRequiredBanner: "KYC Required",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "Network",
+    emailChangeInboxNotice: "Please check your inbox and click the link to complete the email change.",
+    emailChangeSentTo: "A confirmation link has been sent to {{email}}. Please check your inbox and click the link to complete the email change."
   },
   checkout: {
     summary: "SUMMARY",
@@ -1393,7 +1396,10 @@ const ptTranslation = {
     twoFactorDesc: "Adicione uma camada extra de segurança à sua conta. Use um aplicativo autenticador como Google Authenticator ou Authy.",
     qrCode: "Código QR",
     kycRequiredBanner: "KYC Obrigatório",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "Rede",
+    emailChangeInboxNotice: "Verifique sua caixa de entrada e clique no link para concluir a alteração de e-mail.",
+    emailChangeSentTo: "Um link de confirmação foi enviado para {{email}}. Verifique sua caixa de entrada e clique no link para concluir a alteração de e-mail."
   },
   checkout: {
     summary: "RESUMO",
@@ -2289,7 +2295,10 @@ const itTranslation = {
     twoFactorDesc: "Aggiungi un ulteriore livello di sicurezza al tuo account. Usa un’app di autenticazione come Google Authenticator o Authy.",
     qrCode: "Codice QR",
     kycRequiredBanner: "KYC richiesto",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "Rete",
+    emailChangeInboxNotice: "Controlla la tua casella di posta e clicca sul link per completare la modifica dell’email.",
+    emailChangeSentTo: "Un link di conferma è stato inviato a {{email}}. Controlla la tua casella di posta e clicca sul link per completare la modifica dell’email."
   },
   checkout: {
     summary: "RIEPILOGO",
@@ -3165,7 +3174,10 @@ const esTranslation = {
     twoFactorDesc: "Añade una capa adicional de seguridad a tu cuenta. Usa una app de autenticación como Google Authenticator o Authy.",
     qrCode: "Código QR",
     kycRequiredBanner: "KYC requerido",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "Red",
+    emailChangeInboxNotice: "Revisa tu bandeja de entrada y haz clic en el enlace para completar el cambio de correo electrónico.",
+    emailChangeSentTo: "Se ha enviado un enlace de confirmación a {{email}}. Revisa tu bandeja de entrada y haz clic en el enlace para completar el cambio de correo electrónico."
   },
   checkout: {
     summary: "RESUMEN",
@@ -4041,7 +4053,10 @@ const frTranslation = {
     twoFactorDesc: "Ajoutez une couche de sécurité supplémentaire à votre compte. Utilisez une application d’authentification comme Google Authenticator ou Authy.",
     qrCode: "Code QR",
     kycRequiredBanner: "KYC requis",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "Réseau",
+    emailChangeInboxNotice: "Vérifiez votre boîte de réception et cliquez sur le lien pour finaliser le changement d’adresse e-mail.",
+    emailChangeSentTo: "Un lien de confirmation a été envoyé à {{email}}. Vérifiez votre boîte de réception et cliquez sur le lien pour finaliser le changement d’adresse e-mail."
   },
   checkout: {
     summary: "RÉCAPITULATIF",
@@ -4917,7 +4932,10 @@ const deTranslation = {
     twoFactorDesc: "Fügen Sie Ihrem Konto eine zusätzliche Sicherheitsebene hinzu. Verwenden Sie eine Authentifizierungs-App wie Google Authenticator oder Authy.",
     qrCode: "QR-Code",
     kycRequiredBanner: "KYC erforderlich",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "Netzwerk",
+    emailChangeInboxNotice: "Bitte prüfen Sie Ihren Posteingang und klicken Sie auf den Link, um die E-Mail-Änderung abzuschließen.",
+    emailChangeSentTo: "Ein Bestätigungslink wurde an {{email}} gesendet. Bitte prüfen Sie Ihren Posteingang und klicken Sie auf den Link, um die E-Mail-Änderung abzuschließen."
   },
   checkout: {
     summary: "ZUSAMMENFASSUNG",
@@ -5793,7 +5811,10 @@ const ruTranslation = {
     twoFactorDesc: "Добавьте дополнительный уровень безопасности. Используйте приложение-аутентификатор, например Google Authenticator или Authy.",
     qrCode: "QR-код",
     kycRequiredBanner: "Требуется KYC",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "Сеть",
+    emailChangeInboxNotice: "Проверьте входящие сообщения и перейдите по ссылке, чтобы завершить изменение адреса электронной почты.",
+    emailChangeSentTo: "Ссылка для подтверждения отправлена на {{email}}. Проверьте входящие сообщения и перейдите по ссылке, чтобы завершить изменение адреса электронной почты."
   },
   checkout: {
     summary: "ИТОГО",
@@ -6656,7 +6677,10 @@ const zhTranslation = {
     twoFactorDesc: "为您的账户增加一层额外保护。使用 Google Authenticator 或 Authy 等身份验证器应用。",
     qrCode: "二维码",
     kycRequiredBanner: "需要 KYC",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "网络",
+    emailChangeInboxNotice: "请查收您的收件箱，并点击链接以完成电子邮件地址的更改。",
+    emailChangeSentTo: "确认链接已发送至 {{email}}。请查收您的收件箱，并点击链接以完成电子邮件地址的更改。"
   },
   checkout: {
     summary: "摘要",
@@ -7532,7 +7556,10 @@ const jaTranslation = {
     twoFactorDesc: "アカウントにセキュリティを追加します。Google Authenticator や Authy などの認証アプリを使用してください。",
     qrCode: "QRコード",
     kycRequiredBanner: "KYC が必要です",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "ネットワーク",
+    emailChangeInboxNotice: "受信トレイを確認し、リンクをクリックしてメールアドレスの変更を完了してください。",
+    emailChangeSentTo: "確認リンクを {{email}} に送信しました。受信トレイを確認し、リンクをクリックしてメールアドレスの変更を完了してください。"
   },
   checkout: {
     summary: "概要",
@@ -8421,7 +8448,10 @@ const arTranslation = {
     twoFactorDesc: "أضف طبقة أمان إضافية لحسابك. استخدم تطبيق مصادقة مثل Google Authenticator أو Authy.",
     qrCode: "رمز QR",
     kycRequiredBanner: "KYC مطلوب",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "الشبكة",
+    emailChangeInboxNotice: "يرجى التحقق من صندوق الوارد والنقر على الرابط لإتمام تغيير البريد الإلكتروني.",
+    emailChangeSentTo: "تم إرسال رابط تأكيد إلى {{email}}. يرجى التحقق من صندوق الوارد والنقر على الرابط لإتمام تغيير البريد الإلكتروني."
   },
   checkout: {
     summary: "الملخص",
@@ -9297,7 +9327,10 @@ const heTranslation = {
     twoFactorDesc: "הוסף שכבת אבטחה נוספת לחשבונך. השתמש באפליקציית אימות כמו Google Authenticator או Authy.",
     qrCode: "קוד QR",
     kycRequiredBanner: "נדרש KYC",
-    assetsList: "BTC, ETH, SOL"
+    assetsList: "BTC, ETH, SOL",
+    networkLabel: "רשת",
+    emailChangeInboxNotice: "אנא בדוק את תיבת הדואר הנכנס ולחץ על הקישור כדי להשלים את שינוי כתובת הדוא\"ל.",
+    emailChangeSentTo: "קישור אימות נשלח אל {{email}}. אנא בדוק את תיבת הדואר הנכנס ולחץ על הקישור כדי להשלים את שינוי כתובת הדוא\"ל."
   },
   checkout: {
     summary: "סיכום",

@@ -3,10 +3,14 @@
 import React, { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { useTranslation } from 'react-i18next';
-import { TrendingUp, ShieldCheck, Zap } from 'lucide-react';
+import { ShieldCheck, Zap } from 'lucide-react';
+import { useCurrency } from '@/hooks/useCurrency';
 
 const ProfitCalculator = () => {
   const { t } = useTranslation();
+  // Capital allocations are quoted in USD (futures), so the figures must not be
+  // converted to the visitor's local currency.
+  const { formatManagedCapital } = useCurrency();
   const [capital, setCapital] = useState([5000]);
   
   // Estimativa conservadora de 8% a 15% ao mês para o exemplo
@@ -26,7 +30,7 @@ const ProfitCalculator = () => {
             <div className="space-y-6">
               <div className="flex justify-between items-end">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('profitCalculator.initialAllocation')}</label>
-                <span className="text-2xl font-serif font-bold text-[#D4AF37]">${capital[0].toLocaleString()}</span>
+                <span className="text-2xl font-serif font-bold text-[#D4AF37]">{formatManagedCapital(capital[0], 0)}</span>
               </div>
               <Slider 
                 defaultValue={[5000]} 
@@ -37,19 +41,19 @@ const ProfitCalculator = () => {
                 className="py-4"
               />
               <div className="flex justify-between text-[9px] font-bold text-slate-600 uppercase tracking-widest">
-                <span>$2,000</span>
-                <span>$20,000</span>
+                <span>{formatManagedCapital(2000, 0)}</span>
+                <span>{formatManagedCapital(20000, 0)}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-6 bg-white/[0.02] border border-white/5">
                 <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('profitCalculator.monthlyProfit')}</p>
-                <p className="text-xl font-serif font-bold text-green-500">+${monthlyReturn.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                <p className="text-xl font-serif font-bold text-green-500">+{formatManagedCapital(monthlyReturn, 0)}</p>
               </div>
               <div className="p-6 bg-white/[0.02] border border-white/5">
                 <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('profitCalculator.annualProfit')}</p>
-                <p className="text-xl font-serif font-bold text-green-500">+${annualReturn.toLocaleString(undefined, { maximumFractionDigits: 0 })}</p>
+                <p className="text-xl font-serif font-bold text-green-500">+{formatManagedCapital(annualReturn, 0)}</p>
               </div>
             </div>
           </div>

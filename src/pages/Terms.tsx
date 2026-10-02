@@ -31,7 +31,7 @@ const Terms = () => {
         <div className="absolute inset-0 -z-10">
           <img 
             src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=2070&auto=format&fit=crop" 
-            alt="Los Angeles" 
+            alt="" 
             className="w-full h-full object-cover opacity-20"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-[#05070A]/80 to-[#05070A]" />

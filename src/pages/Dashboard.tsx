@@ -689,7 +689,7 @@ const Dashboard = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.network')}</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.networkLabel')}</label>
                       <select className="w-full bg-white/5 border border-white/10 h-14 px-4 text-[12px] font-bold uppercase tracking-widest text-white outline-none appearance-none">
                         <option className="bg-[#1A1A1A]">{t('dashboard.network.erc20')}</option>
                         <option className="bg-[#1A1A1A]">{t('dashboard.network.trc20')}</option>
@@ -755,7 +755,7 @@ const Dashboard = () => {
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.type')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.entry')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.exit')}</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Profit</th>
+                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.profit')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.time')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.status')}</th>
                       </tr>
@@ -893,8 +893,7 @@ const Dashboard = () => {
                             <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-500">{t('dashboard.confirmationSent')}</p>
                           </div>
                           <p className="text-[10px] text-slate-400">
-                            A confirmation link has been sent to <span className="text-white font-bold">{editEmail}</span>.
-                            Please check your inbox and click the link to complete the email change.
+                            {t('dashboard.emailChangeSentTo', { email: editEmail })}
                           </p>
                           <button
                             onClick={() => setEmailChangeRequested(false)}
