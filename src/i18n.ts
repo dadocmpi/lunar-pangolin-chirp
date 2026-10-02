@@ -183,7 +183,8 @@ const enTranslation = {
     select: "SECURE THIS PLAN",
     allocation: "MANAGED CAPITAL",
     month: "monthly fee",
-    detectedCurrency: "Prices shown in your local currency ({{currency}}) based on your location"
+    detectedCurrency: "Prices shown in your local currency ({{currency}}) based on your location",
+    managedCapitalUsdNote: "Managed Capital (Capital Gerenciado) is always quoted in USD."
   },
   plans: {
     starter: "Starter",
@@ -541,7 +542,8 @@ const enTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "Network",
     emailChangeInboxNotice: "Please check your inbox and click the link to complete the email change.",
-    emailChangeSentTo: "A confirmation link has been sent to {{email}}. Please check your inbox and click the link to complete the email change."
+    emailChangeSentTo: "A confirmation link has been sent to {{email}}. Please check your inbox and click the link to complete the email change.",
+    growthPerformanceMtd: "Growth Performance (MTD)"
   },
   checkout: {
     summary: "SUMMARY",
@@ -1279,7 +1281,8 @@ const ptTranslation = {
     select: "GARANTIR ESTE PLANO",
     allocation: "CAPITAL GERENCIADO",
     month: "taxa mensal",
-    detectedCurrency: "Preços mostrados na sua moeda local ({{currency}}) com base na sua localização"
+    detectedCurrency: "Preços mostrados na sua moeda local ({{currency}}) com base na sua localização",
+    managedCapitalUsdNote: "O Capital Gerenciado é sempre cotado em USD."
   },
   plans: {
     starter: "Inicial",
@@ -1564,7 +1567,8 @@ const ptTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "Rede",
     emailChangeInboxNotice: "Verifique sua caixa de entrada e clique no link para concluir a alteração de e-mail.",
-    emailChangeSentTo: "Um link de confirmação foi enviado para {{email}}. Verifique sua caixa de entrada e clique no link para concluir a alteração de e-mail."
+    emailChangeSentTo: "Um link de confirmação foi enviado para {{email}}. Verifique sua caixa de entrada e clique no link para concluir a alteração de e-mail.",
+    growthPerformanceMtd: "Desempenho de Crescimento (no mês)"
   },
   checkout: {
     summary: "RESUMO",
@@ -2341,7 +2345,8 @@ const itTranslation = {
     select: "GARANTISCI QUESTO PIANO",
     allocation: "CAPITALE GESTITO",
     month: "tariffa mensile",
-    detectedCurrency: "Prezzi mostrati nella tua valuta locale ({{currency}}) in base alla tua posizione"
+    detectedCurrency: "Prezzi mostrati nella tua valuta locale ({{currency}}) in base alla tua posizione",
+    managedCapitalUsdNote: "Il capitale gestito (Capital Gerenciado) è sempre quotato in USD."
   },
   plans: {
     starter: "Base",
@@ -2626,7 +2631,8 @@ const itTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "Rete",
     emailChangeInboxNotice: "Controlla la tua casella di posta e clicca sul link per completare la modifica dell’email.",
-    emailChangeSentTo: "Un link di conferma è stato inviato a {{email}}. Controlla la tua casella di posta e clicca sul link per completare la modifica dell’email."
+    emailChangeSentTo: "Un link di conferma è stato inviato a {{email}}. Controlla la tua casella di posta e clicca sul link per completare la modifica dell’email.",
+    growthPerformanceMtd: "Performance di crescita (mese corrente)"
   },
   checkout: {
     summary: "RIEPILOGO",
@@ -3383,7 +3389,8 @@ const esTranslation = {
     select: "ASEGURAR ESTE PLAN",
     allocation: "CAPITAL GESTIONADO",
     month: "tarifa mensual",
-    detectedCurrency: "Precios mostrados en tu moneda local ({{currency}}) según tu ubicación"
+    detectedCurrency: "Precios mostrados en tu moneda local ({{currency}}) según tu ubicación",
+    managedCapitalUsdNote: "El capital gestionado (Capital Gerenciado) siempre se cotiza en USD."
   },
   plans: {
     starter: "Inicial",
@@ -3668,7 +3675,8 @@ const esTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "Red",
     emailChangeInboxNotice: "Revisa tu bandeja de entrada y haz clic en el enlace para completar el cambio de correo electrónico.",
-    emailChangeSentTo: "Se ha enviado un enlace de confirmación a {{email}}. Revisa tu bandeja de entrada y haz clic en el enlace para completar el cambio de correo electrónico."
+    emailChangeSentTo: "Se ha enviado un enlace de confirmación a {{email}}. Revisa tu bandeja de entrada y haz clic en el enlace para completar el cambio de correo electrónico.",
+    growthPerformanceMtd: "Rendimiento de crecimiento (mes en curso)"
   },
   checkout: {
     summary: "RESUMEN",
@@ -4425,7 +4433,8 @@ const frTranslation = {
     select: "SÉCURISER CE PLAN",
     allocation: "CAPITAL GÉRÉ",
     month: "frais mensuels",
-    detectedCurrency: "Prix affichés dans votre devise locale ({{currency}}) selon votre position"
+    detectedCurrency: "Prix affichés dans votre devise locale ({{currency}}) selon votre position",
+    managedCapitalUsdNote: "Le capital géré (Capital Gerenciado) est toujours coté en USD."
   },
   plans: {
     starter: "Débutant",
@@ -4710,7 +4719,8 @@ const frTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "Réseau",
     emailChangeInboxNotice: "Vérifiez votre boîte de réception et cliquez sur le lien pour finaliser le changement d’adresse e-mail.",
-    emailChangeSentTo: "Un lien de confirmation a été envoyé à {{email}}. Vérifiez votre boîte de réception et cliquez sur le lien pour finaliser le changement d’adresse e-mail."
+    emailChangeSentTo: "Un lien de confirmation a été envoyé à {{email}}. Vérifiez votre boîte de réception et cliquez sur le lien pour finaliser le changement d’adresse e-mail.",
+    growthPerformanceMtd: "Performance de croissance (mois en cours)"
   },
   checkout: {
     summary: "RÉCAPITULATIF",
@@ -5467,7 +5477,8 @@ const deTranslation = {
     select: "DIESEN PLAN SICHERN",
     allocation: "VERWALTETES KAPITAL",
     month: "monatliche Gebühr",
-    detectedCurrency: "Preise in Ihrer Landeswährung ({{currency}}) basierend auf Ihrem Standort"
+    detectedCurrency: "Preise in Ihrer Landeswährung ({{currency}}) basierend auf Ihrem Standort",
+    managedCapitalUsdNote: "Verwaltetes Kapital (Capital Gerenciado) wird immer in USD angegeben."
   },
   plans: {
     starter: "Einsteiger",
@@ -5752,7 +5763,8 @@ const deTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "Netzwerk",
     emailChangeInboxNotice: "Bitte prüfen Sie Ihren Posteingang und klicken Sie auf den Link, um die E-Mail-Änderung abzuschließen.",
-    emailChangeSentTo: "Ein Bestätigungslink wurde an {{email}} gesendet. Bitte prüfen Sie Ihren Posteingang und klicken Sie auf den Link, um die E-Mail-Änderung abzuschließen."
+    emailChangeSentTo: "Ein Bestätigungslink wurde an {{email}} gesendet. Bitte prüfen Sie Ihren Posteingang und klicken Sie auf den Link, um die E-Mail-Änderung abzuschließen.",
+    growthPerformanceMtd: "Wachstumsperformance (laufender Monat)"
   },
   checkout: {
     summary: "ZUSAMMENFASSUNG",
@@ -6509,7 +6521,8 @@ const ruTranslation = {
     select: "ВЫБРАТЬ ЭТОТ ПЛАН",
     allocation: "УПРАВЛЯЕМЫЙ КАПИТАЛ",
     month: "ежемесячная плата",
-    detectedCurrency: "Цены в вашей местной валюте ({{currency}}) по вашему местоположению"
+    detectedCurrency: "Цены в вашей местной валюте ({{currency}}) по вашему местоположению",
+    managedCapitalUsdNote: "Управляемый капитал (Capital Gerenciado) всегда указывается в USD."
   },
   plans: {
     starter: "Стартовый",
@@ -6794,7 +6807,8 @@ const ruTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "Сеть",
     emailChangeInboxNotice: "Проверьте входящие сообщения и перейдите по ссылке, чтобы завершить изменение адреса электронной почты.",
-    emailChangeSentTo: "Ссылка для подтверждения отправлена на {{email}}. Проверьте входящие сообщения и перейдите по ссылке, чтобы завершить изменение адреса электронной почты."
+    emailChangeSentTo: "Ссылка для подтверждения отправлена на {{email}}. Проверьте входящие сообщения и перейдите по ссылке, чтобы завершить изменение адреса электронной почты.",
+    growthPerformanceMtd: "Динамика роста (за месяц)"
   },
   checkout: {
     summary: "ИТОГО",
@@ -7538,7 +7552,8 @@ const zhTranslation = {
     select: "选择此计划",
     allocation: "管理资本",
     month: "月费",
-    detectedCurrency: "价格根据您的位置以当地货币 ({{currency}}) 显示"
+    detectedCurrency: "价格根据您的位置以当地货币 ({{currency}}) 显示",
+    managedCapitalUsdNote: "管理资本（Capital Gerenciado）始终以美元计价。"
   },
   plans: {
     starter: "入门版",
@@ -7823,7 +7838,8 @@ const zhTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "网络",
     emailChangeInboxNotice: "请查收您的收件箱，并点击链接以完成电子邮件地址的更改。",
-    emailChangeSentTo: "确认链接已发送至 {{email}}。请查收您的收件箱，并点击链接以完成电子邮件地址的更改。"
+    emailChangeSentTo: "确认链接已发送至 {{email}}。请查收您的收件箱，并点击链接以完成电子邮件地址的更改。",
+    growthPerformanceMtd: "增长表现（本月至今）"
   },
   checkout: {
     summary: "摘要",
@@ -8580,7 +8596,8 @@ const jaTranslation = {
     select: "このプランを確保",
     allocation: "運用資本",
     month: "月額料金",
-    detectedCurrency: "お客様の位置情報に基づき、現地通貨 ({{currency}}) で価格を表示"
+    detectedCurrency: "お客様の位置情報に基づき、現地通貨 ({{currency}}) で価格を表示",
+    managedCapitalUsdNote: "運用資本（Capital Gerenciado）は常にUSDで表示されます。"
   },
   plans: {
     starter: "スターター",
@@ -8865,7 +8882,8 @@ const jaTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "ネットワーク",
     emailChangeInboxNotice: "受信トレイを確認し、リンクをクリックしてメールアドレスの変更を完了してください。",
-    emailChangeSentTo: "確認リンクを {{email}} に送信しました。受信トレイを確認し、リンクをクリックしてメールアドレスの変更を完了してください。"
+    emailChangeSentTo: "確認リンクを {{email}} に送信しました。受信トレイを確認し、リンクをクリックしてメールアドレスの変更を完了してください。",
+    growthPerformanceMtd: "成長パフォーマンス（月初来）"
   },
   checkout: {
     summary: "概要",
@@ -9635,7 +9653,8 @@ const arTranslation = {
     select: "احصل على هذا الخطة",
     allocation: "رأس المال المُدار",
     month: "رسوم شهرية",
-    detectedCurrency: "الأسعار معروضة بعملتك المحلية ({{currency}}) بناءً على موقعك"
+    detectedCurrency: "الأسعار معروضة بعملتك المحلية ({{currency}}) بناءً على موقعك",
+    managedCapitalUsdNote: "رأس المال المُدار (Capital Gerenciado) يُسعَّر دائمًا بالدولار الأمريكي."
   },
   plans: {
     starter: "المبتدئ",
@@ -9920,7 +9939,8 @@ const arTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "الشبكة",
     emailChangeInboxNotice: "يرجى التحقق من صندوق الوارد والنقر على الرابط لإتمام تغيير البريد الإلكتروني.",
-    emailChangeSentTo: "تم إرسال رابط تأكيد إلى {{email}}. يرجى التحقق من صندوق الوارد والنقر على الرابط لإتمام تغيير البريد الإلكتروني."
+    emailChangeSentTo: "تم إرسال رابط تأكيد إلى {{email}}. يرجى التحقق من صندوق الوارد والنقر على الرابط لإتمام تغيير البريد الإلكتروني.",
+    growthPerformanceMtd: "أداء النمو (منذ بداية الشهر)"
   },
   checkout: {
     summary: "الملخص",
@@ -10677,7 +10697,8 @@ const heTranslation = {
     select: "הבטח תוכנית זו",
     allocation: "הון מנוהל",
     month: "עמלה חודשית",
-    detectedCurrency: "המחירים מוצגים במטבע המקומי שלך ({{currency}}) לפי המיקום שלך"
+    detectedCurrency: "המחירים מוצגים במטבע המקומי שלך ({{currency}}) לפי המיקום שלך",
+    managedCapitalUsdNote: "הון מנוהל (Capital Gerenciado) נקוב תמיד בדולר ארה\"ב."
   },
   plans: {
     starter: "בסיסי",
@@ -10962,7 +10983,8 @@ const heTranslation = {
     assetsList: "BTC, ETH, SOL",
     networkLabel: "רשת",
     emailChangeInboxNotice: "אנא בדוק את תיבת הדואר הנכנס ולחץ על הקישור כדי להשלים את שינוי כתובת הדוא\"ל.",
-    emailChangeSentTo: "קישור אימות נשלח אל {{email}}. אנא בדוק את תיבת הדואר הנכנס ולחץ על הקישור כדי להשלים את שינוי כתובת הדוא\"ל."
+    emailChangeSentTo: "קישור אימות נשלח אל {{email}}. אנא בדוק את תיבת הדואר הנכנס ולחץ על הקישור כדי להשלים את שינוי כתובת הדוא\"ל.",
+    growthPerformanceMtd: "ביצועי צמיחה (מתחילת החודש)"
   },
   checkout: {
     summary: "סיכום",

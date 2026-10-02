@@ -76,14 +76,23 @@ export function formatCurrency(
   amount: number,
   currency: string,
   symbol: string,
+  locale = "en-US",
 ): string {
   const decimals = ["JPY", "KRW", "VND", "IDR", "CLP", "COP", "HUF"].includes(currency)
     ? 0
     : 2;
-  const formatted = amount.toLocaleString("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  // Group/decimal separators follow the reader's locale; the currency symbol is
+  // prepended from the country map so we do not depend on ICU symbol data.
+  let formatted: string;
+  try {
+    formatted = new Intl.NumberFormat(locale, {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+      useGrouping: true,
+    }).format(amount);
+  } catch {
+    formatted = amount.toFixed(decimals);
+  }
   return `${symbol}${formatted}`;
 }
 

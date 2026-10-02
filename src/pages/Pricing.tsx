@@ -125,8 +125,11 @@ const Pricing = () => {
       <section className="py-24">
         <div className="container mx-auto px-8">
           {!isLoading && (
-            <div className="text-center mb-8 text-xs text-slate-500">
-              {t('pricing.detectedCurrency', 'Prices shown in your local currency ({{currency}}) based on your location', { currency: currency })}
+            <div className="text-center mb-8 text-xs text-slate-500 space-y-1">
+              <p>
+                {t('pricing.detectedCurrency', 'Prices shown in your local currency ({{currency}}) based on your location', { currency: currency })}
+              </p>
+              <p className="text-[#D4AF37]/70">{t('pricing.managedCapitalUsdNote')}</p>
             </div>
           )}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5">

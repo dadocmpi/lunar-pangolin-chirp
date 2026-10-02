@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   getUserCountry,
   getCurrencyByCountry,
@@ -24,6 +25,8 @@ interface CurrencyContextType {
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
+  const { i18n } = useTranslation();
+  const locale = (i18n.language || "en").split("-")[0];
   const [countryCode, setCountryCode] = useState<string>("US");
   const [currencyInfo, setCurrencyInfo] = useState<{
     currency: string;
@@ -74,7 +77,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 
   const convertPrice = (amountUSD: number): string => {
     const amount = convertFromUSD(amountUSD, currencyInfo.currency);
-    return formatCurrency(amount, currencyInfo.currency, currencyInfo.symbol);
+    return formatCurrency(amount, currencyInfo.currency, currencyInfo.symbol, locale);
   };
 
   const convertPriceValue = (amountUSD: number): number => {

@@ -69,6 +69,14 @@ const Navbar = () => {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng).then(() => {
+      // The detector prioritises `?lng=`, so keep the URL in sync with the
+      // chosen language — otherwise a reload would fall back to the old value.
+      const params = new URLSearchParams(location.search);
+      params.set('lng', lng);
+      navigate(
+        { pathname: location.pathname, search: params.toString() },
+        { replace: true },
+      );
       setIsOpen(false);
     });
   };
