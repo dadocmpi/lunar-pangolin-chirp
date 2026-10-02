@@ -104,6 +104,20 @@ export function buildSamples(now = new Date().toISOString()): SampleEvent[] {
         recebido_em: now,
       },
     },
+    {
+      type: "suporte",
+      subject: "Mensagem do formulário de suporte",
+      replyTo: "visitante.exemplo@example.com",
+      idempotencyKey: `test-suporte-${now}`,
+      data: {
+        nome: "Visitante Exemplo",
+        email: "visitante.exemplo@example.com",
+        assunto: "Dúvida institucional",
+        mensagem: "Preciso de informações sobre alocação.",
+        idioma: "pt",
+        origem: "support_form",
+      },
+    },
   ];
 }
 

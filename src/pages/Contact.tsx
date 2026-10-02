@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Mail, Send, Clock, Loader2, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,17 +11,20 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import { showSuccess, showError } from '@/utils/toast';
-import { notifyOwner } from '@/lib/notifyOwner';
+import { sendSupportMessage } from '@/lib/support';
 import { Link } from 'react-router-dom';
 
 
 const Contact = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   useDocumentMeta('contact');
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(false);
   const [captcha, setCaptcha] = useState({ q: '', a: 0 });
   const [userAnswer, setUserAnswer] = useState('');
+  // Guard against double submission: a ref updates synchronously, so a second
+  // submit fired before React re-renders still sees the in-flight state.
+  const submittingRef = useRef(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -45,6 +48,8 @@ const Contact = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (submittingRef.current) return;
+
     if (formData.website) {
       console.warn("Spam detected via honeypot.");
       return;
@@ -61,23 +66,32 @@ const Contact = () => {
       return;
     }
 
+    submittingRef.current = true;
     setLoading(true);
 
-    // Single notification path: the `notify-owner` Edge Function owns the
-    // Resend key and renders/sanitizes the message. Delivery failures never
-    // surface to the visitor.
-    await notifyOwner({
-      type: 'novo_lead',
-      subject: `Formulário de contato — ${formData.subject}`,
-      replyTo: formData.email,
-      data: {
-        nome: formData.name,
-        email: formData.email,
-        assunto: formData.subject,
-        mensagem: formData.message,
-        origem: 'contact_form',
-      },
+    // Single support path: the `support-message` Edge Function validates the
+    // submission and routes it to the support inbox via Resend. The key and the
+    // inbox address stay server-side.
+    const result = await sendSupportMessage({
+      name: formData.name,
+      email: formData.email,
+      topic: formData.subject,
+      message: formData.message,
+      locale: i18n.resolvedLanguage ?? i18n.language ?? 'en',
+      website: formData.website,
     });
+
+    if (result.ok === false) {
+      showError(
+        result.error === 'rate_limited'
+          ? t('contact.waitMessage')
+          : t('contact.messageFailed'),
+      );
+      generateCaptcha();
+      setLoading(false);
+      submittingRef.current = false;
+      return;
+    }
 
     showSuccess(t('contact.messageSent'));
     setFormData({ name: '', email: '', subject: '', message: '', website: '' });
@@ -86,6 +100,7 @@ const Contact = () => {
     setCooldown(true);
     setTimeout(() => setCooldown(false), 60000);
     setLoading(false);
+    submittingRef.current = false;
   };
 
   return (

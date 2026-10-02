@@ -178,10 +178,11 @@ await test("duplicate idempotency key is suppressed on second call", async () =>
 console.log("\n[5] One sample email per event type");
 // ---------------------------------------------------------------------------
 
-await test("buildSamples covers all 7 event types", () => {
+await test("buildSamples covers every event type", () => {
   const samples = buildSamples();
   const types = new Set(samples.map((s) => s.type));
-  ok(samples.length === 7, `expected 7 samples, got ${samples.length}`);
+  const expected = Object.keys(TYPE_PREFIXES).length;
+  ok(samples.length === expected, `expected ${expected} samples, got ${samples.length}`);
   for (const t of Object.keys(TYPE_PREFIXES)) {
     ok(types.has(t as keyof typeof TYPE_PREFIXES), `missing sample for ${t}`);
   }
@@ -192,7 +193,8 @@ await test("runSamples never throws and reports each type", async () => {
   Deno.env.delete("RESEND_API_KEY");
   try {
     const results = await runSamples();
-    ok(results.length === 7, `expected 7 results, got ${results.length}`);
+    const expected = Object.keys(TYPE_PREFIXES).length;
+    ok(results.length === expected, `expected ${expected} results, got ${results.length}`);
     for (const r of results) {
       ok(
         r.ok === true || r.skipped === "not_configured",
