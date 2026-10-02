@@ -24,7 +24,7 @@ const assertConfigured = () => {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     throw new Error(
       'Missing Supabase environment variables: VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY must be set. ' +
-      'Copy .env.example to .env.localand fill in the values.'
+      'Copy .env.example to .env.local and fill in the values.'
     );
   }
 };

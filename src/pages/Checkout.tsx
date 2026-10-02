@@ -184,9 +184,10 @@ const Checkout = () => {
   const enhancedPlan = planKey
     ? {
         id: planKey,
-        name:
-          planKey.charAt(0).toUpperCase() +
-          planKey.slice(1).toLowerCase(),
+        name: t(`plans.${planKey}`, {
+          defaultValue:
+            planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase(),
+        }),
         price: getPlanPricing(planKey).monthlyUsd,
         features: [],
       }
