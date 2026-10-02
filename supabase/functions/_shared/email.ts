@@ -26,6 +26,7 @@ export const EVENT_TYPES = [
   "conta",
   "erro",
   "webhook",
+  "suporte",
 ] as const;
 
 export type EventType = (typeof EVENT_TYPES)[number];
@@ -39,6 +40,7 @@ export const TYPE_PREFIXES: Record<EventType, string> = {
   conta: "[Conta]",
   erro: "[Erro]",
   webhook: "[Webhook]",
+  suporte: "[Braxel Support]",
 };
 
 export interface NotifyOwnerInput {
@@ -267,6 +269,17 @@ function getOwnerAddress(): string | null {
   return to && to.trim() ? to.trim() : null;
 }
 
+/**
+ * Inbox for the public "Institutional Support" channel. A dedicated variable so
+ * support can be routed independently of general owner notifications. Falls back
+ * to EMAIL_TO, then to the company mailbox. This default only ever executes on
+ * the server; no address here is bundled into client code.
+ */
+function getSupportInboxAddress(): string | null {
+  const to = Deno.env.get("SUPPORT_INBOX_EMAIL") ?? Deno.env.get("EMAIL_TO");
+  return to && to.trim() ? to.trim() : "marketsbraxel@ouvidor.net";
+}
+
 /** Only accept a plausible address as reply_to, never arbitrary header input. */
 function safeReplyTo(value: string | null | undefined): string | undefined {
   if (!value) return undefined;
@@ -337,38 +350,12 @@ export async function notifyOwner(
     const replyTo = safeReplyTo(input.replyTo);
     if (replyTo) payload.reply_to = replyTo;
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    let res: Response;
-    try {
-      res = await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
-        },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
-      });
-    } finally {
-      clearTimeout(timeout);
+    const delivered = await postToResend(apiKey, payload, { type, subject });
+    if (!delivered.ok) {
+      return { ok: false, error: delivered.error };
     }
-
-    if (!res.ok) {
-      // Read but do not log the provider body verbatim if it could echo data.
-      const detail = await res.text().catch(() => "");
-      console.error("[email] resend request failed", {
-        type,
-        subject,
-        status: res.status,
-        detail: detail.slice(0, 300),
-      });
-      return { ok: false, error: `resend_${res.status}` };
-    }
-
-    const result = await res.json().catch(() => ({}));
-    console.log("[email] sent", { type, subject, id: result?.id });
-    return { ok: true, id: result?.id };
+    console.log("[email] sent", { type, subject, id: delivered.id });
+    return { ok: true, id: delivered.id };
   } catch (err) {
     // AbortError, network failure, JSON failure — none may reach the caller.
     console.error("[email] send failed (non-blocking)", {
@@ -396,4 +383,164 @@ export function notifyOwnerInBackground(input: NotifyOwnerInput): void {
   } else {
     void run();
   }
+}
+
+// ---------------------------------------------------------------------------
+// Institutional Support channel (public contact form)
+// ---------------------------------------------------------------------------
+
+export const SUPPORT_LIMITS = {
+  name: 120,
+  email: 254,
+  topic: 160,
+  message: 5000,
+} as const;
+
+export interface SupportMessageInput {
+  name: string;
+  email: string;
+  topic: string;
+  message: string;
+  /** Language/locale the visitor submitted from, e.g. "pt". */
+  locale?: string | null;
+  timestamp?: string;
+}
+
+export const EMAIL_PATTERN = /^[^\s@<>",;]+@[^\s@<>",;]+\.[^\s@<>",;]+$/;
+
+/** Collapse CR/LF runs so a value cannot forge extra header lines. */
+function singleLine(value: string): string {
+  return value.replace(/[\r\n]+/g, " ").trim();
+}
+
+interface ResendResult {
+  ok: boolean;
+  id?: string;
+  error?: string;
+}
+
+/** POST a rendered payload to Resend. Never throws; returns a machine result. */
+async function postToResend(
+  apiKey: string,
+  payload: Record<string, unknown>,
+  context: Record<string, unknown> = {},
+): Promise<ResendResult> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      // Read but do not log the provider body verbatim if it could echo data.
+      const detail = await res.text().catch(() => "");
+      console.error("[email] resend request failed", {
+        ...context,
+        status: res.status,
+        detail: detail.slice(0, 300),
+      });
+      return { ok: false, error: `resend_${res.status}` };
+    }
+
+    const result = await res.json().catch(() => ({}));
+    return { ok: true, id: result?.id };
+  } catch (err) {
+    console.error("[email] send failed (non-blocking)", {
+      ...context,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "unknown_error",
+    };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+/**
+ * Send one message from the public Institutional Support form to the support
+ * inbox. The recipient comes from SUPPORT_INBOX_EMAIL (never hard-coded in
+ * client code); reply_to is the customer so the mailbox can answer directly.
+ * Returns a machine-readable failure so the caller can surface an error state.
+ */
+export async function sendSupportMessage(
+  input: SupportMessageInput,
+): Promise<NotifyOwnerResult> {
+  const apiKey = Deno.env.get("RESEND_API_KEY");
+  const inbox = getSupportInboxAddress();
+
+  if (!apiKey) {
+    console.warn("[email] support message skipped — RESEND_API_KEY missing");
+    return {
+      ok: false,
+      skipped: "not_configured",
+      error: "resend_not_configured",
+    };
+  }
+  if (!inbox) {
+    console.warn("[email] support message skipped — no support inbox configured");
+    return {
+      ok: false,
+      skipped: "not_configured",
+      error: "support_inbox_not_configured",
+    };
+  }
+
+  const name = singleLine(String(input.name ?? "").slice(0, SUPPORT_LIMITS.name));
+  const email = String(input.email ?? "").trim().slice(0, SUPPORT_LIMITS.email);
+  const topic = singleLine(String(input.topic ?? "").slice(0, SUPPORT_LIMITS.topic)) ||
+    "General";
+  const message = String(input.message ?? "").slice(0, SUPPORT_LIMITS.message);
+  const locale = String(input.locale ?? "en").slice(0, 16) || "en";
+  const timestamp = input.timestamp ?? new Date().toISOString();
+
+  const displaySubject = `${topic} — ${name}`;
+  const subject = `${TYPE_PREFIXES.suporte} ${displaySubject}`.slice(0, 200);
+
+  const rows: Array<[string, unknown]> = [
+    ["Name", name],
+    ["Email", email],
+    ["Language", locale],
+    ["Subject", topic],
+    ["Message", message],
+    ["Timestamp", timestamp],
+  ];
+
+  const html = renderHtml(
+    "suporte",
+    TYPE_PREFIXES.suporte,
+    displaySubject,
+    rows,
+    timestamp,
+  );
+  const text = renderText(
+    "suporte",
+    TYPE_PREFIXES.suporte,
+    displaySubject,
+    rows,
+    timestamp,
+  );
+
+  const payload: Record<string, unknown> = {
+    from: getFromAddress(),
+    to: inbox,
+    subject,
+    html,
+    text,
+  };
+  const replyTo = safeReplyTo(email);
+  if (replyTo) payload.reply_to = replyTo;
+
+  const delivered = await postToResend(apiKey, payload);
+  if (!delivered.ok) return { ok: false, error: delivered.error };
+  console.log("[email] support message sent", { id: delivered.id });
+  return { ok: true, id: delivered.id };
 }
