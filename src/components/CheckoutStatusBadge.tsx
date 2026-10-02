@@ -2,18 +2,19 @@
 
 import { CheckoutPaymentStatus } from "@/hooks/usePaymentStatus";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const LABEL: Record<CheckoutPaymentStatus, string> = {
-  created:         "Created",
-  pending:         "Awaiting Payment",
-  processing:      "Verifying On-Chain",
-  confirmed:       "Confirmed",
-  failed:          "Failed",
-  rejected:        "Rejected",
-  refunded:        "Refunded",
-  disputed:        "Disputed",
-  canceled:        "Canceled",
-  pending_manual:  "Awaiting Manual Review",
+  created:         "checkoutStatus.created",
+  pending:         "checkoutStatus.pending",
+  processing:      "checkoutStatus.processing",
+  confirmed:       "checkoutStatus.confirmed",
+  failed:          "checkoutStatus.failed",
+  rejected:        "checkoutStatus.rejected",
+  refunded:        "checkoutStatus.refunded",
+  disputed:        "checkoutStatus.disputed",
+  canceled:        "checkoutStatus.canceled",
+  pending_manual:  "checkoutStatus.pending_manual",
 };
 
 const TONE: Record<CheckoutPaymentStatus, string> = {
@@ -36,6 +37,7 @@ export function CheckoutStatusBadge({
   status: CheckoutPaymentStatus;
   className?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <span
       className={cn(
@@ -45,7 +47,7 @@ export function CheckoutStatusBadge({
       )}
     >
       <span className="w-1.5 h-1.5 rounded-full bg-current" />
-      {LABEL[status]}
+      {t(LABEL[status])}
     </span>
   );
 }

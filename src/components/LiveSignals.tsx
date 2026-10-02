@@ -159,8 +159,8 @@ const LiveSignals = () => {
                 <ShieldCheck size={24} />
               </div>
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-widest text-white">Institutional Verification</p>
-                <p className="text-[9px] text-slate-500 uppercase tracking-widest">Real-time data feed from global liquidity pools.</p>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-white">{t('signals.institutionalVerification')}</p>
+                <p className="text-[9px] text-slate-500 uppercase tracking-widest">{t('signals.realtimeFeed')}</p>
               </div>
             </div>
           </div>
@@ -171,11 +171,11 @@ const LiveSignals = () => {
               <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
                 <div className="flex items-center gap-3">
                   <Activity size={16} className="text-[#D4AF37] animate-pulse" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">LIVE TERMINAL</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white">{t('signals.liveTerminal')}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-                  <span className="text-[9px] font-bold uppercase tracking-widest text-green-500">CONNECTED</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest text-green-500">{t('signals.connected')}</span>
                 </div>
               </div>
 

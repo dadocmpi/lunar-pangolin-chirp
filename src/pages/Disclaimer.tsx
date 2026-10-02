@@ -7,6 +7,19 @@ import { useTranslation } from 'react-i18next';
 
 const Disclaimer = () => {
   const { t } = useTranslation();
+
+  const sections: Array<{ title: string; body: string }> = [
+    { title: t('disclaimerPage.importantRiskTitle'), body: t('disclaimerPage.importantRiskText') },
+    { title: t('disclaimerPage.noAdviceTitle'), body: t('disclaimerPage.noAdviceText') },
+    { title: t('disclaimerPage.limitationTitle'), body: t('disclaimerPage.limitationText') },
+    { title: t('disclaimerPage.capitalAtRiskTitle'), body: t('disclaimerPage.capitalAtRiskText') },
+    { title: t('disclaimerPage.noGuaranteedReturnsTitle'), body: t('disclaimerPage.noGuaranteedReturnsText') },
+    { title: t('disclaimerPage.pastPerformanceTitle'), body: t('disclaimerPage.pastPerformanceText') },
+    { title: t('disclaimerPage.notLicensedTitle'), body: t('disclaimerPage.notLicensedText') },
+    { title: t('disclaimerPage.noCapitalProtectionTitle'), body: t('disclaimerPage.noCapitalProtectionText') },
+    { title: t('disclaimerPage.algorithmicRisksTitle'), body: t('disclaimerPage.algorithmicRisksText') },
+    { title: t('disclaimerPage.jurisdictionRestrictionsTitle'), body: t('disclaimerPage.jurisdictionRestrictionsText') },
+  ];
   
   return (
     <div className="min-h-screen bg-[#05070A] text-white">
@@ -32,18 +45,15 @@ const Disclaimer = () => {
       <div className="container mx-auto px-4 md:px-8 py-20">
         <section className="border border-white/10 bg-[#080B12] p-12 md:p-16">
           <div className="max-w-4xl mx-auto space-y-12 text-slate-400 text-sm leading-relaxed">
-            <div className="p-8 border-l-2 border-[#C5A059] bg-white/5">
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">{t('disclaimerPage.importantRiskTitle')}</h2>
-              <p>{t('disclaimerPage.importantRiskText')}</p>
+            <div className="p-4 border border-yellow-700/40 bg-yellow-950/20 text-yellow-300 text-[10px] font-bold uppercase tracking-widest">
+              {t('legalDraftBanner')}
             </div>
-            <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">{t('disclaimerPage.noAdviceTitle')}</h2>
-              <p>{t('disclaimerPage.noAdviceText')}</p>
-            </div>
-            <div>
-              <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">{t('disclaimerPage.limitationTitle')}</h2>
-              <p>{t('disclaimerPage.limitationText')}</p>
-            </div>
+            {sections.map((section, i) => (
+              <div key={i} className={i === 0 ? "p-8 border-l-2 border-[#C5A059] bg-white/5" : undefined}>
+                <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-4">{section.title}</h2>
+                <p>{section.body}</p>
+              </div>
+            ))}
           </div>
         </section>
       </div>

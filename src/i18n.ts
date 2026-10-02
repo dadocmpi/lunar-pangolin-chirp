@@ -28,7 +28,9 @@ const enTranslation = {
     openAccount: "CREATE ACCOUNT",
     dashboard: "DASHBOARD",
     logout: "LOGOUT",
-    selectLanguage: "Select Language"
+    selectLanguage: "Select Language",
+    sessionActive: "Active Session",
+    accessDashboard: "Access Dashboard"
   },
   footer: {
     desc: "Institutional-grade investment infrastructure. Proprietary technology for the modern market.",
@@ -47,7 +49,15 @@ const enTranslation = {
   chatbot: {
     title: "Braxel Support",
     placeholder: "Type a message...",
-    emailSupport: "Email:"
+    emailSupport: "Email:",
+    assistantReply: "Thank you for your message. Our team will respond shortly.",
+    send: "Send",
+    brandAI: "Braxel Markets AI",
+    openChat: "Open support chat",
+    close: "Close",
+    minimize: "Minimize",
+    maximize: "Maximize",
+    supportDialog: "Support chat"
   },
   auth: {
     loginTitle: "Sign In",
@@ -87,7 +97,10 @@ const enTranslation = {
     registerLink: "Create account",
     accountNotFound: "Account not found. Please create an account first.",
     passwordPlaceholder: "Password",
-    accountNotFoundError: "Account not found. Please create an account first."
+    accountNotFoundError: "Account not found. Please create an account first.",
+    resetPasswordSent: "If an account exists for that email, a password reset link has been sent.",
+    resetPasswordError: "Could not send the reset link. Please try again.",
+    enterEmailFirst: "Enter your email address first."
   },
   hero: {
     title1: "ELITE ALGORITHMIC",
@@ -367,7 +380,11 @@ const enTranslation = {
     profit: "PROFIT",
     status: "STATUS",
     active: "ACTIVE",
-    completed: "COMPLETED"
+    completed: "COMPLETED",
+    institutionalVerification: "Institutional Verification",
+    realtimeFeed: "Real-time data feed from global liquidity pools.",
+    liveTerminal: "LIVE TERMINAL",
+    connected: "CONNECTED"
   },
   dashboard: {
     portfolio: "Investment Portfolio",
@@ -747,7 +764,73 @@ const enTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "Sorry, the page you are looking for does not exist.",
+    returnHome: "Return to Home"
+  },
+  authCallback: {
+    confirmingTitle: "Confirming your account...",
+    confirmingDesc: "Please wait while we verify your email.",
+    confirmedTitle: "Email Confirmed!",
+    confirmedDesc: "Your account has been successfully verified.",
+    redirecting: "Redirecting to login...",
+    failedTitle: "Confirmation Failed",
+    goToLogin: "Go to Login",
+    invalidLink: "Invalid or expired confirmation link",
+    failedConfirm: "Failed to confirm email"
+  },
+  paymentsDisabled: {
+    title: "Payments are currently disabled.",
+    desc: "The payment system is not yet active. To enable payments, contact the operator at",
+    managedBy: "Payment processing is managed exclusively by the platform operator. If you have questions about a pending allocation, please contact support.",
+    viewPlans: "View Investment Plans"
+  },
+  checkoutStatus: {
+    created: "Created",
+    pending: "Awaiting Payment",
+    processing: "Verifying On-Chain",
+    confirmed: "Confirmed",
+    failed: "Failed",
+    rejected: "Rejected",
+    refunded: "Refunded",
+    disputed: "Disputed",
+    canceled: "Canceled",
+    pending_manual: "Awaiting Manual Review"
+  },
+  legalReview: {
+    title: "Draft under legal review"
+  },
+  operator: {
+    title: "Operator",
+    subtitle: "Dashboard",
+    description: "Review and activate pending customer applications.",
+    no_pending_applications: "No pending applications.",
+    plan: "Plan",
+    amount: "Amount",
+    country: "Country",
+    customer_note: "Customer note",
+    activate_account: "Activate account",
+    activating: "Activating...",
+    reject_or_request_info: "Reject / request info",
+    rejecting: "Rejecting...",
+    reject_application: "Reject application",
+    reject_reason_prompt: "Provide a reason for rejection or the information needed.",
+    reject_reason_placeholder: "Reason...",
+    cancel: "Cancel",
+    reject: "Reject",
+    errors: {
+      activation_failed: "Failed to activate the application.",
+      rejection_failed: "Failed to reject the application."
+    },
+    status: {
+      activation_pending: "Activation pending",
+      account_active: "Account active",
+      rejected: "Rejected",
+      manual_review: "Manual review"
+    }
+  }
 };
 
 const ptTranslation = {
@@ -815,7 +898,9 @@ const ptTranslation = {
     openAccount: "CRIAR CONTA",
     dashboard: "PAINEL",
     logout: "SAIR",
-    selectLanguage: "Selecionar Idioma"
+    selectLanguage: "Selecionar Idioma",
+    sessionActive: "Sessão Ativa",
+    accessDashboard: "Acessar Painel"
   },
   footer: {
     desc: "Infraestrutura de investimento de nível institucional. Tecnologia proprietária para o mercado moderno.",
@@ -834,7 +919,15 @@ const ptTranslation = {
   chatbot: {
     title: "Suporte Braxel",
     placeholder: "Digite uma mensagem...",
-    emailSupport: "E-mail:"
+    emailSupport: "E-mail:",
+    assistantReply: "Obrigado pela sua mensagem. Nossa equipe responderá em breve.",
+    send: "Enviar",
+    brandAI: "IA da Braxel Markets",
+    openChat: "Abrir chat de suporte",
+    close: "Fechar",
+    minimize: "Minimizar",
+    maximize: "Maximizar",
+    supportDialog: "Chat de suporte"
   },
   auth: {
     loginTitle: "Entrar",
@@ -874,7 +967,10 @@ const ptTranslation = {
     rememberMe: "Lembrar-me",
     registerLink: "Criar conta",
     passwordPlaceholder: "Senha",
-    accountNotFoundError: "Conta não encontrada. Crie uma conta primeiro."
+    accountNotFoundError: "Conta não encontrada. Crie uma conta primeiro.",
+    resetPasswordSent: "Se existir uma conta para esse e-mail, um link de redefinição de senha foi enviado.",
+    resetPasswordError: "Não foi possível enviar o link de redefinição. Tente novamente.",
+    enterEmailFirst: "Digite seu endereço de e-mail primeiro."
   },
   hero: {
     title1: "GESTÃO ALGORÍTMICA",
@@ -1390,7 +1486,11 @@ const ptTranslation = {
     profit: "LUCRO",
     status: "STATUS",
     active: "ATIVO",
-    completed: "CONCLUÍDO"
+    completed: "CONCLUÍDO",
+    institutionalVerification: "Verificação Institucional",
+    realtimeFeed: "Feed de dados em tempo real de pools de liquidez globais.",
+    liveTerminal: "TERMINAL AO VIVO",
+    connected: "CONECTADO"
   },
   application: {
     title: "INSCRIÇÃO",
@@ -1480,7 +1580,73 @@ const ptTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "Desculpe, a página que você procura não existe.",
+    returnHome: "Voltar ao Início"
+  },
+  authCallback: {
+    confirmingTitle: "Confirmando sua conta...",
+    confirmingDesc: "Aguarde enquanto verificamos seu e-mail.",
+    confirmedTitle: "E-mail Confirmado!",
+    confirmedDesc: "Sua conta foi verificada com sucesso.",
+    redirecting: "Redirecionando para o login...",
+    failedTitle: "Falha na Confirmação",
+    goToLogin: "Ir para o Login",
+    invalidLink: "Link de confirmação inválido ou expirado",
+    failedConfirm: "Falha ao confirmar o e-mail"
+  },
+  paymentsDisabled: {
+    title: "Os pagamentos estão atualmente desativados.",
+    desc: "O sistema de pagamento ainda não está ativo. Para ativar os pagamentos, entre em contato com o operador em",
+    managedBy: "O processamento de pagamentos é gerenciado exclusivamente pelo operador da plataforma. Se você tiver dúvidas sobre uma alocação pendente, entre em contato com o suporte.",
+    viewPlans: "Ver Planos de Investimento"
+  },
+  checkoutStatus: {
+    created: "Criado",
+    pending: "Aguardando Pagamento",
+    processing: "Verificando On-Chain",
+    confirmed: "Confirmado",
+    failed: "Falhou",
+    rejected: "Rejeitado",
+    refunded: "Reembolsado",
+    disputed: "Contestado",
+    canceled: "Cancelado",
+    pending_manual: "Aguardando Revisão Manual"
+  },
+  legalReview: {
+    title: "Minuta em revisão jurídica"
+  },
+  operator: {
+    title: "Operador",
+    subtitle: "Painel",
+    description: "Revise e ative as solicitações de clientes pendentes.",
+    no_pending_applications: "Nenhuma solicitação pendente.",
+    plan: "Plano",
+    amount: "Valor",
+    country: "País",
+    customer_note: "Observação do cliente",
+    activate_account: "Ativar conta",
+    activating: "Ativando...",
+    reject_or_request_info: "Rejeitar / solicitar informações",
+    rejecting: "Rejeitando...",
+    reject_application: "Rejeitar solicitação",
+    reject_reason_prompt: "Informe o motivo da rejeição ou as informações necessárias.",
+    reject_reason_placeholder: "Motivo...",
+    cancel: "Cancelar",
+    reject: "Rejeitar",
+    errors: {
+      activation_failed: "Falha ao ativar a solicitação.",
+      rejection_failed: "Falha ao rejeitar a solicitação."
+    },
+    status: {
+      activation_pending: "Ativação pendente",
+      account_active: "Conta ativa",
+      rejected: "Rejeitado",
+      manual_review: "Revisão manual"
+    }
+  }
 };
 
 const itTranslation = {
@@ -1548,7 +1714,9 @@ const itTranslation = {
     openAccount: "CREA ACCOUNT",
     dashboard: "PANNELLO",
     logout: "ESCI",
-    selectLanguage: "Seleziona Lingua"
+    selectLanguage: "Seleziona Lingua",
+    sessionActive: "Sessione attiva",
+    accessDashboard: "Accedi alla dashboard"
   },
   footer: {
     desc: "Infrastruttura di investimento di livello istituzionale. Tecnologia proprietaria per il mercato moderno.",
@@ -1567,7 +1735,15 @@ const itTranslation = {
   chatbot: {
     title: "Supporto Braxel",
     placeholder: "Scrivi un messaggio...",
-    emailSupport: "Email:"
+    emailSupport: "Email:",
+    assistantReply: "Grazie per il tuo messaggio. Il nostro team risponderà a breve.",
+    send: "Invia",
+    brandAI: "IA di Braxel Markets",
+    openChat: "Apri chat di assistenza",
+    close: "Chiudi",
+    minimize: "Riduci",
+    maximize: "Ingrandisci",
+    supportDialog: "Chat di assistenza"
   },
   auth: {
     loginTitle: "Accesso",
@@ -1607,7 +1783,10 @@ const itTranslation = {
     rememberMe: "Ricordami",
     registerLink: "Crea account",
     passwordPlaceholder: "Password",
-    accountNotFoundError: "Account non trovato. Crea prima un account."
+    accountNotFoundError: "Account non trovato. Crea prima un account.",
+    resetPasswordSent: "Se esiste un account per quell’email, è stato inviato un link di reimpostazione della password.",
+    resetPasswordError: "Impossibile inviare il link di reimpostazione. Riprova.",
+    enterEmailFirst: "Inserisci prima il tuo indirizzo email."
   },
   hero: {
     title1: "GESTIONE ALGORITMICA",
@@ -2123,7 +2302,11 @@ const itTranslation = {
     profit: "PROFITTO",
     status: "STATO",
     active: "ATTIVO",
-    completed: "COMPLETATO"
+    completed: "COMPLETATO",
+    institutionalVerification: "Verifica istituzionale",
+    realtimeFeed: "Feed dati in tempo reale dai pool di liquidità globali.",
+    liveTerminal: "TERMINALE LIVE",
+    connected: "CONNESSO"
   },
   application: {
     title: "DOMANDA",
@@ -2213,7 +2396,73 @@ const itTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "Spiacenti, la pagina che stai cercando non esiste.",
+    returnHome: "Torna alla home"
+  },
+  authCallback: {
+    confirmingTitle: "Conferma del tuo account...",
+    confirmingDesc: "Attendi mentre verifichiamo la tua email.",
+    confirmedTitle: "Email confermata!",
+    confirmedDesc: "Il tuo account è stato verificato con successo.",
+    redirecting: "Reindirizzamento al login...",
+    failedTitle: "Conferma non riuscita",
+    goToLogin: "Vai al login",
+    invalidLink: "Link di conferma non valido o scaduto",
+    failedConfirm: "Conferma email non riuscita"
+  },
+  paymentsDisabled: {
+    title: "I pagamenti sono attualmente disabilitati.",
+    desc: "Il sistema di pagamento non è ancora attivo. Per abilitare i pagamenti, contatta l’operatore all’indirizzo",
+    managedBy: "L’elaborazione dei pagamenti è gestita esclusivamente dall’operatore della piattaforma. Se hai domande su un’allocazione in sospeso, contatta l’assistenza.",
+    viewPlans: "Vedi i piani di investimento"
+  },
+  checkoutStatus: {
+    created: "Creato",
+    pending: "In attesa di pagamento",
+    processing: "Verifica on-chain",
+    confirmed: "Confermato",
+    failed: "Non riuscito",
+    rejected: "Rifiutato",
+    refunded: "Rimborsato",
+    disputed: "Contestato",
+    canceled: "Annullato",
+    pending_manual: "In attesa di revisione manuale"
+  },
+  legalReview: {
+    title: "Bozza in revisione legale"
+  },
+  operator: {
+    title: "Operatore",
+    subtitle: "Dashboard",
+    description: "Esamina e attiva le richieste dei clienti in sospeso.",
+    no_pending_applications: "Nessuna richiesta in sospeso.",
+    plan: "Piano",
+    amount: "Importo",
+    country: "Paese",
+    customer_note: "Nota del cliente",
+    activate_account: "Attiva account",
+    activating: "Attivazione...",
+    reject_or_request_info: "Rifiuta / richiedi informazioni",
+    rejecting: "Rifiuto...",
+    reject_application: "Rifiuta richiesta",
+    reject_reason_prompt: "Indica il motivo del rifiuto o le informazioni necessarie.",
+    reject_reason_placeholder: "Motivo...",
+    cancel: "Annulla",
+    reject: "Rifiuta",
+    errors: {
+      activation_failed: "Attivazione della richiesta non riuscita.",
+      rejection_failed: "Rifiuto della richiesta non riuscito."
+    },
+    status: {
+      activation_pending: "Attivazione in sospeso",
+      account_active: "Account attivo",
+      rejected: "Rifiutato",
+      manual_review: "Revisione manuale"
+    }
+  }
 };
 
 const esTranslation = {
@@ -2281,7 +2530,9 @@ const esTranslation = {
     openAccount: "CREAR CUENTA",
     dashboard: "PANEL",
     logout: "CERRAR SESIÓN",
-    selectLanguage: "Seleccionar idioma"
+    selectLanguage: "Seleccionar idioma",
+    sessionActive: "Sesión activa",
+    accessDashboard: "Acceder al panel"
   },
   footer: {
     desc: "Infraestructura de inversión de nivel institucional. Tecnología propietaria para el mercado moderno.",
@@ -2300,7 +2551,15 @@ const esTranslation = {
   chatbot: {
     title: "Soporte Braxel",
     placeholder: "Escribe un mensaje...",
-    emailSupport: "Correo:"
+    emailSupport: "Correo:",
+    assistantReply: "Gracias por tu mensaje. Nuestro equipo responderá en breve.",
+    send: "Enviar",
+    brandAI: "IA de Braxel Markets",
+    openChat: "Abrir chat de soporte",
+    close: "Cerrar",
+    minimize: "Minimizar",
+    maximize: "Maximizar",
+    supportDialog: "Chat de soporte"
   },
   auth: {
     loginTitle: "Iniciar Sesión",
@@ -2340,7 +2599,10 @@ const esTranslation = {
     rememberMe: "Recordarme",
     registerLink: "Crear cuenta",
     passwordPlaceholder: "Contraseña",
-    accountNotFoundError: "Cuenta no encontrada. Crea una cuenta primero."
+    accountNotFoundError: "Cuenta no encontrada. Crea una cuenta primero.",
+    resetPasswordSent: "Si existe una cuenta para ese correo, se ha enviado un enlace de restablecimiento de contraseña.",
+    resetPasswordError: "No se pudo enviar el enlace de restablecimiento. Inténtalo de nuevo.",
+    enterEmailFirst: "Introduce primero tu dirección de correo."
   },
   hero: {
     title1: "GESTIÓN ALGORÍTMICA",
@@ -2856,7 +3118,11 @@ const esTranslation = {
     profit: "GANANCIA",
     status: "ESTADO",
     active: "ACTIVO",
-    completed: "COMPLETADO"
+    completed: "COMPLETADO",
+    institutionalVerification: "Verificación institucional",
+    realtimeFeed: "Fuente de datos en tiempo real de pools de liquidez globales.",
+    liveTerminal: "TERMINAL EN VIVO",
+    connected: "CONECTADO"
   },
   application: {
     title: "SOLICITUD",
@@ -2946,7 +3212,73 @@ const esTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "Lo sentimos, la página que buscas no existe.",
+    returnHome: "Volver al inicio"
+  },
+  authCallback: {
+    confirmingTitle: "Confirmando tu cuenta...",
+    confirmingDesc: "Espera mientras verificamos tu correo.",
+    confirmedTitle: "¡Correo confirmado!",
+    confirmedDesc: "Tu cuenta se ha verificado correctamente.",
+    redirecting: "Redirigiendo al inicio de sesión...",
+    failedTitle: "Confirmación fallida",
+    goToLogin: "Ir al inicio de sesión",
+    invalidLink: "Enlace de confirmación no válido o caducado",
+    failedConfirm: "No se pudo confirmar el correo"
+  },
+  paymentsDisabled: {
+    title: "Los pagos están actualmente deshabilitados.",
+    desc: "El sistema de pago aún no está activo. Para habilitar los pagos, contacta al operador en",
+    managedBy: "El procesamiento de pagos es gestionado exclusivamente por el operador de la plataforma. Si tienes preguntas sobre una asignación pendiente, contacta con soporte.",
+    viewPlans: "Ver planes de inversión"
+  },
+  checkoutStatus: {
+    created: "Creado",
+    pending: "Esperando pago",
+    processing: "Verificando en cadena",
+    confirmed: "Confirmado",
+    failed: "Fallido",
+    rejected: "Rechazado",
+    refunded: "Reembolsado",
+    disputed: "En disputa",
+    canceled: "Cancelado",
+    pending_manual: "Esperando revisión manual"
+  },
+  legalReview: {
+    title: "Borrador en revisión legal"
+  },
+  operator: {
+    title: "Operador",
+    subtitle: "Panel",
+    description: "Revisa y activa las solicitudes de clientes pendientes.",
+    no_pending_applications: "No hay solicitudes pendientes.",
+    plan: "Plan",
+    amount: "Importe",
+    country: "País",
+    customer_note: "Nota del cliente",
+    activate_account: "Activar cuenta",
+    activating: "Activando...",
+    reject_or_request_info: "Rechazar / solicitar información",
+    rejecting: "Rechazando...",
+    reject_application: "Rechazar solicitud",
+    reject_reason_prompt: "Indica el motivo del rechazo o la información necesaria.",
+    reject_reason_placeholder: "Motivo...",
+    cancel: "Cancelar",
+    reject: "Rechazar",
+    errors: {
+      activation_failed: "No se pudo activar la solicitud.",
+      rejection_failed: "No se pudo rechazar la solicitud."
+    },
+    status: {
+      activation_pending: "Activación pendiente",
+      account_active: "Cuenta activa",
+      rejected: "Rechazado",
+      manual_review: "Revisión manual"
+    }
+  }
 };
 
 const frTranslation = {
@@ -3014,7 +3346,9 @@ const frTranslation = {
     openAccount: "CRÉER UN COMPTE",
     dashboard: "TABLEAU DE BORD",
     logout: "DÉCONNEXION",
-    selectLanguage: "Choisir la langue"
+    selectLanguage: "Choisir la langue",
+    sessionActive: "Session active",
+    accessDashboard: "Accéder au tableau de bord"
   },
   footer: {
     desc: "Infrastructure d'investissement de niveau institutionnel. Technologie propriétaire pour le marché moderne.",
@@ -3033,7 +3367,15 @@ const frTranslation = {
   chatbot: {
     title: "Support Braxel",
     placeholder: "Tapez un message...",
-    emailSupport: "E-mail :"
+    emailSupport: "E-mail :",
+    assistantReply: "Merci pour votre message. Notre équipe vous répondra sous peu.",
+    send: "Envoyer",
+    brandAI: "IA de Braxel Markets",
+    openChat: "Ouvrir le chat d’assistance",
+    close: "Fermer",
+    minimize: "Réduire",
+    maximize: "Agrandir",
+    supportDialog: "Chat d’assistance"
   },
   auth: {
     loginTitle: "Connexion",
@@ -3073,7 +3415,10 @@ const frTranslation = {
     rememberMe: "Se souvenir de moi",
     registerLink: "Créer un compte",
     passwordPlaceholder: "Mot de passe",
-    accountNotFoundError: "Compte introuvable. Veuillez d’abord créer un compte."
+    accountNotFoundError: "Compte introuvable. Veuillez d’abord créer un compte.",
+    resetPasswordSent: "Si un compte existe pour cet e-mail, un lien de réinitialisation du mot de passe a été envoyé.",
+    resetPasswordError: "Impossible d’envoyer le lien de réinitialisation. Veuillez réessayer.",
+    enterEmailFirst: "Saisissez d’abord votre adresse e-mail."
   },
   hero: {
     title1: "GESTION ALGORITHMIQUE",
@@ -3589,7 +3934,11 @@ const frTranslation = {
     profit: "PROFIT",
     status: "STATUT",
     active: "ACTIF",
-    completed: "TERMINÉ"
+    completed: "TERMINÉ",
+    institutionalVerification: "Vérification institutionnelle",
+    realtimeFeed: "Flux de données en temps réel provenant de pools de liquidité mondiaux.",
+    liveTerminal: "TERMINAL EN DIRECT",
+    connected: "CONNECTÉ"
   },
   application: {
     title: "CANDIDATURE",
@@ -3679,7 +4028,73 @@ const frTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "Désolé, la page que vous recherchez n’existe pas.",
+    returnHome: "Retour à l’accueil"
+  },
+  authCallback: {
+    confirmingTitle: "Confirmation de votre compte...",
+    confirmingDesc: "Veuillez patienter pendant la vérification de votre e-mail.",
+    confirmedTitle: "E-mail confirmé !",
+    confirmedDesc: "Votre compte a été vérifié avec succès.",
+    redirecting: "Redirection vers la connexion...",
+    failedTitle: "Échec de la confirmation",
+    goToLogin: "Aller à la connexion",
+    invalidLink: "Lien de confirmation invalide ou expiré",
+    failedConfirm: "Échec de la confirmation de l’e-mail"
+  },
+  paymentsDisabled: {
+    title: "Les paiements sont actuellement désactivés.",
+    desc: "Le système de paiement n’est pas encore actif. Pour activer les paiements, contactez l’opérateur à",
+    managedBy: "Le traitement des paiements est géré exclusivement par l’opérateur de la plateforme. Si vous avez des questions sur une allocation en attente, contactez le support.",
+    viewPlans: "Voir les plans d’investissement"
+  },
+  checkoutStatus: {
+    created: "Créé",
+    pending: "En attente de paiement",
+    processing: "Vérification on-chain",
+    confirmed: "Confirmé",
+    failed: "Échoué",
+    rejected: "Rejeté",
+    refunded: "Remboursé",
+    disputed: "Contesté",
+    canceled: "Annulé",
+    pending_manual: "En attente de vérification manuelle"
+  },
+  legalReview: {
+    title: "Projet en cours de révision juridique"
+  },
+  operator: {
+    title: "Opérateur",
+    subtitle: "Tableau de bord",
+    description: "Examinez et activez les demandes clients en attente.",
+    no_pending_applications: "Aucune demande en attente.",
+    plan: "Forfait",
+    amount: "Montant",
+    country: "Pays",
+    customer_note: "Note du client",
+    activate_account: "Activer le compte",
+    activating: "Activation...",
+    reject_or_request_info: "Rejeter / demander des informations",
+    rejecting: "Rejet...",
+    reject_application: "Rejeter la demande",
+    reject_reason_prompt: "Indiquez le motif du rejet ou les informations nécessaires.",
+    reject_reason_placeholder: "Motif...",
+    cancel: "Annuler",
+    reject: "Rejeter",
+    errors: {
+      activation_failed: "Échec de l’activation de la demande.",
+      rejection_failed: "Échec du rejet de la demande."
+    },
+    status: {
+      activation_pending: "Activation en attente",
+      account_active: "Compte actif",
+      rejected: "Rejeté",
+      manual_review: "Vérification manuelle"
+    }
+  }
 };
 
 const deTranslation = {
@@ -3747,7 +4162,9 @@ const deTranslation = {
     openAccount: "KONTO ERSTELLEN",
     dashboard: "DASHBOARD",
     logout: "ABMELDEN",
-    selectLanguage: "Sprache wählen"
+    selectLanguage: "Sprache wählen",
+    sessionActive: "Aktive Sitzung",
+    accessDashboard: "Zum Dashboard"
   },
   footer: {
     desc: "Institutionelle Investmentinfrastruktur. Proprietäre Technologie für den modernen Markt.",
@@ -3766,7 +4183,15 @@ const deTranslation = {
   chatbot: {
     title: "Braxel Support",
     placeholder: "Nachricht eingeben...",
-    emailSupport: "E-Mail:"
+    emailSupport: "E-Mail:",
+    assistantReply: "Vielen Dank für Ihre Nachricht. Unser Team wird sich in Kürze melden.",
+    send: "Senden",
+    brandAI: "Braxel Markets KI",
+    openChat: "Support-Chat öffnen",
+    close: "Schließen",
+    minimize: "Minimieren",
+    maximize: "Maximieren",
+    supportDialog: "Support-Chat"
   },
   auth: {
     loginTitle: "Anmeldung",
@@ -3806,7 +4231,10 @@ const deTranslation = {
     rememberMe: "Angemeldet bleiben",
     registerLink: "Konto erstellen",
     passwordPlaceholder: "Passwort",
-    accountNotFoundError: "Konto nicht gefunden. Bitte erstellen Sie zuerst ein Konto."
+    accountNotFoundError: "Konto nicht gefunden. Bitte erstellen Sie zuerst ein Konto.",
+    resetPasswordSent: "Falls ein Konto für diese E-Mail existiert, wurde ein Link zum Zurücksetzen des Passworts gesendet.",
+    resetPasswordError: "Der Link zum Zurücksetzen konnte nicht gesendet werden. Bitte versuchen Sie es erneut.",
+    enterEmailFirst: "Geben Sie zuerst Ihre E-Mail-Adresse ein."
   },
   hero: {
     title1: "ALGORITHMISCHES",
@@ -4322,7 +4750,11 @@ const deTranslation = {
     profit: "GEWINN",
     status: "STATUS",
     active: "AKTIV",
-    completed: "ABGESCHLOSSEN"
+    completed: "ABGESCHLOSSEN",
+    institutionalVerification: "Institutionelle Verifizierung",
+    realtimeFeed: "Echtzeit-Datenfeed aus globalen Liquiditätspools.",
+    liveTerminal: "LIVE-TERMINAL",
+    connected: "VERBUNDEN"
   },
   application: {
     title: "ANTRAG",
@@ -4412,7 +4844,73 @@ const deTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "Entschuldigung, die gesuchte Seite existiert nicht.",
+    returnHome: "Zur Startseite"
+  },
+  authCallback: {
+    confirmingTitle: "Ihr Konto wird bestätigt...",
+    confirmingDesc: "Bitte warten Sie, während wir Ihre E-Mail verifizieren.",
+    confirmedTitle: "E-Mail bestätigt!",
+    confirmedDesc: "Ihr Konto wurde erfolgreich verifiziert.",
+    redirecting: "Weiterleitung zur Anmeldung...",
+    failedTitle: "Bestätigung fehlgeschlagen",
+    goToLogin: "Zur Anmeldung",
+    invalidLink: "Ungültiger oder abgelaufener Bestätigungslink",
+    failedConfirm: "E-Mail konnte nicht bestätigt werden"
+  },
+  paymentsDisabled: {
+    title: "Zahlungen sind derzeit deaktiviert.",
+    desc: "Das Zahlungssystem ist noch nicht aktiv. Um Zahlungen zu aktivieren, kontaktieren Sie den Betreiber unter",
+    managedBy: "Die Zahlungsabwicklung wird ausschließlich vom Plattformbetreiber verwaltet. Bei Fragen zu einer ausstehenden Zuweisung wenden Sie sich bitte an den Support.",
+    viewPlans: "Investmentpläne ansehen"
+  },
+  checkoutStatus: {
+    created: "Erstellt",
+    pending: "Zahlung ausstehend",
+    processing: "On-Chain-Verifizierung",
+    confirmed: "Bestätigt",
+    failed: "Fehlgeschlagen",
+    rejected: "Abgelehnt",
+    refunded: "Erstattet",
+    disputed: "Angefochten",
+    canceled: "Storniert",
+    pending_manual: "Manuelle Prüfung ausstehend"
+  },
+  legalReview: {
+    title: "Entwurf in rechtlicher Prüfung"
+  },
+  operator: {
+    title: "Betreiber",
+    subtitle: "Dashboard",
+    description: "Prüfen und aktivieren Sie ausstehende Kundenanträge.",
+    no_pending_applications: "Keine ausstehenden Anträge.",
+    plan: "Plan",
+    amount: "Betrag",
+    country: "Land",
+    customer_note: "Kundennotiz",
+    activate_account: "Konto aktivieren",
+    activating: "Wird aktiviert...",
+    reject_or_request_info: "Ablehnen / Infos anfordern",
+    rejecting: "Wird abgelehnt...",
+    reject_application: "Antrag ablehnen",
+    reject_reason_prompt: "Geben Sie einen Ablehnungsgrund oder die benötigten Informationen an.",
+    reject_reason_placeholder: "Grund...",
+    cancel: "Abbrechen",
+    reject: "Ablehnen",
+    errors: {
+      activation_failed: "Antrag konnte nicht aktiviert werden.",
+      rejection_failed: "Antrag konnte nicht abgelehnt werden."
+    },
+    status: {
+      activation_pending: "Aktivierung ausstehend",
+      account_active: "Konto aktiv",
+      rejected: "Abgelehnt",
+      manual_review: "Manuelle Prüfung"
+    }
+  }
 };
 
 const ruTranslation = {
@@ -4480,7 +4978,9 @@ const ruTranslation = {
     openAccount: "СОЗДАТЬ АККАУНТ",
     dashboard: "ПАНЕЛЬ УПРАВЛЕНИЯ",
     logout: "ВЫХОД",
-    selectLanguage: "Выбрать язык"
+    selectLanguage: "Выбрать язык",
+    sessionActive: "Активная сессия",
+    accessDashboard: "Перейти в панель"
   },
   footer: {
     desc: "Инвестиционная инфраструктура институционального уровня. Проприетарная технология для современного рынка.",
@@ -4499,7 +4999,15 @@ const ruTranslation = {
   chatbot: {
     title: "Поддержка Braxel",
     placeholder: "Введите сообщение...",
-    emailSupport: "Эл. почта:"
+    emailSupport: "Эл. почта:",
+    assistantReply: "Спасибо за ваше сообщение. Наша команда скоро ответит.",
+    send: "Отправить",
+    brandAI: "ИИ Braxel Markets",
+    openChat: "Открыть чат поддержки",
+    close: "Закрыть",
+    minimize: "Свернуть",
+    maximize: "Развернуть",
+    supportDialog: "Чат поддержки"
   },
   auth: {
     loginTitle: "Вход",
@@ -4539,7 +5047,10 @@ const ruTranslation = {
     rememberMe: "Запомнить меня",
     registerLink: "Создать аккаунт",
     passwordPlaceholder: "Пароль",
-    accountNotFoundError: "Аккаунт не найден. Сначала создайте аккаунт."
+    accountNotFoundError: "Аккаунт не найден. Сначала создайте аккаунт.",
+    resetPasswordSent: "Если аккаунт с такой почтой существует, ссылка для сброса пароля отправлена.",
+    resetPasswordError: "Не удалось отправить ссылку для сброса. Попробуйте ещё раз.",
+    enterEmailFirst: "Сначала введите адрес электронной почты."
   },
   hero: {
     title1: "ЭЛИТНОЕ АЛГОРИТМИЧЕСКОЕ",
@@ -5055,7 +5566,11 @@ const ruTranslation = {
     profit: "ПРИБЫЛЬ",
     status: "СТАТУС",
     active: "АКТИВНЫЙ",
-    completed: "ЗАВЕРШЁН"
+    completed: "ЗАВЕРШЁН",
+    institutionalVerification: "Институциональная верификация",
+    realtimeFeed: "Поток данных в реальном времени из глобальных пулов ликвидности.",
+    liveTerminal: "ТЕРМИНАЛ ОНЛАЙН",
+    connected: "ПОДКЛЮЧЕНО"
   },
   application: {
     title: "ЗАЯВКА",
@@ -5145,7 +5660,73 @@ const ruTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "Извините, страница, которую вы ищете, не существует.",
+    returnHome: "Вернуться на главную"
+  },
+  authCallback: {
+    confirmingTitle: "Подтверждение вашего аккаунта...",
+    confirmingDesc: "Пожалуйста, подождите, пока мы проверяем вашу почту.",
+    confirmedTitle: "Электронная почта подтверждена!",
+    confirmedDesc: "Ваш аккаунт успешно подтверждён.",
+    redirecting: "Перенаправление на вход...",
+    failedTitle: "Ошибка подтверждения",
+    goToLogin: "Перейти к входу",
+    invalidLink: "Недействительная или истёкшая ссылка подтверждения",
+    failedConfirm: "Не удалось подтвердить почту"
+  },
+  paymentsDisabled: {
+    title: "Платежи в настоящее время отключены.",
+    desc: "Платёжная система ещё не активна. Чтобы включить платежи, свяжитесь с оператором по адресу",
+    managedBy: "Обработка платежей осуществляется исключительно оператором платформы. Если у вас есть вопросы о pending-распределении, обратитесь в поддержку.",
+    viewPlans: "Посмотреть инвестиционные планы"
+  },
+  checkoutStatus: {
+    created: "Создан",
+    pending: "Ожидание оплаты",
+    processing: "Проверка в блокчейне",
+    confirmed: "Подтверждён",
+    failed: "Ошибка",
+    rejected: "Отклонён",
+    refunded: "Возвращён",
+    disputed: "Оспорен",
+    canceled: "Отменён",
+    pending_manual: "Ожидание ручной проверки"
+  },
+  legalReview: {
+    title: "Черновик на юридической проверке"
+  },
+  operator: {
+    title: "Оператор",
+    subtitle: "Панель",
+    description: "Проверяйте и активируйте ожидающие заявки клиентов.",
+    no_pending_applications: "Нет ожидающих заявок.",
+    plan: "План",
+    amount: "Сумма",
+    country: "Страна",
+    customer_note: "Примечание клиента",
+    activate_account: "Активировать аккаунт",
+    activating: "Активация...",
+    reject_or_request_info: "Отклонить / запросить информацию",
+    rejecting: "Отклонение...",
+    reject_application: "Отклонить заявку",
+    reject_reason_prompt: "Укажите причину отклонения или необходимую информацию.",
+    reject_reason_placeholder: "Причина...",
+    cancel: "Отмена",
+    reject: "Отклонить",
+    errors: {
+      activation_failed: "Не удалось активировать заявку.",
+      rejection_failed: "Не удалось отклонить заявку."
+    },
+    status: {
+      activation_pending: "Ожидает активации",
+      account_active: "Аккаунт активен",
+      rejected: "Отклонён",
+      manual_review: "Ручная проверка"
+    }
+  }
 };
 
 const zhTranslation = {
@@ -5213,7 +5794,9 @@ const zhTranslation = {
     openAccount: "创建账户",
     dashboard: "控制面板",
     logout: "退出登录",
-    selectLanguage: "选择语言"
+    selectLanguage: "选择语言",
+    sessionActive: "活跃会话",
+    accessDashboard: "访问控制面板"
   },
   footer: {
     desc: "机构级投资基础设施。为现代市场打造的专有技术。",
@@ -5267,7 +5850,10 @@ const zhTranslation = {
     rememberMe: "记住我",
     registerLink: "创建账户",
     passwordPlaceholder: "密码",
-    accountNotFoundError: "未找到账户。请先创建账户。"
+    accountNotFoundError: "未找到账户。请先创建账户。",
+    resetPasswordSent: "如果该邮箱存在账户，已发送密码重置链接。",
+    resetPasswordError: "无法发送重置链接。请重试。",
+    enterEmailFirst: "请先输入您的电子邮件地址。"
   },
   hero: {
     title1: "精英算法",
@@ -5783,12 +6369,24 @@ const zhTranslation = {
     profit: "利润",
     status: "状态",
     active: "活跃",
-    completed: "已完成"
+    completed: "已完成",
+    institutionalVerification: "机构验证",
+    realtimeFeed: "来自全球流动性池的实时数据馈送。",
+    liveTerminal: "实时终端",
+    connected: "已连接"
   },
   chatbot: {
     title: "Braxel Support",
     placeholder: "Type a message...",
-    emailSupport: "邮箱："
+    emailSupport: "邮箱：",
+    assistantReply: "感谢您的留言。我们的团队将尽快回复。",
+    send: "发送",
+    brandAI: "Braxel Markets 人工智能",
+    openChat: "打开支持聊天",
+    close: "关闭",
+    minimize: "最小化",
+    maximize: "最大化",
+    supportDialog: "支持聊天"
   },
   application: {
     title: "申请",
@@ -5878,7 +6476,73 @@ const zhTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "抱歉，您要查找的页面不存在。",
+    returnHome: "返回首页"
+  },
+  authCallback: {
+    confirmingTitle: "正在确认您的账户...",
+    confirmingDesc: "请稍候，我们正在验证您的电子邮件。",
+    confirmedTitle: "电子邮件已确认！",
+    confirmedDesc: "您的账户已成功验证。",
+    redirecting: "正在跳转到登录页面...",
+    failedTitle: "确认失败",
+    goToLogin: "前往登录",
+    invalidLink: "确认链接无效或已过期",
+    failedConfirm: "确认电子邮件失败"
+  },
+  paymentsDisabled: {
+    title: "支付功能目前已禁用。",
+    desc: "支付系统尚未启用。如需启用支付，请联系运营方：",
+    managedBy: "支付处理仅由平台运营方管理。如果您对待处理的配资有疑问，请联系客服。",
+    viewPlans: "查看投资计划"
+  },
+  checkoutStatus: {
+    created: "已创建",
+    pending: "等待支付",
+    processing: "链上验证中",
+    confirmed: "已确认",
+    failed: "失败",
+    rejected: "已拒绝",
+    refunded: "已退款",
+    disputed: "有争议",
+    canceled: "已取消",
+    pending_manual: "等待人工审核"
+  },
+  legalReview: {
+    title: "法律审核中的草案"
+  },
+  operator: {
+    title: "运营方",
+    subtitle: "控制面板",
+    description: "审核并激活待处理的客户申请。",
+    no_pending_applications: "没有待处理的申请。",
+    plan: "计划",
+    amount: "金额",
+    country: "国家/地区",
+    customer_note: "客户备注",
+    activate_account: "激活账户",
+    activating: "正在激活...",
+    reject_or_request_info: "拒绝 / 请求信息",
+    rejecting: "正在拒绝...",
+    reject_application: "拒绝申请",
+    reject_reason_prompt: "请提供拒绝原因或所需信息。",
+    reject_reason_placeholder: "原因...",
+    cancel: "取消",
+    reject: "拒绝",
+    errors: {
+      activation_failed: "激活申请失败。",
+      rejection_failed: "拒绝申请失败。"
+    },
+    status: {
+      activation_pending: "等待激活",
+      account_active: "账户已激活",
+      rejected: "已拒绝",
+      manual_review: "人工审核"
+    }
+  }
 };
 
 const jaTranslation = {
@@ -5946,7 +6610,9 @@ const jaTranslation = {
     openAccount: "アカウント作成",
     dashboard: "ダッシュボード",
     logout: "ログアウト",
-    selectLanguage: "言語を選択"
+    selectLanguage: "言語を選択",
+    sessionActive: "アクティブセッション",
+    accessDashboard: "ダッシュボードへ"
   },
   footer: {
     desc: "機関投資家レベルの投資インフラ。現代の市場のための独自テクノロジー。",
@@ -6000,7 +6666,10 @@ const jaTranslation = {
     rememberMe: "ログイン状態を保持",
     registerLink: "アカウント作成",
     passwordPlaceholder: "パスワード",
-    accountNotFoundError: "アカウントが見つかりません。先にアカウントを作成してください。"
+    accountNotFoundError: "アカウントが見つかりません。先にアカウントを作成してください。",
+    resetPasswordSent: "そのメールアドレスのアカウントが存在する場合、パスワード再設定リンクを送信しました。",
+    resetPasswordError: "再設定リンクを送信できませんでした。もう一度お試しください。",
+    enterEmailFirst: "先にメールアドレスを入力してください。"
   },
   hero: {
     title1: "エリートアルゴリズム",
@@ -6516,12 +7185,24 @@ const jaTranslation = {
     profit: "利益",
     status: "ステータス",
     active: "アクティブ",
-    completed: "完了"
+    completed: "完了",
+    institutionalVerification: "機関検証",
+    realtimeFeed: "グローバルな流動性プールからのリアルタイムデータフィード。",
+    liveTerminal: "ライブターミナル",
+    connected: "接続済み"
   },
   chatbot: {
     title: "Braxel Support",
     placeholder: "Type a message...",
-    emailSupport: "メール："
+    emailSupport: "メール：",
+    assistantReply: "メッセージありがとうございます。担当チームがまもなく返信いたします。",
+    send: "送信",
+    brandAI: "Braxel Markets AI",
+    openChat: "サポートチャットを開く",
+    close: "閉じる",
+    minimize: "最小化",
+    maximize: "最大化",
+    supportDialog: "サポートチャット"
   },
   application: {
     title: "申込",
@@ -6611,7 +7292,73 @@ const jaTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "申し訳ありません。お探しのページは存在しません。",
+    returnHome: "ホームに戻る"
+  },
+  authCallback: {
+    confirmingTitle: "アカウントを確認しています...",
+    confirmingDesc: "メールアドレスを確認していますのでお待ちください。",
+    confirmedTitle: "メールアドレスを確認しました！",
+    confirmedDesc: "アカウントの確認が完了しました。",
+    redirecting: "ログインへリダイレクト中...",
+    failedTitle: "確認に失敗しました",
+    goToLogin: "ログインへ",
+    invalidLink: "確認リンクが無効または期限切れです",
+    failedConfirm: "メールの確認に失敗しました"
+  },
+  paymentsDisabled: {
+    title: "現在、支払い機能は無効になっています。",
+    desc: "決済システムはまだ有効になっていません。支払いを有効にするには、運営者までお問い合わせください：",
+    managedBy: "支払い処理はプラットフォーム運営者のみが管理しています。保留中の割り当てについてご質問がある場合は、サポートにお問い合わせください。",
+    viewPlans: "投資プランを見る"
+  },
+  checkoutStatus: {
+    created: "作成済み",
+    pending: "支払い待ち",
+    processing: "オンチェーン確認中",
+    confirmed: "確認済み",
+    failed: "失敗",
+    rejected: "拒否",
+    refunded: "返金済み",
+    disputed: "係争中",
+    canceled: "キャンセル済み",
+    pending_manual: "手動レビュー待ち"
+  },
+  legalReview: {
+    title: "法務レビュー中のドラフト"
+  },
+  operator: {
+    title: "オペレーター",
+    subtitle: "ダッシュボード",
+    description: "保留中の顧客申請を確認して有効化します。",
+    no_pending_applications: "保留中の申請はありません。",
+    plan: "プラン",
+    amount: "金額",
+    country: "国",
+    customer_note: "顧客メモ",
+    activate_account: "アカウントを有効化",
+    activating: "有効化中...",
+    reject_or_request_info: "拒否 / 情報を要求",
+    rejecting: "拒否中...",
+    reject_application: "申請を拒否",
+    reject_reason_prompt: "拒否理由または必要な情報を入力してください。",
+    reject_reason_placeholder: "理由...",
+    cancel: "キャンセル",
+    reject: "拒否",
+    errors: {
+      activation_failed: "申請の有効化に失敗しました。",
+      rejection_failed: "申請の拒否に失敗しました。"
+    },
+    status: {
+      activation_pending: "有効化待ち",
+      account_active: "アカウント有効",
+      rejected: "拒否",
+      manual_review: "手動レビュー"
+    }
+  }
 };
 
 const arTranslation = {
@@ -6679,7 +7426,9 @@ const arTranslation = {
     openAccount: "إنشاء حساب",
     dashboard: "لوحة التحكم",
     logout: "تسجيل الخروج",
-    selectLanguage: "اختر اللغة"
+    selectLanguage: "اختر اللغة",
+    sessionActive: "الجلسة النشطة",
+    accessDashboard: "الوصول إلى لوحة التحكم"
   },
   footer: {
     desc: "بنية تحتية استثمارية مؤسسية. تقنية مملوكة للسوق الحديث.",
@@ -6698,7 +7447,15 @@ const arTranslation = {
   chatbot: {
     title: "دعم Braxel",
     placeholder: "اكتب رسالة...",
-    emailSupport: "البريد الإلكتروني:"
+    emailSupport: "البريد الإلكتروني:",
+    assistantReply: "شكرًا لرسالتك. سيرد فريقنا قريبًا.",
+    send: "إرسال",
+    brandAI: "ذكاء Braxel Markets الاصطناعي",
+    openChat: "فتح محادثة الدعم",
+    close: "إغلاق",
+    minimize: "تصغير",
+    maximize: "تكبير",
+    supportDialog: "محادثة الدعم"
   },
   auth: {
     loginTitle: "تسجيل الدخول",
@@ -6738,7 +7495,10 @@ const arTranslation = {
     emailPlaceholder: "أدخل بريدك الإلكتروني",
     fullNamePlaceholder: "أدخل اسمك الكامل",
     passwordPlaceholder: "كلمة المرور",
-    accountNotFoundError: "لم يتم العثور على الحساب. يرجى إنشاء حساب أولاً."
+    accountNotFoundError: "لم يتم العثور على الحساب. يرجى إنشاء حساب أولاً.",
+    resetPasswordSent: "إذا كان هناك حساب لهذا البريد الإلكتروني، فقد تم إرسال رابط إعادة تعيين كلمة المرور.",
+    resetPasswordError: "تعذّر إرسال رابط إعادة التعيين. يرجى المحاولة مرة أخرى.",
+    enterEmailFirst: "أدخل عنوان بريدك الإلكتروني أولاً."
   },
   hero: {
     title1: "إدارة رأس المال",
@@ -7254,7 +8014,11 @@ const arTranslation = {
     profit: "الربح",
     status: "الحالة",
     active: "نشط",
-    completed: "مكتمل"
+    completed: "مكتمل",
+    institutionalVerification: "التحقق المؤسسي",
+    realtimeFeed: "تدفق بيانات في الوقت الفعلي من مجمّعات السيولة العالمية.",
+    liveTerminal: "الطرفية المباشرة",
+    connected: "متصل"
   },
   application: {
     title: "الطلب",
@@ -7344,7 +8108,73 @@ const arTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "عذرًا، الصفحة التي تبحث عنها غير موجودة.",
+    returnHome: "العودة إلى الصفحة الرئيسية"
+  },
+  authCallback: {
+    confirmingTitle: "جارٍ تأكيد حسابك...",
+    confirmingDesc: "يرجى الانتظار بينما نتحقق من بريدك الإلكتروني.",
+    confirmedTitle: "تم تأكيد البريد الإلكتروني!",
+    confirmedDesc: "تم التحقق من حسابك بنجاح.",
+    redirecting: "جارٍ إعادة التوجيه إلى تسجيل الدخول...",
+    failedTitle: "فشل التأكيد",
+    goToLogin: "الانتقال إلى تسجيل الدخول",
+    invalidLink: "رابط التأكيد غير صالح أو منتهي الصلاحية",
+    failedConfirm: "فشل تأكيد البريد الإلكتروني"
+  },
+  paymentsDisabled: {
+    title: "المدفوعات معطّلة حاليًا.",
+    desc: "نظام الدفع غير مُفعّل بعد. لتفعيل المدفوعات، تواصل مع المشغّل على",
+    managedBy: "تتم إدارة معالجة المدفوعات حصريًا بواسطة مشغّل المنصة. إذا كانت لديك أسئلة حول تخصيص معلّق، يرجى التواصل مع الدعم.",
+    viewPlans: "عرض خطط الاستثمار"
+  },
+  checkoutStatus: {
+    created: "تم الإنشاء",
+    pending: "في انتظار الدفع",
+    processing: "التحقق على السلسلة",
+    confirmed: "مؤكَّد",
+    failed: "فشل",
+    rejected: "مرفوض",
+    refunded: "مُسترد",
+    disputed: "متنازع عليه",
+    canceled: "ملغى",
+    pending_manual: "في انتظار المراجعة اليدوية"
+  },
+  legalReview: {
+    title: "مسودة قيد المراجعة القانونية"
+  },
+  operator: {
+    title: "المشغّل",
+    subtitle: "لوحة التحكم",
+    description: "راجع طلبات العملاء المعلّقة وقم بتفعيلها.",
+    no_pending_applications: "لا توجد طلبات معلّقة.",
+    plan: "الخطة",
+    amount: "المبلغ",
+    country: "البلد",
+    customer_note: "ملاحظة العميل",
+    activate_account: "تفعيل الحساب",
+    activating: "جارٍ التفعيل...",
+    reject_or_request_info: "رفض / طلب معلومات",
+    rejecting: "جارٍ الرفض...",
+    reject_application: "رفض الطلب",
+    reject_reason_prompt: "قدّم سبب الرفض أو المعلومات المطلوبة.",
+    reject_reason_placeholder: "السبب...",
+    cancel: "إلغاء",
+    reject: "رفض",
+    errors: {
+      activation_failed: "فشل تفعيل الطلب.",
+      rejection_failed: "فشل رفض الطلب."
+    },
+    status: {
+      activation_pending: "التفعيل معلّق",
+      account_active: "الحساب نشط",
+      rejected: "مرفوض",
+      manual_review: "مراجعة يدوية"
+    }
+  }
 };
 
 const heTranslation = {
@@ -7412,7 +8242,9 @@ const heTranslation = {
     openAccount: "יצירת חשבון",
     dashboard: "לוח בקרה",
     logout: "התנתקות",
-    selectLanguage: "בחר שפה"
+    selectLanguage: "בחר שפה",
+    sessionActive: "סשן פעיל",
+    accessDashboard: "גש ללוח הבקרה"
   },
   footer: {
     desc: "תשתית השקעות ברמה מוסדית. טכנולוגיה קניינית לשוק המודרני.",
@@ -7431,7 +8263,15 @@ const heTranslation = {
   chatbot: {
     title: "תמיכת Braxel",
     placeholder: "הקלד הודעה...",
-    emailSupport: "אימייל:"
+    emailSupport: "אימייל:",
+    assistantReply: "תודה על הודעתך. הצוות שלנו ישיב בקרוב.",
+    send: "שלח",
+    brandAI: "Braxel Markets AI",
+    openChat: "פתח צ׳אט תמיכה",
+    close: "סגור",
+    minimize: "מזער",
+    maximize: "הרחב",
+    supportDialog: "צ׳אט תמיכה"
   },
   auth: {
     loginTitle: "התחברות",
@@ -7471,7 +8311,10 @@ const heTranslation = {
     emailPlaceholder: "הזן את האימייל שלך",
     fullNamePlaceholder: "הזן את שמך המלא",
     passwordPlaceholder: "סיסמה",
-    accountNotFoundError: "החשבון לא נמצא. אנא צור חשבון תחילה."
+    accountNotFoundError: "החשבון לא נמצא. אנא צור חשבון תחילה.",
+    resetPasswordSent: "אם קיים חשבון עבור אימייל זה, נשלח קישור לאיפוס הסיסמה.",
+    resetPasswordError: "לא ניתן לשלוח קישור לאיפוס. אנא נסה שוב.",
+    enterEmailFirst: "הזן תחילה את כתובת האימייל שלך."
   },
   hero: {
     title1: "ניהול הון",
@@ -7987,7 +8830,11 @@ const heTranslation = {
     profit: "רווח",
     status: "סטטוס",
     active: "פעיל",
-    completed: "הושלם"
+    completed: "הושלם",
+    institutionalVerification: "אימות מוסדי",
+    realtimeFeed: "זרם נתונים בזמן אמת ממאגרי נזילות גלובליים.",
+    liveTerminal: "מסוף חי",
+    connected: "מחובר"
   },
   application: {
     title: "בקשה",
@@ -8077,7 +8924,73 @@ const heTranslation = {
     contactTitle: "Contact",
     contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
   },
-  legalDraftBanner: "This page is a draft under legal review and is not yet final."
+  legalDraftBanner: "This page is a draft under legal review and is not yet final.",
+  notFound: {
+    title: "404",
+    message: "מצטערים, הדף שחיפשת אינו קיים.",
+    returnHome: "חזרה לדף הבית"
+  },
+  authCallback: {
+    confirmingTitle: "מאמת את החשבון שלך...",
+    confirmingDesc: "אנא המתן בזמן שאנו מאמתים את האימייל שלך.",
+    confirmedTitle: "האימייל אומת!",
+    confirmedDesc: "החשבון שלך אומת בהצלחה.",
+    redirecting: "מעביר להתחברות...",
+    failedTitle: "האימות נכשל",
+    goToLogin: "עבור להתחברות",
+    invalidLink: "קישור אימות שגוי או שפג תוקפו",
+    failedConfirm: "אימות האימייל נכשל"
+  },
+  paymentsDisabled: {
+    title: "התשלומים מושבתים כעת.",
+    desc: "מערכת התשלומים טרם פעילה. להפעלת תשלומים, צור קשר עם המפעיל בכתובת",
+    managedBy: "עיבוד התשלומים מנוהל אך ורק על ידי מפעיל הפלטפורמה. אם יש לך שאלות בנוגע להקצאה ממתינה, אנא צור קשר עם התמיכה.",
+    viewPlans: "צפה בתוכניות ההשקעה"
+  },
+  checkoutStatus: {
+    created: "נוצר",
+    pending: "ממתין לתשלום",
+    processing: "אימות ברשת",
+    confirmed: "מאושר",
+    failed: "נכשל",
+    rejected: "נדחה",
+    refunded: "הוחזר",
+    disputed: "במחלוקת",
+    canceled: "בוטל",
+    pending_manual: "ממתין לבדיקה ידנית"
+  },
+  legalReview: {
+    title: "טיוטה בבדיקה משפטית"
+  },
+  operator: {
+    title: "מפעיל",
+    subtitle: "לוח בקרה",
+    description: "סקור והפעל בקשות לקוחות ממתינות.",
+    no_pending_applications: "אין בקשות ממתינות.",
+    plan: "תוכנית",
+    amount: "סכום",
+    country: "מדינה",
+    customer_note: "הערת לקוח",
+    activate_account: "הפעל חשבון",
+    activating: "מפעיל...",
+    reject_or_request_info: "דחה / בקש מידע",
+    rejecting: "דוחה...",
+    reject_application: "דחה בקשה",
+    reject_reason_prompt: "ספק סיבה לדחייה או את המידע הנדרש.",
+    reject_reason_placeholder: "סיבה...",
+    cancel: "ביטול",
+    reject: "דחה",
+    errors: {
+      activation_failed: "הפעלת הבקשה נכשלה.",
+      rejection_failed: "דחיית הבקשה נכשלה."
+    },
+    status: {
+      activation_pending: "ממתין להפעלה",
+      account_active: "חשבון פעיל",
+      rejected: "נדחה",
+      manual_review: "בדיקה ידנית"
+    }
+  }
 };
 
 const resources = {
