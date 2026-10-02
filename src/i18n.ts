@@ -274,18 +274,6 @@ const enTranslation = {
         role: "Founder & CEO",
         bio: "Quantitative strategist and entrepreneur leading Braxel Markets' vision for institutional-grade algorithmic infrastructure.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[Co-Founder Name]",
-        role: "Co-Founder & CTO",
-        bio: "Software engineer specialized in high-frequency systems and distributed computing.",
-        photo: ""
-      },
-      {
-        name: "[Manager Name]",
-        role: "Head of Risk Management",
-        bio: "Former institutional risk analyst with deep expertise in portfolio optimization.",
-        photo: ""
       }
     ]
   },
@@ -311,7 +299,9 @@ const enTranslation = {
     waitMessage: "Please wait a moment before sending another message.",
     messageSent: "Message sent successfully! Our team will contact you soon.",
     messageFailed: "Failed to send message. Please try again or email us directly at marketsbraxel@ouvidor.net",
-    cooldown: "PLEASE WAIT"
+    cooldown: "PLEASE WAIT",
+    consentPre: "By submitting this form, you agree to our",
+    consentPost: "We use your data only to respond to your inquiry."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -435,7 +425,12 @@ const enTranslation = {
     analytics: "Analytics",
     newWithdrawalRequest: "New Withdrawal Request",
     walletIban: "Wallet / IBAN",
-    network: "Network",
+    network: {
+      erc20: "ERC-20 (Ethereum)",
+      trc20: "TRC-20 (Tron)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "Bank Transfer (SWIFT)"
+    },
     transactionHistory: "Transaction History",
     operations: "Operations",
     asset: "Asset",
@@ -524,7 +519,23 @@ const enTranslation = {
       eventAccountCreated: "Account created",
       timeHoursAgo: "{{count}} hours ago",
       timeDaysAgo: "{{count}} days ago"
-    }
+    },
+    performanceTitle: "Performance Dashboard",
+    auditLogTitle: "Audit Log",
+    auditLogDesc: "All algorithmic orders executed on your account.",
+    accountSettingsTitle: "Account Settings",
+    personalInformation: "Personal Information",
+    emailAddress: "Email Address",
+    emailChangeNotice: "Changing your email requires verification. A confirmation link will be sent to the new email address.",
+    currentEmail: "Current Email",
+    confirmationSent: "Confirmation Sent",
+    tryDifferentEmail: "Try a different email",
+    continueToMethod: "Continue to Method Selection",
+    uploadHint: "PNG, JPG, PDF up to 10MB",
+    twoFactorDesc: "Add an extra layer of security to your account. Use an authenticator app like Google Authenticator or Authy.",
+    qrCode: "QR Code",
+    kycRequiredBanner: "KYC Required",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "SUMMARY",
@@ -628,7 +639,8 @@ const enTranslation = {
     subscriptionSubtitle: "SERVICE PLAN",
     serviceAccess: "Service Access",
     confirmCard: "CONFIRM CARD",
-    redirecting: "Redirecting to payment..."
+    redirecting: "Redirecting to payment...",
+    testModeBanner: "TEST MODE — No real money. No real bank. No real wallet. No real activation."
   },
   application: {
     title: "APPLICATION",
@@ -830,6 +842,19 @@ const enTranslation = {
       rejected: "Rejected",
       manual_review: "Manual review"
     }
+  },
+  profitCalculator: {
+    badge: "PROJECTION",
+    titleA: "PROFIT",
+    titleB: "CALCULATOR",
+    initialAllocation: "Initial Allocation",
+    monthlyProfit: "Est. Monthly Profit",
+    annualProfit: "Est. Annual Profit",
+    riskTitle: "Risk Management",
+    riskDesc: "Projections based on historical algorithmic performance with strict drawdown limits.",
+    instantTitle: "Instant Deployment",
+    instantDesc: "Your capital starts working within minutes of infrastructure integration.",
+    disclaimer: "* Disclaimer: Past performance does not guarantee future results. Projections are for illustrative purposes only."
   }
 };
 
@@ -838,47 +863,47 @@ const ptTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "O investimento em mercados financeiros envolve riscos substanciais e pode resultar na perda total do capital investido. O desempenho passado não é garantia de resultados futuros.",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "O conteúdo deste site e os serviços prestados pela Braxel Markets não constituem aconselhamento financeiro, jurídico ou tributário. Recomendamos que cada investidor busque orientação profissional independente antes de tomar decisões de investimento.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "A Braxel Markets não é responsável por perdas financeiras decorrentes do uso da nossa tecnologia de automação ou de flutuações de mercado.",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "Seu capital está em risco ao usar nossos serviços. Você pode perder parte ou a totalidade do seu investimento.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "Não garantimos quaisquer retornos ou lucros. O desempenho passado não é indicativo de resultados futuros.",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "Qualquer desempenho histórico exibido é apenas para fins ilustrativos e não garante resultados futuros.",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "A Braxel Markets não é atualmente representada como instituição financeira licenciada ou regulada em [PLACEHOLDER: jurisdição]. Verifique o status regulatório aplicável à sua localização.",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "Não oferecemos qualquer proteção de capital ou garantia contra perdas.",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "Estratégias de negociação automatizadas e algorítmicas envolvem riscos que incluem, entre outros, falhas de sistema, problemas de conectividade, erros de modelo e condições de mercado inesperadas.",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "Nossos serviços podem não estar disponíveis em todas as jurisdições. Os usuários são responsáveis por garantir a conformidade com as leis e regulamentos locais antes de usar nossa plataforma."
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "Coletamos apenas as informações necessárias para a prestação dos nossos serviços, incluindo nome, e-mail e dados de transações. Seus dados são protegidos por criptografia AES-256.",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "As informações coletadas são usadas exclusivamente para gerenciar sua conta, processar pagamentos e enviar relatórios semanais de desempenho.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "Implementamos medidas de segurança rigorosas para proteger contra acesso não autorizado, alteração ou destruição dos seus dados pessoais.",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "Nossa base legal para o tratamento dos seus dados pessoais é [PLACEHOLDER: base legal, ex.: consentimento, interesse legítimo, necessidade contratual].",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "Retemos seus dados pessoais por [PLACEHOLDER: período de retenção], a menos que um período mais longo seja exigido por lei.",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "Podemos compartilhar seus dados com prestadores de serviços terceirizados de confiança, como [PLACEHOLDER: lista de operadores, ex.: processadores de pagamento, hospedagem em nuvem, serviços de e-mail], exclusivamente para os fins descritos nesta política.",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "Nos termos das leis de proteção de dados aplicáveis, como a LGPD (Brasil) e o GDPR (UE), você tem o direito de acessar, retificar, excluir e portar seus dados pessoais, bem como de se opor ou restringir o tratamento. Para exercer esses direitos, entre em contato conosco pelo [PLACEHOLDER: contato para solicitações de direitos].",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "Nosso site usa cookies e tecnologias semelhantes para melhorar a experiência do usuário, analisar o tráfego e personalizar o conteúdo. Você pode gerenciar suas preferências de cookies nas configurações do navegador.",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "Para dúvidas sobre esta Política de Privacidade ou nossas práticas de dados, entre em contato com nosso Encarregado de Proteção de Dados pelo [PLACEHOLDER: e-mail ou contato do DPO]."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -1143,18 +1168,6 @@ const ptTranslation = {
         role: "Fundador & CEO",
         bio: "Estrategista quantitativo e empreendedor liderando a visão da Braxel Markets para infraestrutura algorítmica institucional.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[Nome do Cofundador]",
-        role: "Cofundador & CTO",
-        bio: "Engenheiro de software especializado em sistemas de alta frequência e computação distribuída.",
-        photo: ""
-      },
-      {
-        name: "[Nome do Gestor]",
-        role: "Diretor de Gestão de Riscos",
-        bio: "Ex-analista de riscos institucionais com ampla experiência em otimização de portfólio.",
-        photo: ""
       }
     ],
     teamBadge: "LIDERANÇA"
@@ -1181,7 +1194,9 @@ const ptTranslation = {
     waitMessage: "Por favor, aguarde um momento antes de enviar outra mensagem.",
     messageSent: "Mensagem enviada com sucesso! Nossa equipe entrará em contato em breve.",
     messageFailed: "Falha ao enviar mensagem. Por favor, tente novamente ou envie um e-mail diretamente para marketsbraxel@ouvidor.net",
-    cooldown: "AGUARDE"
+    cooldown: "AGUARDE",
+    consentPre: "Ao enviar este formulário, você concorda com nossa",
+    consentPost: "Usamos seus dados apenas para responder à sua solicitação."
   },
   dashboard: {
     portfolio: "Portfólio",
@@ -1232,7 +1247,12 @@ const ptTranslation = {
     analytics: "Análises",
     newWithdrawalRequest: "Nova Solicitação de Saque",
     walletIban: "Carteira / IBAN",
-    network: "Rede",
+    network: {
+      erc20: "ERC-20 (Ethereum)",
+      trc20: "TRC-20 (Tron)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "Transferência Bancária (SWIFT)"
+    },
     transactionHistory: "Histórico de Transações",
     operations: "Operações",
     asset: "Ativo",
@@ -1321,7 +1341,23 @@ const ptTranslation = {
       eventAccountCreated: "Conta criada",
       timeHoursAgo: "há {{count}} horas",
       timeDaysAgo: "há {{count}} dias"
-    }
+    },
+    performanceTitle: "Painel de Desempenho",
+    auditLogTitle: "Registro de Auditoria",
+    auditLogDesc: "Todas as ordens algorítmicas executadas na sua conta.",
+    accountSettingsTitle: "Configurações da Conta",
+    personalInformation: "Informações Pessoais",
+    emailAddress: "Endereço de E-mail",
+    emailChangeNotice: "Alterar seu e-mail exige verificação. Um link de confirmação será enviado ao novo endereço de e-mail.",
+    currentEmail: "E-mail Atual",
+    confirmationSent: "Confirmação Enviada",
+    tryDifferentEmail: "Tentar outro e-mail",
+    continueToMethod: "Continuar para Seleção de Método",
+    uploadHint: "PNG, JPG, PDF até 10MB",
+    twoFactorDesc: "Adicione uma camada extra de segurança à sua conta. Use um aplicativo autenticador como Google Authenticator ou Authy.",
+    qrCode: "Código QR",
+    kycRequiredBanner: "KYC Obrigatório",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "RESUMO",
@@ -1425,7 +1461,8 @@ const ptTranslation = {
     serviceAccess: "Acesso ao Serviço",
     confirmCard: "CONFIRMAR CARTÃO",
     redirecting: "Redirecionando para o pagamento...",
-    card: "Cartão de Crédito / Débito"
+    card: "Cartão de Crédito / Débito",
+    testModeBanner: "MODO DE TESTE — Sem dinheiro real. Sem banco real. Sem carteira real. Sem ativação real."
   },
   legal: {
     badgeLegal: "JURÍDICO",
@@ -1560,25 +1597,25 @@ const ptTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[Nome da Pessoa Jurídica, Número de Registro, Jurisdição]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "A Braxel Markets fornece infraestrutura de negociação algorítmica de nível institucional e serviços relacionados por meio de sua plataforma.",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "As taxas pelos nossos serviços estão descritas na página de Preços e estão sujeitas a alterações com aviso prévio. Os métodos de pagamento incluem transferência bancária, cartão de crédito e criptomoeda.",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "Nossos serviços estão disponíveis para pessoas físicas e jurídicas com pelo menos 18 anos de idade e que cumpram nossos requisitos de Conheça Seu Cliente (KYC) e de prevenção à lavagem de dinheiro (AML).",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "Qualquer das partes pode encerrar a conta mediante aviso escrito de [PLACEHOLDER: prazo de aviso, ex.: 30 dias]. A Braxel Markets pode encerrar imediatamente em caso de violação dos termos, atividade ilegal ou exigências regulatórias.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "Na máxima extensão permitida por lei, a Braxel Markets não será responsável por quaisquer danos indiretos, incidentais, especiais, consequenciais ou punitivos, nem por qualquer perda de dados, uso, fundo de comércio ou outras perdas intangíveis decorrentes do seu acesso ou uso dos nossos serviços.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "Estes Termos serão regidos e interpretados de acordo com as leis de [PLACEHOLDER: jurisdição]. Qualquer disputa decorrente ou relacionada a estes Termos será submetida à jurisdição exclusiva dos tribunais de [PLACEHOLDER: jurisdição].",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "Reservamo-nos o direito de modificar ou substituir estes Termos a qualquer momento. Se uma revisão for relevante, forneceremos um aviso de pelo menos [PLACEHOLDER: prazo de aviso, ex.: 30 dias] antes que os novos termos entrem em vigor. O que constitui uma alteração relevante será determinado a nosso exclusivo critério.",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "Data de Vigência: [PLACEHOLDER: data]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "Para dúvidas sobre estes Termos, entre em contato conosco pelo [PLACEHOLDER: e-mail ou endereço de contato]."
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -1646,6 +1683,19 @@ const ptTranslation = {
       rejected: "Rejeitado",
       manual_review: "Revisão manual"
     }
+  },
+  profitCalculator: {
+    badge: "PROJEÇÃO",
+    titleA: "CALCULADORA",
+    titleB: "DE LUCRO",
+    initialAllocation: "Alocação Inicial",
+    monthlyProfit: "Lucro Mensal Est.",
+    annualProfit: "Lucro Anual Est.",
+    riskTitle: "Gestão de Risco",
+    riskDesc: "Projeções baseadas no desempenho algorítmico histórico com limites rigorosos de drawdown.",
+    instantTitle: "Implantação Instantânea",
+    instantDesc: "Seu capital começa a trabalhar minutos após a integração da infraestrutura.",
+    disclaimer: "* Aviso: O desempenho passado não garante resultados futuros. As projeções são apenas ilustrativas."
   }
 };
 
@@ -1654,47 +1704,47 @@ const itTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "L’investimento nei mercati finanziari comporta rischi sostanziali e può comportare la perdita totale del capitale investito. I risultati passati non sono garanzia di quelli futuri.",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "Il contenuto di questo sito e i servizi forniti da Braxel Markets non costituiscono consulenza finanziaria, legale o fiscale. Consigliamo a ogni investitore di rivolgersi a un professionista indipendente prima di prendere decisioni di investimento.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "Braxel Markets non è responsabile per perdite finanziarie derivanti dall’uso della nostra tecnologia di automazione o dalle fluttuazioni di mercato.",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "Il tuo capitale è a rischio quando utilizzi i nostri servizi. Potresti perdere parte o tutto il tuo investimento.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "Non garantiamo alcun rendimento o profitto. I risultati passati non sono indicativi di quelli futuri.",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "Qualsiasi risultato storico mostrato è solo a scopo illustrativo e non garantisce risultati futuri.",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "Braxel Markets non è attualmente rappresentata come istituzione finanziaria autorizzata o regolamentata in [PLACEHOLDER: giurisdizione]. Ti invitiamo a verificare lo status normativo applicabile alla tua località.",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "Non offriamo alcuna protezione del capitale né garanzia contro le perdite.",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "Le strategie di trading automatizzate e algoritmiche comportano rischi tra cui, a titolo esemplificativo, guasti di sistema, problemi di connettività, errori di modello e condizioni di mercato impreviste.",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "I nostri servizi potrebbero non essere disponibili in tutte le giurisdizioni. Gli utenti sono responsabili di garantire la conformità alle leggi e ai regolamenti locali prima di utilizzare la nostra piattaforma."
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "Raccogliamo solo le informazioni necessarie all’erogazione dei nostri servizi, tra cui nome, email e dati delle transazioni. I tuoi dati sono protetti con crittografia AES-256.",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "Le informazioni raccolte sono utilizzate esclusivamente per gestire il tuo account, elaborare i pagamenti e inviare report settimanali sulle prestazioni.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "Adottiamo rigorose misure di sicurezza per proteggere dall’accesso non autorizzato, dalla modifica o dalla distruzione dei tuoi dati personali.",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "La nostra base giuridica per il trattamento dei tuoi dati personali è [PLACEHOLDER: base giuridica, es. consenso, interesse legittimo, necessità contrattuale].",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "Conserviamo i tuoi dati personali per [PLACEHOLDER: periodo di conservazione], salvo che la legge richieda un periodo più lungo.",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "Possiamo condividere i tuoi dati con fornitori di servizi terzi affidabili come [PLACEHOLDER: elenco dei responsabili, es. processori di pagamento, hosting cloud, servizi email], esclusivamente per le finalità descritte nella presente politica.",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "Ai sensi delle leggi applicabili sulla protezione dei dati, come la LGPD (Brasile) e il GDPR (UE), hai il diritto di accedere, rettificare, cancellare e trasferire i tuoi dati personali, nonché di opporti o limitare il trattamento. Per esercitare tali diritti, contattaci all’indirizzo [PLACEHOLDER: contatto per richieste sui diritti].",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "Il nostro sito utilizza cookie e tecnologie simili per migliorare l’esperienza utente, analizzare il traffico e personalizzare i contenuti. Puoi gestire le tue preferenze sui cookie tramite le impostazioni del browser.",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "Per domande sulla presente Informativa sulla privacy o sulle nostre pratiche sui dati, contatta il nostro Responsabile della protezione dei dati all’indirizzo [PLACEHOLDER: email o contatto del DPO]."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -1979,18 +2029,6 @@ const itTranslation = {
         role: "Fondatore & CEO",
         bio: "Stratega quantitativo e imprenditore che guida la visione di Braxel Markets per l'infrastruttura algoritmica istituzionale.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[Nome Co-Fondatore]",
-        role: "Co-Fondatore & CTO",
-        bio: "Ingegnere del software specializzato in sistemi ad alta frequenza e calcolo distribuito.",
-        photo: ""
-      },
-      {
-        name: "[Nome Gestore]",
-        role: "Head of Risk Management",
-        bio: "Ex analista di rischio istituzionale con expertise in ottimizzazione del portafoglio.",
-        photo: ""
       }
     ],
     teamBadge: "LEADERSHIP"
@@ -2017,7 +2055,9 @@ const itTranslation = {
     waitMessage: "Per favore, attendi un momento prima di inviare un altro messaggio.",
     messageSent: "Messaggio inviato con successo! Il nostro team ti contatterà presto.",
     messageFailed: "Invio del messaggio fallito. Per favore, riprova o inviaci un'email direttamente a marketsbraxel@ouvidor.net",
-    cooldown: "ATTENDI"
+    cooldown: "ATTENDI",
+    consentPre: "Inviando questo modulo, accetti la nostra",
+    consentPost: "Utilizziamo i tuoi dati solo per rispondere alla tua richiesta."
   },
   dashboard: {
     portfolio: "Portafoglio",
@@ -2052,7 +2092,7 @@ const itTranslation = {
     investor: "Investitore",
     kycRequired: "Verifica KYC Richiesta",
     kycRequiredDesc: "Completa la verifica d'identità per accedere a tutte le funzionalità della piattaforma. Questo è obbligatorio per tutti gli account che gestiscono capitale.",
-    kycUnderReview: "KYC in Revisione",
+    kycUnderReview: "KYC in revisione",
     kycUnderReviewDesc: "I tuoi documenti sono in fase di revisione da parte del nostro team di conformità. Questo richiede generalmente 24-48 ore.",
     kycRejected: "Verifica KYC Rifiutata",
     kycRejectedDesc: "I tuoi documenti non sono stati accettati. Per favore, invia nuovamente con documentazione valida.",
@@ -2068,7 +2108,12 @@ const itTranslation = {
     analytics: "Analisi",
     newWithdrawalRequest: "Nuova Richiesta di Prelievo",
     walletIban: "Wallet / IBAN",
-    network: "Rete",
+    network: {
+      erc20: "ERC-20 (Ethereum)",
+      trc20: "TRC-20 (Tron)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "Bonifico bancario (SWIFT)"
+    },
     transactionHistory: "Storico Transazioni",
     operations: "Operazioni",
     asset: "Asset",
@@ -2157,7 +2202,23 @@ const itTranslation = {
     uploadDocument: "Carica un documento.",
     completeSteps: "Completa tutti i passaggi di verifica.",
     documentsSubmitted: "Documenti inviati per la verifica. Riceverai una notifica dopo la revisione.",
-    failedDocuments: "Invio dei documenti non riuscito."
+    failedDocuments: "Invio dei documenti non riuscito.",
+    performanceTitle: "Dashboard delle prestazioni",
+    auditLogTitle: "Registro di audit",
+    auditLogDesc: "Tutti gli ordini algoritmici eseguiti sul tuo account.",
+    accountSettingsTitle: "Impostazioni account",
+    personalInformation: "Informazioni personali",
+    emailAddress: "Indirizzo email",
+    emailChangeNotice: "La modifica dell’email richiede una verifica. Un link di conferma verrà inviato al nuovo indirizzo email.",
+    currentEmail: "Email attuale",
+    confirmationSent: "Conferma inviata",
+    tryDifferentEmail: "Prova un’altra email",
+    continueToMethod: "Continua alla selezione del metodo",
+    uploadHint: "PNG, JPG, PDF fino a 10MB",
+    twoFactorDesc: "Aggiungi un ulteriore livello di sicurezza al tuo account. Usa un’app di autenticazione come Google Authenticator o Authy.",
+    qrCode: "Codice QR",
+    kycRequiredBanner: "KYC richiesto",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "RIEPILOGO",
@@ -2261,7 +2322,8 @@ const itTranslation = {
     serviceAccess: "Accesso al servizio",
     confirmCard: "CONFERMA CARTA",
     redirecting: "Reindirizzamento al pagamento...",
-    card: "Carta di credito / debito"
+    card: "Carta di credito / debito",
+    testModeBanner: "MODALITÀ TEST — Niente denaro reale. Nessuna banca reale. Nessun wallet reale. Nessuna attivazione reale."
   },
   legal: {
     badgeLegal: "LEGALE",
@@ -2376,25 +2438,25 @@ const itTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[Ragione Sociale, Numero di Registrazione, Giurisdizione]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "Braxel Markets fornisce infrastruttura di trading algoritmico di livello istituzionale e servizi correlati tramite la sua piattaforma.",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "Le commissioni per i nostri servizi sono indicate nella pagina dei prezzi e sono soggette a modifiche con preavviso. I metodi di pagamento includono bonifico bancario, carta di credito e criptovaluta.",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "I nostri servizi sono disponibili per persone fisiche e giuridiche di almeno 18 anni che rispettano i nostri requisiti Know Your Customer (KYC) e antiriciclaggio (AML).",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "Ciascuna parte può chiudere l’account con preavviso scritto di [PLACEHOLDER: periodo di preavviso, es. 30 giorni]. Braxel Markets può chiudere immediatamente in caso di violazione dei termini, attività illegale o requisiti normativi.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "Nella misura massima consentita dalla legge, Braxel Markets non sarà responsabile per eventuali danni indiretti, incidentali, speciali, consequenziali o punitivi, né per qualsiasi perdita di dati, uso, avviamento o altre perdite immateriali derivanti dall’accesso o dall’uso dei nostri servizi.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "I presenti Termini sono regolati e interpretati in conformità con le leggi di [PLACEHOLDER: giurisdizione]. Qualsiasi controversia derivante o connessa ai presenti Termini sarà sottoposta alla giurisdizione esclusiva dei tribunali di [PLACEHOLDER: giurisdizione].",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "Ci riserviamo il diritto di modificare o sostituire i presenti Termini in qualsiasi momento. Se una revisione è sostanziale, forniremo un preavviso di almeno [PLACEHOLDER: periodo di preavviso, es. 30 giorni] prima dell’entrata in vigore dei nuovi termini. Ciò che costituisce una modifica sostanziale sarà determinato a nostra esclusiva discrezione.",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "Data di entrata in vigore: [PLACEHOLDER: data]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "Per domande sui presenti Termini, contattaci all’indirizzo [PLACEHOLDER: email o indirizzo di contatto]."
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -2462,6 +2524,19 @@ const itTranslation = {
       rejected: "Rifiutato",
       manual_review: "Revisione manuale"
     }
+  },
+  profitCalculator: {
+    badge: "PROIEZIONE",
+    titleA: "CALCOLATORE",
+    titleB: "DI PROFITTO",
+    initialAllocation: "Allocazione iniziale",
+    monthlyProfit: "Profitto mensile stimato",
+    annualProfit: "Profitto annuale stimato",
+    riskTitle: "Gestione del rischio",
+    riskDesc: "Proiezioni basate sulle prestazioni algoritmiche storiche con rigorosi limiti di drawdown.",
+    instantTitle: "Implementazione immediata",
+    instantDesc: "Il tuo capitale inizia a lavorare pochi minuti dopo l’integrazione dell’infrastruttura.",
+    disclaimer: "* Avvertenza: I risultati passati non garantiscono quelli futuri. Le proiezioni sono solo a scopo illustrativo."
   }
 };
 
@@ -2470,47 +2545,47 @@ const esTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "La inversión en los mercados financieros conlleva riesgos sustanciales y puede provocar la pérdida total del capital invertido. El rendimiento pasado no garantiza resultados futuros.",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "El contenido de este sitio y los servicios prestados por Braxel Markets no constituyen asesoramiento financiero, legal o fiscal. Recomendamos que cada inversor busque asesoramiento profesional independiente antes de tomar decisiones de inversión.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "Braxel Markets no es responsable de las pérdidas financieras derivadas del uso de nuestra tecnología de automatización o de las fluctuaciones del mercado.",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "Tu capital está en riesgo al usar nuestros servicios. Puedes perder parte o la totalidad de tu inversión.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "No garantizamos ningún rendimiento ni beneficio. El rendimiento pasado no es indicativo de resultados futuros.",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "Cualquier rendimiento histórico mostrado es solo a título ilustrativo y no garantiza resultados futuros.",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "Actualmente, Braxel Markets no está representada como una institución financiera autorizada o regulada en [PLACEHOLDER: jurisdicción]. Verifica el estado regulatorio aplicable a tu ubicación.",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "No ofrecemos ninguna protección del capital ni garantía contra pérdidas.",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "Las estrategias de negociación automatizadas y algorítmicas conllevan riesgos que incluyen, entre otros, fallos del sistema, problemas de conectividad, errores de modelo y condiciones de mercado inesperadas.",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "Nuestros servicios pueden no estar disponibles en todas las jurisdicciones. Los usuarios son responsables de garantizar el cumplimiento de las leyes y regulaciones locales antes de usar nuestra plataforma."
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "Solo recopilamos la información necesaria para la prestación de nuestros servicios, incluidos nombre, correo y datos de transacciones. Tus datos están protegidos con cifrado AES-256.",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "La información recopilada se utiliza exclusivamente para gestionar tu cuenta, procesar pagos y enviar informes semanales de rendimiento.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "Implementamos rigurosas medidas de seguridad para proteger contra el acceso no autorizado, la alteración o la destrucción de tus datos personales.",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "Nuestra base legal para el tratamiento de tus datos personales es [PLACEHOLDER: base legal, p. ej., consentimiento, interés legítimo, necesidad contractual].",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "Conservamos tus datos personales durante [PLACEHOLDER: periodo de conservación], salvo que la ley exija un periodo más largo.",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "Podemos compartir tus datos con proveedores de servicios externos de confianza como [PLACEHOLDER: lista de encargados, p. ej., procesadores de pago, alojamiento en la nube, servicios de correo], exclusivamente para los fines descritos en esta política.",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "En virtud de las leyes de protección de datos aplicables, como la LGPD (Brasil) y el RGPD (UE), tienes derecho a acceder, rectificar, suprimir y portar tus datos personales, así como a oponerte o restringir el tratamiento. Para ejercer estos derechos, contáctanos en [PLACEHOLDER: contacto para solicitudes de derechos].",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "Nuestro sitio web utiliza cookies y tecnologías similares para mejorar la experiencia del usuario, analizar el tráfico y personalizar el contenido. Puedes gestionar tus preferencias de cookies en la configuración de tu navegador.",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "Para preguntas sobre esta Política de Privacidad o nuestras prácticas de datos, contacta con nuestro Delegado de Protección de Datos en [PLACEHOLDER: correo o contacto del DPO]."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -2795,18 +2870,6 @@ const esTranslation = {
         role: "Fundador & CEO",
         bio: "Estratega cuantitativo y emprendedor liderando la visión de Braxel Markets para infraestructura algorítmica institucional.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[Nombre del Co-Fundador]",
-        role: "Co-Fundador & CTO",
-        bio: "Ingeniero de software especializado en sistemas de alta frecuencia y computación distribuida.",
-        photo: ""
-      },
-      {
-        name: "[Nombre del Gestor]",
-        role: "Head de Gestión de Riesgo",
-        bio: "Ex analista de riesgo institucional con expertise en optimización de portafolio.",
-        photo: ""
       }
     ],
     teamBadge: "LIDERAZGO"
@@ -2833,7 +2896,9 @@ const esTranslation = {
     waitMessage: "Por favor, espere un momento antes de enviar otro mensaje.",
     messageSent: "¡Mensaje enviado con éxito! Nuestro equipo le contactará pronto.",
     messageFailed: "Error al enviar el mensaje. Por favor, inténtelo de nuevo o envíenos un correo directamente a marketsbraxel@ouvidor.net",
-    cooldown: "ESPERE"
+    cooldown: "ESPERE",
+    consentPre: "Al enviar este formulario, aceptas nuestra",
+    consentPost: "Usamos tus datos solo para responder a tu consulta."
   },
   dashboard: {
     portfolio: "Portafolio",
@@ -2868,7 +2933,7 @@ const esTranslation = {
     investor: "Inversor",
     kycRequired: "Verificación KYC Requerida",
     kycRequiredDesc: "Пройдите проверку личности для доступа ко всем функциям платформы. Это обязательно для всех аккаунтов, управляющих капиталом.",
-    kycUnderReview: "KYC на рассмотрении",
+    kycUnderReview: "KYC en revisión",
     kycUnderReviewDesc: "Ваши документы проверяются нашей командой комплаенс. Обычно это занимает 24-48 часов.",
     kycRejected: "Верификация KYC отклонена",
     kycRejectedDesc: "Ваши документы не были приняты. Пожалуйста, отправьте действительные документы повторно.",
@@ -2884,7 +2949,12 @@ const esTranslation = {
     analytics: "Аналитика",
     newWithdrawalRequest: "Новая заявка на вывод",
     walletIban: "Cartera / IBAN",
-    network: "Сеть",
+    network: {
+      erc20: "ERC-20 (Ethereum)",
+      trc20: "TRC-20 (Tron)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "Transferencia bancaria (SWIFT)"
+    },
     transactionHistory: "История транзакций",
     operations: "Операции",
     asset: "Activo",
@@ -2973,7 +3043,23 @@ const esTranslation = {
     uploadDocument: "Sube un documento.",
     completeSteps: "Completa todos los pasos de verificación.",
     documentsSubmitted: "Documentos enviados para verificación. Se te notificará una vez revisados.",
-    failedDocuments: "No se pudieron enviar los documentos."
+    failedDocuments: "No se pudieron enviar los documentos.",
+    performanceTitle: "Panel de rendimiento",
+    auditLogTitle: "Registro de auditoría",
+    auditLogDesc: "Todas las órdenes algorítmicas ejecutadas en tu cuenta.",
+    accountSettingsTitle: "Configuración de la cuenta",
+    personalInformation: "Información personal",
+    emailAddress: "Dirección de correo",
+    emailChangeNotice: "Cambiar tu correo requiere verificación. Se enviará un enlace de confirmación a la nueva dirección.",
+    currentEmail: "Correo actual",
+    confirmationSent: "Confirmación enviada",
+    tryDifferentEmail: "Probar otro correo",
+    continueToMethod: "Continuar a la selección de método",
+    uploadHint: "PNG, JPG, PDF hasta 10MB",
+    twoFactorDesc: "Añade una capa adicional de seguridad a tu cuenta. Usa una app de autenticación como Google Authenticator o Authy.",
+    qrCode: "Código QR",
+    kycRequiredBanner: "KYC requerido",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "RESUMEN",
@@ -3077,7 +3163,8 @@ const esTranslation = {
     serviceAccess: "Acceso al servicio",
     confirmCard: "CONFIRMAR TARJETA",
     redirecting: "Redirigiendo al pago...",
-    card: "Tarjeta de crédito / débito"
+    card: "Tarjeta de crédito / débito",
+    testModeBanner: "MODO PRUEBA — Sin dinero real. Sin banco real. Sin cartera real. Sin activación real."
   },
   legal: {
     badgeLegal: "LEGAL",
@@ -3192,25 +3279,25 @@ const esTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[Nombre de la Entidad Legal, Número de Registro, Jurisdicción]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "Braxel Markets proporciona infraestructura de negociación algorítmica de nivel institucional y servicios relacionados a través de su plataforma.",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "Las tarifas de nuestros servicios se detallan en la página de Precios y están sujetas a cambios con aviso previo. Los métodos de pago incluyen transferencia bancaria, tarjeta de crédito y criptomoneda.",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "Nuestros servicios están disponibles para personas físicas y jurídicas mayores de 18 años que cumplan con nuestros requisitos de Conoce a tu Cliente (KYC) y de prevención de blanqueo de capitales (AML).",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "Cualquiera de las partes puede cancelar la cuenta con un preaviso por escrito de [PLACEHOLDER: periodo de preaviso, p. ej., 30 días]. Braxel Markets puede cancelarla de inmediato por incumplimiento de los términos, actividad ilegal o requisitos regulatorios.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "En la máxima medida permitida por la ley, Braxel Markets no será responsable de ningún daño indirecto, incidental, especial, consecuente o punitivo, ni de ninguna pérdida de datos, uso, fondo de comercio u otras pérdidas intangibles derivadas de tu acceso o uso de nuestros servicios.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "Estos Términos se regirán e interpretarán de conformidad con las leyes de [PLACEHOLDER: jurisdicción]. Cualquier controversia derivada de o relacionada con estos Términos se someterá a la jurisdicción exclusiva de los tribunales de [PLACEHOLDER: jurisdicción].",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "Nos reservamos el derecho de modificar o sustituir estos Términos en cualquier momento. Si una revisión es sustancial, avisaremos con al menos [PLACEHOLDER: periodo de preaviso, p. ej., 30 días] antes de que entren en vigor los nuevos términos. Lo que constituye un cambio sustancial se determinará a nuestra entera discreción.",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "Fecha de entrada en vigor: [PLACEHOLDER: fecha]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "Para preguntas sobre estos Términos, contáctanos en [PLACEHOLDER: correo o dirección de contacto]."
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -3278,6 +3365,19 @@ const esTranslation = {
       rejected: "Rechazado",
       manual_review: "Revisión manual"
     }
+  },
+  profitCalculator: {
+    badge: "PROYECCIÓN",
+    titleA: "CALCULADORA",
+    titleB: "DE GANANCIAS",
+    initialAllocation: "Asignación inicial",
+    monthlyProfit: "Ganancia mensual est.",
+    annualProfit: "Ganancia anual est.",
+    riskTitle: "Gestión de riesgos",
+    riskDesc: "Proyecciones basadas en el rendimiento algorítmico histórico con estrictos límites de drawdown.",
+    instantTitle: "Implementación instantánea",
+    instantDesc: "Tu capital empieza a trabajar minutos después de la integración de la infraestructura.",
+    disclaimer: "* Aviso: El rendimiento pasado no garantiza resultados futuros. Las proyecciones son solo ilustrativas."
   }
 };
 
@@ -3286,47 +3386,47 @@ const frTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "L’investissement sur les marchés financiers comporte des risques substantiels et peut entraîner la perte totale du capital investi. Les performances passées ne garantissent pas les résultats futurs.",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "Le contenu de ce site et les services fournis par Braxel Markets ne constituent pas des conseils financiers, juridiques ou fiscaux. Nous recommandons à chaque investisseur de solliciter l’avis d’un professionnel indépendant avant toute décision d’investissement.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "Braxel Markets n’est pas responsable des pertes financières résultant de l’utilisation de notre technologie d’automatisation ou des fluctuations du marché.",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "Votre capital est exposé à un risque lorsque vous utilisez nos services. Vous pouvez perdre tout ou partie de votre investissement.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "Nous ne garantissons aucun rendement ni profit. Les performances passées ne préjugent pas des résultats futurs.",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "Toute performance historique présentée est fournie à titre indicatif uniquement et ne garantit pas les résultats futurs.",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "Braxel Markets n’est actuellement pas présentée comme un établissement financier agréé ou réglementé en [PLACEHOLDER: juridiction]. Veuillez vérifier le statut réglementaire applicable à votre localisation.",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "Nous n’offrons aucune protection du capital ni garantie contre les pertes.",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "Les stratégies de trading automatisées et algorithmiques comportent des risques incluant, sans s’y limiter, les défaillances système, les problèmes de connectivité, les erreurs de modèle et les conditions de marché imprévues.",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "Nos services peuvent ne pas être disponibles dans toutes les juridictions. Il incombe aux utilisateurs de s’assurer du respect des lois et réglementations locales avant d’utiliser notre plateforme."
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "Nous ne collectons que les informations nécessaires à la fourniture de nos services, notamment le nom, l’e-mail et les données de transaction. Vos données sont protégées par un chiffrement AES-256.",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "Les informations collectées sont utilisées exclusivement pour gérer votre compte, traiter les paiements et envoyer des rapports de performance hebdomadaires.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "Nous mettons en œuvre des mesures de sécurité rigoureuses pour protéger vos données personnelles contre tout accès, modification ou destruction non autorisés.",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "Notre base légale pour le traitement de vos données personnelles est [PLACEHOLDER: base légale, p. ex. consentement, intérêt légitime, nécessité contractuelle].",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "Nous conservons vos données personnelles pendant [PLACEHOLDER: durée de conservation], sauf si la loi exige une durée plus longue.",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "Nous pouvons partager vos données avec des prestataires de services tiers de confiance tels que [PLACEHOLDER: liste des sous-traitants, p. ex. prestataires de paiement, hébergement cloud, services e-mail], uniquement aux fins décrites dans la présente politique.",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "En vertu des lois applicables sur la protection des données, telles que la LGPD (Brésil) et le RGPD (UE), vous avez le droit d’accéder à vos données personnelles, de les rectifier, de les supprimer et de les porter, ainsi que de vous opposer ou de restreindre leur traitement. Pour exercer ces droits, contactez-nous à [PLACEHOLDER: contact pour les demandes de droits].",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "Notre site web utilise des cookies et des technologies similaires pour améliorer l’expérience utilisateur, analyser le trafic et personnaliser le contenu. Vous pouvez gérer vos préférences en matière de cookies dans les paramètres de votre navigateur.",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "Pour toute question concernant la présente Politique de confidentialité ou nos pratiques en matière de données, contactez notre Délégué à la protection des données à [PLACEHOLDER: e-mail ou contact du DPO]."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -3611,18 +3711,6 @@ const frTranslation = {
         role: "Fondateur & CEO",
         bio: "Stratège quantitatif et entrepreneur dirigeant la vision de Braxel Markets pour l'infrastructure algorithmique institutionnelle.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[Nom du Co-Fondateur]",
-        role: "Co-Fondateur & CTO",
-        bio: "Ingénieur logiciel spécialisé dans les systèmes haute fréquence et le calcul distribué.",
-        photo: ""
-      },
-      {
-        name: "[Nom du Gestionnaire]",
-        role: "Directeur de la Gestion des Risques",
-        bio: "Ancien analyste de risque institutionnel avec une expertise en optimisation de portefeuille.",
-        photo: ""
       }
     ],
     teamBadge: "DIRECTION"
@@ -3649,7 +3737,9 @@ const frTranslation = {
     waitMessage: "Veuillez patienter un moment avant d'envoyer un autre message.",
     messageSent: "Message envoyé avec succès! Notre équipe vous contactera bientôt.",
     messageFailed: "Échec de l'envoi du message. Veuillez réessayer ou nous envoyer un email directement à marketsbraxel@ouvidor.net",
-    cooldown: "ATTENDEZ"
+    cooldown: "ATTENDEZ",
+    consentPre: "En soumettant ce formulaire, vous acceptez notre",
+    consentPost: "Nous utilisons vos données uniquement pour répondre à votre demande."
   },
   dashboard: {
     portfolio: "Portefeuille",
@@ -3684,7 +3774,7 @@ const frTranslation = {
     investor: "Investisseur",
     kycRequired: "Vérification KYC Requise",
     kycRequiredDesc: "Пройдите проверку личности для доступа ко всем функциям платформы. Это обязательно для всех аккаунтов, управляющих капиталом.",
-    kycUnderReview: "KYC на рассмотрении",
+    kycUnderReview: "KYC en cours de vérification",
     kycUnderReviewDesc: "Ваши документы проверяются нашей командой комплаенс. Обычно это занимает 24-48 часов.",
     kycRejected: "Верификация KYC отклонена",
     kycRejectedDesc: "Ваши документы не были приняты. Пожалуйста, отправьте действительные документы повторно.",
@@ -3700,7 +3790,12 @@ const frTranslation = {
     analytics: "Аналитика",
     newWithdrawalRequest: "Новая заявка на вывод",
     walletIban: "Portefeuille / IBAN",
-    network: "Сеть",
+    network: {
+      erc20: "ERC-20 (Ethereum)",
+      trc20: "TRC-20 (Tron)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "Virement bancaire (SWIFT)"
+    },
     transactionHistory: "История транзакций",
     operations: "Операции",
     asset: "Actif",
@@ -3789,7 +3884,23 @@ const frTranslation = {
     uploadDocument: "Veuillez télécharger un document.",
     completeSteps: "Veuillez compléter toutes les étapes de vérification.",
     documentsSubmitted: "Documents soumis pour vérification. Vous serez notifié après examen.",
-    failedDocuments: "Échec de l’envoi des documents."
+    failedDocuments: "Échec de l’envoi des documents.",
+    performanceTitle: "Tableau de bord des performances",
+    auditLogTitle: "Journal d’audit",
+    auditLogDesc: "Tous les ordres algorithmiques exécutés sur votre compte.",
+    accountSettingsTitle: "Paramètres du compte",
+    personalInformation: "Informations personnelles",
+    emailAddress: "Adresse e-mail",
+    emailChangeNotice: "La modification de votre e-mail nécessite une vérification. Un lien de confirmation sera envoyé à la nouvelle adresse.",
+    currentEmail: "E-mail actuel",
+    confirmationSent: "Confirmation envoyée",
+    tryDifferentEmail: "Essayer un autre e-mail",
+    continueToMethod: "Continuer vers la sélection de la méthode",
+    uploadHint: "PNG, JPG, PDF jusqu’à 10 Mo",
+    twoFactorDesc: "Ajoutez une couche de sécurité supplémentaire à votre compte. Utilisez une application d’authentification comme Google Authenticator ou Authy.",
+    qrCode: "Code QR",
+    kycRequiredBanner: "KYC requis",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "RÉCAPITULATIF",
@@ -3893,7 +4004,8 @@ const frTranslation = {
     serviceAccess: "Accès au service",
     confirmCard: "CONFIRMER LA CARTE",
     redirecting: "Redirection vers le paiement...",
-    card: "Carte de crédit / débit"
+    card: "Carte de crédit / débit",
+    testModeBanner: "MODE TEST — Pas d’argent réel. Pas de banque réelle. Pas de portefeuille réel. Pas d’activation réelle."
   },
   legal: {
     badgeLegal: "JURIDIQUE",
@@ -4008,25 +4120,25 @@ const frTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[Nom de l’entité juridique, numéro d’enregistrement, juridiction]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "Braxel Markets fournit une infrastructure de trading algorithmique de niveau institutionnel et des services associés via sa plateforme.",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "Les frais de nos services sont indiqués sur la page Tarifs et sont susceptibles de changer avec préavis. Les moyens de paiement incluent le virement bancaire, la carte de crédit et la cryptomonnaie.",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "Nos services sont accessibles aux personnes physiques et morales âgées d’au moins 18 ans et respectant nos exigences Know Your Customer (KYC) et de lutte contre le blanchiment d’argent (AML).",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "Chaque partie peut résilier le compte moyennant un préavis écrit de [PLACEHOLDER: délai de préavis, p. ex. 30 jours]. Braxel Markets peut résilier immédiatement en cas de violation des conditions, d’activité illégale ou d’exigences réglementaires.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "Dans toute la mesure permise par la loi, Braxel Markets ne saurait être tenue responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs, ni d’aucune perte de données, d’usage, de clientèle ou d’autres pertes immatérielles résultant de votre accès ou de votre utilisation de nos services.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "Les présentes Conditions sont régies par et interprétées conformément aux lois de [PLACEHOLDER: juridiction]. Tout litige découlant des présentes Conditions ou s’y rapportant sera soumis à la compétence exclusive des tribunaux de [PLACEHOLDER: juridiction].",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "Nous nous réservons le droit de modifier ou de remplacer les présentes Conditions à tout moment. Si une révision est substantielle, nous fournirons un préavis d’au moins [PLACEHOLDER: délai de préavis, p. ex. 30 jours] avant l’entrée en vigueur des nouvelles conditions. Ce qui constitue une modification substantielle sera déterminé à notre seule discrétion.",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "Date d’entrée en vigueur : [PLACEHOLDER: date]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "Pour toute question concernant les présentes Conditions, contactez-nous à [PLACEHOLDER: e-mail ou adresse de contact]."
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -4094,6 +4206,19 @@ const frTranslation = {
       rejected: "Rejeté",
       manual_review: "Vérification manuelle"
     }
+  },
+  profitCalculator: {
+    badge: "PROJECTION",
+    titleA: "CALCULATEUR",
+    titleB: "DE PROFIT",
+    initialAllocation: "Allocation initiale",
+    monthlyProfit: "Profit mensuel est.",
+    annualProfit: "Profit annuel est.",
+    riskTitle: "Gestion des risques",
+    riskDesc: "Projections fondées sur les performances algorithmiques historiques avec des limites strictes de drawdown.",
+    instantTitle: "Déploiement instantané",
+    instantDesc: "Votre capital commence à travailler quelques minutes après l’intégration de l’infrastructure.",
+    disclaimer: "* Avertissement : Les performances passées ne garantissent pas les résultats futurs. Les projections sont fournies à titre indicatif uniquement."
   }
 };
 
@@ -4102,47 +4227,47 @@ const deTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "Die Anlage an den Finanzmärkten birgt erhebliche Risiken und kann zum vollständigen Verlust des eingesetzten Kapitals führen. Frühere Ergebnisse sind kein Garant für zukünftige Resultate.",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "Die Inhalte dieser Website und die von Braxel Markets erbrachten Dienstleistungen stellen keine Finanz-, Rechts- oder Steuerberatung dar. Wir empfehlen jedem Anleger, vor Anlageentscheidungen unabhängigen professionellen Rat einzuholen.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "Braxel Markets ist nicht verantwortlich für finanzielle Verluste, die aus der Nutzung unserer Automatisierungstechnologie oder aus Marktschwankungen entstehen.",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "Bei der Nutzung unserer Dienste ist Ihr Kapital einem Risiko ausgesetzt. Sie können einen Teil oder Ihr gesamtes Investment verlieren.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "Wir garantieren keine Renditen oder Gewinne. Frühere Ergebnisse sind kein Hinweis auf zukünftige Resultate.",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "Jegliche dargestellte historische Performance dient nur zur Veranschaulichung und garantiert keine zukünftigen Ergebnisse.",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "Braxel Markets wird derzeit nicht als zugelassenes oder reguliertes Finanzinstitut in [PLACEHOLDER: Gerichtsstand] dargestellt. Bitte prüfen Sie den für Ihren Standort geltenden Regulierungsstatus.",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "Wir bieten keinen Kapitalschutz und keine Garantie gegen Verluste.",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "Automatisierte und algorithmische Handelsstrategien bergen Risiken wie unter anderem Systemausfälle, Konnektivitätsprobleme, Modellfehler und unerwartete Marktbedingungen.",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "Unsere Dienste sind möglicherweise nicht in allen Gerichtsbarkeiten verfügbar. Nutzer sind dafür verantwortlich, vor der Nutzung unserer Plattform die Einhaltung lokaler Gesetze und Vorschriften sicherzustellen."
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "Wir erheben nur die für die Erbringung unserer Dienste erforderlichen Informationen, darunter Name, E-Mail und Transaktionsdaten. Ihre Daten sind durch AES-256-Verschlüsselung geschützt.",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "Die erhobenen Informationen werden ausschließlich zur Verwaltung Ihres Kontos, zur Abwicklung von Zahlungen und zum Versand wöchentlicher Performance-Berichte verwendet.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "Wir setzen strenge Sicherheitsmaßnahmen ein, um Ihre personenbezogenen Daten vor unbefugtem Zugriff, Veränderung oder Zerstörung zu schützen.",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "Unsere Rechtsgrundlage für die Verarbeitung Ihrer personenbezogenen Daten ist [PLACEHOLDER: Rechtsgrundlage, z. B. Einwilligung, berechtigtes Interesse, Vertragserfüllung].",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "Wir speichern Ihre personenbezogenen Daten für [PLACEHOLDER: Speicherdauer], sofern nicht gesetzlich eine längere Frist vorgeschrieben ist.",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "Wir können Ihre Daten mit vertrauenswürdigen Dienstleistern Dritter wie [PLACEHOLDER: Liste der Auftragsverarbeiter, z. B. Zahlungsdienstleister, Cloud-Hosting, E-Mail-Dienste] ausschließlich zu den in dieser Richtlinie genannten Zwecken teilen.",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "Nach den geltenden Datenschutzgesetzen wie der LGPD (Brasilien) und der DSGVO (EU) haben Sie das Recht auf Auskunft, Berichtigung, Löschung und Übertragbarkeit Ihrer personenbezogenen Daten sowie auf Widerspruch gegen oder Einschränkung der Verarbeitung. Um diese Rechte auszuüben, kontaktieren Sie uns bitte unter [PLACEHOLDER: Kontakt für Rechteanfragen].",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "Unsere Website verwendet Cookies und ähnliche Technologien, um die Nutzererfahrung zu verbessern, den Datenverkehr zu analysieren und Inhalte zu personalisieren. Sie können Ihre Cookie-Einstellungen in Ihren Browsereinstellungen verwalten.",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "Bei Fragen zu dieser Datenschutzrichtlinie oder unseren Datenpraktiken wenden Sie sich bitte an unseren Datenschutzbeauftragten unter [PLACEHOLDER: E-Mail oder Kontakt des DSB]."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -4427,18 +4552,6 @@ const deTranslation = {
         role: "Gründer & CEO",
         bio: "Quantitativer Stratege und Unternehmer, der die Vision von Braxel Markets für institutionelle algorithmische Infrastruktur leitet.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[Name des Co-Gründers]",
-        role: "Co-Gründer & CTO",
-        bio: "Software-Ingenieur spezialisiert auf Hochfrequenzsysteme und verteiltes Rechnen.",
-        photo: ""
-      },
-      {
-        name: "[Name des Managers]",
-        role: "Leiter Risikomanagement",
-        bio: "Ehemaliger institutioneller Risikoanalyst mit Expertise in Portfolio-Optimierung.",
-        photo: ""
       }
     ],
     teamBadge: "FÜHRUNG"
@@ -4465,7 +4578,9 @@ const deTranslation = {
     waitMessage: "Bitte warten Sie einen Moment, bevor Sie eine weitere Nachricht senden.",
     messageSent: "Nachricht erfolgreich gesendet! Unser Team wird Sie in Kürze kontaktieren.",
     messageFailed: "Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut oder senden Sie uns eine E-Mail direkt an marketsbraxel@ouvidor.net",
-    cooldown: "BITTE WARTEN"
+    cooldown: "BITTE WARTEN",
+    consentPre: "Mit dem Absenden dieses Formulars stimmen Sie unserer",
+    consentPost: "Wir verwenden Ihre Daten nur, um auf Ihre Anfrage zu antworten."
   },
   dashboard: {
     portfolio: "Portfolio",
@@ -4500,7 +4615,7 @@ const deTranslation = {
     investor: "Investor",
     kycRequired: "KYC-Verifizierung Erforderlich",
     kycRequiredDesc: "Пройдите проверку личности для доступа ко всем функциям платформы. Это обязательно для всех аккаунтов, управляющих капиталом.",
-    kycUnderReview: "KYC на рассмотрении",
+    kycUnderReview: "KYC in Prüfung",
     kycUnderReviewDesc: "Ваши документы проверяются нашей командой комплаенс. Обычно это занимает 24-48 часов.",
     kycRejected: "Верификация KYC отклонена",
     kycRejectedDesc: "Ваши документы не были приняты. Пожалуйста, отправьте действительные документы повторно.",
@@ -4516,7 +4631,12 @@ const deTranslation = {
     analytics: "Аналитика",
     newWithdrawalRequest: "Новая заявка на вывод",
     walletIban: "Wallet / IBAN",
-    network: "Сеть",
+    network: {
+      erc20: "ERC-20 (Ethereum)",
+      trc20: "TRC-20 (Tron)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "Banküberweisung (SWIFT)"
+    },
     transactionHistory: "История транзакций",
     operations: "Операции",
     asset: "Asset",
@@ -4605,7 +4725,23 @@ const deTranslation = {
     uploadDocument: "Bitte laden Sie ein Dokument hoch.",
     completeSteps: "Bitte schließen Sie alle Verifizierungsschritte ab.",
     documentsSubmitted: "Dokumente zur Verifizierung eingereicht. Sie werden nach der Prüfung benachrichtigt.",
-    failedDocuments: "Dokumente konnten nicht eingereicht werden."
+    failedDocuments: "Dokumente konnten nicht eingereicht werden.",
+    performanceTitle: "Performance-Dashboard",
+    auditLogTitle: "Prüfprotokoll",
+    auditLogDesc: "Alle algorithmischen Aufträge, die auf Ihrem Konto ausgeführt wurden.",
+    accountSettingsTitle: "Kontoeinstellungen",
+    personalInformation: "Persönliche Informationen",
+    emailAddress: "E-Mail-Adresse",
+    emailChangeNotice: "Das Ändern Ihrer E-Mail erfordert eine Verifizierung. Ein Bestätigungslink wird an die neue E-Mail-Adresse gesendet.",
+    currentEmail: "Aktuelle E-Mail",
+    confirmationSent: "Bestätigung gesendet",
+    tryDifferentEmail: "Andere E-Mail versuchen",
+    continueToMethod: "Weiter zur Methodenauswahl",
+    uploadHint: "PNG, JPG, PDF bis 10 MB",
+    twoFactorDesc: "Fügen Sie Ihrem Konto eine zusätzliche Sicherheitsebene hinzu. Verwenden Sie eine Authentifizierungs-App wie Google Authenticator oder Authy.",
+    qrCode: "QR-Code",
+    kycRequiredBanner: "KYC erforderlich",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "ZUSAMMENFASSUNG",
@@ -4709,7 +4845,8 @@ const deTranslation = {
     serviceAccess: "Servicezugang",
     confirmCard: "KARTE BESTÄTIGEN",
     redirecting: "Weiterleitung zur Zahlung...",
-    card: "Kredit- / Debitkarte"
+    card: "Kredit- / Debitkarte",
+    testModeBanner: "TESTMODUS — Kein echtes Geld. Keine echte Bank. Keine echte Wallet. Keine echte Aktivierung."
   },
   legal: {
     badgeLegal: "RECHTLICHES",
@@ -4824,25 +4961,25 @@ const deTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[Name der juristischen Person, Registernummer, Gerichtsstand]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "Braxel Markets stellt über seine Plattform algorithmische Handelsinfrastruktur auf institutionellem Niveau und damit verbundene Dienstleistungen bereit.",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "Die Gebühren für unsere Dienstleistungen sind auf der Preisseite aufgeführt und können mit vorheriger Ankündigung geändert werden. Zu den Zahlungsmethoden gehören Banküberweisung, Kreditkarte und Kryptowährung.",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "Unsere Dienstleistungen stehen natürlichen und juristischen Personen zur Verfügung, die mindestens 18 Jahre alt sind und unsere Know-Your-Customer- (KYC) und Anti-Geldwäsche-Anforderungen (AML) erfüllen.",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "Jede Partei kann das Konto mit einer schriftlichen Kündigungsfrist von [PLACEHOLDER: Kündigungsfrist, z. B. 30 Tage] kündigen. Braxel Markets kann bei Verstoß gegen die Bedingungen, illegaler Aktivität oder regulatorischen Anforderungen sofort kündigen.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "Soweit gesetzlich zulässig, haftet Braxel Markets nicht für indirekte, zufällige, besondere, Folge- oder Strafschäden oder für Daten-, Nutzungs-, Geschäftswert- oder sonstige immaterielle Verluste, die aus Ihrem Zugriff auf oder Ihrer Nutzung unserer Dienste resultieren.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "Diese Bedingungen unterliegen dem Recht von [PLACEHOLDER: Gerichtsstand] und werden nach diesem ausgelegt. Alle Streitigkeiten, die sich aus oder im Zusammenhang mit diesen Bedingungen ergeben, unterliegen der ausschließlichen Zuständigkeit der Gerichte von [PLACEHOLDER: Gerichtsstand].",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern oder zu ersetzen. Bei einer wesentlichen Änderung kündigen wir mindestens [PLACEHOLDER: Kündigungsfrist, z. B. 30 Tage] vor Inkrafttreten der neuen Bedingungen an. Was eine wesentliche Änderung darstellt, liegt in unserem alleinigen Ermessen.",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "Datum des Inkrafttretens: [PLACEHOLDER: Datum]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "Bei Fragen zu diesen Bedingungen kontaktieren Sie uns bitte unter [PLACEHOLDER: Kontakt-E-Mail oder Adresse]."
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -4910,6 +5047,19 @@ const deTranslation = {
       rejected: "Abgelehnt",
       manual_review: "Manuelle Prüfung"
     }
+  },
+  profitCalculator: {
+    badge: "PROJEKTION",
+    titleA: "GEWINN",
+    titleB: "RECHNER",
+    initialAllocation: "Erstzuweisung",
+    monthlyProfit: "Gesch. Monatsgewinn",
+    annualProfit: "Gesch. Jahresgewinn",
+    riskTitle: "Risikomanagement",
+    riskDesc: "Projektionen basierend auf historischer algorithmischer Performance mit strengen Drawdown-Limits.",
+    instantTitle: "Sofortige Bereitstellung",
+    instantDesc: "Ihr Kapital beginnt wenige Minuten nach der Infrastrukturintegration zu arbeiten.",
+    disclaimer: "* Hinweis: Frühere Ergebnisse sind kein Garant für zukünftige Resultate. Projektionen dienen nur zur Veranschaulichung."
   }
 };
 
@@ -4918,47 +5068,47 @@ const ruTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "Инвестирование на финансовых рынках связано с существенными рисками и может привести к полной потере вложенного капитала. Прошлые результаты не гарантируют будущих.",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "Содержание этого сайта и услуги, предоставляемые Braxel Markets, не являются финансовой, юридической или налоговой консультацией. Мы рекомендуем каждому инвестору получить независимую профессиональную консультацию перед принятием инвестиционных решений.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "Braxel Markets не несёт ответственности за финансовые потери, возникшие в результате использования нашей технологии автоматизации или рыночных колебаний.",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "При использовании наших услуг ваш капитал подвержен риску. Вы можете потерять часть или весь свой инвестированный капитал.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "Мы не гарантируем никакой доходности или прибыли. Прошлые результаты не показательны для будущих.",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "Любые показанные исторические результаты приведены исключительно в иллюстративных целях и не гарантируют будущих результатов.",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "Braxel Markets в настоящее время не представлена как лицензированное или регулируемое финансовое учреждение в [PLACEHOLDER: юрисдикция]. Пожалуйста, проверьте регуляторный статус, применимый к вашему местоположению.",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "Мы не предлагаем защиту капитала или гарантию от убытков.",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "Автоматизированные и алгоритмические торговые стратегии связаны с рисками, включая, помимо прочего, сбои системы, проблемы с подключением, ошибки модели и непредвиденные рыночные условия.",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "Наши услуги могут быть недоступны в некоторых юрисдикциях. Пользователи обязаны обеспечить соблюдение местных законов и нормативов перед использованием нашей платформы."
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "Мы собираем только информацию, необходимую для оказания наших услуг, включая имя, электронную почту и данные о транзакциях. Ваши данные защищены шифрованием AES-256.",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "Собранная информация используется исключительно для управления вашим аккаунтом, обработки платежей и отправки еженедельных отчётов о результатах.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "Мы применяем строгие меры безопасности для защиты ваших персональных данных от несанкционированного доступа, изменения или уничтожения.",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "Нашим правовым основанием для обработки ваших персональных данных является [PLACEHOLDER: правовое основание, например согласие, законный интерес, необходимость исполнения договора].",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "Мы храним ваши персональные данные в течение [PLACEHOLDER: срок хранения], если законом не требуется более длительный срок.",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "Мы можем передавать ваши данные надёжным сторонним поставщикам услуг, таким как [PLACEHOLDER: список обработчиков, например платёжные системы, облачный хостинг, почтовые сервисы], исключительно для целей, указанных в настоящей политике.",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "В соответствии с применимыми законами о защите данных, такими как LGPD (Бразилия) и GDPR (ЕС), вы имеете право на доступ, исправление, удаление и перенос ваших персональных данных, а также на возражение против обработки или её ограничение. Для реализации этих прав свяжитесь с нами по адресу [PLACEHOLDER: контакт для запросов о правах].",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "Наш сайт использует файлы cookie и аналогичные технологии для улучшения пользовательского опыта, анализа трафика и персонализации контента. Вы можете управлять настройками cookie в параметрах браузера.",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "По вопросам об этой Политике конфиденциальности или наших методах работы с данными обращайтесь к нашему специалисту по защите данных по адресу [PLACEHOLDER: электронная почта или контакт DPO]."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -5243,18 +5393,6 @@ const ruTranslation = {
         role: "Основатель и CEO",
         bio: "Количественный стратег и предприниматель, возглавляющий видение Braxel Markets в области институциональной алгоритмической инфраструктуры.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[Имя Сооснователя]",
-        role: "Сооснователь и CTO",
-        bio: "Программный инженер, специализирующийся на высокочастотных системах и распределённых вычислениях.",
-        photo: ""
-      },
-      {
-        name: "[Имя Управляющего]",
-        role: "Руководитель Управления Рисками",
-        bio: "Бывший институциональный аналитик рисков с глубокой экспертизой в оптимизации портфеля.",
-        photo: ""
       }
     ],
     teamBadge: "РУКОВОДСТВО"
@@ -5281,7 +5419,9 @@ const ruTranslation = {
     waitMessage: "Пожалуйста, подождите перед отправкой следующего сообщения.",
     messageSent: "Сообщение успешно отправлено! Наша команда свяжется с вами в ближайшее время.",
     messageFailed: "Не удалось отправить сообщение. Пожалуйста, попробуйте снова или отправьте нам письмо напрямую на marketsbraxel@ouvidor.net",
-    cooldown: "ПОДОЖДИТЕ"
+    cooldown: "ПОДОЖДИТЕ",
+    consentPre: "Отправляя эту форму, вы соглашаетесь с нашей",
+    consentPost: "Мы используем ваши данные только для ответа на ваш запрос."
   },
   dashboard: {
     portfolio: "Портфель",
@@ -5316,7 +5456,7 @@ const ruTranslation = {
     investor: "Инвестор",
     kycRequired: "Требуется верификация KYC",
     kycRequiredDesc: "Пройдите проверку личности для доступа ко всем функциям платформы. Это обязательно для всех аккаунтов, управляющих капиталом.",
-    kycUnderReview: "KYC на рассмотрении",
+    kycUnderReview: "KYC на проверке",
     kycUnderReviewDesc: "Ваши документы проверяются нашей командой комплаенс. Обычно это занимает 24-48 часов.",
     kycRejected: "Верификация KYC отклонена",
     kycRejectedDesc: "Ваши документы не были приняты. Пожалуйста, отправьте действительные документы повторно.",
@@ -5332,7 +5472,12 @@ const ruTranslation = {
     analytics: "Аналитика",
     newWithdrawalRequest: "Новая заявка на вывод",
     walletIban: "Кошелёк / IBAN",
-    network: "Сеть",
+    network: {
+      erc20: "ERC-20 (Ethereum)",
+      trc20: "TRC-20 (Tron)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "Банковский перевод (SWIFT)"
+    },
     transactionHistory: "История транзакций",
     operations: "Операции",
     asset: "Актив",
@@ -5421,7 +5566,23 @@ const ruTranslation = {
     uploadDocument: "Загрузите документ.",
     completeSteps: "Пожалуйста, завершите все этапы верификации.",
     documentsSubmitted: "Документы отправлены на верификацию. Вы получите уведомление после проверки.",
-    failedDocuments: "Не удалось отправить документы."
+    failedDocuments: "Не удалось отправить документы.",
+    performanceTitle: "Панель производительности",
+    auditLogTitle: "Журнал аудита",
+    auditLogDesc: "Все алгоритмические ордера, исполненные на вашем аккаунте.",
+    accountSettingsTitle: "Настройки аккаунта",
+    personalInformation: "Личная информация",
+    emailAddress: "Адрес электронной почты",
+    emailChangeNotice: "Смена электронной почты требует подтверждения. Ссылка для подтверждения будет отправлена на новый адрес.",
+    currentEmail: "Текущая почта",
+    confirmationSent: "Подтверждение отправлено",
+    tryDifferentEmail: "Попробовать другую почту",
+    continueToMethod: "Перейти к выбору метода",
+    uploadHint: "PNG, JPG, PDF до 10 МБ",
+    twoFactorDesc: "Добавьте дополнительный уровень безопасности. Используйте приложение-аутентификатор, например Google Authenticator или Authy.",
+    qrCode: "QR-код",
+    kycRequiredBanner: "Требуется KYC",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "ИТОГО",
@@ -5525,7 +5686,8 @@ const ruTranslation = {
     serviceAccess: "Доступ к сервису",
     confirmCard: "ПОДТВЕРДИТЬ КАРТУ",
     redirecting: "Перенаправление на оплату...",
-    card: "Кредитная / дебетовая карта"
+    card: "Кредитная / дебетовая карта",
+    testModeBanner: "ТЕСТОВЫЙ РЕЖИМ — Без реальных денег. Без реального банка. Без реального кошелька. Без реальной активации."
   },
   legal: {
     badgeLegal: "ПРАВОВАЯ ИНФОРМАЦИЯ",
@@ -5640,25 +5802,25 @@ const ruTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[Наименование юридического лица, регистрационный номер, юрисдикция]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "Braxel Markets предоставляет инфраструктуру алгоритмической торговли институционального уровня и сопутствующие услуги через свою платформу.",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "Стоимость наших услуг указана на странице «Тарифы» и может быть изменена с предварительным уведомлением. Способы оплаты включают банковский перевод, кредитную карту и криптовалюту.",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "Наши услуги доступны физическим и юридическим лицам не моложе 18 лет, соблюдающим наши требования по идентификации клиентов (KYC) и противодействию отмыванию денег (AML).",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "Любая из сторон может закрыть аккаунт, уведомив письменно за [PLACEHOLDER: срок уведомления, например 30 дней]. Braxel Markets может закрыть аккаунт немедленно при нарушении условий, незаконной деятельности или требований регуляторов.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "В максимально допустимой законом степени Braxel Markets не несёт ответственности за косвенные, случайные, специальные, последующие или штрафные убытки, а также за потерю данных, использования, деловой репутации или иные нематериальные потери, возникшие в результате доступа к нашим услугам или их использования.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "Настоящие Условия регулируются и толкуются в соответствии с законодательством [PLACEHOLDER: юрисдикция]. Любой спор, возникающий из настоящих Условий или в связи с ними, подлежит исключительной юрисдикции судов [PLACEHOLDER: юрисдикция].",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "Мы оставляем за собой право изменять или заменять настоящие Условия в любое время. При существенном изменении мы уведомим не менее чем за [PLACEHOLDER: срок уведомления, например 30 дней] до вступления новых условий в силу. Что считается существенным изменением, определяется нашим единоличным усмотрением.",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "Дата вступления в силу: [PLACEHOLDER: дата]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "По вопросам об этих Условиях обращайтесь к нам по адресу [PLACEHOLDER: контактная электронная почта или адрес]."
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -5726,6 +5888,19 @@ const ruTranslation = {
       rejected: "Отклонён",
       manual_review: "Ручная проверка"
     }
+  },
+  profitCalculator: {
+    badge: "ПРОГНОЗ",
+    titleA: "КАЛЬКУЛЯТОР",
+    titleB: "ПРИБЫЛИ",
+    initialAllocation: "Начальное распределение",
+    monthlyProfit: "Ожид. месячная прибыль",
+    annualProfit: "Ожид. годовая прибыль",
+    riskTitle: "Управление рисками",
+    riskDesc: "Прогнозы основаны на исторической эффективности алгоритма со строгими лимитами просадки.",
+    instantTitle: "Мгновенное развёртывание",
+    instantDesc: "Ваш капитал начинает работать через несколько минут после интеграции инфраструктуры.",
+    disclaimer: "* Отказ от ответственности: прошлые результаты не гарантируют будущих. Прогнозы приведены исключительно в иллюстративных целях."
   }
 };
 
@@ -5734,47 +5909,47 @@ const zhTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "投资金融市场存在重大风险，可能导致投资本金全部损失。过往表现并不保证未来结果。",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "本网站的内容及 Braxel Markets 提供的服务不构成财务、法律或税务建议。我们建议每位投资者在做出投资决策前寻求独立的专业意见。",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "对于因使用我们的自动化技术或市场波动而造成的财务损失，Braxel Markets 概不负责。",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "使用我们的服务时，您的资金面临风险。您可能损失部分或全部投资。",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "我们不保证任何回报或利润。过往表现并不预示未来结果。",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "所展示的任何历史表现仅供参考，并不保证未来结果。",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "Braxel Markets 目前在 [PLACEHOLDER: 司法管辖区] 并未以持牌或受监管金融机构的身份出现。请核实适用于您所在地区的监管状态。",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "我们不提供任何本金保护或损失担保。",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "自动化及算法交易策略涉及多种风险，包括但不限于系统故障、连接问题、模型错误以及意外的市场状况。",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "我们的服务可能并非在所有司法管辖区均可提供。用户有责任在使用我们的平台前确保遵守当地法律法规。"
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "我们仅收集提供服务所必需的信息，包括姓名、电子邮件和交易数据。您的数据受 AES-256 加密保护。",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "所收集的信息仅用于管理您的账户、处理付款以及发送每周业绩报告。",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "我们实施严格的安全措施，防止您的个人数据遭到未经授权的访问、篡改或销毁。",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "我们处理您个人数据的法律依据是 [PLACEHOLDER: 法律依据，例如同意、合法利益、合同必要性]。",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "我们将您的个人数据保留 [PLACEHOLDER: 保留期限]，除非法律要求更长的期限。",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "我们可能将您的数据分享给值得信赖的第三方服务提供商，例如 [PLACEHOLDER: 处理者清单，例如支付处理商、云托管、电子邮件服务]，仅用于本政策所述的目的。",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "根据适用的数据保护法律（如巴西 LGPD 和欧盟 GDPR），您有权访问、更正、删除和转移您的个人数据，并有权反对或限制处理。如需行使这些权利，请通过 [PLACEHOLDER: 权利请求联系方式] 与我们联系。",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "我们的网站使用 Cookie 及类似技术来提升用户体验、分析流量并个性化内容。您可以通过浏览器设置管理您的 Cookie 偏好。",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "如对本隐私政策或我们的数据实践有任何疑问，请通过 [PLACEHOLDER: DPO 邮箱或联系方式] 联系我们的数据保护官。"
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -6046,18 +6221,6 @@ const zhTranslation = {
         role: "创始人兼CEO",
         bio: "量化策略师和企业家，引领Braxel Markets在机构级算法基础设施方面的愿景。",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[联合创始人姓名]",
-        role: "联合创始人兼CTO",
-        bio: "专注于高频系统和分布式计算的软件工程师。",
-        photo: ""
-      },
-      {
-        name: "[经理姓名]",
-        role: "风险管理主管",
-        bio: "前机构风险分析师，精通投资组合优化。",
-        photo: ""
       }
     ],
     teamBadge: "领导团队"
@@ -6084,7 +6247,9 @@ const zhTranslation = {
     waitMessage: "请稍候再发送下一条消息。",
     messageSent: "消息发送成功！我们的团队将尽快与您联系。",
     messageFailed: "消息发送失败。请重试或直接发送邮件至 marketsbraxel@ouvidor.net",
-    cooldown: "请等待"
+    cooldown: "请等待",
+    consentPre: "提交此表单即表示您同意我们的",
+    consentPost: "我们仅使用您的数据来回复您的咨询。"
   },
   dashboard: {
     portfolio: "投资组合",
@@ -6119,7 +6284,7 @@ const zhTranslation = {
     investor: "投资者",
     kycRequired: "需要KYC验证",
     kycRequiredDesc: "完成身份验证以访问平台的所有功能。这是所有管理资金的账户的必填项。",
-    kycUnderReview: "KYC审核中",
+    kycUnderReview: "KYC 审核中",
     kycUnderReviewDesc: "您的文件正在由我们的合规团队审核。这通常需要24-48小时。",
     kycRejected: "KYC验证被拒绝",
     kycRejectedDesc: "您的文件未被接受。请重新提交有效文件。",
@@ -6135,7 +6300,12 @@ const zhTranslation = {
     analytics: "分析",
     newWithdrawalRequest: "新的取款请求",
     walletIban: "钱包 / IBAN",
-    network: "网络",
+    network: {
+      erc20: "ERC-20（以太坊）",
+      trc20: "TRC-20（波场）",
+      bep20: "BEP-20（BSC）",
+      bankSwift: "银行转账（SWIFT）"
+    },
     transactionHistory: "交易历史",
     operations: "操作",
     asset: "资产",
@@ -6224,7 +6394,23 @@ const zhTranslation = {
     uploadDocument: "请上传文件。",
     completeSteps: "请完成所有验证步骤。",
     documentsSubmitted: "文件已提交以供验证。审核完成后您将收到通知。",
-    failedDocuments: "提交文件失败。"
+    failedDocuments: "提交文件失败。",
+    performanceTitle: "业绩控制面板",
+    auditLogTitle: "审计日志",
+    auditLogDesc: "在您的账户上执行的所有算法订单。",
+    accountSettingsTitle: "账户设置",
+    personalInformation: "个人信息",
+    emailAddress: "电子邮件地址",
+    emailChangeNotice: "更改电子邮件需要验证。确认链接将发送到新的电子邮件地址。",
+    currentEmail: "当前电子邮件",
+    confirmationSent: "确认已发送",
+    tryDifferentEmail: "尝试其他电子邮件",
+    continueToMethod: "继续选择方式",
+    uploadHint: "PNG、JPG、PDF，最大 10MB",
+    twoFactorDesc: "为您的账户增加一层额外保护。使用 Google Authenticator 或 Authy 等身份验证器应用。",
+    qrCode: "二维码",
+    kycRequiredBanner: "需要 KYC",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "摘要",
@@ -6328,7 +6514,8 @@ const zhTranslation = {
     serviceAccess: "服务访问",
     confirmCard: "确认银行卡",
     redirecting: "正在跳转到支付页面...",
-    card: "信用卡 / 借记卡"
+    card: "信用卡 / 借记卡",
+    testModeBanner: "测试模式 — 无真实资金。无真实银行。无真实钱包。无真实激活。"
   },
   legal: {
     badgeLegal: "法律",
@@ -6456,25 +6643,25 @@ const zhTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[法人名称、注册号、司法管辖区]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "Braxel Markets 通过其平台提供机构级算法交易基础设施及相关服务。",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "我们的服务费用载于定价页面，并可在事先通知后变更。支付方式包括银行转账、信用卡和加密货币。",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "我们的服务面向年满 18 周岁且符合我们「了解你的客户」(KYC) 及反洗钱 (AML) 要求的个人和实体。",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "任何一方均可提前 [PLACEHOLDER: 通知期限，例如 30 天] 书面通知后终止账户。若违反条款、从事非法活动或出于监管要求，Braxel Markets 可立即终止账户。",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "在法律允许的最大范围内，对于因您访问或使用我们的服务而产生的任何间接、附带、特殊、后果性或惩罚性损害，或任何数据、使用、商誉或其他无形损失，Braxel Markets 概不承担责任。",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "本条款受 [PLACEHOLDER: 司法管辖区] 法律管辖并据其解释。因本条款产生或与之相关的任何争议，均提交 [PLACEHOLDER: 司法管辖区] 法院专属管辖。",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "我们保留随时修改或替换本条款的权利。若修订为重大变更，我们将在新条款生效前至少提前 [PLACEHOLDER: 通知期限，例如 30 天] 通知。何为重大变更由我们全权决定。",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "生效日期：[PLACEHOLDER: 日期]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "如对本条款有任何疑问，请通过 [PLACEHOLDER: 联系邮箱或地址] 与我们联系。"
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -6542,6 +6729,19 @@ const zhTranslation = {
       rejected: "已拒绝",
       manual_review: "人工审核"
     }
+  },
+  profitCalculator: {
+    badge: "预测",
+    titleA: "收益",
+    titleB: "计算器",
+    initialAllocation: "初始配资",
+    monthlyProfit: "预计月收益",
+    annualProfit: "预计年收益",
+    riskTitle: "风险管理",
+    riskDesc: "基于历史算法表现并设有严格回撤限制的预测。",
+    instantTitle: "即时部署",
+    instantDesc: "基础设施集成后几分钟内，您的资金即可开始运作。",
+    disclaimer: "* 免责声明：过往表现并不保证未来结果。预测仅供参考。"
   }
 };
 
@@ -6550,47 +6750,47 @@ const jaTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "金融市場への投資には重大なリスクが伴い、投資元本の全額を失う可能性があります。過去の実績は将来の結果を保証するものではありません。",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "本サイトの内容および Braxel Markets が提供するサービスは、金融・法律・税務上の助言を構成するものではありません。投資判断を行う前に、各投資家が独立した専門家の助言を求めることを推奨します。",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "Braxel Markets は、当社の自動化技術の使用または市場の変動に起因する金銭的損失について責任を負いません。",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "当社のサービスを利用する際、お客様の資金はリスクにさらされます。投資額の一部または全部を失う可能性があります。",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "当社は、いかなるリターンや利益も保証しません。過去の実績は将来の結果を示すものではありません。",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "表示される過去の実績はあくまで例示目的であり、将来の結果を保証するものではありません。",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "Braxel Markets は現在、[PLACEHOLDER: 管轄区域] において免許を有するまたは規制された金融機関として表明されていません。お住まいの地域に適用される規制上の地位をご確認ください。",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "当社は、元本保護や損失に対する保証を一切提供しません。",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "自動化およびアルゴリズム取引戦略には、システム障害、接続問題、モデルの誤り、予期しない市場状況などのリスクが含まれます（これらに限定されません）。",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "当社のサービスはすべての管轄区域で提供されるものではありません。ユーザーは、当社プラットフォームを利用する前に、現地の法令を遵守していることを確認する責任を負います。"
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "当社は、サービス提供に必要な情報（氏名、メールアドレス、取引データなど）のみを収集します。お客様のデータは AES-256 暗号化により保護されます。",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "収集した情報は、お客様のアカウント管理、支払い処理、および週次の運用実績レポートの送信にのみ使用されます。",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "当社は、お客様の個人データへの不正アクセス、改ざん、または破壊を防ぐため、厳格なセキュリティ対策を実施しています。",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "お客様の個人データを処理する法的根拠は [PLACEHOLDER: 法的根拠、例：同意、正当な利益、契約上の必要性] です。",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "当社は、法律により長期間が求められる場合を除き、お客様の個人データを [PLACEHOLDER: 保存期間] 保持します。",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "当社は、お客様のデータを、[PLACEHOLDER: 委託先の一覧、例：決済処理業者、クラウドホスティング、メールサービス] などの信頼できる第三者サービス提供者と、本ポリシーに記載された目的にのみ共有することがあります。",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "ブラジルの LGPD や EU の GDPR など適用されるデータ保護法の下で、お客様は自身の個人データにアクセスし、訂正し、削除し、移行する権利、ならびに処理に異議を述べるまたは制限する権利を有します。これらの権利を行使するには、[PLACEHOLDER: 権利行使の連絡先] までお問い合わせください。",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "当社のウェブサイトは、ユーザー体験の向上、トラフィックの分析、コンテンツのパーソナライズのために Cookie および類似技術を使用しています。Cookie の設定はブラウザの設定から管理できます。",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "本プライバシーポリシーまたは当社のデータ取扱いに関するご質問は、[PLACEHOLDER: DPO のメールアドレスまたは連絡先] までお問い合わせください。"
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -6862,18 +7062,6 @@ const jaTranslation = {
         role: "創業者兼CEO",
         bio: "機関投資家レベルのアルゴリズムインフラに向けたBraxel Marketsのビジョンを率いる定量ストラテジスト兼起業家。",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[共同創業者名]",
-        role: "共同創業者兼CTO",
-        bio: "高頻度システムと分散コンピューティングを専門とするソフトウェアエンジニア。",
-        photo: ""
-      },
-      {
-        name: "[マネージャー名]",
-        role: "リスク管理責任者",
-        bio: "ポートフォリオ最適化に深い専門知識を持つ元機関リスクアナリスト。",
-        photo: ""
       }
     ],
     teamBadge: "リーダーシップ"
@@ -6900,7 +7088,9 @@ const jaTranslation = {
     waitMessage: "次のメッセージを送信するまでしばらくお待ちください。",
     messageSent: "メッセージが正常に送信されました！まもなくチームよりご連絡いたします。",
     messageFailed: "メッセージの送信に失敗しました。もう一度お試しいただくか、marketsbraxel@ouvidor.netまで直接メールをお送りください。",
-    cooldown: "お待ちください"
+    cooldown: "お待ちください",
+    consentPre: "このフォームを送信すると、以下に同意したことになります：",
+    consentPost: "お客様のデータはお問い合わせへの回答にのみ使用します。"
   },
   dashboard: {
     portfolio: "ポートフォリオ",
@@ -6935,7 +7125,7 @@ const jaTranslation = {
     investor: "投資家",
     kycRequired: "KYC認証が必要です",
     kycRequiredDesc: "プラットフォームの全機能にアクセスするには、本人確認を完了してください。これは資本を管理するすべてのアカウントに義務付けられています。",
-    kycUnderReview: "KYC審査中",
+    kycUnderReview: "KYC 審査中",
     kycUnderReviewDesc: "書類はコンプライアンスチームによって審査中です。通常24〜48時間かかります。",
     kycRejected: "KYC認証が拒否されました",
     kycRejectedDesc: "書類は承認されませんでした。有効な書類を再度ご提出ください。",
@@ -6951,7 +7141,12 @@ const jaTranslation = {
     analytics: "分析",
     newWithdrawalRequest: "新しい出金リクエスト",
     walletIban: "ウォレット / IBAN",
-    network: "ネットワーク",
+    network: {
+      erc20: "ERC-20（イーサリアム）",
+      trc20: "TRC-20（トロン）",
+      bep20: "BEP-20（BSC）",
+      bankSwift: "銀行振込（SWIFT）"
+    },
     transactionHistory: "取引履歴",
     operations: "オペレーション",
     asset: "資産",
@@ -7040,7 +7235,23 @@ const jaTranslation = {
     uploadDocument: "書類をアップロードしてください。",
     completeSteps: "すべての確認手順を完了してください。",
     documentsSubmitted: "書類を確認のために送信しました。審査完了後に通知されます。",
-    failedDocuments: "書類の送信に失敗しました。"
+    failedDocuments: "書類の送信に失敗しました。",
+    performanceTitle: "パフォーマンスダッシュボード",
+    auditLogTitle: "監査ログ",
+    auditLogDesc: "お客様のアカウントで実行されたすべてのアルゴリズム注文。",
+    accountSettingsTitle: "アカウント設定",
+    personalInformation: "個人情報",
+    emailAddress: "メールアドレス",
+    emailChangeNotice: "メールアドレスの変更には確認が必要です。確認リンクが新しいメールアドレスに送信されます。",
+    currentEmail: "現在のメールアドレス",
+    confirmationSent: "確認を送信しました",
+    tryDifferentEmail: "別のメールアドレスを試す",
+    continueToMethod: "方式の選択へ進む",
+    uploadHint: "PNG、JPG、PDF（最大10MB）",
+    twoFactorDesc: "アカウントにセキュリティを追加します。Google Authenticator や Authy などの認証アプリを使用してください。",
+    qrCode: "QRコード",
+    kycRequiredBanner: "KYC が必要です",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "概要",
@@ -7144,7 +7355,8 @@ const jaTranslation = {
     serviceAccess: "サービスアクセス",
     confirmCard: "カードを確認",
     redirecting: "支払いページへリダイレクト中...",
-    card: "クレジット / デビットカード"
+    card: "クレジット / デビットカード",
+    testModeBanner: "テストモード — 実際の資金・銀行・ウォレット・有効化はありません。"
   },
   legal: {
     badgeLegal: "法的情報",
@@ -7272,25 +7484,25 @@ const jaTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[法人名、登録番号、管轄区域]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "Braxel Markets は、そのプラットフォームを通じて機関投資家水準のアルゴリズム取引インフラと関連サービスを提供します。",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "当社サービスの手数料は料金ページに記載されており、事前の通知により変更される場合があります。支払い方法には銀行振込、クレジットカード、暗号資産が含まれます。",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "当社のサービスは、18 歳以上で、当社の本人確認（KYC）およびマネーロンダリング対策（AML）要件を満たす個人および法人がご利用いただけます。",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "いずれの当事者も、[PLACEHOLDER: 通知期間、例：30 日] の書面による通知をもってアカウントを解約できます。Braxel Markets は、規約違反、違法行為、または規制上の要件がある場合、直ちに解約することがあります。",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "法律で認められる最大限の範囲において、Braxel Markets は、当社サービスへのアクセスまたは利用に起因する間接的、偶発的、特別、結果的、または懲罰的損害、ならびにデータ、使用、のれん、その他の無形の損失について一切責任を負いません。",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "本規約は [PLACEHOLDER: 管轄区域] の法律に準拠し、これに従って解釈されます。本規約に起因または関連して生じる紛争は、[PLACEHOLDER: 管轄区域] の裁判所の専属管轄に服します。",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "当社は、いつでも本規約を変更または代替する権利を留保します。重要な改定の場合、新しい規約の発効前に少なくとも [PLACEHOLDER: 通知期間、例：30 日] の通知を行います。重要な変更に該当するか否かは、当社の単独の裁量により判断されます。",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "発効日：[PLACEHOLDER: 日付]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "本規約に関するご質問は、[PLACEHOLDER: 連絡先メールアドレスまたは住所] までお問い合わせください。"
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -7358,6 +7570,19 @@ const jaTranslation = {
       rejected: "拒否",
       manual_review: "手動レビュー"
     }
+  },
+  profitCalculator: {
+    badge: "予測",
+    titleA: "利益",
+    titleB: "計算機",
+    initialAllocation: "初期配分",
+    monthlyProfit: "月間利益（予想）",
+    annualProfit: "年間利益（予想）",
+    riskTitle: "リスク管理",
+    riskDesc: "厳格なドローダウン制限を伴う過去のアルゴリズム実績に基づく予測です。",
+    instantTitle: "即時展開",
+    instantDesc: "インフラ統合後、数分以内に資金が運用を開始します。",
+    disclaimer: "* 免責事項：過去の実績は将来の結果を保証するものではありません。予測はあくまで例示目的です。"
   }
 };
 
@@ -7366,47 +7591,47 @@ const arTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "ينطوي الاستثمار في الأسواق المالية على مخاطر كبيرة وقد يؤدي إلى خسارة كاملة لرأس المال المستثمر. الأداء السابق ليس ضمانًا للنتائج المستقبلية.",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "لا يُعدّ محتوى هذا الموقع والخدمات التي تقدّمها Braxel Markets نصيحة مالية أو قانونية أو ضريبية. نوصي كل مستثمر بالحصول على استشارة مهنية مستقلة قبل اتخاذ قرارات الاستثمار.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "لا تتحمّل Braxel Markets المسؤولية عن الخسائر المالية الناتجة عن استخدام تقنية الأتمتة لدينا أو عن تقلّبات السوق.",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "رأس مالك معرّض للخطر عند استخدام خدماتنا. قد تخسر جزءًا من استثمارك أو كله.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "نحن لا نضمن أي عوائد أو أرباح. الأداء السابق ليس مؤشرًا على النتائج المستقبلية.",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "أي أداء تاريخي معروض هو لأغراض توضيحية فقط ولا يضمن النتائج المستقبلية.",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "لا تُمثَّل Braxel Markets حاليًا كمؤسسة مالية مرخّصة أو خاضعة للتنظيم في [PLACEHOLDER: الاختصاص القضائي]. يرجى التحقق من الوضع التنظيمي المطبّق على موقعك.",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "نحن لا نقدّم أي حماية لرأس المال أو ضمان ضد الخسائر.",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "تنطوي استراتيجيات التداول الآلي والخوارزمي على مخاطر تشمل، على سبيل المثال لا الحصر، أعطال الأنظمة ومشكلات الاتصال وأخطاء النماذج وظروف السوق غير المتوقعة.",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "قد لا تتوفّر خدماتنا في جميع الاختصاصات القضائية. يتحمّل المستخدمون مسؤولية ضمان الامتثال للقوانين واللوائح المحلية قبل استخدام منصتنا."
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "نجمع فقط المعلومات اللازمة لتقديم خدماتنا، بما في ذلك الاسم والبريد الإلكتروني وبيانات المعاملات. بياناتك محمية بتشفير AES-256.",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "تُستخدم المعلومات المجمّعة حصريًا لإدارة حسابك ومعالجة المدفوعات وإرسال تقارير الأداء الأسبوعية.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "نطبّق إجراءات أمنية صارمة للحماية من الوصول غير المصرّح به إلى بياناتك الشخصية أو تغييرها أو إتلافها.",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "الأساس القانوني لدينا لمعالجة بياناتك الشخصية هو [PLACEHOLDER: الأساس القانوني، مثل الموافقة أو المصلحة المشروعة أو الضرورة التعاقدية].",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "نحتفظ ببياناتك الشخصية لمدة [PLACEHOLDER: فترة الاحتفاظ]، ما لم يتطلب القانون فترة أطول.",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "قد نشارك بياناتك مع مزوّدي خدمات خارجيين موثوقين مثل [PLACEHOLDER: قائمة المعالجين، مثل معالجات الدفع والاستضافة السحابية وخدمات البريد الإلكتروني] حصريًا للأغراض الموضّحة في هذه السياسة.",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "بموجب قوانين حماية البيانات المعمول بها مثل LGPD (البرازيل) وGDPR (الاتحاد الأوروبي)، يحق لك الوصول إلى بياناتك الشخصية وتصحيحها وحذفها ونقلها، فضلاً عن الاعتراض على المعالجة أو تقييدها. لممارسة هذه الحقوق، يرجى التواصل معنا على [PLACEHOLDER: جهة الاتصال لطلبات الحقوق].",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "يستخدم موقعنا ملفات تعريف الارتباط وتقنيات مشابهة لتحسين تجربة المستخدم وتحليل الزيارات وتخصيص المحتوى. يمكنك إدارة تفضيلات ملفات تعريف الارتباط من خلال إعدادات متصفحك.",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "لأي أسئلة حول سياسة الخصوصية هذه أو ممارساتنا المتعلقة بالبيانات، يرجى التواصل مع مسؤول حماية البيانات لدينا على [PLACEHOLDER: بريد أو جهة اتصال مسؤول حماية البيانات]."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -7691,18 +7916,6 @@ const arTranslation = {
         role: "المؤسس والرئيس التنفيذي",
         bio: "استراتيجي كمي ورائد أعمال يقود رؤية Braxel Markets للبنية التحتية الخوارزمية المؤسسية.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[اسم الشريك المؤسس]",
-        role: "الشريك المؤسس ومدير التقنية",
-        bio: "مهندس برمجيات متخصص في أنظمة التردد العالي والحوسبة الموزعة.",
-        photo: ""
-      },
-      {
-        name: "[اسم المدير]",
-        role: "رئيس إدارة المخاطر",
-        bio: "محلل مخاطر مؤسسي سابق ذو خبرة عميقة في تحسين المحافظ.",
-        photo: ""
       }
     ],
     teamBadge: "القيادة"
@@ -7729,7 +7942,9 @@ const arTranslation = {
     waitMessage: "يرجى الانتظار لحظة قبل إرسال رسالة أخرى.",
     messageSent: "تم إرسال الرسالة بنجاح! سيتواصل معك فريقنا قريبًا.",
     messageFailed: "فشل إرسال الرسالة. يرجى المحاولة مرة أخرى أو مراسلتنا مباشرة على marketsbraxel@ouvidor.net",
-    cooldown: "الرجاء الانتظار"
+    cooldown: "الرجاء الانتظار",
+    consentPre: "بإرسال هذا النموذج، فإنك توافق على",
+    consentPost: "نستخدم بياناتك فقط للرد على استفسارك."
   },
   dashboard: {
     portfolio: "المحفظة",
@@ -7780,7 +7995,12 @@ const arTranslation = {
     analytics: "التحليلات",
     newWithdrawalRequest: "طلب سحب جديد",
     walletIban: "المحفظة / IBAN",
-    network: "الشبكة",
+    network: {
+      erc20: "ERC-20 (إيثيريوم)",
+      trc20: "TRC-20 (ترون)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "تحويل بنكي (SWIFT)"
+    },
     transactionHistory: "سجل المعاملات",
     operations: "العمليات",
     asset: "الأصل",
@@ -7869,7 +8089,23 @@ const arTranslation = {
     uploadDocument: "يرجى تحميل مستند.",
     completeSteps: "يرجى إكمال جميع خطوات التحقق.",
     documentsSubmitted: "تم إرسال المستندات للتحقق. سيتم إخطارك بعد المراجعة.",
-    failedDocuments: "فشل إرسال المستندات."
+    failedDocuments: "فشل إرسال المستندات.",
+    performanceTitle: "لوحة الأداء",
+    auditLogTitle: "سجل التدقيق",
+    auditLogDesc: "جميع الأوامر الخوارزمية المنفَّذة على حسابك.",
+    accountSettingsTitle: "إعدادات الحساب",
+    personalInformation: "المعلومات الشخصية",
+    emailAddress: "عنوان البريد الإلكتروني",
+    emailChangeNotice: "يتطلب تغيير بريدك الإلكتروني التحقق. سيتم إرسال رابط تأكيد إلى العنوان الجديد.",
+    currentEmail: "البريد الإلكتروني الحالي",
+    confirmationSent: "تم إرسال التأكيد",
+    tryDifferentEmail: "جرّب بريدًا إلكترونيًا آخر",
+    continueToMethod: "المتابعة إلى اختيار الطريقة",
+    uploadHint: "PNG، JPG، PDF حتى 10 ميجابايت",
+    twoFactorDesc: "أضف طبقة أمان إضافية لحسابك. استخدم تطبيق مصادقة مثل Google Authenticator أو Authy.",
+    qrCode: "رمز QR",
+    kycRequiredBanner: "KYC مطلوب",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "الملخص",
@@ -7973,7 +8209,8 @@ const arTranslation = {
     serviceAccess: "الوصول إلى الخدمة",
     confirmCard: "تأكيد البطاقة",
     redirecting: "جارٍ إعادة التوجيه إلى الدفع...",
-    card: "بطاقة ائتمان / خصم"
+    card: "بطاقة ائتمان / خصم",
+    testModeBanner: "وضع الاختبار — لا أموال حقيقية. لا بنك حقيقي. لا محفظة حقيقية. لا تفعيل حقيقي."
   },
   legal: {
     badgeLegal: "قانوني",
@@ -8088,25 +8325,25 @@ const arTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[اسم الكيان القانوني، رقم التسجيل، الاختصاص القضائي]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "تقدّم Braxel Markets بنية تحتية للتداول الخوارزمي بمستوى المؤسسات وخدمات ذات صلة عبر منصتها.",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "تُحدَّد رسوم خدماتنا في صفحة الأسعار وتخضع للتغيير بإشعار مسبق. تشمل طرق الدفع التحويل البنكي وبطاقة الائتمان والعملات المشفّرة.",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "خدماتنا متاحة للأفراد والكيانات الذين بلغوا 18 عامًا على الأقل ويلتزمون بمتطلبات «اعرف عميلك» (KYC) ومكافحة غسل الأموال (AML).",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "يجوز لأي من الطرفين إنهاء الحساب بإشعار كتابي مدته [PLACEHOLDER: فترة الإشعار، مثل 30 يومًا]. ويجوز لـ Braxel Markets الإنهاء الفوري في حالة خرق الشروط أو النشاط غير القانوني أو المتطلبات التنظيمية.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "إلى أقصى حدّ يسمح به القانون، لا تتحمّل Braxel Markets المسؤولية عن أي أضرار غير مباشرة أو عرضية أو خاصة أو تبعية أو تأديبية، أو أي خسارة في البيانات أو الاستخدام أو السمعة أو غيرها من الخسائر غير المادية الناتجة عن وصولك إلى خدماتنا أو استخدامك لها.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "تخضع هذه الشروط وتُفسَّر وفقًا لقوانين [PLACEHOLDER: الاختصاص القضائي]. ويُحال أي نزاع ينشأ عن هذه الشروط أو يتعلق بها إلى الاختصاص القضائي الحصري لمحاكم [PLACEHOLDER: الاختصاص القضائي].",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "نحتفظ بالحق في تعديل هذه الشروط أو استبدالها في أي وقت. وإذا كان التعديل جوهريًا، فسنقدّم إشعارًا لا يقل عن [PLACEHOLDER: فترة الإشعار، مثل 30 يومًا] قبل سريان الشروط الجديدة. ويُحدَّد ما يُعدّ تعديلًا جوهريًا وفقًا لتقديرنا المنفرد.",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "تاريخ النفاذ: [PLACEHOLDER: التاريخ]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "لأي أسئلة حول هذه الشروط، يرجى التواصل معنا على [PLACEHOLDER: البريد الإلكتروني أو العنوان]."
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -8174,6 +8411,19 @@ const arTranslation = {
       rejected: "مرفوض",
       manual_review: "مراجعة يدوية"
     }
+  },
+  profitCalculator: {
+    badge: "توقّع",
+    titleA: "حاسبة",
+    titleB: "الأرباح",
+    initialAllocation: "التخصيص الأولي",
+    monthlyProfit: "الربح الشهري المتوقع",
+    annualProfit: "الربح السنوي المتوقع",
+    riskTitle: "إدارة المخاطر",
+    riskDesc: "توقعات مبنية على الأداء الخوارزمي التاريخي مع حدود صارمة للتراجع.",
+    instantTitle: "نشر فوري",
+    instantDesc: "يبدأ رأس مالك بالعمل خلال دقائق من دمج البنية التحتية.",
+    disclaimer: "* إخلاء المسؤولية: الأداء السابق لا يضمن النتائج المستقبلية. التوقعات لأغراض توضيحية فقط."
   }
 };
 
@@ -8182,47 +8432,47 @@ const heTranslation = {
     title: "Financial Disclaimer",
     risk: "Risk",
     importantRiskTitle: "Important Risk Warning",
-    importantRiskText: "Investment in financial markets involves substantial risks and can result in the total loss of invested capital. Past performance is no guarantee of future results.",
+    importantRiskText: "השקעה בשווקים הפיננסיים כרוכה בסיכונים מהותיים ועלולה לגרום לאובדן מלא של ההון המושקע. ביצועי עבר אינם ערובה לתוצאות עתידיות.",
     noAdviceTitle: "No Advice",
-    noAdviceText: "The content of this site and the services provided by Braxel Markets do not constitute financial, legal, or tax advice. We recommend that each investor seek independent professional guidance before making investment decisions.",
+    noAdviceText: "תוכן אתר זה והשירותים שמספקת Braxel Markets אינם מהווים ייעוץ פיננסי, משפטי או מיסויי. אנו ממליצים לכל משקיע לקבל ייעוץ מקצועי בלתי תלוי לפני קבלת החלטות השקעה.",
     limitationTitle: "Limitation of Liability",
-    limitationText: "Braxel Markets is not responsible for financial losses resulting from the use of our automation technology or market fluctuations.",
+    limitationText: "Braxel Markets אינה אחראית להפסדים כספיים הנובעים משימוש בטכנולוגיית האוטומציה שלנו או מתנודות בשוק.",
     capitalAtRiskTitle: "Capital at Risk",
-    capitalAtRiskText: "Your capital is at risk when using our services. You may lose some or all of your investment.",
+    capitalAtRiskText: "ההון שלך חשוף לסיכון בעת השימוש בשירותים שלנו. ייתכן שתאבד חלק מהשקעתך או את כולה.",
     noGuaranteedReturnsTitle: "No Guaranteed Returns",
-    noGuaranteedReturnsText: "We do not guarantee any returns or profits. Past performance is not indicative of future results.",
+    noGuaranteedReturnsText: "איננו מתחייבים לכל תשואה או רווח. ביצועי עבר אינם מעידים על תוצאות עתידיות.",
     pastPerformanceTitle: "Past Performance Not Indicative",
-    pastPerformanceText: "Any historical performance shown is for illustrative purposes only and does not guarantee future results.",
+    pastPerformanceText: "כל ביצועי עבר המוצגים הם להמחשה בלבד ואינם מבטיחים תוצאות עתידיות.",
     notLicensedTitle: "Regulatory Status",
-    notLicensedText: "Braxel Markets is not currently represented as a licensed or regulated financial institution in [PLACEHOLDER: jurisdiction]. Please verify the regulatory status applicable to your location.",
+    notLicensedText: "Braxel Markets אינה מיוצגת כיום כמוסד פיננסי מורשה או מפוקח ב-[PLACEHOLDER: סמכות שיפוט]. אנא בדוק את הסטטוס הרגולטורי החל על מיקומך.",
     noCapitalProtectionTitle: "No Capital Protection Guarantee",
-    noCapitalProtectionText: "We do not offer any capital protection or guarantee against losses.",
+    noCapitalProtectionText: "איננו מציעים הגנת הון או ערובה מפני הפסדים.",
     algorithmicRisksTitle: "Algorithmic/Automated Trading Risks",
-    algorithmicRisksText: "Automated and algorithmic trading strategies involve risks including, but not limited to, system failures, connectivity issues, model errors, and unexpected market conditions.",
+    algorithmicRisksText: "אסטרטגיות מסחר אוטומטיות ואלגוריתמיות כרוכות בסיכונים הכוללים, בין היתר, כשלי מערכת, בעיות קישוריות, שגיאות מודל ותנאי שוק בלתי צפויים.",
     jurisdictionRestrictionsTitle: "Jurisdiction Restrictions",
-    jurisdictionRestrictionsText: "Our services may not be available in all jurisdictions. Users are responsible for ensuring compliance with local laws and regulations before using our platform."
+    jurisdictionRestrictionsText: "השירותים שלנו עשויים שלא להיות זמינים בכל תחומי השיפוט. המשתמשים אחראים לוודא עמידה בחוקים ובתקנות המקומיים לפני השימוש בפלטפורמה שלנו."
   },
   privacyPage: {
     title: "Privacy Policy",
     privacy: "Privacy",
     dataCollectionTitle: "Data Collection",
-    dataCollectionText: "We collect only the information necessary for the provision of our services, including name, email, and transaction data. Your data is protected by AES-256 encryption.",
+    dataCollectionText: "אנו אוספים רק את המידע הנדרש לאספקת השירותים שלנו, לרבות שם, אימייל ונתוני עסקאות. הנתונים שלך מוגנים בהצפנת AES-256.",
     useOfInfoTitle: "Use of Information",
-    useOfInfoText: "The information collected is used exclusively to manage your account, process payments, and send weekly performance reports.",
+    useOfInfoText: "המידע הנאסף משמש אך ורק לניהול החשבון שלך, לעיבוד תשלומים ולשליחת דוחות ביצועים שבועיים.",
     securityTitle: "Security",
-    securityText: "We implement rigorous security measures to protect against unauthorized access, alteration, or destruction of your personal data.",
+    securityText: "אנו מיישמים אמצעי אבטחה קפדניים כדי להגן מפני גישה בלתי מורשית, שינוי או השמדה של הנתונים האישיים שלך.",
     legalBasisTitle: "Legal Basis for Processing",
-    legalBasisText: "Our legal basis for processing your personal data is [PLACEHOLDER: legal basis, e.g., consent, legitimate interest, contractual necessity].",
+    legalBasisText: "הבסיס המשפטי שלנו לעיבוד הנתונים האישיים שלך הוא [PLACEHOLDER: בסיס משפטי, למשל הסכמה, אינטרס לגיטימי, נחיצות חוזית].",
     retentionTitle: "Data Retention Period",
-    retentionText: "We retain your personal data for [PLACEHOLDER: retention period] unless a longer period is required by law.",
+    retentionText: "אנו שומרים את הנתונים האישיים שלך במשך [PLACEHOLDER: תקופת שמירה], אלא אם החוק מחייב תקופה ארוכה יותר.",
     thirdPartiesTitle: "Third Parties and Processors",
-    thirdPartiesText: "We may share your data with trusted third-party service providers such as [PLACEHOLDER: list of processors, e.g., payment processors, cloud hosting, email services] solely for the purposes outlined in this policy.",
+    thirdPartiesText: "אנו עשויים לשתף את הנתונים שלך עם ספקי שירות חיצוניים מהימנים כגון [PLACEHOLDER: רשימת מעבדים, למשל ספקי סליקה, אחסון בענן, שירותי דואר אלקטרוני] אך ורק למטרות המפורטות במדיניות זו.",
     userRightsTitle: "Your Rights",
-    userRightsText: "Under applicable data protection laws such as the LGPD (Brazil) and GDPR (EU), you have the right to access, rectify, delete, and port your personal data, as well as to object to or restrict processing. To exercise these rights, please contact us at [PLACEHOLDER: contact for rights requests].",
+    userRightsText: "בהתאם לחוקי הגנת הנתונים החלים, כגון LGPD (ברזיל) ו-GDPR (האיחוד האירופי), יש לך הזכות לגשת לנתונים האישיים שלך, לתקנם, למחקם ולהעבירם, כמו גם להתנגד לעיבוד או להגבילו. למימוש זכויות אלה, אנא צור קשר בכתובת [PLACEHOLDER: איש קשר לבקשות זכויות].",
     cookiesTitle: "Cookies and Similar Technologies",
-    cookiesText: "Our website uses cookies and similar technologies to enhance user experience, analyze traffic, and personalize content. You can manage your cookie preferences through your browser settings.",
+    cookiesText: "האתר שלנו משתמש בקובצי Cookie ובטכנולוגיות דומות כדי לשפר את חוויית המשתמש, לנתח תנועה ולהתאים תוכן. ניתן לנהל את העדפות קובצי ה-Cookie דרך הגדרות הדפדפן שלך.",
     contactTitle: "Contact and Data Protection Officer",
-    contactText: "For questions about this Privacy Policy or our data practices, please contact our Data Protection Officer at [PLACEHOLDER: DPO email or contact]."
+    contactText: "לשאלות בנוגע למדיניות פרטיות זו או לנוהלי הנתונים שלנו, אנא צור קשר עם ממונה הגנת הנתונים בכתובת [PLACEHOLDER: אימייל או איש קשר של ה-DPO]."
   },
   contactEmail: {
     newSubmission: "New Contact Form Submission",
@@ -8507,18 +8757,6 @@ const heTranslation = {
         role: "מייסד ומנכ״ל",
         bio: "אסטרטג כמותי ויזם המוביל את החזון של Braxel Markets לתשתית אלגוריתמית מוסדית.",
         photo: "/team-bernardo-campi.jpg"
-      },
-      {
-        name: "[שם השותף המייסד]",
-        role: "שותף מייסד ו-CTO",
-        bio: "מהנדס תוכנה המתמחה במערכות תדירות גבוהה ומחשוב מבוזר.",
-        photo: ""
-      },
-      {
-        name: "[שם המנהל]",
-        role: "ראש ניהול סיכונים",
-        bio: "אנליסט סיכונים מוסדי לשעבר עם מומחיות עמוקה באופטימיזציית תיקים.",
-        photo: ""
       }
     ],
     teamBadge: "הנהגה"
@@ -8545,7 +8783,9 @@ const heTranslation = {
     waitMessage: "אנא המתן רגע לפני שליחת הודעה נוספת.",
     messageSent: "ההודעה נשלחה בהצלחה! הצוות שלנו יצור איתך קשר בקרוב.",
     messageFailed: "שליחת ההודעה נכשלה. אנא נסה שוב או שלח לנו אימייל ישירות ל marketsbraxel@ouvidor.net",
-    cooldown: "אנא המתן"
+    cooldown: "אנא המתן",
+    consentPre: "בשליחת טופס זה, אתה מסכים ל",
+    consentPost: "אנו משתמשים בנתונים שלך רק כדי להשיב לפנייתך."
   },
   dashboard: {
     portfolio: "תיק השקעות",
@@ -8596,7 +8836,12 @@ const heTranslation = {
     analytics: "ניתוחים",
     newWithdrawalRequest: "בקשת משיכה חדשה",
     walletIban: "ארנק / IBAN",
-    network: "רשת",
+    network: {
+      erc20: "ERC-20 (אתריום)",
+      trc20: "TRC-20 (טרון)",
+      bep20: "BEP-20 (BSC)",
+      bankSwift: "העברה בנקאית (SWIFT)"
+    },
     transactionHistory: "היסטוריית עסקאות",
     operations: "פעולות",
     asset: "נכס",
@@ -8685,7 +8930,23 @@ const heTranslation = {
     uploadDocument: "אנא העלה מסמך.",
     completeSteps: "אנא השלם את כל שלבי האימות.",
     documentsSubmitted: "המסמכים נשלחו לאימות. תקבל הודעה לאחר הבדיקה.",
-    failedDocuments: "שליחת המסמכים נכשלה."
+    failedDocuments: "שליחת המסמכים נכשלה.",
+    performanceTitle: "לוח ביצועים",
+    auditLogTitle: "יומן ביקורת",
+    auditLogDesc: "כל ההזמנות האלגוריתמיות שבוצעו בחשבונך.",
+    accountSettingsTitle: "הגדרות חשבון",
+    personalInformation: "מידע אישי",
+    emailAddress: "כתובת אימייל",
+    emailChangeNotice: "שינוי האימייל דורש אימות. קישור אימות יישלח לכתובת החדשה.",
+    currentEmail: "אימייל נוכחי",
+    confirmationSent: "אימות נשלח",
+    tryDifferentEmail: "נסה אימייל אחר",
+    continueToMethod: "המשך לבחירת שיטה",
+    uploadHint: "PNG, JPG, PDF עד 10MB",
+    twoFactorDesc: "הוסף שכבת אבטחה נוספת לחשבונך. השתמש באפליקציית אימות כמו Google Authenticator או Authy.",
+    qrCode: "קוד QR",
+    kycRequiredBanner: "נדרש KYC",
+    assetsList: "BTC, ETH, SOL"
   },
   checkout: {
     summary: "סיכום",
@@ -8789,7 +9050,8 @@ const heTranslation = {
     serviceAccess: "גישה לשירות",
     confirmCard: "אשר כרטיס",
     redirecting: "מעביר לתשלום...",
-    card: "כרטיס אשראי / חיוב"
+    card: "כרטיס אשראי / חיוב",
+    testModeBanner: "מצב בדיקה — ללא כסף אמיתי. ללא בנק אמיתי. ללא ארנק אמיתי. ללא הפעלה אמיתית."
   },
   legal: {
     badgeLegal: "משפטי",
@@ -8904,25 +9166,25 @@ const heTranslation = {
   termsPage: {
     title: "Terms of Service",
     entityTitle: "Contracting Entity",
-    entityText: "[Legal Entity Name, Registration Number, Jurisdiction]",
+    entityText: "[שם הישות המשפטית, מספר רישום, סמכות שיפוט]",
     descriptionTitle: "Service Description",
-    descriptionText: "Braxel Markets provides institutional-grade algorithmic trading infrastructure and related services through its platform.",
+    descriptionText: "Braxel Markets מספקת תשתית מסחר אלגוריתמית ברמה מוסדית ושירותים נלווים דרך הפלטפורמה שלה.",
     feesTitle: "Fees and Payments",
-    feesText: "Fees for our services are as outlined on the Pricing page and are subject to change with prior notice. Payment methods include bank transfer, credit card, and cryptocurrency.",
+    feesText: "העמלות עבור השירותים שלנו מפורטות בעמוד התמחור ועשויות להשתנות בהודעה מראש. אמצעי התשלום כוללים העברה בנקאית, כרטיס אשראי ומטבע קריפטוגרפי.",
     eligibilityTitle: "Eligibility",
-    eligibilityText: "Our services are available to individuals and entities that are at least 18 years of age and comply with our Know Your Customer (KYC) and anti-money laundering (AML) requirements.",
+    eligibilityText: "השירותים שלנו זמינים ליחידים ולתאגידים בני 18 ומעלה העומדים בדרישות ה-Know Your Customer (KYC) ומניעת הלבנת הון (AML) שלנו.",
     accountTerminationTitle: "Account Termination",
-    accountTerminationText: "Either party may terminate the account upon [PLACEHOLDER: notice period, e.g., 30 days] written notice. Braxel Markets may terminate immediately for breach of terms, illegal activity, or regulatory requirements.",
+    accountTerminationText: "כל צד רשאי לסגור את החשבון בהודעה מראש בכתב של [PLACEHOLDER: תקופת הודעה, למשל 30 יום]. Braxel Markets רשאית לסגור את החשבון באופן מיידי במקרה של הפרת התנאים, פעילות בלתי חוקית או דרישות רגולטוריות.",
     limitationOfLiabilityTitle: "Limitation of Liability",
-    limitationOfLiabilityText: "To the maximum extent permitted by law, Braxel Markets shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, use, goodwill, or other intangible losses, resulting from your access to or use of our services.",
+    limitationOfLiabilityText: "במידה המרבית המותרת בחוק, Braxel Markets לא תישא באחריות לכל נזק עקיף, מקרי, מיוחד, תוצאתי או עונשי, או לכל אובדן של נתונים, שימוש, מוניטין או הפסדים בלתי מוחשיים אחרים, הנובעים מגישתך לשירותים שלנו או משימושך בהם.",
     disputeResolutionTitle: "Dispute Resolution and Governing Law",
-    disputeResolutionText: "These Terms shall be governed by and construed in accordance with the laws of [PLACEHOLDER: jurisdiction]. Any dispute arising out of or in connection with these Terms shall be submitted to the exclusive jurisdiction of the courts of [PLACEHOLDER: jurisdiction].",
+    disputeResolutionText: "תנאים אלה ייקבעו ויפורשו בהתאם לחוקי [PLACEHOLDER: סמכות שיפוט]. כל מחלוקת הנובעת מתנאים אלה או הקשורה להם תוגש לסמכות השיפוט הבלעדית של בתי המשפט של [PLACEHOLDER: סמכות שיפוט].",
     changesToTermsTitle: "Changes to These Terms",
-    changesToTermsText: "We reserve the right to modify or replace these Terms at any time. If a revision is material we will provide at least [PLACEHOLDER: notice period, e.g., 30 days] notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.",
+    changesToTermsText: "אנו שומרים לעצמנו את הזכות לשנות או להחליף תנאים אלה בכל עת. אם השינוי מהותי, נודיע לפחות [PLACEHOLDER: תקופת הודעה, למשל 30 יום] לפני כניסת התנאים החדשים לתוקף. מה נחשב שינוי מהותי ייקבע לפי שיקול דעתנו הבלעדי.",
     effectiveDateTitle: "Effective Date",
-    effectiveDateText: "Effective Date: [PLACEHOLDER: date]",
+    effectiveDateText: "תאריך תחילה: [PLACEHOLDER: תאריך]",
     contactTitle: "Contact",
-    contactText: "For questions about these Terms, please contact us at [PLACEHOLDER: contact email or address]."
+    contactText: "לשאלות בנוגע לתנאים אלה, אנא צור קשר בכתובת [PLACEHOLDER: אימייל או כתובת ליצירת קשר]."
   },
   legalDraftBanner: "This page is a draft under legal review and is not yet final.",
   notFound: {
@@ -8990,6 +9252,19 @@ const heTranslation = {
       rejected: "נדחה",
       manual_review: "בדיקה ידנית"
     }
+  },
+  profitCalculator: {
+    badge: "תחזית",
+    titleA: "מחשבון",
+    titleB: "רווח",
+    initialAllocation: "הקצאה ראשונית",
+    monthlyProfit: "רווח חודשי משוער",
+    annualProfit: "רווח שנתי משוער",
+    riskTitle: "ניהול סיכונים",
+    riskDesc: "תחזיות המבוססות על ביצועים אלגוריתמיים היסטוריים עם מגבלות ירידה מחמירות.",
+    instantTitle: "פריסה מיידית",
+    instantDesc: "ההון שלך מתחיל לפעול תוך דקות משילוב התשתית.",
+    disclaimer: "* כתב ויתור: ביצועי עבר אינם מבטיחים תוצאות עתידיות. התחזיות להמחשה בלבד."
   }
 };
 
@@ -9012,10 +9287,19 @@ i18n
   .init({
     resources,
     fallbackLng: 'en',
+    // Collapse regional variants (e.g. navigator "en-US", "pt-BR") to the base
+    // code so <html lang> is correct and the language-switcher active state
+    // matches the codes in supportedLanguages.
+    supportedLngs: supportedLanguages.map((l) => l.code),
+    nonExplicitSupportedLngs: true,
+    load: 'languageOnly',
     debug: false,
     detection: {
       order: ['localStorage', 'navigator', 'cookie', 'sessionStorage'],
-      caches: ['localStorage']
+      caches: ['localStorage'],
+      // The detector returns regional variants ("en-US", "pt-BR"); collapse
+      // them to the base code so i18n.language matches supportedLanguages.
+      convertDetectedLanguage: (lng) => lng.split('-')[0]
     },
     interpolation: {
       escapeValue: false

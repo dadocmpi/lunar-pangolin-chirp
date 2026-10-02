@@ -389,7 +389,7 @@ const Checkout = () => {
         {testMode && (
           <div className="mb-8 p-4 border-2 border-yellow-500/60 bg-yellow-500/10 text-yellow-300 text-[10px] font-bold uppercase tracking-widest flex items-center gap-3">
             <ShieldAlert size={18} />
-            TEST MODE — No real money. No real bank. No real wallet. No real activation.
+            {t('checkout.testModeBanner')}
           </div>
         )}
 

@@ -11,11 +11,10 @@ const About = () => {
 
   const teamMembers = [
     {
-      name: 'Bernardo Campi',
-      role: 'Founder & CEO',
-      bio: 'Software engineer and professional trader with a background in institutional-style capital allocation.',
-      // TODO: swap in Bernardo's photo
-      photo: '/team-bernardo-campi.jpg',
+      name: t('about.team[0].name'),
+      role: t('about.team[0].role'),
+      bio: t('about.team[0].bio'),
+      photo: t('about.team[0].photo'),
     },
   ];
 

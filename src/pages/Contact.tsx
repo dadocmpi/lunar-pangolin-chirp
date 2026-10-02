@@ -190,10 +190,11 @@ const Contact = () => {
               </div>
 
               <div className="text-[9px] text-slate-500 italic">
-                By submitting this form, you agree to our{' '}
+                {t('contact.consentPre')}{' '}
                 <Link to="/privacy" className="underline hover:text-[#D4AF37]">
                   {t('footer.privacy')}
-                </Link>{' '}. We use your data only to respond to your inquiry.
+                </Link>
+                {'. '}{t('contact.consentPost')}
               </div>
 
               <Button 
