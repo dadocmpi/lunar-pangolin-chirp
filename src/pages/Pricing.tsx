@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import { useCurrency } from '@/hooks/useCurrency';
 
 const PRICES_USD = {
@@ -20,6 +21,7 @@ const PRICES_USD = {
 
 const Pricing = () => {
   const { t } = useTranslation();
+  useDocumentMeta('pricing');
   const navigate = useNavigate();
   const { convertPrice, currency, isLoading, formatManagedCapital } = useCurrency();
 

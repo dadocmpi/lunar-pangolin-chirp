@@ -4,9 +4,11 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 
 const Privacy = () => {
   const { t } = useTranslation();
+  useDocumentMeta('privacy');
 
   const sections: Array<{ title: string; body: string }> = [
     { title: t('privacyPage.dataCollectionTitle'), body: t('privacyPage.dataCollectionText') },

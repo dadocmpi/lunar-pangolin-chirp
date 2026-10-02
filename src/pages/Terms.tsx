@@ -4,9 +4,11 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 
 const Terms = () => {
   const { t } = useTranslation();
+  useDocumentMeta('terms');
 
   const sections: Array<{ title: string; body: string }> = [
     { title: t('termsPage.entityTitle'), body: t('termsPage.entityText') },

@@ -5,12 +5,14 @@ import { UserPlus, CreditCard, Key, ArrowDownCircle, Mail, Layout, CheckCircle2,
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
 
 const HowItWorks = () => {
   const { t } = useTranslation();
+  useDocumentMeta('howItWorks');
   const icons = [<UserPlus size={32} />, <Layout size={32} />, <CreditCard size={32} />, <Key size={32} />, <ArrowDownCircle size={32} />, <Mail size={32} />];
 
   interface HowItWorksStep {

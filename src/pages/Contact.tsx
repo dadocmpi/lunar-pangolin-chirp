@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
@@ -16,6 +17,7 @@ import { Link } from 'react-router-dom';
 
 const Contact = () => {
   const { t } = useTranslation();
+  useDocumentMeta('contact');
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(false);
   const [captcha, setCaptcha] = useState({ q: '', a: 0 });

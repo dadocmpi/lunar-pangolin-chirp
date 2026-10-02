@@ -855,6 +855,40 @@ const enTranslation = {
     instantTitle: "Instant Deployment",
     instantDesc: "Your capital starts working within minutes of infrastructure integration.",
     disclaimer: "* Disclaimer: Past performance does not guarantee future results. Projections are for illustrative purposes only."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | Institutional Algorithmic Capital Management",
+      description: "Institutional-grade algorithmic trading infrastructure, prop firm capital access, CopyTrade authorization and full MetaTrader automation for XAU/USD and US500."
+    },
+    pricing: {
+      title: "Plans & Managed Capital | Braxel Markets",
+      description: "Compare algorithmic trading plans and Capital Gerenciado (Managed Capital) allocations. Managed capital is always quoted in USD."
+    },
+    about: {
+      title: "About Braxel Markets | Algorithmic Trading",
+      description: "Braxel Markets builds institutional-grade algorithmic trading infrastructure and manages capital with strict risk controls."
+    },
+    howItWorks: {
+      title: "How It Works | Braxel Markets",
+      description: "See how Braxel Markets connects your capital to fully automated MetaTrader strategies for XAU/USD and US500."
+    },
+    contact: {
+      title: "Contact | Braxel Markets",
+      description: "Contact the Braxel Markets team about algorithmic trading infrastructure and managed capital."
+    },
+    terms: {
+      title: "Terms of Service | Braxel Markets",
+      description: "Read the Terms of Service for using Braxel Markets."
+    },
+    privacy: {
+      title: "Privacy Policy | Braxel Markets",
+      description: "Learn how Braxel Markets collects, uses and protects your personal data."
+    },
+    disclaimer: {
+      title: "Risk Disclosure | Braxel Markets",
+      description: "Important risk disclosure for algorithmic trading and managed capital with Braxel Markets."
+    }
   }
 };
 
@@ -1696,6 +1730,40 @@ const ptTranslation = {
     instantTitle: "Implantação Instantânea",
     instantDesc: "Seu capital começa a trabalhar minutos após a integração da infraestrutura.",
     disclaimer: "* Aviso: O desempenho passado não garante resultados futuros. As projeções são apenas ilustrativas."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | Gestão de Capital Algorítmica Institucional",
+      description: "Infraestrutura de negociação algorítmica de nível institucional, acesso a capital de prop firm, autorização de CopyTrade e automação completa do MetaTrader para XAU/USD e US500."
+    },
+    pricing: {
+      title: "Planos e Capital Gerenciado | Braxel Markets",
+      description: "Compare planos de negociação algorítmica e alocações de Capital Gerenciado. O Capital Gerenciado é sempre cotado em USD."
+    },
+    about: {
+      title: "Sobre a Braxel Markets | Negociação Algorítmica",
+      description: "A Braxel Markets desenvolve infraestrutura de negociação algorítmica de nível institucional e gerencia capital com controles de risco rigorosos."
+    },
+    howItWorks: {
+      title: "Como Funciona | Braxel Markets",
+      description: "Veja como a Braxel Markets conecta seu capital a estratégias totalmente automatizadas de MetaTrader para XAU/USD e US500."
+    },
+    contact: {
+      title: "Contato | Braxel Markets",
+      description: "Entre em contato com a equipe da Braxel Markets sobre infraestrutura de negociação algorítmica e capital gerenciado."
+    },
+    terms: {
+      title: "Termos de Serviço | Braxel Markets",
+      description: "Leia os Termos de Serviço para usar a Braxel Markets."
+    },
+    privacy: {
+      title: "Política de Privacidade | Braxel Markets",
+      description: "Saiba como a Braxel Markets coleta, usa e protege seus dados pessoais."
+    },
+    disclaimer: {
+      title: "Aviso de Risco | Braxel Markets",
+      description: "Aviso importante de risco para negociação algorítmica e capital gerenciado com a Braxel Markets."
+    }
   }
 };
 
@@ -2537,6 +2605,40 @@ const itTranslation = {
     instantTitle: "Implementazione immediata",
     instantDesc: "Il tuo capitale inizia a lavorare pochi minuti dopo l’integrazione dell’infrastruttura.",
     disclaimer: "* Avvertenza: I risultati passati non garantiscono quelli futuri. Le proiezioni sono solo a scopo illustrativo."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | Gestione algoritmica del capitale istituzionale",
+      description: "Infrastruttura di trading algoritmico di livello istituzionale, accesso al capitale di prop firm, autorizzazione CopyTrade e automazione completa di MetaTrader per XAU/USD e US500."
+    },
+    pricing: {
+      title: "Piani e capitale gestito | Braxel Markets",
+      description: "Confronta i piani di trading algoritmico e le allocazioni di capitale gestito. Il capitale gestito è sempre quotato in USD."
+    },
+    about: {
+      title: "Chi è Braxel Markets | Trading algoritmico",
+      description: "Braxel Markets sviluppa infrastruttura di trading algoritmico di livello istituzionale e gestisce capitale con rigorosi controlli del rischio."
+    },
+    howItWorks: {
+      title: "Come funziona | Braxel Markets",
+      description: "Scopri come Braxel Markets collega il tuo capitale a strategie MetaTrader completamente automatizzate per XAU/USD e US500."
+    },
+    contact: {
+      title: "Contatti | Braxel Markets",
+      description: "Contatta il team di Braxel Markets per infrastruttura di trading algoritmico e capitale gestito."
+    },
+    terms: {
+      title: "Termini di servizio | Braxel Markets",
+      description: "Leggi i Termini di servizio per utilizzare Braxel Markets."
+    },
+    privacy: {
+      title: "Informativa sulla privacy | Braxel Markets",
+      description: "Scopri come Braxel Markets raccoglie, utilizza e protegge i tuoi dati personali."
+    },
+    disclaimer: {
+      title: "Informativa sui rischi | Braxel Markets",
+      description: "Importante informativa sui rischi per il trading algoritmico e il capitale gestito con Braxel Markets."
+    }
   }
 };
 
@@ -3378,6 +3480,40 @@ const esTranslation = {
     instantTitle: "Implementación instantánea",
     instantDesc: "Tu capital empieza a trabajar minutos después de la integración de la infraestructura.",
     disclaimer: "* Aviso: El rendimiento pasado no garantiza resultados futuros. Las proyecciones son solo ilustrativas."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | Gestión algorítmica institucional de capital",
+      description: "Infraestructura de negociación algorítmica de nivel institucional, acceso a capital de prop firm, autorización de CopyTrade y automatización completa de MetaTrader para XAU/USD y US500."
+    },
+    pricing: {
+      title: "Planes y capital gestionado | Braxel Markets",
+      description: "Compara planes de negociación algorítmica y asignaciones de capital gestionado. El capital gestionado siempre se cotiza en USD."
+    },
+    about: {
+      title: "Sobre Braxel Markets | Negociación algorítmica",
+      description: "Braxel Markets desarrolla infraestructura de negociación algorítmica de nivel institucional y gestiona capital con estrictos controles de riesgo."
+    },
+    howItWorks: {
+      title: "Cómo funciona | Braxel Markets",
+      description: "Descubre cómo Braxel Markets conecta tu capital a estrategias de MetaTrader totalmente automatizadas para XAU/USD y US500."
+    },
+    contact: {
+      title: "Contacto | Braxel Markets",
+      description: "Contacta con el equipo de Braxel Markets sobre infraestructura de negociación algorítmica y capital gestionado."
+    },
+    terms: {
+      title: "Términos de servicio | Braxel Markets",
+      description: "Lee los Términos de servicio para usar Braxel Markets."
+    },
+    privacy: {
+      title: "Política de privacidad | Braxel Markets",
+      description: "Descubre cómo Braxel Markets recopila, usa y protege tus datos personales."
+    },
+    disclaimer: {
+      title: "Divulgación de riesgos | Braxel Markets",
+      description: "Divulgación importante de riesgos para la negociación algorítmica y el capital gestionado con Braxel Markets."
+    }
   }
 };
 
@@ -4219,6 +4355,40 @@ const frTranslation = {
     instantTitle: "Déploiement instantané",
     instantDesc: "Votre capital commence à travailler quelques minutes après l’intégration de l’infrastructure.",
     disclaimer: "* Avertissement : Les performances passées ne garantissent pas les résultats futurs. Les projections sont fournies à titre indicatif uniquement."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | Gestion algorithmique institutionnelle du capital",
+      description: "Infrastructure de trading algorithmique de niveau institutionnel, accès au capital de prop firm, autorisation CopyTrade et automatisation complète de MetaTrader pour XAU/USD et US500."
+    },
+    pricing: {
+      title: "Forfaits et capital géré | Braxel Markets",
+      description: "Comparez les forfaits de trading algorithmique et les allocations de capital géré. Le capital géré est toujours libellé en USD."
+    },
+    about: {
+      title: "À propos de Braxel Markets | Trading algorithmique",
+      description: "Braxel Markets conçoit une infrastructure de trading algorithmique de niveau institutionnel et gère le capital avec des contrôles de risque stricts."
+    },
+    howItWorks: {
+      title: "Comment ça marche | Braxel Markets",
+      description: "Découvrez comment Braxel Markets connecte votre capital à des stratégies MetaTrader entièrement automatisées pour XAU/USD et US500."
+    },
+    contact: {
+      title: "Contact | Braxel Markets",
+      description: "Contactez l’équipe Braxel Markets au sujet de l’infrastructure de trading algorithmique et du capital géré."
+    },
+    terms: {
+      title: "Conditions d’utilisation | Braxel Markets",
+      description: "Consultez les Conditions d’utilisation de Braxel Markets."
+    },
+    privacy: {
+      title: "Politique de confidentialité | Braxel Markets",
+      description: "Découvrez comment Braxel Markets collecte, utilise et protège vos données personnelles."
+    },
+    disclaimer: {
+      title: "Avertissement sur les risques | Braxel Markets",
+      description: "Avertissement important sur les risques liés au trading algorithmique et au capital géré avec Braxel Markets."
+    }
   }
 };
 
@@ -5060,6 +5230,40 @@ const deTranslation = {
     instantTitle: "Sofortige Bereitstellung",
     instantDesc: "Ihr Kapital beginnt wenige Minuten nach der Infrastrukturintegration zu arbeiten.",
     disclaimer: "* Hinweis: Frühere Ergebnisse sind kein Garant für zukünftige Resultate. Projektionen dienen nur zur Veranschaulichung."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | Institutionelle algorithmische Kapitalverwaltung",
+      description: "Algorithmische Handelsinfrastruktur auf institutionellem Niveau, Zugang zu Prop-Firm-Kapital, CopyTrade-Autorisierung und vollständige MetaTrader-Automatisierung für XAU/USD und US500."
+    },
+    pricing: {
+      title: "Tarife und verwaltetes Kapital | Braxel Markets",
+      description: "Vergleichen Sie algorithmische Handelspläne und Zuweisungen für verwaltetes Kapital. Verwaltetes Kapital wird stets in USD angegeben."
+    },
+    about: {
+      title: "Über Braxel Markets | Algorithmischer Handel",
+      description: "Braxel Markets entwickelt algorithmische Handelsinfrastruktur auf institutionellem Niveau und verwaltet Kapital mit strengen Risikokontrollen."
+    },
+    howItWorks: {
+      title: "So funktioniert es | Braxel Markets",
+      description: "Erfahren Sie, wie Braxel Markets Ihr Kapital mit vollständig automatisierten MetaTrader-Strategien für XAU/USD und US500 verbindet."
+    },
+    contact: {
+      title: "Kontakt | Braxel Markets",
+      description: "Kontaktieren Sie das Team von Braxel Markets zu algorithmischer Handelsinfrastruktur und verwaltetem Kapital."
+    },
+    terms: {
+      title: "Nutzungsbedingungen | Braxel Markets",
+      description: "Lesen Sie die Nutzungsbedingungen für Braxel Markets."
+    },
+    privacy: {
+      title: "Datenschutzrichtlinie | Braxel Markets",
+      description: "Erfahren Sie, wie Braxel Markets Ihre personenbezogenen Daten erhebt, verwendet und schützt."
+    },
+    disclaimer: {
+      title: "Risikohinweis | Braxel Markets",
+      description: "Wichtiger Risikohinweis für algorithmischen Handel und verwaltetes Kapital mit Braxel Markets."
+    }
   }
 };
 
@@ -5901,6 +6105,40 @@ const ruTranslation = {
     instantTitle: "Мгновенное развёртывание",
     instantDesc: "Ваш капитал начинает работать через несколько минут после интеграции инфраструктуры.",
     disclaimer: "* Отказ от ответственности: прошлые результаты не гарантируют будущих. Прогнозы приведены исключительно в иллюстративных целях."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | Институциональное алгоритмическое управление капиталом",
+      description: "Инфраструктура алгоритмической торговли институционального уровня, доступ к капиталу проп-фирм, авторизация CopyTrade и полная автоматизация MetaTrader для XAU/USD и US500."
+    },
+    pricing: {
+      title: "Тарифы и управляемый капитал | Braxel Markets",
+      description: "Сравните тарифы алгоритмической торговли и распределение управляемого капитала. Управляемый капитал всегда указывается в USD."
+    },
+    about: {
+      title: "О Braxel Markets | Алгоритмическая торговля",
+      description: "Braxel Markets создаёт инфраструктуру алгоритмической торговли институционального уровня и управляет капиталом со строгим контролем рисков."
+    },
+    howItWorks: {
+      title: "Как это работает | Braxel Markets",
+      description: "Узнайте, как Braxel Markets подключает ваш капитал к полностью автоматизированным стратегиям MetaTrader для XAU/USD и US500."
+    },
+    contact: {
+      title: "Контакты | Braxel Markets",
+      description: "Свяжитесь с командой Braxel Markets по вопросам инфраструктуры алгоритмической торговли и управляемого капитала."
+    },
+    terms: {
+      title: "Условия использования | Braxel Markets",
+      description: "Ознакомьтесь с Условиями использования Braxel Markets."
+    },
+    privacy: {
+      title: "Политика конфиденциальности | Braxel Markets",
+      description: "Узнайте, как Braxel Markets собирает, использует и защищает ваши персональные данные."
+    },
+    disclaimer: {
+      title: "Раскрытие рисков | Braxel Markets",
+      description: "Важное раскрытие рисков для алгоритмической торговли и управляемого капитала в Braxel Markets."
+    }
   }
 };
 
@@ -6742,6 +6980,40 @@ const zhTranslation = {
     instantTitle: "即时部署",
     instantDesc: "基础设施集成后几分钟内，您的资金即可开始运作。",
     disclaimer: "* 免责声明：过往表现并不保证未来结果。预测仅供参考。"
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | 机构级算法资本管理",
+      description: "机构级算法交易基础设施、自营交易公司资金接入、CopyTrade 授权，以及针对 XAU/USD 和 US500 的完整 MetaTrader 自动化。"
+    },
+    pricing: {
+      title: "方案与托管资金 | Braxel Markets",
+      description: "比较算法交易方案与托管资金配资。托管资金始终以美元计价。"
+    },
+    about: {
+      title: "关于 Braxel Markets | 算法交易",
+      description: "Braxel Markets 构建机构级算法交易基础设施，并以严格的风险控制管理资金。"
+    },
+    howItWorks: {
+      title: "运作方式 | Braxel Markets",
+      description: "了解 Braxel Markets 如何将您的资金接入针对 XAU/USD 和 US500 的全自动 MetaTrader 策略。"
+    },
+    contact: {
+      title: "联系我们 | Braxel Markets",
+      description: "就算法交易基础设施和托管资金事宜联系 Braxel Markets 团队。"
+    },
+    terms: {
+      title: "服务条款 | Braxel Markets",
+      description: "阅读使用 Braxel Markets 的服务条款。"
+    },
+    privacy: {
+      title: "隐私政策 | Braxel Markets",
+      description: "了解 Braxel Markets 如何收集、使用和保护您的个人数据。"
+    },
+    disclaimer: {
+      title: "风险披露 | Braxel Markets",
+      description: "关于在 Braxel Markets 进行算法交易和托管资金的重要风险披露。"
+    }
   }
 };
 
@@ -7583,6 +7855,40 @@ const jaTranslation = {
     instantTitle: "即時展開",
     instantDesc: "インフラ統合後、数分以内に資金が運用を開始します。",
     disclaimer: "* 免責事項：過去の実績は将来の結果を保証するものではありません。予測はあくまで例示目的です。"
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | 機関投資家向けアルゴリズム資本運用",
+      description: "機関投資家水準のアルゴリズム取引インフラ、プロップファーム資金へのアクセス、CopyTrade 認証、XAU/USD と US500 の完全な MetaTrader 自動化。"
+    },
+    pricing: {
+      title: "プランと運用資金 | Braxel Markets",
+      description: "アルゴリズム取引プランと運用資金の配分を比較。運用資金は常に米ドルで表示されます。"
+    },
+    about: {
+      title: "Braxel Markets について | アルゴリズム取引",
+      description: "Braxel Markets は機関投資家水準のアルゴリズム取引インフラを構築し、厳格なリスク管理のもとで資金を運用します。"
+    },
+    howItWorks: {
+      title: "仕組み | Braxel Markets",
+      description: "Braxel Markets がお客様の資金を XAU/USD と US500 の完全自動 MetaTrader 戦略に接続する仕組みをご覧ください。"
+    },
+    contact: {
+      title: "お問い合わせ | Braxel Markets",
+      description: "アルゴリズム取引インフラと運用資金について、Braxel Markets チームにお問い合わせください。"
+    },
+    terms: {
+      title: "利用規約 | Braxel Markets",
+      description: "Braxel Markets の利用規約をご覧ください。"
+    },
+    privacy: {
+      title: "プライバシーポリシー | Braxel Markets",
+      description: "Braxel Markets がお客様の個人データをどのように収集・利用・保護するかをご覧ください。"
+    },
+    disclaimer: {
+      title: "リスク開示 | Braxel Markets",
+      description: "Braxel Markets でのアルゴリズム取引および運用資金に関する重要なリスク開示。"
+    }
   }
 };
 
@@ -8424,6 +8730,40 @@ const arTranslation = {
     instantTitle: "نشر فوري",
     instantDesc: "يبدأ رأس مالك بالعمل خلال دقائق من دمج البنية التحتية.",
     disclaimer: "* إخلاء المسؤولية: الأداء السابق لا يضمن النتائج المستقبلية. التوقعات لأغراض توضيحية فقط."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | إدارة رأس المال الخوارزمية للمؤسسات",
+      description: "بنية تحتية للتداول الخوارزمي بمستوى المؤسسات، والوصول إلى رأس مال شركات التداول، وتفويض CopyTrade، وأتمتة كاملة لـ MetaTrader على XAU/USD وUS500."
+    },
+    pricing: {
+      title: "الخطط ورأس المال المُدار | Braxel Markets",
+      description: "قارن بين خطط التداول الخوارزمي وتخصيصات رأس المال المُدار. يُسعَّر رأس المال المُدار دائمًا بالدولار الأمريكي."
+    },
+    about: {
+      title: "عن Braxel Markets | التداول الخوارزمي",
+      description: "تبني Braxel Markets بنية تحتية للتداول الخوارزمي بمستوى المؤسسات وتدير رأس المال بضوابط صارمة للمخاطر."
+    },
+    howItWorks: {
+      title: "كيف تعمل | Braxel Markets",
+      description: "تعرّف على كيفية ربط Braxel Markets رأس مالك باستراتيجيات MetaTrader المؤتمتة بالكامل على XAU/USD وUS500."
+    },
+    contact: {
+      title: "اتصل بنا | Braxel Markets",
+      description: "تواصل مع فريق Braxel Markets بخصوص البنية التحتية للتداول الخوارزمي ورأس المال المُدار."
+    },
+    terms: {
+      title: "شروط الخدمة | Braxel Markets",
+      description: "اقرأ شروط الخدمة لاستخدام Braxel Markets."
+    },
+    privacy: {
+      title: "سياسة الخصوصية | Braxel Markets",
+      description: "تعرّف على كيفية جمع Braxel Markets لبياناتك الشخصية واستخدامها وحمايتها."
+    },
+    disclaimer: {
+      title: "الإفصاح عن المخاطر | Braxel Markets",
+      description: "إفصاح مهم عن المخاطر المتعلقة بالتداول الخوارزمي ورأس المال المُدار مع Braxel Markets."
+    }
   }
 };
 
@@ -9265,6 +9605,40 @@ const heTranslation = {
     instantTitle: "פריסה מיידית",
     instantDesc: "ההון שלך מתחיל לפעול תוך דקות משילוב התשתית.",
     disclaimer: "* כתב ויתור: ביצועי עבר אינם מבטיחים תוצאות עתידיות. התחזיות להמחשה בלבד."
+  },
+  meta: {
+    home: {
+      title: "Braxel Markets | ניהול הון אלגוריתמי ברמה מוסדית",
+      description: "תשתית מסחר אלגוריתמית ברמה מוסדית, גישה להון של חברות פרופ, הרשאת CopyTrade ואוטומציה מלאה של MetaTrader עבור XAU/USD ו-US500."
+    },
+    pricing: {
+      title: "מסלולים והון מנוהל | Braxel Markets",
+      description: "השווה בין מסלולי מסחר אלגוריתמיים והקצאות הון מנוהל. הון מנוהל נקוב תמיד בדולר ארה\"ב."
+    },
+    about: {
+      title: "אודות Braxel Markets | מסחר אלגוריתמי",
+      description: "Braxel Markets בונה תשתית מסחר אלגוריתמית ברמה מוסדית ומנהלת הון עם בקרות סיכון מחמירות."
+    },
+    howItWorks: {
+      title: "איך זה עובד | Braxel Markets",
+      description: "גלה כיצד Braxel Markets מחברת את ההון שלך לאסטרטגיות MetaTrader אוטומטיות לחלוטין עבור XAU/USD ו-US500."
+    },
+    contact: {
+      title: "צור קשר | Braxel Markets",
+      description: "צור קשר עם צוות Braxel Markets בנושא תשתית מסחר אלגוריתמית והון מנוהל."
+    },
+    terms: {
+      title: "תנאי שירות | Braxel Markets",
+      description: "קרא את תנאי השירות לשימוש ב-Braxel Markets."
+    },
+    privacy: {
+      title: "מדיניות פרטיות | Braxel Markets",
+      description: "למד כיצד Braxel Markets אוספת, משתמשת ומגנה על הנתונים האישיים שלך."
+    },
+    disclaimer: {
+      title: "גילוי סיכונים | Braxel Markets",
+      description: "גילוי סיכונים חשוב עבור מסחר אלגוריתמי והון מנוהל עם Braxel Markets."
+    }
   }
 };
 
@@ -9295,7 +9669,10 @@ i18n
     load: 'languageOnly',
     debug: false,
     detection: {
-      order: ['localStorage', 'navigator', 'cookie', 'sessionStorage'],
+      // querystring first so `?lng=<code>` links (used by hreflang alternates)
+      // take precedence over a previously stored preference.
+      order: ['querystring', 'localStorage', 'navigator', 'cookie', 'sessionStorage'],
+      lookupQuerystring: 'lng',
       caches: ['localStorage'],
       // The detector returns regional variants ("en-US", "pt-BR"); collapse
       // them to the base code so i18n.language matches supportedLanguages.

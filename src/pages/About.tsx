@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, Target, Eye, Users, Award, Globe, Landmark, Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
@@ -8,6 +9,7 @@ import TeamCard from '@/components/TeamCard';
 
 const About = () => {
   const { t } = useTranslation();
+  useDocumentMeta('about');
 
   const teamMembers = [
     {

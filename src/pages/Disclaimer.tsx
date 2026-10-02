@@ -4,9 +4,11 @@ import React from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 
 const Disclaimer = () => {
   const { t } = useTranslation();
+  useDocumentMeta('disclaimer');
 
   const sections: Array<{ title: string; body: string }> = [
     { title: t('disclaimerPage.importantRiskTitle'), body: t('disclaimerPage.importantRiskText') },
