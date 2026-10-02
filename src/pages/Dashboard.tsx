@@ -1002,7 +1002,7 @@ const Dashboard = () => {
                                 className="w-full flex items-center justify-between p-4 bg-white/5 border border-white/10 hover:border-[#D4AF37]/30 transition-colors"
                               >
                                 <span className="text-[12px] font-medium">
-                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${getCountryByCode(selectedCountry)?.name}` : t('dashboard.kyc.selectCountryPlaceholder')}
+                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${t('kyc.country.' + selectedCountry, { defaultValue: getCountryByCode(selectedCountry)?.name })}` : t('dashboard.kyc.selectCountryPlaceholder')}
                                 </span>
                                 <ChevronDown size={16} className={cn("text-slate-400 transition-transform", countryDropdownOpen && "rotate-180")} />
                               </button>
@@ -1020,7 +1020,7 @@ const Dashboard = () => {
                                       className="w-full flex items-center gap-3 p-3 hover:bg-white/5 text-left transition-colors"
                                     >
                                       <span className="text-lg">{country.flag}</span>
-                                      <span className="text-[11px] font-medium text-white">{country.name}</span>
+                                      <span className="text-[11px] font-medium text-white">{t('kyc.country.' + country.code, { defaultValue: country.name })}</span>
                                     </button>
                                   ))}
                                 </div>
@@ -1064,7 +1064,7 @@ const Dashboard = () => {
                                       : "border-white/10 hover:border-white/20 bg-white/[0.02]"
                                   )}
                                 >
-                                  <span className="text-[12px] font-bold uppercase tracking-widest">{method.name}</span>
+                                  <span className="text-[12px] font-bold uppercase tracking-widest">{t('kyc.method.' + selectedCountry + '.' + method.id, { defaultValue: t('kyc.methodName.' + method.id, { defaultValue: method.name }) })}</span>
                                 </button>
                               ))}
                             </div>
@@ -1097,8 +1097,8 @@ const Dashboard = () => {
                                       : "border-white/10 hover:border-white/20 bg-white/[0.02]"
                                   )}
                                 >
-                                  <span className="text-[12px] font-bold uppercase tracking-widest block">{doc.name}</span>
-                                  <span className="text-[10px] text-slate-500 mt-1 block">{doc.description}</span>
+                                  <span className="text-[12px] font-bold uppercase tracking-widest block">{t('kyc.doc.' + doc.id + '.name', { defaultValue: doc.name })}</span>
+                                  <span className="text-[10px] text-slate-500 mt-1 block">{t('kyc.doc.' + doc.id + '.desc', { defaultValue: doc.description })}</span>
                                 </button>
                               ))}
                             </div>

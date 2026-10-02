@@ -40,7 +40,7 @@ const Footer = () => {
             <div className="flex items-center gap-4">
               <a 
                 href="mailto:marketsbraxel@ouvidor.net" 
-                aria-label="Email"
+                aria-label={t("footer.emailAria")}
                 className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all"
               >
                 <Mail size={16} />
@@ -49,7 +49,7 @@ const Footer = () => {
                 href="https://x.com" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                aria-label="X (Twitter)"
+                aria-label={t("footer.xAria")}
                 className="w-10 h-10 border border-white/10 flex items-center justify-center hover:border-[#D4AF37] hover:text-[#D4AF37] transition-all"
               >
                 <XIcon className="w-3.5 h-3.5" />

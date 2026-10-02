@@ -62,6 +62,13 @@ for (const loc of LOCALES) flat[loc] = flatten(extractLocale(loc));
 const enKeys = new Set(Object.keys(flat.en));
 let failed = false;
 
+// Keys that legitimately stay identical to English in every locale: brand /
+// proper nouns, ISO codes and crypto tickers.
+const INVARIANT = /^(about\.team\.\d+\.(name|photo)|dashboard\.assetsList|checkout\.cryptoLabel|contactEmail\.(newSubmission|name|email|subject|message|sentFrom))$/;
+
+const interp = /\{\{\s*([^}\s]+)\s*\}\}/g;
+const placeholdersOf = (s) => new Set([...s.matchAll(interp)].map((m) => m[1]));
+
 for (const loc of LOCALES) {
   const keys = new Set(Object.keys(flat[loc]));
   const missing = [...enKeys].filter((k) => !keys.has(k));
@@ -70,13 +77,41 @@ for (const loc of LOCALES) {
     .filter(([, v]) => typeof v === 'string' && v.trim() === '')
     .map(([k]) => k);
 
-  if (missing.length || extra.length || empty.length) failed = true;
+  // A translated string must keep exactly the placeholders of the source
+  // string, otherwise interpolation silently breaks at runtime.
+  const interpIssues = [];
+  for (const [k, en] of Object.entries(flat.en)) {
+    const value = flat[loc][k];
+    if (typeof en !== 'string' || typeof value !== 'string') continue;
+    const a = placeholdersOf(en);
+    const b = placeholdersOf(value);
+    if (a.size !== b.size || [...a].some((x) => !b.has(x))) {
+      interpIssues.push(`${k} (en:${[...a].join(',') || '-'} ${loc}:${[...b].join(',') || '-'})`);
+    }
+  }
+
+  if (missing.length || extra.length || empty.length || interpIssues.length) failed = true;
   console.log(
-    `${loc}: keys=${keys.size} missing=${missing.length} extra=${extra.length} empty=${empty.length}`,
+    `${loc}: keys=${keys.size} missing=${missing.length} extra=${extra.length} empty=${empty.length} interp=${interpIssues.length}`,
   );
   if (missing.length) console.log(`   MISSING: ${missing.slice(0, 20).join(', ')}`);
   if (extra.length) console.log(`   EXTRA:   ${extra.slice(0, 20).join(', ')}`);
   if (empty.length) console.log(`   EMPTY:   ${empty.slice(0, 20).join(', ')}`);
+  if (interpIssues.length) console.log(`   INTERP:  ${interpIssues.slice(0, 20).join(', ')}`);
+}
+
+// Informational: values still byte-identical to English (may be intentional for
+// proper nouns / codes).
+const untranslated = {};
+for (const loc of LOCALES.filter((l) => l !== 'en')) {
+  untranslated[loc] = Object.entries(flat.en)
+    .filter(([k, v]) => typeof v === 'string' && v.trim().length > 3 && flat[loc][k] === v && !INVARIANT.test(k))
+    .map(([k]) => k);
+}
+const totalUntranslated = Object.values(untranslated).reduce((n, l) => n + l.length, 0);
+console.log(`\nidentical-to-EN values (informational): ${totalUntranslated}`);
+for (const [loc, keys] of Object.entries(untranslated)) {
+  if (keys.length) console.log(`   ${loc}: ${keys.join(', ')}`);
 }
 
 if (failed) {

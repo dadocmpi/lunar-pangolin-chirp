@@ -44,7 +44,9 @@ const enTranslation = {
     address: "Business Address",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain",
     riskTitle: "RISK WARNING",
-    riskText: "Trading in financial markets involves a substantial risk of loss and is not suitable for all investors. Past performance is not indicative of future results. The value of investments may go down as well as up. Do not invest money you cannot afford to lose. Braxel Markets does not guarantee specific returns."
+    riskText: "Trading in financial markets involves a substantial risk of loss and is not suitable for all investors. Past performance is not indicative of future results. The value of investments may go down as well as up. Do not invest money you cannot afford to lose. Braxel Markets does not guarantee specific returns.",
+    emailAria: "Email",
+    xAria: "X (Twitter)"
   },
   chatbot: {
     title: "Braxel Support",
@@ -893,6 +895,167 @@ const enTranslation = {
       title: "Risk Disclosure | Braxel Markets",
       description: "Important risk disclosure for algorithmic trading and managed capital with Braxel Markets."
     }
+  },
+  kyc: {
+    country: {
+      BR: "Brazil",
+      US: "United States",
+      GB: "United Kingdom",
+      DE: "Germany",
+      FR: "France",
+      ES: "Spain",
+      IT: "Italy",
+      PT: "Portugal",
+      RU: "Russia",
+      CN: "China",
+      JP: "Japan",
+      IN: "India",
+      OTHER: "Other Countries"
+    },
+    method: {
+      BR: {
+        id_card: "National ID Card (RG/CPF)",
+        drivers_license: "Driver's License"
+      },
+      US: {
+        id_card: "State ID Card"
+      },
+      GB: {
+        id_card: "National ID / Driver License",
+        biometric: "Biometric Residence Permit"
+      },
+      DE: {
+        drivers: "Driver's License",
+        passport: "Passport / Reisepass"
+      },
+      FR: {
+        residence: "Residence Permit"
+      },
+      RU: {
+        foreign_passport: "Foreign Passport"
+      },
+      OTHER: {
+        passport: "International Passport",
+        national_id: "National ID Card"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "Brazilian national identity document"
+      },
+      cpf: {
+        desc: "Brazilian taxpayer registry card"
+      },
+      passport: {
+        desc: "Valid passport with photo page",
+        name: "Passport"
+      },
+      cnh: {
+        desc: "Brazilian driver's license",
+        name: "CNH (Driver's License)"
+      },
+      state_id: {
+        desc: "Driver's license or state-issued ID",
+        name: "State ID Card"
+      },
+      passport_uk: {
+        desc: "Valid UK passport"
+      },
+      driving_license_uk: {
+        desc: "UK driver's license",
+        name: "Driving License"
+      },
+      brp: {
+        desc: "UK Biometric Residence Permit",
+        name: "Biometric Residence Permit"
+      },
+      personalausweis: {
+        desc: "German identity card"
+      },
+      passport_de: {
+        desc: "Valid German passport"
+      },
+      fuehrerschein: {
+        desc: "German driver's license"
+      },
+      cni: {
+        desc: "French national identity card"
+      },
+      passport_fr: {
+        desc: "Valid French passport"
+      },
+      titre_sejour: {
+        desc: "French residence permit"
+      },
+      dni: {
+        desc: "Spanish national identity document"
+      },
+      nie: {
+        desc: "Foreigner identification number"
+      },
+      passport_es: {
+        desc: "Valid passport"
+      },
+      carta_id: {
+        desc: "Italian identity card"
+      },
+      passport_it: {
+        desc: "Valid Italian passport"
+      },
+      cc: {
+        desc: "Portuguese citizen card"
+      },
+      passport_pt: {
+        desc: "Valid Portuguese passport"
+      },
+      passport_ru: {
+        desc: "Russian internal passport"
+      },
+      foreign_passport_ru: {
+        desc: "Russian foreign passport",
+        name: "Foreign Passport"
+      },
+      id_card_cn: {
+        desc: "Chinese identity card"
+      },
+      passport_cn: {
+        desc: "Valid passport"
+      },
+      passport_jp: {
+        desc: "Valid Japanese passport"
+      },
+      zairyu: {
+        desc: "Residence card"
+      },
+      aadhaar: {
+        desc: "Unique Identification card",
+        name: "Aadhaar Card"
+      },
+      voter_id: {
+        desc: "Electoral photo identity card",
+        name: "Voter ID"
+      },
+      passport_in: {
+        desc: "Valid Indian passport"
+      },
+      passport_intl: {
+        desc: "Valid passport from your country"
+      },
+      national_id_intl: {
+        desc: "Government-issued national ID",
+        name: "National ID Card"
+      }
+    },
+    methodName: {
+      id_card: "National ID Card",
+      passport: "Passport",
+      drivers_license: "Driver's License",
+      drivers: "Driver's License",
+      biometric: "Biometric Residence Permit",
+      residence: "Residence Permit",
+      foreign_passport: "Foreign Passport",
+      national_id: "National ID Card"
+    }
   }
 };
 
@@ -977,7 +1140,9 @@ const ptTranslation = {
     address: "Endereço Comercial",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, España",
     riskTitle: "AVISO DE RISCO",
-    riskText: "A negociação nos mercados financeiros envolve risco substancial de perda e não é adequada para todos os investidores. Desempenhos passados não são indicativos de resultados futuros. O valor dos investimentos pode diminuir ou aumentar. Não invista dinheiro que você não pode se dar ao luxo de perder. Braxel Markets não garante retornos específicos."
+    riskText: "A negociação nos mercados financeiros envolve risco substancial de perda e não é adequada para todos os investidores. Desempenhos passados não são indicativos de resultados futuros. O valor dos investimentos pode diminuir ou aumentar. Não invista dinheiro que você não pode se dar ao luxo de perder. Braxel Markets não garante retornos específicos.",
+    emailAria: "E-mail",
+    xAria: "X (Twitter)"
   },
   chatbot: {
     title: "Suporte Braxel",
@@ -1772,6 +1937,167 @@ const ptTranslation = {
       title: "Aviso de Risco | Braxel Markets",
       description: "Aviso importante de risco para negociação algorítmica e capital gerenciado com a Braxel Markets."
     }
+  },
+  kyc: {
+    country: {
+      BR: "Brasil",
+      US: "Estados Unidos",
+      GB: "Reino Unido",
+      DE: "Alemanha",
+      FR: "França",
+      ES: "Espanha",
+      IT: "Itália",
+      PT: "Portugal",
+      RU: "Rússia",
+      CN: "China",
+      JP: "Japão",
+      IN: "Índia",
+      OTHER: "Outros Países"
+    },
+    method: {
+      BR: {
+        id_card: "Documento de Identidade Nacional (RG/CPF)",
+        drivers_license: "Carteira de Motorista"
+      },
+      US: {
+        id_card: "Documento de Identidade Estadual"
+      },
+      GB: {
+        id_card: "Documento Nacional / Carteira de Motorista",
+        biometric: "Autorização de Residência Biométrica"
+      },
+      DE: {
+        drivers: "Carteira de Motorista",
+        passport: "Passaporte / Reisepass"
+      },
+      FR: {
+        residence: "Autorização de Residência"
+      },
+      RU: {
+        foreign_passport: "Passaporte Estrangeiro"
+      },
+      OTHER: {
+        passport: "Passaporte Internacional",
+        national_id: "Documento de Identidade Nacional"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "Documento nacional de identidade brasileiro"
+      },
+      cpf: {
+        desc: "Cartão de registro de contribuinte brasileiro (CPF)"
+      },
+      passport: {
+        desc: "Passaporte válido com página de foto",
+        name: "Passaporte"
+      },
+      cnh: {
+        desc: "Carteira de Motorista brasileira",
+        name: "CNH (Carteira de Motorista)"
+      },
+      state_id: {
+        desc: "Carteira de Motorista ou documento emitido pelo estado",
+        name: "Documento de Identidade Estadual"
+      },
+      passport_uk: {
+        desc: "Passaporte britânico válido"
+      },
+      driving_license_uk: {
+        desc: "Carteira de Motorista britânica",
+        name: "Carteira de Motorista"
+      },
+      brp: {
+        desc: "Autorização de Residência Biométrica britânica",
+        name: "Autorização de Residência Biométrica"
+      },
+      personalausweis: {
+        desc: "Documento de identidade alemão"
+      },
+      passport_de: {
+        desc: "Passaporte alemão válido"
+      },
+      fuehrerschein: {
+        desc: "Carteira de Motorista alemã"
+      },
+      cni: {
+        desc: "Documento nacional de identidade francês"
+      },
+      passport_fr: {
+        desc: "Passaporte francês válido"
+      },
+      titre_sejour: {
+        desc: "Autorização de residência francesa"
+      },
+      dni: {
+        desc: "Documento nacional de identidade espanhol"
+      },
+      nie: {
+        desc: "Número de identificação de estrangeiro"
+      },
+      passport_es: {
+        desc: "Passaporte válido"
+      },
+      carta_id: {
+        desc: "Documento de identidade italiano"
+      },
+      passport_it: {
+        desc: "Passaporte italiano válido"
+      },
+      cc: {
+        desc: "Cartão de Cidadão português"
+      },
+      passport_pt: {
+        desc: "Passaporte português válido"
+      },
+      passport_ru: {
+        desc: "Passaporte interno russo"
+      },
+      foreign_passport_ru: {
+        desc: "Passaporte russo para o exterior",
+        name: "Passaporte Estrangeiro"
+      },
+      id_card_cn: {
+        desc: "Documento de identidade chinês"
+      },
+      passport_cn: {
+        desc: "Passaporte válido"
+      },
+      passport_jp: {
+        desc: "Passaporte japonês válido"
+      },
+      zairyu: {
+        desc: "Cartão de residência"
+      },
+      aadhaar: {
+        desc: "Cartão de Identificação Única",
+        name: "Cartão Aadhaar"
+      },
+      voter_id: {
+        desc: "Título de eleitor com foto",
+        name: "Título de Eleitor"
+      },
+      passport_in: {
+        desc: "Passaporte indiano válido"
+      },
+      passport_intl: {
+        desc: "Passaporte válido do seu país"
+      },
+      national_id_intl: {
+        desc: "Documento de identidade nacional emitido pelo governo",
+        name: "Documento de Identidade Nacional"
+      }
+    },
+    methodName: {
+      id_card: "Documento de Identidade Nacional",
+      passport: "Passaporte",
+      drivers_license: "Carteira de Motorista",
+      drivers: "Carteira de Motorista",
+      biometric: "Autorização de Residência Biométrica",
+      residence: "Autorização de Residência",
+      foreign_passport: "Passaporte Estrangeiro",
+      national_id: "Documento de Identidade Nacional"
+    }
   }
 };
 
@@ -1856,7 +2182,9 @@ const itTranslation = {
     address: "Indirizzo Commerciale",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Spagna",
     riskTitle: "AVVISO DI RISCHIO",
-    riskText: "Il trading nei mercati finanziari comporta un rischio sostanziale di perdita e non è adatto a tutti gli investitori. Le performance passate non sono indicative dei risultati futuri. Il valore degli investimenti può diminuire o aumentare. Non investire denaro che non puoi permetterti di perdere. Braxel Markets non garantisce rendimenti specifici."
+    riskText: "Il trading nei mercati finanziari comporta un rischio sostanziale di perdita e non è adatto a tutti gli investitori. Le performance passate non sono indicative dei risultati futuri. Il valore degli investimenti può diminuire o aumentare. Non investire denaro che non puoi permetterti di perdere. Braxel Markets non garantisce rendimenti specifici.",
+    emailAria: "Email",
+    xAria: "X (Twitter)"
   },
   chatbot: {
     title: "Supporto Braxel",
@@ -2651,6 +2979,167 @@ const itTranslation = {
       title: "Informativa sui rischi | Braxel Markets",
       description: "Importante informativa sui rischi per il trading algoritmico e il capitale gestito con Braxel Markets."
     }
+  },
+  kyc: {
+    country: {
+      BR: "Brasile",
+      US: "Stati Uniti",
+      GB: "Regno Unito",
+      DE: "Germania",
+      FR: "Francia",
+      ES: "Spagna",
+      IT: "Italia",
+      PT: "Portogallo",
+      RU: "Russia",
+      CN: "Cina",
+      JP: "Giappone",
+      IN: "India",
+      OTHER: "Altri Paesi"
+    },
+    method: {
+      BR: {
+        id_card: "Carta d’identità nazionale (RG/CPF)",
+        drivers_license: "Patente di guida"
+      },
+      US: {
+        id_card: "Carta d’identità statale"
+      },
+      GB: {
+        id_card: "Documento nazionale / Patente di guida",
+        biometric: "Permesso di soggiorno biometrico"
+      },
+      DE: {
+        drivers: "Patente di guida",
+        passport: "Passaporto / Reisepass"
+      },
+      FR: {
+        residence: "Permesso di soggiorno"
+      },
+      RU: {
+        foreign_passport: "Passaporto straniero"
+      },
+      OTHER: {
+        passport: "Passaporto internazionale",
+        national_id: "Carta d’identità nazionale"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "Documento d’identità nazionale brasiliano"
+      },
+      cpf: {
+        desc: "Tessera del contribuente brasiliano (CPF)"
+      },
+      passport: {
+        desc: "Passaporto valido con pagina fotografica",
+        name: "Passaporto"
+      },
+      cnh: {
+        desc: "Patente di guida brasiliana",
+        name: "CNH (Patente di guida)"
+      },
+      state_id: {
+        desc: "Patente di guida o documento rilasciato dallo Stato",
+        name: "Carta d’identità statale"
+      },
+      passport_uk: {
+        desc: "Passaporto britannico valido"
+      },
+      driving_license_uk: {
+        desc: "Patente di guida britannica",
+        name: "Patente di guida"
+      },
+      brp: {
+        desc: "Permesso di soggiorno biometrico britannico",
+        name: "Permesso di soggiorno biometrico"
+      },
+      personalausweis: {
+        desc: "Carta d’identità tedesca"
+      },
+      passport_de: {
+        desc: "Passaporto tedesco valido"
+      },
+      fuehrerschein: {
+        desc: "Patente di guida tedesca"
+      },
+      cni: {
+        desc: "Carta d’identità nazionale francese"
+      },
+      passport_fr: {
+        desc: "Passaporto francese valido"
+      },
+      titre_sejour: {
+        desc: "Permesso di soggiorno francese"
+      },
+      dni: {
+        desc: "Documento d’identità nazionale spagnolo"
+      },
+      nie: {
+        desc: "Numero di identificazione per stranieri"
+      },
+      passport_es: {
+        desc: "Passaporto valido"
+      },
+      carta_id: {
+        desc: "Carta d’identità italiana"
+      },
+      passport_it: {
+        desc: "Passaporto italiano valido"
+      },
+      cc: {
+        desc: "Carta d’identità portoghese"
+      },
+      passport_pt: {
+        desc: "Passaporto portoghese valido"
+      },
+      passport_ru: {
+        desc: "Passaporto interno russo"
+      },
+      foreign_passport_ru: {
+        desc: "Passaporto russo per l’estero",
+        name: "Passaporto straniero"
+      },
+      id_card_cn: {
+        desc: "Carta d’identità cinese"
+      },
+      passport_cn: {
+        desc: "Passaporto valido"
+      },
+      passport_jp: {
+        desc: "Passaporto giapponese valido"
+      },
+      zairyu: {
+        desc: "Carta di soggiorno"
+      },
+      aadhaar: {
+        desc: "Carta di identificazione unica",
+        name: "Carta Aadhaar"
+      },
+      voter_id: {
+        desc: "Tessera elettorale con foto",
+        name: "Tessera elettorale"
+      },
+      passport_in: {
+        desc: "Passaporto indiano valido"
+      },
+      passport_intl: {
+        desc: "Passaporto valido del tuo Paese"
+      },
+      national_id_intl: {
+        desc: "Documento d’identità nazionale rilasciato dal governo",
+        name: "Carta d’identità nazionale"
+      }
+    },
+    methodName: {
+      id_card: "Carta d’identità nazionale",
+      passport: "Passaporto",
+      drivers_license: "Patente di guida",
+      drivers: "Patente di guida",
+      biometric: "Permesso di soggiorno biometrico",
+      residence: "Permesso di soggiorno",
+      foreign_passport: "Passaporto straniero",
+      national_id: "Carta d’identità nazionale"
+    }
   }
 };
 
@@ -2735,7 +3224,9 @@ const esTranslation = {
     address: "Dirección Comercial",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, España",
     riskTitle: "AVISO DE RIESGO",
-    riskText: "El trading en mercados financieros implica un riesgo sustancial de pérdida y no es apto para todos los inversores. El rendimiento pasado no es indicativo de resultados futuros. El valor de las inversiones puede disminuir o aumentar. No invierta dinero que no pueda permitirse perder. Braxel Markets no garantiza rendimientos específicos."
+    riskText: "El trading en mercados financieros implica un riesgo sustancial de pérdida y no es apto para todos los inversores. El rendimiento pasado no es indicativo de resultados futuros. El valor de las inversiones puede disminuir o aumentar. No invierta dinero que no pueda permitirse perder. Braxel Markets no garantiza rendimientos específicos.",
+    emailAria: "Correo electrónico",
+    xAria: "X (Twitter)"
   },
   chatbot: {
     title: "Soporte Braxel",
@@ -3530,6 +4021,167 @@ const esTranslation = {
       title: "Divulgación de riesgos | Braxel Markets",
       description: "Divulgación importante de riesgos para la negociación algorítmica y el capital gestionado con Braxel Markets."
     }
+  },
+  kyc: {
+    country: {
+      BR: "Brasil",
+      US: "Estados Unidos",
+      GB: "Reino Unido",
+      DE: "Alemania",
+      FR: "Francia",
+      ES: "España",
+      IT: "Italia",
+      PT: "Portugal",
+      RU: "Rusia",
+      CN: "China",
+      JP: "Japón",
+      IN: "India",
+      OTHER: "Otros países"
+    },
+    method: {
+      BR: {
+        id_card: "Documento nacional de identidad (RG/CPF)",
+        drivers_license: "Permiso de conducir"
+      },
+      US: {
+        id_card: "Documento de identidad estatal"
+      },
+      GB: {
+        id_card: "Documento nacional / Permiso de conducir",
+        biometric: "Permiso de residencia biométrico"
+      },
+      DE: {
+        drivers: "Permiso de conducir",
+        passport: "Pasaporte / Reisepass"
+      },
+      FR: {
+        residence: "Permiso de residencia"
+      },
+      RU: {
+        foreign_passport: "Pasaporte extranjero"
+      },
+      OTHER: {
+        passport: "Pasaporte internacional",
+        national_id: "Documento nacional de identidad"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "Documento nacional de identidad brasileño"
+      },
+      cpf: {
+        desc: "Tarjeta de registro de contribuyente brasileño (CPF)"
+      },
+      passport: {
+        desc: "Pasaporte válido con página de fotografía",
+        name: "Pasaporte"
+      },
+      cnh: {
+        desc: "Permiso de conducir brasileño",
+        name: "CNH (Permiso de conducir)"
+      },
+      state_id: {
+        desc: "Permiso de conducir o identificación estatal",
+        name: "Documento de identidad estatal"
+      },
+      passport_uk: {
+        desc: "Pasaporte británico válido"
+      },
+      driving_license_uk: {
+        desc: "Permiso de conducir británico",
+        name: "Permiso de conducir"
+      },
+      brp: {
+        desc: "Permiso de residencia biométrico británico",
+        name: "Permiso de residencia biométrico"
+      },
+      personalausweis: {
+        desc: "Documento de identidad alemán"
+      },
+      passport_de: {
+        desc: "Pasaporte alemán válido"
+      },
+      fuehrerschein: {
+        desc: "Permiso de conducir alemán"
+      },
+      cni: {
+        desc: "Documento nacional de identidad francés"
+      },
+      passport_fr: {
+        desc: "Pasaporte francés válido"
+      },
+      titre_sejour: {
+        desc: "Permiso de residencia francés"
+      },
+      dni: {
+        desc: "Documento nacional de identidad español"
+      },
+      nie: {
+        desc: "Número de identificación de extranjero"
+      },
+      passport_es: {
+        desc: "Pasaporte válido"
+      },
+      carta_id: {
+        desc: "Documento de identidad italiano"
+      },
+      passport_it: {
+        desc: "Pasaporte italiano válido"
+      },
+      cc: {
+        desc: "Tarjeta de ciudadano portuguesa"
+      },
+      passport_pt: {
+        desc: "Pasaporte portugués válido"
+      },
+      passport_ru: {
+        desc: "Pasaporte interno ruso"
+      },
+      foreign_passport_ru: {
+        desc: "Pasaporte ruso para el extranjero",
+        name: "Pasaporte extranjero"
+      },
+      id_card_cn: {
+        desc: "Documento de identidad chino"
+      },
+      passport_cn: {
+        desc: "Pasaporte válido"
+      },
+      passport_jp: {
+        desc: "Pasaporte japonés válido"
+      },
+      zairyu: {
+        desc: "Tarjeta de residencia"
+      },
+      aadhaar: {
+        desc: "Tarjeta de identificación única",
+        name: "Tarjeta Aadhaar"
+      },
+      voter_id: {
+        desc: "Credencial electoral con fotografía",
+        name: "Credencial electoral"
+      },
+      passport_in: {
+        desc: "Pasaporte indio válido"
+      },
+      passport_intl: {
+        desc: "Pasaporte válido de tu país"
+      },
+      national_id_intl: {
+        desc: "Identificación nacional emitida por el gobierno",
+        name: "Documento nacional de identidad"
+      }
+    },
+    methodName: {
+      id_card: "Documento nacional de identidad",
+      passport: "Pasaporte",
+      drivers_license: "Permiso de conducir",
+      drivers: "Permiso de conducir",
+      biometric: "Permiso de residencia biométrico",
+      residence: "Permiso de residencia",
+      foreign_passport: "Pasaporte extranjero",
+      national_id: "Documento nacional de identidad"
+    }
   }
 };
 
@@ -3614,7 +4266,9 @@ const frTranslation = {
     address: "Adresse Commerciale",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Espagne",
     riskTitle: "AVERTISSEMENT SUR LES RISQUES",
-    riskText: "Le trading sur les marchés financiers comporte un risque substantiel de perte et ne convient pas à tous les investisseurs. Les performances passées ne préjugent pas des résultats futurs. La valeur des investissements peut baisser ou augmenter. N'investissez pas d'argent que vous ne pouvez pas vous permettre de perdre. Braxel Markets ne garantit aucun rendement spécifique."
+    riskText: "Le trading sur les marchés financiers comporte un risque substantiel de perte et ne convient pas à tous les investisseurs. Les performances passées ne préjugent pas des résultats futurs. La valeur des investissements peut baisser ou augmenter. N'investissez pas d'argent que vous ne pouvez pas vous permettre de perdre. Braxel Markets ne garantit aucun rendement spécifique.",
+    emailAria: "E-mail",
+    xAria: "X (Twitter)"
   },
   chatbot: {
     title: "Support Braxel",
@@ -4409,6 +5063,167 @@ const frTranslation = {
       title: "Avertissement sur les risques | Braxel Markets",
       description: "Avertissement important sur les risques liés au trading algorithmique et au capital géré avec Braxel Markets."
     }
+  },
+  kyc: {
+    country: {
+      BR: "Brésil",
+      US: "États-Unis",
+      GB: "Royaume-Uni",
+      DE: "Allemagne",
+      FR: "France",
+      ES: "Espagne",
+      IT: "Italie",
+      PT: "Portugal",
+      RU: "Russie",
+      CN: "Chine",
+      JP: "Japon",
+      IN: "Inde",
+      OTHER: "Autres pays"
+    },
+    method: {
+      BR: {
+        id_card: "Carte d’identité nationale (RG/CPF)",
+        drivers_license: "Permis de conduire"
+      },
+      US: {
+        id_card: "Carte d’identité d’État"
+      },
+      GB: {
+        id_card: "Carte d’identité nationale / Permis de conduire",
+        biometric: "Titre de séjour biométrique"
+      },
+      DE: {
+        drivers: "Permis de conduire",
+        passport: "Passeport / Reisepass"
+      },
+      FR: {
+        residence: "Titre de séjour"
+      },
+      RU: {
+        foreign_passport: "Passeport étranger"
+      },
+      OTHER: {
+        passport: "Passeport international",
+        national_id: "Carte d’identité nationale"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "Document d’identité national brésilien"
+      },
+      cpf: {
+        desc: "Carte de contribuable brésilien (CPF)"
+      },
+      passport: {
+        desc: "Passeport valide avec page photo",
+        name: "Passeport"
+      },
+      cnh: {
+        desc: "Permis de conduire brésilien",
+        name: "CNH (Permis de conduire)"
+      },
+      state_id: {
+        desc: "Permis de conduire ou pièce d’identité délivrée par l’État",
+        name: "Carte d’identité d’État"
+      },
+      passport_uk: {
+        desc: "Passeport britannique valide"
+      },
+      driving_license_uk: {
+        desc: "Permis de conduire britannique",
+        name: "Permis de conduire"
+      },
+      brp: {
+        desc: "Titre de séjour biométrique britannique",
+        name: "Titre de séjour biométrique"
+      },
+      personalausweis: {
+        desc: "Carte d’identité allemande"
+      },
+      passport_de: {
+        desc: "Passeport allemand valide"
+      },
+      fuehrerschein: {
+        desc: "Permis de conduire allemand"
+      },
+      cni: {
+        desc: "Carte d’identité nationale française"
+      },
+      passport_fr: {
+        desc: "Passeport français valide"
+      },
+      titre_sejour: {
+        desc: "Titre de séjour français"
+      },
+      dni: {
+        desc: "Document d’identité national espagnol"
+      },
+      nie: {
+        desc: "Numéro d’identification des étrangers"
+      },
+      passport_es: {
+        desc: "Passeport valide"
+      },
+      carta_id: {
+        desc: "Carte d’identité italienne"
+      },
+      passport_it: {
+        desc: "Passeport italien valide"
+      },
+      cc: {
+        desc: "Carte de citoyen portugaise"
+      },
+      passport_pt: {
+        desc: "Passeport portugais valide"
+      },
+      passport_ru: {
+        desc: "Passeport interne russe"
+      },
+      foreign_passport_ru: {
+        desc: "Passeport russe pour l’étranger",
+        name: "Passeport étranger"
+      },
+      id_card_cn: {
+        desc: "Carte d’identité chinoise"
+      },
+      passport_cn: {
+        desc: "Passeport valide"
+      },
+      passport_jp: {
+        desc: "Passeport japonais valide"
+      },
+      zairyu: {
+        desc: "Carte de résident"
+      },
+      aadhaar: {
+        desc: "Carte d’identification unique",
+        name: "Carte Aadhaar"
+      },
+      voter_id: {
+        desc: "Carte électorale avec photo",
+        name: "Carte électorale"
+      },
+      passport_in: {
+        desc: "Passeport indien valide"
+      },
+      passport_intl: {
+        desc: "Passeport valide de votre pays"
+      },
+      national_id_intl: {
+        desc: "Pièce d’identité nationale délivrée par le gouvernement",
+        name: "Carte d’identité nationale"
+      }
+    },
+    methodName: {
+      id_card: "Carte d’identité nationale",
+      passport: "Passeport",
+      drivers_license: "Permis de conduire",
+      drivers: "Permis de conduire",
+      biometric: "Titre de séjour biométrique",
+      residence: "Titre de séjour",
+      foreign_passport: "Passeport étranger",
+      national_id: "Carte d’identité nationale"
+    }
   }
 };
 
@@ -4493,7 +5308,9 @@ const deTranslation = {
     address: "Geschäftsadresse",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Spanien",
     riskTitle: "RISIKOHINWEIS",
-    riskText: "Der Handel an Finanzmärkten birgt ein erhebliches Verlustrisiko und ist nicht für alle Anleger geeignet. Vergangene Ergebnisse sind kein Indikator für zukünftige Ergebnisse. Der Wert von Anlagen kann steigen oder fallen. Investieren Sie kein Geld, dessen Verlust Sie sich nicht leisten können. Braxel Markets garantiert keine bestimmten Renditen."
+    riskText: "Der Handel an Finanzmärkten birgt ein erhebliches Verlustrisiko und ist nicht für alle Anleger geeignet. Vergangene Ergebnisse sind kein Indikator für zukünftige Ergebnisse. Der Wert von Anlagen kann steigen oder fallen. Investieren Sie kein Geld, dessen Verlust Sie sich nicht leisten können. Braxel Markets garantiert keine bestimmten Renditen.",
+    emailAria: "E-Mail",
+    xAria: "X (Twitter)"
   },
   chatbot: {
     title: "Braxel Support",
@@ -5288,6 +6105,167 @@ const deTranslation = {
       title: "Risikohinweis | Braxel Markets",
       description: "Wichtiger Risikohinweis für algorithmischen Handel und verwaltetes Kapital mit Braxel Markets."
     }
+  },
+  kyc: {
+    country: {
+      BR: "Brasilien",
+      US: "Vereinigte Staaten",
+      GB: "Vereinigtes Königreich",
+      DE: "Deutschland",
+      FR: "Frankreich",
+      ES: "Spanien",
+      IT: "Italien",
+      PT: "Portugal",
+      RU: "Russland",
+      CN: "China",
+      JP: "Japan",
+      IN: "Indien",
+      OTHER: "Andere Länder"
+    },
+    method: {
+      BR: {
+        id_card: "Nationaler Personalausweis (RG/CPF)",
+        drivers_license: "Führerschein"
+      },
+      US: {
+        id_card: "Staatlicher Personalausweis"
+      },
+      GB: {
+        id_card: "Nationaler Ausweis / Führerschein",
+        biometric: "Biometrischer Aufenthaltstitel"
+      },
+      DE: {
+        drivers: "Führerschein",
+        passport: "Pass / Reisepass"
+      },
+      FR: {
+        residence: "Aufenthaltstitel"
+      },
+      RU: {
+        foreign_passport: "Auslandspass"
+      },
+      OTHER: {
+        passport: "Internationaler Pass",
+        national_id: "Nationaler Personalausweis"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "Brasilianischer Personalausweis"
+      },
+      cpf: {
+        desc: "Brasilianische Steuernummernkarte (CPF)"
+      },
+      passport: {
+        desc: "Gültiger Reisepass mit Lichtbildseite",
+        name: "Reisepass"
+      },
+      cnh: {
+        desc: "Brasilianischer Führerschein",
+        name: "CNH (Führerschein)"
+      },
+      state_id: {
+        desc: "Führerschein oder staatlich ausgestellter Ausweis",
+        name: "Staatlicher Personalausweis"
+      },
+      passport_uk: {
+        desc: "Gültiger britischer Reisepass"
+      },
+      driving_license_uk: {
+        desc: "Britischer Führerschein",
+        name: "Führerschein"
+      },
+      brp: {
+        desc: "Britischer biometrischer Aufenthaltstitel",
+        name: "Biometrischer Aufenthaltstitel"
+      },
+      personalausweis: {
+        desc: "Deutscher Personalausweis"
+      },
+      passport_de: {
+        desc: "Gültiger deutscher Reisepass"
+      },
+      fuehrerschein: {
+        desc: "Deutscher Führerschein"
+      },
+      cni: {
+        desc: "Französischer Personalausweis"
+      },
+      passport_fr: {
+        desc: "Gültiger französischer Reisepass"
+      },
+      titre_sejour: {
+        desc: "Französischer Aufenthaltstitel"
+      },
+      dni: {
+        desc: "Spanischer Personalausweis"
+      },
+      nie: {
+        desc: "Ausländer-Identifikationsnummer"
+      },
+      passport_es: {
+        desc: "Gültiger Reisepass"
+      },
+      carta_id: {
+        desc: "Italienischer Personalausweis"
+      },
+      passport_it: {
+        desc: "Gültiger italienischer Reisepass"
+      },
+      cc: {
+        desc: "Portugiesische Bürgerkarte"
+      },
+      passport_pt: {
+        desc: "Gültiger portugiesischer Reisepass"
+      },
+      passport_ru: {
+        desc: "Russischer Inlandspass"
+      },
+      foreign_passport_ru: {
+        desc: "Russischer Auslandspass",
+        name: "Auslandspass"
+      },
+      id_card_cn: {
+        desc: "Chinesischer Personalausweis"
+      },
+      passport_cn: {
+        desc: "Gültiger Reisepass"
+      },
+      passport_jp: {
+        desc: "Gültiger japanischer Reisepass"
+      },
+      zairyu: {
+        desc: "Aufenthaltskarte"
+      },
+      aadhaar: {
+        desc: "Eindeutige Identifikationskarte",
+        name: "Aadhaar-Karte"
+      },
+      voter_id: {
+        desc: "Wählerausweis mit Foto",
+        name: "Wählerausweis"
+      },
+      passport_in: {
+        desc: "Gültiger indischer Reisepass"
+      },
+      passport_intl: {
+        desc: "Gültiger Reisepass Ihres Landes"
+      },
+      national_id_intl: {
+        desc: "Staatlich ausgestellter nationaler Ausweis",
+        name: "Nationaler Personalausweis"
+      }
+    },
+    methodName: {
+      id_card: "Nationaler Personalausweis",
+      passport: "Reisepass",
+      drivers_license: "Führerschein",
+      drivers: "Führerschein",
+      biometric: "Biometrischer Aufenthaltstitel",
+      residence: "Aufenthaltstitel",
+      foreign_passport: "Auslandspass",
+      national_id: "Nationaler Personalausweis"
+    }
   }
 };
 
@@ -5372,7 +6350,9 @@ const ruTranslation = {
     address: "Коммерческий Адрес",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, Испания",
     riskTitle: "ПРЕДУПРЕЖДЕНИЕ О РИСКАХ",
-    riskText: "Торговля на финансовых рынках сопряжена со значительным риском убытков и подходит не всем инвесторам. Прошлые результаты не гарантируют будущих. Стоимость инвестиций может как расти, так и падать. Не инвестируйте средства, потерю которых вы не можете себе позволить. Braxel Markets не гарантирует конкретной доходности."
+    riskText: "Торговля на финансовых рынках сопряжена со значительным риском убытков и подходит не всем инвесторам. Прошлые результаты не гарантируют будущих. Стоимость инвестиций может как расти, так и падать. Не инвестируйте средства, потерю которых вы не можете себе позволить. Braxel Markets не гарантирует конкретной доходности.",
+    emailAria: "Эл. почта",
+    xAria: "X (Twitter)"
   },
   chatbot: {
     title: "Поддержка Braxel",
@@ -6167,6 +7147,167 @@ const ruTranslation = {
       title: "Раскрытие рисков | Braxel Markets",
       description: "Важное раскрытие рисков для алгоритмической торговли и управляемого капитала в Braxel Markets."
     }
+  },
+  kyc: {
+    country: {
+      BR: "Бразилия",
+      US: "США",
+      GB: "Великобритания",
+      DE: "Германия",
+      FR: "Франция",
+      ES: "Испания",
+      IT: "Италия",
+      PT: "Португалия",
+      RU: "Россия",
+      CN: "Китай",
+      JP: "Япония",
+      IN: "Индия",
+      OTHER: "Другие страны"
+    },
+    method: {
+      BR: {
+        id_card: "Национальное удостоверение личности (RG/CPF)",
+        drivers_license: "Водительское удостоверение"
+      },
+      US: {
+        id_card: "Удостоверение личности штата"
+      },
+      GB: {
+        id_card: "Национальное удостоверение / Водительские права",
+        biometric: "Биометрическое разрешение на пребывание"
+      },
+      DE: {
+        drivers: "Водительское удостоверение",
+        passport: "Паспорт / Reisepass"
+      },
+      FR: {
+        residence: "Разрешение на проживание"
+      },
+      RU: {
+        foreign_passport: "Заграничный паспорт"
+      },
+      OTHER: {
+        passport: "Международный паспорт",
+        national_id: "Национальное удостоверение личности"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "Бразильское национальное удостоверение личности"
+      },
+      cpf: {
+        desc: "Бразильская карта налогового учёта (CPF)"
+      },
+      passport: {
+        desc: "Действующий паспорт со страницей с фотографией",
+        name: "Паспорт"
+      },
+      cnh: {
+        desc: "Бразильское водительское удостоверение",
+        name: "CNH (водительское удостоверение)"
+      },
+      state_id: {
+        desc: "Водительские права или удостоверение, выданное штатом",
+        name: "Удостоверение личности штата"
+      },
+      passport_uk: {
+        desc: "Действующий паспорт Великобритании"
+      },
+      driving_license_uk: {
+        desc: "Водительское удостоверение Великобритании",
+        name: "Водительское удостоверение"
+      },
+      brp: {
+        desc: "Биометрическое разрешение на пребывание в Великобритании",
+        name: "Биометрическое разрешение на пребывание"
+      },
+      personalausweis: {
+        desc: "Немецкое удостоверение личности"
+      },
+      passport_de: {
+        desc: "Действующий немецкий паспорт"
+      },
+      fuehrerschein: {
+        desc: "Немецкое водительское удостоверение"
+      },
+      cni: {
+        desc: "Французское национальное удостоверение личности"
+      },
+      passport_fr: {
+        desc: "Действующий французский паспорт"
+      },
+      titre_sejour: {
+        desc: "Французское разрешение на проживание"
+      },
+      dni: {
+        desc: "Испанское национальное удостоверение личности"
+      },
+      nie: {
+        desc: "Идентификационный номер иностранца"
+      },
+      passport_es: {
+        desc: "Действующий паспорт"
+      },
+      carta_id: {
+        desc: "Итальянское удостоверение личности"
+      },
+      passport_it: {
+        desc: "Действующий итальянский паспорт"
+      },
+      cc: {
+        desc: "Португальская карта гражданина"
+      },
+      passport_pt: {
+        desc: "Действующий португальский паспорт"
+      },
+      passport_ru: {
+        desc: "Российский внутренний паспорт"
+      },
+      foreign_passport_ru: {
+        desc: "Российский заграничный паспорт",
+        name: "Заграничный паспорт"
+      },
+      id_card_cn: {
+        desc: "Китайское удостоверение личности"
+      },
+      passport_cn: {
+        desc: "Действующий паспорт"
+      },
+      passport_jp: {
+        desc: "Действующий японский паспорт"
+      },
+      zairyu: {
+        desc: "Карта резидента"
+      },
+      aadhaar: {
+        desc: "Карта уникальной идентификации",
+        name: "Карта Aadhaar"
+      },
+      voter_id: {
+        desc: "Избирательное удостоверение с фотографией",
+        name: "Избирательное удостоверение"
+      },
+      passport_in: {
+        desc: "Действующий индийский паспорт"
+      },
+      passport_intl: {
+        desc: "Действующий паспорт вашей страны"
+      },
+      national_id_intl: {
+        desc: "Национальное удостоверение, выданное государством",
+        name: "Национальное удостоверение личности"
+      }
+    },
+    methodName: {
+      id_card: "Национальное удостоверение личности",
+      passport: "Паспорт",
+      drivers_license: "Водительское удостоверение",
+      drivers: "Водительское удостоверение",
+      biometric: "Биометрическое разрешение на пребывание",
+      residence: "Разрешение на проживание",
+      foreign_passport: "Заграничный паспорт",
+      national_id: "Национальное удостоверение личности"
+    }
   }
 };
 
@@ -6251,7 +7392,9 @@ const zhTranslation = {
     address: "商业地址",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, 西班牙",
     riskTitle: "风险免责声明",
-    riskText: "金融市场交易涉及重大损失风险，并非适合所有投资者。过往业绩不代表未来表现。投资价值可能上升或下降。请勿投资您无法承受损失的资金。Braxel Markets不保证任何特定回报。"
+    riskText: "金融市场交易涉及重大损失风险，并非适合所有投资者。过往业绩不代表未来表现。投资价值可能上升或下降。请勿投资您无法承受损失的资金。Braxel Markets不保证任何特定回报。",
+    emailAria: "电子邮件",
+    xAria: "X（推特）"
   },
   auth: {
     loginTitle: "登录",
@@ -6833,8 +7976,8 @@ const zhTranslation = {
     connected: "已连接"
   },
   chatbot: {
-    title: "Braxel Support",
-    placeholder: "Type a message...",
+    title: "Braxel 支持",
+    placeholder: "输入消息…",
     emailSupport: "邮箱：",
     assistantReply: "感谢您的留言。我们的团队将尽快回复。",
     send: "发送",
@@ -7046,6 +8189,167 @@ const zhTranslation = {
       title: "风险披露 | Braxel Markets",
       description: "关于在 Braxel Markets 进行算法交易和托管资金的重要风险披露。"
     }
+  },
+  kyc: {
+    country: {
+      BR: "巴西",
+      US: "美国",
+      GB: "英国",
+      DE: "德国",
+      FR: "法国",
+      ES: "西班牙",
+      IT: "意大利",
+      PT: "葡萄牙",
+      RU: "俄罗斯",
+      CN: "中国",
+      JP: "日本",
+      IN: "印度",
+      OTHER: "其他国家"
+    },
+    method: {
+      BR: {
+        id_card: "国民身份证（RG/CPF）",
+        drivers_license: "驾驶执照"
+      },
+      US: {
+        id_card: "州身份证"
+      },
+      GB: {
+        id_card: "国民身份证 / 驾驶执照",
+        biometric: "生物识别居留许可"
+      },
+      DE: {
+        drivers: "驾驶执照",
+        passport: "护照 / Reisepass"
+      },
+      FR: {
+        residence: "居留许可"
+      },
+      RU: {
+        foreign_passport: "外国护照"
+      },
+      OTHER: {
+        passport: "国际护照",
+        national_id: "国民身份证"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "巴西国民身份证件"
+      },
+      cpf: {
+        desc: "巴西纳税人登记卡"
+      },
+      passport: {
+        desc: "有效护照（含照片页）",
+        name: "护照"
+      },
+      cnh: {
+        desc: "巴西驾驶执照",
+        name: "CNH（驾驶执照）"
+      },
+      state_id: {
+        desc: "驾驶执照或州政府签发的身份证件",
+        name: "州身份证"
+      },
+      passport_uk: {
+        desc: "有效英国护照"
+      },
+      driving_license_uk: {
+        desc: "英国驾驶执照",
+        name: "驾驶执照"
+      },
+      brp: {
+        desc: "英国生物识别居留许可",
+        name: "生物识别居留许可"
+      },
+      personalausweis: {
+        desc: "德国身份证"
+      },
+      passport_de: {
+        desc: "有效德国护照"
+      },
+      fuehrerschein: {
+        desc: "德国驾驶执照"
+      },
+      cni: {
+        desc: "法国国民身份证"
+      },
+      passport_fr: {
+        desc: "有效法国护照"
+      },
+      titre_sejour: {
+        desc: "法国居留许可"
+      },
+      dni: {
+        desc: "西班牙国民身份证件"
+      },
+      nie: {
+        desc: "外国人识别号码"
+      },
+      passport_es: {
+        desc: "有效护照"
+      },
+      carta_id: {
+        desc: "意大利身份证"
+      },
+      passport_it: {
+        desc: "有效意大利护照"
+      },
+      cc: {
+        desc: "葡萄牙公民卡"
+      },
+      passport_pt: {
+        desc: "有效葡萄牙护照"
+      },
+      passport_ru: {
+        desc: "俄罗斯国内护照"
+      },
+      foreign_passport_ru: {
+        desc: "俄罗斯外国护照",
+        name: "外国护照"
+      },
+      id_card_cn: {
+        desc: "中国身份证"
+      },
+      passport_cn: {
+        desc: "有效护照"
+      },
+      passport_jp: {
+        desc: "有效日本护照"
+      },
+      zairyu: {
+        desc: "居留卡"
+      },
+      aadhaar: {
+        desc: "唯一身份识别卡",
+        name: "Aadhaar 卡"
+      },
+      voter_id: {
+        desc: "选民照片身份卡",
+        name: "选民证"
+      },
+      passport_in: {
+        desc: "有效印度护照"
+      },
+      passport_intl: {
+        desc: "您所在国家的有效护照"
+      },
+      national_id_intl: {
+        desc: "政府签发的国民身份证件",
+        name: "国民身份证"
+      }
+    },
+    methodName: {
+      id_card: "国民身份证",
+      passport: "护照",
+      drivers_license: "驾驶执照",
+      drivers: "驾驶执照",
+      biometric: "生物识别居留许可",
+      residence: "居留许可",
+      foreign_passport: "外国护照",
+      national_id: "国民身份证"
+    }
   }
 };
 
@@ -7130,7 +8434,9 @@ const jaTranslation = {
     address: "本社所在地",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, スペイン",
     riskTitle: "リスク免責事項",
-    riskText: "金融市場での取引には重大な損失リスクが伴い、すべての投資家に適しているわけではありません。過去の実績は将来の結果を保証するものではありません。投資の価値は上下する可能性があります。失っても構わない資金以外は投資しないでください。Braxel Marketsは特定のリターンを保証しません。"
+    riskText: "金融市場での取引には重大な損失リスクが伴い、すべての投資家に適しているわけではありません。過去の実績は将来の結果を保証するものではありません。投資の価値は上下する可能性があります。失っても構わない資金以外は投資しないでください。Braxel Marketsは特定のリターンを保証しません。",
+    emailAria: "メール",
+    xAria: "X（旧Twitter）"
   },
   auth: {
     loginTitle: "ログイン",
@@ -7712,8 +9018,8 @@ const jaTranslation = {
     connected: "接続済み"
   },
   chatbot: {
-    title: "Braxel Support",
-    placeholder: "Type a message...",
+    title: "Braxel サポート",
+    placeholder: "メッセージを入力…",
     emailSupport: "メール：",
     assistantReply: "メッセージありがとうございます。担当チームがまもなく返信いたします。",
     send: "送信",
@@ -7925,6 +9231,167 @@ const jaTranslation = {
       title: "リスク開示 | Braxel Markets",
       description: "Braxel Markets でのアルゴリズム取引および運用資金に関する重要なリスク開示。"
     }
+  },
+  kyc: {
+    country: {
+      BR: "ブラジル",
+      US: "アメリカ合衆国",
+      GB: "イギリス",
+      DE: "ドイツ",
+      FR: "フランス",
+      ES: "スペイン",
+      IT: "イタリア",
+      PT: "ポルトガル",
+      RU: "ロシア",
+      CN: "中国",
+      JP: "日本",
+      IN: "インド",
+      OTHER: "その他の国"
+    },
+    method: {
+      BR: {
+        id_card: "国民IDカード（RG/CPF）",
+        drivers_license: "運転免許証"
+      },
+      US: {
+        id_card: "州発行IDカード"
+      },
+      GB: {
+        id_card: "国民ID / 運転免許証",
+        biometric: "生体認証在留許可"
+      },
+      DE: {
+        drivers: "運転免許証",
+        passport: "パスポート / Reisepass"
+      },
+      FR: {
+        residence: "在留許可"
+      },
+      RU: {
+        foreign_passport: "外国パスポート"
+      },
+      OTHER: {
+        passport: "国際パスポート",
+        national_id: "国民IDカード"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "ブラジルの国民身分証明書"
+      },
+      cpf: {
+        desc: "ブラジルの納税者登録カード"
+      },
+      passport: {
+        desc: "写真ページ付きの有効なパスポート",
+        name: "パスポート"
+      },
+      cnh: {
+        desc: "ブラジルの運転免許証",
+        name: "CNH（運転免許証）"
+      },
+      state_id: {
+        desc: "運転免許証または州発行のID",
+        name: "州発行IDカード"
+      },
+      passport_uk: {
+        desc: "有効な英国パスポート"
+      },
+      driving_license_uk: {
+        desc: "英国の運転免許証",
+        name: "運転免許証"
+      },
+      brp: {
+        desc: "英国の生体認証在留許可",
+        name: "生体認証在留許可"
+      },
+      personalausweis: {
+        desc: "ドイツの身分証明書"
+      },
+      passport_de: {
+        desc: "有効なドイツのパスポート"
+      },
+      fuehrerschein: {
+        desc: "ドイツの運転免許証"
+      },
+      cni: {
+        desc: "フランスの国民身分証明書"
+      },
+      passport_fr: {
+        desc: "有効なフランスのパスポート"
+      },
+      titre_sejour: {
+        desc: "フランスの在留許可"
+      },
+      dni: {
+        desc: "スペインの国民身分証明書"
+      },
+      nie: {
+        desc: "外国人識別番号"
+      },
+      passport_es: {
+        desc: "有効なパスポート"
+      },
+      carta_id: {
+        desc: "イタリアの身分証明書"
+      },
+      passport_it: {
+        desc: "有効なイタリアのパスポート"
+      },
+      cc: {
+        desc: "ポルトガルの市民カード"
+      },
+      passport_pt: {
+        desc: "有効なポルトガルのパスポート"
+      },
+      passport_ru: {
+        desc: "ロシアの国内パスポート"
+      },
+      foreign_passport_ru: {
+        desc: "ロシアの外国パスポート",
+        name: "外国パスポート"
+      },
+      id_card_cn: {
+        desc: "中国の身分証明書"
+      },
+      passport_cn: {
+        desc: "有効なパスポート"
+      },
+      passport_jp: {
+        desc: "有効な日本のパスポート"
+      },
+      zairyu: {
+        desc: "在留カード"
+      },
+      aadhaar: {
+        desc: "固有識別カード",
+        name: "Aadhaarカード"
+      },
+      voter_id: {
+        desc: "選挙人写真付き身分証",
+        name: "選挙人証"
+      },
+      passport_in: {
+        desc: "有効なインドのパスポート"
+      },
+      passport_intl: {
+        desc: "お住まいの国の有効なパスポート"
+      },
+      national_id_intl: {
+        desc: "政府発行の国民ID",
+        name: "国民IDカード"
+      }
+    },
+    methodName: {
+      id_card: "国民IDカード",
+      passport: "パスポート",
+      drivers_license: "運転免許証",
+      drivers: "運転免許証",
+      biometric: "生体認証在留許可",
+      residence: "在留許可",
+      foreign_passport: "外国パスポート",
+      national_id: "国民IDカード"
+    }
   }
 };
 
@@ -8009,7 +9476,9 @@ const arTranslation = {
     address: "العنوان التجاري",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, Madrid, إسبانيا",
     riskTitle: "إخلاء مسؤولية المخاطر",
-    riskText: "التداول في الأسواق المالية ينطوي على مخاطر كبيرة للخسارة وليس مناسبًا لجميع المستثمرين. الأداء السابق لا يضمن النتائج المستقبلية. قيمة الاستثمارات قد ترتفع أو تنخفض. لا تستثمر أموالاً لا يمكنك تحمل خسارتها. Braxel Markets لا تضمن عوائد محددة."
+    riskText: "التداول في الأسواق المالية ينطوي على مخاطر كبيرة للخسارة وليس مناسبًا لجميع المستثمرين. الأداء السابق لا يضمن النتائج المستقبلية. قيمة الاستثمارات قد ترتفع أو تنخفض. لا تستثمر أموالاً لا يمكنك تحمل خسارتها. Braxel Markets لا تضمن عوائد محددة.",
+    emailAria: "البريد الإلكتروني",
+    xAria: "إكس (تويتر)"
   },
   chatbot: {
     title: "دعم Braxel",
@@ -8804,6 +10273,167 @@ const arTranslation = {
       title: "الإفصاح عن المخاطر | Braxel Markets",
       description: "إفصاح مهم عن المخاطر المتعلقة بالتداول الخوارزمي ورأس المال المُدار مع Braxel Markets."
     }
+  },
+  kyc: {
+    country: {
+      BR: "البرازيل",
+      US: "الولايات المتحدة",
+      GB: "المملكة المتحدة",
+      DE: "ألمانيا",
+      FR: "فرنسا",
+      ES: "إسبانيا",
+      IT: "إيطاليا",
+      PT: "البرتغال",
+      RU: "روسيا",
+      CN: "الصين",
+      JP: "اليابان",
+      IN: "الهند",
+      OTHER: "بلدان أخرى"
+    },
+    method: {
+      BR: {
+        id_card: "بطاقة الهوية الوطنية (RG/CPF)",
+        drivers_license: "رخصة القيادة"
+      },
+      US: {
+        id_card: "بطاقة هوية الولاية"
+      },
+      GB: {
+        id_card: "الهوية الوطنية / رخصة القيادة",
+        biometric: "تصريح إقامة بيومتري"
+      },
+      DE: {
+        drivers: "رخصة القيادة",
+        passport: "جواز السفر / Reisepass"
+      },
+      FR: {
+        residence: "تصريح الإقامة"
+      },
+      RU: {
+        foreign_passport: "جواز سفر أجنبي"
+      },
+      OTHER: {
+        passport: "جواز سفر دولي",
+        national_id: "بطاقة الهوية الوطنية"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "وثيقة الهوية الوطنية البرازيلية"
+      },
+      cpf: {
+        desc: "بطاقة تسجيل دافع الضرائب البرازيلي"
+      },
+      passport: {
+        desc: "جواز سفر ساري المفعول مع صفحة الصورة",
+        name: "جواز السفر"
+      },
+      cnh: {
+        desc: "رخصة القيادة البرازيلية",
+        name: "CNH (رخصة القيادة)"
+      },
+      state_id: {
+        desc: "رخصة القيادة أو بطاقة هوية صادرة عن الولاية",
+        name: "بطاقة هوية الولاية"
+      },
+      passport_uk: {
+        desc: "جواز سفر بريطاني ساري المفعول"
+      },
+      driving_license_uk: {
+        desc: "رخصة القيادة البريطانية",
+        name: "رخصة القيادة"
+      },
+      brp: {
+        desc: "تصريح إقامة بيومتري بريطاني",
+        name: "تصريح إقامة بيومتري"
+      },
+      personalausweis: {
+        desc: "بطاقة الهوية الألمانية"
+      },
+      passport_de: {
+        desc: "جواز سفر ألماني ساري المفعول"
+      },
+      fuehrerschein: {
+        desc: "رخصة القيادة الألمانية"
+      },
+      cni: {
+        desc: "بطاقة الهوية الوطنية الفرنسية"
+      },
+      passport_fr: {
+        desc: "جواز سفر فرنسي ساري المفعول"
+      },
+      titre_sejour: {
+        desc: "تصريح الإقامة الفرنسي"
+      },
+      dni: {
+        desc: "وثيقة الهوية الوطنية الإسبانية"
+      },
+      nie: {
+        desc: "رقم تعريف الأجانب"
+      },
+      passport_es: {
+        desc: "جواز سفر ساري المفعول"
+      },
+      carta_id: {
+        desc: "بطاقة الهوية الإيطالية"
+      },
+      passport_it: {
+        desc: "جواز سفر إيطالي ساري المفعول"
+      },
+      cc: {
+        desc: "بطاقة المواطن البرتغالية"
+      },
+      passport_pt: {
+        desc: "جواز سفر برتغالي ساري المفعول"
+      },
+      passport_ru: {
+        desc: "جواز السفر الروسي الداخلي"
+      },
+      foreign_passport_ru: {
+        desc: "جواز السفر الروسي الخارجي",
+        name: "جواز سفر أجنبي"
+      },
+      id_card_cn: {
+        desc: "بطاقة الهوية الصينية"
+      },
+      passport_cn: {
+        desc: "جواز سفر ساري المفعول"
+      },
+      passport_jp: {
+        desc: "جواز سفر ياباني ساري المفعول"
+      },
+      zairyu: {
+        desc: "بطاقة الإقامة"
+      },
+      aadhaar: {
+        desc: "بطاقة الهوية الفريدة",
+        name: "بطاقة Aadhaar"
+      },
+      voter_id: {
+        desc: "بطاقة هوية انتخابية بالصورة",
+        name: "بطاقة الناخب"
+      },
+      passport_in: {
+        desc: "جواز سفر هندي ساري المفعول"
+      },
+      passport_intl: {
+        desc: "جواز سفر ساري المفعول من بلدك"
+      },
+      national_id_intl: {
+        desc: "بطاقة هوية وطنية صادرة عن الحكومة",
+        name: "بطاقة الهوية الوطنية"
+      }
+    },
+    methodName: {
+      id_card: "بطاقة الهوية الوطنية",
+      passport: "جواز السفر",
+      drivers_license: "رخصة القيادة",
+      drivers: "رخصة القيادة",
+      biometric: "تصريح إقامة بيومتري",
+      residence: "تصريح الإقامة",
+      foreign_passport: "جواز سفر أجنبي",
+      national_id: "بطاقة الهوية الوطنية"
+    }
   }
 };
 
@@ -8888,7 +10518,9 @@ const heTranslation = {
     address: "כתובת מסחרית",
     addressValue: "Calle de la Haya, 28935, Parque Coimbra, מדריד, ספרד",
     riskTitle: "הצהרת סיכונים",
-    riskText: "מסחר בשווקים פיננסיים כרוך בסיכון משמעותי להפסד ואינו מתאים לכל המשקיעים. ביצועי עבר אינם מעידים על תוצאות עתידיות. ערך ההשקעות יכול לעלות או לרדת. אל תשקיע כסף שאינך יכול להרשות לעצמך להפסיד. Braxel Markets אינה מבטיחה תשואות ספציפיות."
+    riskText: "מסחר בשווקים פיננסיים כרוך בסיכון משמעותי להפסד ואינו מתאים לכל המשקיעים. ביצועי עבר אינם מעידים על תוצאות עתידיות. ערך ההשקעות יכול לעלות או לרדת. אל תשקיע כסף שאינך יכול להרשות לעצמך להפסיד. Braxel Markets אינה מבטיחה תשואות ספציפיות.",
+    emailAria: "דוא\"ל",
+    xAria: "X (טוויטר)"
   },
   chatbot: {
     title: "תמיכת Braxel",
@@ -9682,6 +11314,167 @@ const heTranslation = {
     disclaimer: {
       title: "גילוי סיכונים | Braxel Markets",
       description: "גילוי סיכונים חשוב עבור מסחר אלגוריתמי והון מנוהל עם Braxel Markets."
+    }
+  },
+  kyc: {
+    country: {
+      BR: "ברזיל",
+      US: "ארצות הברית",
+      GB: "הממלכה המאוחדת",
+      DE: "גרמניה",
+      FR: "צרפת",
+      ES: "ספרד",
+      IT: "איטליה",
+      PT: "פורטוגל",
+      RU: "רוסיה",
+      CN: "סין",
+      JP: "יפן",
+      IN: "הודו",
+      OTHER: "מדינות אחרות"
+    },
+    method: {
+      BR: {
+        id_card: "תעודת זהות לאומית (RG/CPF)",
+        drivers_license: "רישיון נהיגה"
+      },
+      US: {
+        id_card: "תעודת זהות מדינתית"
+      },
+      GB: {
+        id_card: "תעודה לאומית / רישיון נהיגה",
+        biometric: "היתר שהייה ביומטרי"
+      },
+      DE: {
+        drivers: "רישיון נהיגה",
+        passport: "דרכון / Reisepass"
+      },
+      FR: {
+        residence: "היתר שהייה"
+      },
+      RU: {
+        foreign_passport: "דרכון חוץ"
+      },
+      OTHER: {
+        passport: "דרכון בינלאומי",
+        national_id: "תעודת זהות לאומית"
+      }
+    },
+    doc: {
+      rg: {
+        desc: "תעודת זהות לאומית ברזילאית"
+      },
+      cpf: {
+        desc: "כרטיס רישום משלם המסים הברזילאי"
+      },
+      passport: {
+        desc: "דרכון בתוקף עם עמוד תמונה",
+        name: "דרכון"
+      },
+      cnh: {
+        desc: "רישיון נהיגה ברזילאי",
+        name: "CNH (רישיון נהיגה)"
+      },
+      state_id: {
+        desc: "רישיון נהיגה או תעודה ממשלתית",
+        name: "תעודת זהות מדינתית"
+      },
+      passport_uk: {
+        desc: "דרכון בריטי בתוקף"
+      },
+      driving_license_uk: {
+        desc: "רישיון נהיגה בריטי",
+        name: "רישיון נהיגה"
+      },
+      brp: {
+        desc: "היתר שהייה ביומטרי בריטי",
+        name: "היתר שהייה ביומטרי"
+      },
+      personalausweis: {
+        desc: "תעודת זהות גרמנית"
+      },
+      passport_de: {
+        desc: "דרכון גרמני בתוקף"
+      },
+      fuehrerschein: {
+        desc: "רישיון נהיגה גרמני"
+      },
+      cni: {
+        desc: "תעודת זהות לאומית צרפתית"
+      },
+      passport_fr: {
+        desc: "דרכון צרפתי בתוקף"
+      },
+      titre_sejour: {
+        desc: "היתר שהייה צרפתי"
+      },
+      dni: {
+        desc: "תעודת זהות לאומית ספרדית"
+      },
+      nie: {
+        desc: "מספר זיהוי לזרים"
+      },
+      passport_es: {
+        desc: "דרכון בתוקף"
+      },
+      carta_id: {
+        desc: "תעודת זהות איטלקית"
+      },
+      passport_it: {
+        desc: "דרכון איטלקי בתוקף"
+      },
+      cc: {
+        desc: "כרטיס אזרח פורטוגלי"
+      },
+      passport_pt: {
+        desc: "דרכון פורטוגלי בתוקף"
+      },
+      passport_ru: {
+        desc: "דרכון פנימי רוסי"
+      },
+      foreign_passport_ru: {
+        desc: "דרכון חוץ רוסי",
+        name: "דרכון חוץ"
+      },
+      id_card_cn: {
+        desc: "תעודת זהות סינית"
+      },
+      passport_cn: {
+        desc: "דרכון בתוקף"
+      },
+      passport_jp: {
+        desc: "דרכון יפני בתוקף"
+      },
+      zairyu: {
+        desc: "כרטיס תושב"
+      },
+      aadhaar: {
+        desc: "כרטיס זיהוי ייחודי",
+        name: "כרטיס Aadhaar"
+      },
+      voter_id: {
+        desc: "תעודת זהות בחירות עם תמונה",
+        name: "תעודת בוחר"
+      },
+      passport_in: {
+        desc: "דרכון הודי בתוקף"
+      },
+      passport_intl: {
+        desc: "דרכון בתוקף מארץ מוצאך"
+      },
+      national_id_intl: {
+        desc: "תעודת זהות לאומית ממשלתית",
+        name: "תעודת זהות לאומית"
+      }
+    },
+    methodName: {
+      id_card: "תעודת זהות לאומית",
+      passport: "דרכון",
+      drivers_license: "רישיון נהיגה",
+      drivers: "רישיון נהיגה",
+      biometric: "היתר שהייה ביומטרי",
+      residence: "היתר שהייה",
+      foreign_passport: "דרכון חוץ",
+      national_id: "תעודת זהות לאומית"
     }
   }
 };
