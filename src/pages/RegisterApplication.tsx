@@ -154,7 +154,7 @@ const RegisterApplication = () => {
           <div className="flex justify-between items-center pb-4 border-b border-white/5">
             <div>
               <h2 className="font-bold text-2xl uppercase tracking-tight">
-                {plan.name}
+                {t(`plans.${plan.id}`, { defaultValue: plan.name })}
               </h2>
               <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">
                 {t('application.plan_selected')}
@@ -172,7 +172,7 @@ const RegisterApplication = () => {
 
           <div className="space-y-4">
             <p className="text-[10px] text-slate-400">
-              {t('application.plan_description', { plan: plan.name })}
+              {t('application.plan_description', { plan: t(`plans.${plan.id}`, { defaultValue: plan.name }) })}
             </p>
             <p className="text-[10px] text-slate-400">
               {t('application.plan_price_detail', {

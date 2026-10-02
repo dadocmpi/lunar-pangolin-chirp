@@ -10,6 +10,7 @@ import {
   CreditCard, LayoutDashboard, Wallet
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -22,6 +23,7 @@ import SupportChatbotBoundary from '@/components/SupportChatbotBoundary';
 
 const Index = () => {
   const { t } = useTranslation();
+  useDocumentMeta('home');
   
   const stats = [
     { value: "500+", label: t('stats.traders') },

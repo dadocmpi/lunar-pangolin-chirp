@@ -1,52 +1,175 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml"
+>
   <url>
     <loc>https://braxelmarkets.vercel.app/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/" />
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/pricing</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/pricing?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/pricing?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/pricing?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/pricing?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/pricing?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/pricing?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/pricing?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/pricing?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/pricing?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/pricing?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/pricing?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/pricing" />
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/how-it-works</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/how-it-works?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/how-it-works?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/how-it-works?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/how-it-works?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/how-it-works?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/how-it-works?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/how-it-works?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/how-it-works?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/how-it-works?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/how-it-works?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/how-it-works?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/how-it-works" />
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/about?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/about?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/about?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/about?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/about?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/about?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/about?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/about?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/about?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/about?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/about?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/about" />
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/contact</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/contact?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/contact?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/contact?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/contact?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/contact?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/contact?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/contact?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/contact?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/contact?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/contact?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/contact?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/contact" />
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/login</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/login?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/login?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/login?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/login?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/login?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/login?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/login?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/login?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/login?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/login?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/login?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/login" />
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/register</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/register?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/register?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/register?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/register?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/register?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/register?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/register?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/register?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/register?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/register?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/register?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/register" />
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/terms?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/terms?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/terms?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/terms?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/terms?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/terms?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/terms?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/terms?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/terms?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/terms?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/terms?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/terms" />
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/privacy?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/privacy?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/privacy?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/privacy?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/privacy?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/privacy?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/privacy?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/privacy?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/privacy?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/privacy?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/privacy?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/privacy" />
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://braxelmarkets.vercel.app/disclaimer</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://braxelmarkets.vercel.app/disclaimer?lng=en" />
+    <xhtml:link rel="alternate" hreflang="pt" href="https://braxelmarkets.vercel.app/disclaimer?lng=pt" />
+    <xhtml:link rel="alternate" hreflang="it" href="https://braxelmarkets.vercel.app/disclaimer?lng=it" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://braxelmarkets.vercel.app/disclaimer?lng=es" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://braxelmarkets.vercel.app/disclaimer?lng=fr" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://braxelmarkets.vercel.app/disclaimer?lng=de" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://braxelmarkets.vercel.app/disclaimer?lng=ru" />
+    <xhtml:link rel="alternate" hreflang="zh" href="https://braxelmarkets.vercel.app/disclaimer?lng=zh" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://braxelmarkets.vercel.app/disclaimer?lng=ja" />
+    <xhtml:link rel="alternate" hreflang="ar" href="https://braxelmarkets.vercel.app/disclaimer?lng=ar" />
+    <xhtml:link rel="alternate" hreflang="he" href="https://braxelmarkets.vercel.app/disclaimer?lng=he" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://braxelmarkets.vercel.app/disclaimer" />
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
   </url>

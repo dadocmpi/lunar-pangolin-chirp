@@ -483,9 +483,9 @@ const Dashboard = () => {
                 {kycStatus === 'approved' ? (
                   <><div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> <span className="text-emerald-500">{t('dashboard.verifiedAccount')}</span></>
                 ) : kycStatus === 'submitted' ? (
-                  <><div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse" /> <span className="text-yellow-500">KYC Under Review</span></>
+                  <><div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse" /> <span className="text-yellow-500">{t('dashboard.kycUnderReview')}</span></>
                 ) : (
-                  <><div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" /> <span className="text-red-500">KYC Required</span></>
+                  <><div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" /> <span className="text-red-500">{t('dashboard.kycRequiredBanner')}</span></>
                 )}
               </div>
             </div>
@@ -607,7 +607,7 @@ const Dashboard = () => {
               <div className="space-y-8">
                 <div>
                   <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.analytics')}</span>
-                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Performance Dashboard</h2>
+                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">{t('dashboard.performanceTitle')}</h2>
                 </div>
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -631,7 +631,7 @@ const Dashboard = () => {
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.assetsInOperation')}</p>
-                    <p className="text-xl font-serif font-bold text-white">BTC, ETH, SOL</p>
+                    <p className="text-xl font-serif font-bold text-white">{t('dashboard.assetsList')}</p>
                   </div>
                 </div>
 
@@ -689,12 +689,12 @@ const Dashboard = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.network')}</label>
+                      <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.networkLabel')}</label>
                       <select className="w-full bg-white/5 border border-white/10 h-14 px-4 text-[12px] font-bold uppercase tracking-widest text-white outline-none appearance-none">
-                        <option className="bg-[#1A1A1A]">ERC-20 (Ethereum)</option>
-                        <option className="bg-[#1A1A1A]">TRC-20 (Tron)</option>
-                        <option className="bg-[#1A1A1A]">BEP-20 (BSC)</option>
-                        <option className="bg-[#1A1A1A]">Bank Transfer (SWIFT)</option>
+                        <option className="bg-[#1A1A1A]">{t('dashboard.network.erc20')}</option>
+                        <option className="bg-[#1A1A1A]">{t('dashboard.network.trc20')}</option>
+                        <option className="bg-[#1A1A1A]">{t('dashboard.network.bep20')}</option>
+                        <option className="bg-[#1A1A1A]">{t('dashboard.network.bankSwift')}</option>
                       </select>
                     </div>
 
@@ -743,8 +743,8 @@ const Dashboard = () => {
               <div className="space-y-8">
                 <div>
                   <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.operations')}</span>
-                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Audit Log</h2>
-                  <p className="text-slate-500 text-[12px] mt-2">All algorithmic orders executed on your account.</p>
+                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">{t('dashboard.auditLogTitle')}</h2>
+                  <p className="text-slate-500 text-[12px] mt-2">{t('dashboard.auditLogDesc')}</p>
                 </div>
 
                 <div className="bg-[#1A1A1A] border border-white/10 overflow-x-auto">
@@ -755,7 +755,7 @@ const Dashboard = () => {
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.type')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.entry')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.exit')}</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">Profit</th>
+                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.profit')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.time')}</th>
                         <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.status')}</th>
                       </tr>
@@ -791,7 +791,7 @@ const Dashboard = () => {
               <div className="space-y-8">
                 <div>
                   <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.settings')}</span>
-                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">Account Settings</h2>
+                  <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">{t('dashboard.accountSettingsTitle')}</h2>
                 </div>
 
                 {/* Settings Tabs */}
@@ -820,7 +820,7 @@ const Dashboard = () => {
                     {/* Name Fields */}
                     <div className="bg-[#1A1A1A] border border-white/10 p-8 space-y-6">
                       <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-3">
-                        <User size={16} className="text-[#D4AF37]" /> Personal Information
+                        <User size={16} className="text-[#D4AF37]" /> {t('dashboard.personalInformation')}
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
@@ -853,14 +853,14 @@ const Dashboard = () => {
                     {/* Email Change */}
                     <div className="bg-[#1A1A1A] border border-white/10 p-8 space-y-6">
                       <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white flex items-center gap-3">
-                        <Mail size={16} className="text-[#D4AF37]" /> Email Address
+                        <Mail size={16} className="text-[#D4AF37]" /> {t('dashboard.emailAddress')}
                       </h3>
                       <p className="text-[10px] text-slate-400 leading-relaxed">
-                        Changing your email requires verification. A confirmation link will be sent to the new email address.
+                        {t('dashboard.emailChangeNotice')}
                       </p>
 
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Current Email</label>
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard.currentEmail')}</label>
                         <div className="flex items-center gap-2 p-4 bg-white/[0.02] border border-white/5">
                           <CheckCircle2 size={14} className="text-emerald-500" />
                           <span className="text-[12px] text-white">{user?.email}</span>
@@ -890,17 +890,16 @@ const Dashboard = () => {
                         <div className="bg-emerald-500/10 border border-emerald-500/20 p-6">
                           <div className="flex items-center gap-3 mb-2">
                             <CheckCircle2 size={16} className="text-emerald-500" />
-                            <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-500">Confirmation Sent</p>
+                            <p className="text-[11px] font-bold uppercase tracking-widest text-emerald-500">{t('dashboard.confirmationSent')}</p>
                           </div>
                           <p className="text-[10px] text-slate-400">
-                            A confirmation link has been sent to <span className="text-white font-bold">{editEmail}</span>.
-                            Please check your inbox and click the link to complete the email change.
+                            {t('dashboard.emailChangeSentTo', { email: editEmail })}
                           </p>
                           <button
                             onClick={() => setEmailChangeRequested(false)}
                             className="text-[10px] text-[#D4AF37] font-bold uppercase tracking-widest mt-4 hover:underline"
                           >
-                            Try a different email
+                            {t('dashboard.tryDifferentEmail')}
                           </button>
                         </div>
                       )}
@@ -1003,7 +1002,7 @@ const Dashboard = () => {
                                 className="w-full flex items-center justify-between p-4 bg-white/5 border border-white/10 hover:border-[#D4AF37]/30 transition-colors"
                               >
                                 <span className="text-[12px] font-medium">
-                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${getCountryByCode(selectedCountry)?.name}` : t('dashboard.kyc.selectCountryPlaceholder')}
+                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${t('kyc.country.' + selectedCountry, { defaultValue: getCountryByCode(selectedCountry)?.name })}` : t('dashboard.kyc.selectCountryPlaceholder')}
                                 </span>
                                 <ChevronDown size={16} className={cn("text-slate-400 transition-transform", countryDropdownOpen && "rotate-180")} />
                               </button>
@@ -1021,7 +1020,7 @@ const Dashboard = () => {
                                       className="w-full flex items-center gap-3 p-3 hover:bg-white/5 text-left transition-colors"
                                     >
                                       <span className="text-lg">{country.flag}</span>
-                                      <span className="text-[11px] font-medium text-white">{country.name}</span>
+                                      <span className="text-[11px] font-medium text-white">{t('kyc.country.' + country.code, { defaultValue: country.name })}</span>
                                     </button>
                                   ))}
                                 </div>
@@ -1032,7 +1031,7 @@ const Dashboard = () => {
                               disabled={!canProceedToMethod}
                               className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-12 font-black text-[10px] uppercase tracking-widest disabled:opacity-50"
                             >
-                              Continue to Method Selection
+                              {t('dashboard.continueToMethod')}
                             </Button>
                           </div>
                         )}
@@ -1065,7 +1064,7 @@ const Dashboard = () => {
                                       : "border-white/10 hover:border-white/20 bg-white/[0.02]"
                                   )}
                                 >
-                                  <span className="text-[12px] font-bold uppercase tracking-widest">{method.name}</span>
+                                  <span className="text-[12px] font-bold uppercase tracking-widest">{t('kyc.method.' + selectedCountry + '.' + method.id, { defaultValue: t('kyc.methodName.' + method.id, { defaultValue: method.name }) })}</span>
                                 </button>
                               ))}
                             </div>
@@ -1098,8 +1097,8 @@ const Dashboard = () => {
                                       : "border-white/10 hover:border-white/20 bg-white/[0.02]"
                                   )}
                                 >
-                                  <span className="text-[12px] font-bold uppercase tracking-widest block">{doc.name}</span>
-                                  <span className="text-[10px] text-slate-500 mt-1 block">{doc.description}</span>
+                                  <span className="text-[12px] font-bold uppercase tracking-widest block">{t('kyc.doc.' + doc.id + '.name', { defaultValue: doc.name })}</span>
+                                  <span className="text-[10px] text-slate-500 mt-1 block">{t('kyc.doc.' + doc.id + '.desc', { defaultValue: doc.description })}</span>
                                 </button>
                               ))}
                             </div>
@@ -1127,7 +1126,7 @@ const Dashboard = () => {
                                     <div className="space-y-2">
                                       <Upload size={32} className="mx-auto text-slate-600" />
                                       <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.kyc.clickToUpload')}</p>
-                                      <p className="text-[9px] text-slate-600">PNG, JPG, PDF up to 10MB</p>
+                                      <p className="text-[9px] text-slate-600">{t('dashboard.uploadHint')}</p>
                                     </div>
                                   )}
                                 </label>
@@ -1194,12 +1193,12 @@ const Dashboard = () => {
                         </div>
 
                         <p className="text-slate-500 text-[12px] leading-relaxed">
-                          Add an extra layer of security to your account. Use an authenticator app like Google Authenticator or Authy.
+                          {t('dashboard.twoFactorDesc')}
                         </p>
 
                         <div className="bg-white/[0.02] border border-white/5 p-6 text-center">
                           <div className="w-32 h-32 mx-auto bg-white/5 border border-white/10 flex items-center justify-center mb-4">
-                            <p className="text-[9px] text-slate-500 uppercase">QR Code</p>
+                            <p className="text-[9px] text-slate-500 uppercase">{t('dashboard.qrCode')}</p>
                           </div>
                           <p className="text-[9px] text-slate-500">{t('dashboard.kyc.scanAuthenticator')}</p>
                         </div>

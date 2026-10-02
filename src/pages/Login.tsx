@@ -45,6 +45,23 @@ const Login = () => {
     checkSession();
   }, [navigate, from]);
 
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      showError(t('auth.enterEmailFirst'));
+      return;
+    }
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login`,
+      });
+      if (error) throw error;
+      showSuccess(t('auth.resetPasswordSent'));
+    } catch (err) {
+      console.error('Password reset error:', err);
+      showError(t('auth.resetPasswordError'));
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -160,7 +177,7 @@ const Login = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('auth.password')}</label>
-                <a href="#" className="text-[9px] text-[#C5A059] hover:underline font-bold uppercase tracking-widest">{t('auth.forgotPassword')}</a>
+                <button type="button" onClick={handleForgotPassword} className="text-[9px] text-[#C5A059] hover:underline font-bold uppercase tracking-widest">{t('auth.forgotPassword')}</button>
               </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={18} />

@@ -10,6 +10,7 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 const data = [
   { name: 'Jan', value: 2000 },
@@ -22,10 +23,12 @@ const data = [
 ];
 
 const PerformanceChart = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="h-[300px] w-full bg-[#080B12] border border-white/10 p-6">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Growth Performance (MTD)</h3>
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">{t('dashboard.growthPerformanceMtd')}</h3>
         <span className="text-green-500 text-[10px] font-bold">+12.4%</span>
       </div>
       <ResponsiveContainer width="100%" height="100%">

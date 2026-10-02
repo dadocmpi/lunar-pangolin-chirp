@@ -69,6 +69,14 @@ const Navbar = () => {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng).then(() => {
+      // The detector prioritises `?lng=`, so keep the URL in sync with the
+      // chosen language — otherwise a reload would fall back to the old value.
+      const params = new URLSearchParams(location.search);
+      params.set('lng', lng);
+      navigate(
+        { pathname: location.pathname, search: params.toString() },
+        { replace: true },
+      );
       setIsOpen(false);
     });
   };
@@ -155,7 +163,7 @@ const Navbar = () => {
               className="bg-[#080B12] border-white/10 text-white rounded-none min-w-[200px] z-[1100]"
             >
               <div className="px-4 py-3 border-b border-white/10">
-                <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase mb-1">Sessão Ativa</p>
+                <p className="text-[9px] font-bold text-slate-500 tracking-widest uppercase mb-1">{t('nav.sessionActive')}</p>
                 <p className="text-[11px] text-slate-300 truncate">{userEmail}</p>
               </div>
               <DropdownMenuItem 
@@ -163,7 +171,7 @@ const Navbar = () => {
                 className="hover:bg-[#D4AF37] hover:text-black cursor-pointer text-[11px] font-bold tracking-wide p-4 rounded-none transition-colors focus:bg-[#D4AF37] focus:text-black"
               >
                 <LayoutDashboard size={14} className="mr-3" />
-                Acessar Painel
+                {t('nav.accessDashboard')}
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/5" />
               <DropdownMenuItem 
@@ -171,7 +179,7 @@ const Navbar = () => {
                 className="hover:bg-red-600 hover:text-white cursor-pointer text-[11px] font-bold tracking-wide p-4 rounded-none transition-colors text-red-400 focus:bg-red-600 focus:text-white"
               >
                 <LogOut size={14} className="mr-3" />
-                Sair
+                {t('nav.logout')}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -236,13 +244,13 @@ const Navbar = () => {
                   onClick={() => { navigate('/dashboard'); setIsOpen(false); }}
                   className="block w-full text-left text-[11px] font-bold text-white tracking-[0.3em] uppercase font-tech"
                 >
-                  Acessar Painel
+                  {t('nav.accessDashboard')}
                 </button>
                 <button 
                   onClick={() => { handleLogout(); setIsOpen(false); }}
                   className="block w-full text-left text-[11px] font-bold text-red-400 tracking-[0.3em] uppercase font-tech"
                 >
-                  Sair
+                  {t('nav.logout')}
                 </button>
               </>
             ) : (

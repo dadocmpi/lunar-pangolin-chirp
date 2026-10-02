@@ -36,7 +36,7 @@ const SupportChatbot = () => {
       const assistantMessage: Message = {
         id: String(Date.now() + 1),
         role: 'assistant',
-        content: 'Thank you for your message. Our team will respond shortly.',
+        content: t('chatbot.assistantReply'),
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, assistantMessage]);
@@ -49,10 +49,10 @@ const SupportChatbot = () => {
         type="button"
         onClick={() => setIsOpen(true)}
         className="fixed bottom-8 right-8 z-[999] bg-[#D4AF37] text-black px-6 py-4 flex items-center gap-3 hover:opacity-90 transition-opacity"
-        aria-label="Open support chat"
+        aria-label={t('chatbot.openChat')}
       >
         <span className="text-[11px] font-black uppercase tracking-[0.2em]">
-          {typeof t === 'function' ? t('nav.support', 'Support') : 'Support'}
+          {t('nav.support')}
         </span>
       </button>
     );
@@ -62,16 +62,16 @@ const SupportChatbot = () => {
     <div
       className="fixed bottom-8 right-8 z-[999] w-[400px] max-w-[calc(100vw-2rem)] bg-[#0a0e27] border border-white/10 shadow-2xl"
       role="dialog"
-      aria-label="Support chat"
+      aria-label={t('chatbot.supportDialog')}
     >
       <div className="p-4 border-b border-white/5 flex items-center justify-between bg-gradient-to-r from-[#0a0e27] to-[#0f1430]">
         <div>
           <h3 className="text-[11px] font-bold uppercase tracking-widest text-white">
-            {typeof t === 'function' ? t('chatbot.title', 'Braxel Support') : 'Braxel Support'}
+            {t('chatbot.title')}
           </h3>
           <p className="text-[9px] text-[#D4AF37] flex items-center gap-1">
             <span className="w-1.5 h-1.5 bg-[#D4AF37] rounded-full" />
-            Braxel Markets AI
+            {t('chatbot.brandAI')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -79,7 +79,7 @@ const SupportChatbot = () => {
             type="button"
             onClick={() => setIsMinimized((v) => !v)}
             className="p-2 text-slate-400 hover:text-white"
-            aria-label={isMinimized ? 'Maximize' : 'Minimize'}
+            aria-label={isMinimized ? t('chatbot.maximize') : t('chatbot.minimize')}
           >
             <span className="text-[10px] font-bold uppercase tracking-widest">
               {isMinimized ? '+' : '−'}
@@ -92,7 +92,7 @@ const SupportChatbot = () => {
               setIsMinimized(false);
             }}
             className="p-2 text-slate-400 hover:text-white"
-            aria-label="Close"
+            aria-label={t('chatbot.close')}
           >
             <span className="text-[10px] font-bold uppercase tracking-widest">×</span>
           </button>
@@ -149,11 +149,7 @@ const SupportChatbot = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleSendMessage();
                 }}
-                placeholder={
-                  typeof t === 'function'
-                    ? t('chatbot.placeholder', 'Type a message...')
-                    : 'Type a message...'
-                }
+                placeholder={t('chatbot.placeholder')}
                 className="flex-1 bg-white/5 border border-white/10 text-[11px] text-white placeholder:text-slate-600 focus:border-[#D4AF37] px-3 py-2 outline-none"
               />
               <button
@@ -163,14 +159,12 @@ const SupportChatbot = () => {
                 className="p-3 bg-[#D4AF37] text-black hover:bg-[#D4AF37]/90 disabled:opacity-50"
               >
                 <span className="text-[10px] font-black uppercase tracking-widest">
-                  Send
+                  {t('chatbot.send')}
                 </span>
               </button>
             </div>
             <p className="text-[8px] text-slate-600 mt-2 text-center">
-              {typeof t === 'function'
-                ? t('chatbot.emailSupport', 'Email:') + ' marketsbraxel@ouvidor.net'
-                : 'Email: marketsbraxel@ouvidor.net'}
+              {t('chatbot.emailSupport')} marketsbraxel@ouvidor.net
             </p>
           </div>
         </>

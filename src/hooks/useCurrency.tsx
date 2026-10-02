@@ -1,4 +1,5 @@
 import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   getUserCountry,
   getCurrencyByCountry,
@@ -18,12 +19,14 @@ interface CurrencyContextType {
   ratesReady: boolean;
   convertPrice: (amountUSD: number) => string;
   convertPriceValue: (amountUSD: number) => number;
-  formatManagedCapital: (amountUSD: number) => string;
+  formatManagedCapital: (amountUSD: number, fractionDigits?: number) => string;
 }
 
 const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
 
 export function CurrencyProvider({ children }: { children: ReactNode }) {
+  const { i18n } = useTranslation();
+  const locale = (i18n.language || "en").split("-")[0];
   const [countryCode, setCountryCode] = useState<string>("US");
   const [currencyInfo, setCurrencyInfo] = useState<{
     currency: string;
@@ -74,7 +77,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
 
   const convertPrice = (amountUSD: number): string => {
     const amount = convertFromUSD(amountUSD, currencyInfo.currency);
-    return formatCurrency(amount, currencyInfo.currency, currencyInfo.symbol);
+    return formatCurrency(amount, currencyInfo.currency, currencyInfo.symbol, locale);
   };
 
   const convertPriceValue = (amountUSD: number): number => {
@@ -82,8 +85,8 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   };
 
   // Managed capital is always USD, regardless of the visitor's local currency.
-  const formatManagedCapital = (amountUSD: number): string =>
-    formatUsdAmount(amountUSD);
+  const formatManagedCapital = (amountUSD: number, fractionDigits = 2): string =>
+    formatUsdAmount(amountUSD, fractionDigits);
 
   return (
     <CurrencyContext.Provider

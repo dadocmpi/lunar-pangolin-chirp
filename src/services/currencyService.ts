@@ -76,14 +76,23 @@ export function formatCurrency(
   amount: number,
   currency: string,
   symbol: string,
+  locale = "en-US",
 ): string {
   const decimals = ["JPY", "KRW", "VND", "IDR", "CLP", "COP", "HUF"].includes(currency)
     ? 0
     : 2;
-  const formatted = amount.toLocaleString("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
+  // Group/decimal separators follow the reader's locale; the currency symbol is
+  // prepended from the country map so we do not depend on ICU symbol data.
+  let formatted: string;
+  try {
+    formatted = new Intl.NumberFormat(locale, {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+      useGrouping: true,
+    }).format(amount);
+  } catch {
+    formatted = amount.toFixed(decimals);
+  }
   return `${symbol}${formatted}`;
 }
 
@@ -91,12 +100,12 @@ export function formatCurrency(
  * Formats managed capital as a fixed USD amount. Managed capital is quoted in
  * USD (futures), so it must never be converted to the visitor's local currency.
  */
-export function formatUsdAmount(amountUSD: number): string {
+export function formatUsdAmount(amountUSD: number, fractionDigits = 2): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
   }).format(amountUSD);
 }
 

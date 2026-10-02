@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { notifyOwnerInBackground } from '@/lib/notifyOwner';
 
 const AuthCallback = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -89,16 +91,16 @@ const AuthCallback = () => {
 
         // No valid session found
         setStatus('error');
-        setErrorMessage('Invalid or expired confirmation link');
+        setErrorMessage(t('authCallback.invalidLink'));
       } catch (error: unknown) {
         console.error('Auth callback error:', error);
         setStatus('error');
-        setErrorMessage(error instanceof Error ? error.message : 'Failed to confirm email');
+        setErrorMessage(error instanceof Error ? error.message : t('authCallback.failedConfirm'));
       }
     };
 
     handleCallback();
-  }, [searchParams, navigate]);
+  }, [searchParams, navigate, t]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#05070A]">
@@ -106,8 +108,8 @@ const AuthCallback = () => {
         {status === 'loading' && (
           <>
             <div className="w-16 h-16 border-4 border-[#C5A059] border-t-transparent rounded-full animate-spin mx-auto mb-6" />
-            <h2 className="text-2xl font-bold text-white mb-2">Confirming your account...</h2>
-            <p className="text-slate-400">Please wait while we verify your email.</p>
+            <h2 className="text-2xl font-bold text-white mb-2">{t('authCallback.confirmingTitle')}</h2>
+            <p className="text-slate-400">{t('authCallback.confirmingDesc')}</p>
           </>
         )}
 
@@ -118,9 +120,9 @@ const AuthCallback = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Email Confirmed!</h2>
-            <p className="text-slate-400 mb-4">Your account has been successfully verified.</p>
-            <p className="text-[#C5A059] text-sm">Redirecting to login...</p>
+            <h2 className="text-2xl font-bold text-white mb-2">{t('authCallback.confirmedTitle')}</h2>
+            <p className="text-slate-400 mb-4">{t('authCallback.confirmedDesc')}</p>
+            <p className="text-[#C5A059] text-sm">{t('authCallback.redirecting')}</p>
           </>
         )}
 
@@ -131,13 +133,13 @@ const AuthCallback = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Confirmation Failed</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">{t('authCallback.failedTitle')}</h2>
             <p className="text-slate-400 mb-4">{errorMessage}</p>
             <button
               onClick={() => navigate('/login', { replace: true })}
               className="px-6 py-3 bg-[#C5A059] text-white font-bold text-sm uppercase tracking-wider rounded-none hover:bg-[#B08D48] transition-colors"
             >
-              Go to Login
+              {t('authCallback.goToLogin')}
             </button>
           </>
         )}

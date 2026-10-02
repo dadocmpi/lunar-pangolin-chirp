@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useTranslation } from 'react-i18next';
+import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import MarketTicker from '@/components/MarketTicker';
@@ -16,6 +17,7 @@ import { Link } from 'react-router-dom';
 
 const Contact = () => {
   const { t } = useTranslation();
+  useDocumentMeta('contact');
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(false);
   const [captcha, setCaptcha] = useState({ q: '', a: 0 });
@@ -114,7 +116,7 @@ const Contact = () => {
               <div className="flex items-start gap-6 group">
                 <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Mail size={28} /></div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">E-mail</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">{t('contact.emailLabel')}</p>
                   <a href="mailto:marketsbraxel@ouvidor.net" className="text-slate-400 text-[14px] hover:text-[#D4AF37] transition-colors">marketsbraxel@ouvidor.net</a>
                 </div>
               </div>
@@ -190,10 +192,11 @@ const Contact = () => {
               </div>
 
               <div className="text-[9px] text-slate-500 italic">
-                By submitting this form, you agree to our{' '}
+                {t('contact.consentPre')}{' '}
                 <Link to="/privacy" className="underline hover:text-[#D4AF37]">
                   {t('footer.privacy')}
-                </Link>{' '}. We use your data only to respond to your inquiry.
+                </Link>
+                {'. '}{t('contact.consentPost')}
               </div>
 
               <Button 
