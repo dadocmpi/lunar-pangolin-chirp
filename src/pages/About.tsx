@@ -13,10 +13,10 @@ const About = () => {
 
   const teamMembers = [
     {
-      name: t('about.team[0].name'),
-      role: t('about.team[0].role'),
-      bio: t('about.team[0].bio'),
-      photo: t('about.team[0].photo'),
+      name: t('about.team.0.name'),
+      role: t('about.team.0.role'),
+      bio: t('about.team.0.bio'),
+      photo: t('about.team.0.photo'),
     },
   ];
 

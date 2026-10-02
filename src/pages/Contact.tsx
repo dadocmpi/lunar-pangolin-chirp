@@ -116,7 +116,7 @@ const Contact = () => {
               <div className="flex items-start gap-6 group">
                 <div className="text-[#D4AF37] mt-1 group-hover:scale-110 transition-transform"><Mail size={28} /></div>
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">E-mail</p>
+                  <p className="text-[10px] font-bold uppercase tracking-[3px] text-white mb-2">{t('contact.emailLabel')}</p>
                   <a href="mailto:marketsbraxel@ouvidor.net" className="text-slate-400 text-[14px] hover:text-[#D4AF37] transition-colors">marketsbraxel@ouvidor.net</a>
                 </div>
               </div>
