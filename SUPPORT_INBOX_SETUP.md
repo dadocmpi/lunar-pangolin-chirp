@@ -72,6 +72,36 @@ and the `contact.messageFailed` string in `src/i18n.ts`.
 
 ## Deploying the function
 
+The frontend calls the function at
+`https://<project-ref>.supabase.co/functions/v1/support-message`. Deploy it to
+**the same project the site uses** (project ref `ymzdxifedtjwkxkzfwqu`):
+
 ```bash
+supabase link --project-ref ymzdxifedtjwkxkzfwqu
 supabase functions deploy support-message
 ```
+
+Pushing to `main` deploys the **site** on Vercel, but it does **not** deploy
+Edge Functions — publishing the function is a manual Supabase step. If it is
+missing, the form's `fetch` receives a `404` and the visitor sees the generic
+error, so always confirm the deploy below.
+
+## Verify the deploy (troubleshooting)
+
+An unauthenticated request must return **401** (function exists, auth required).
+A **404** means the function is not deployed to that project:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" -X POST \
+  https://ymzdxifedtjwkxkzfwqu.supabase.co/functions/v1/support-message \
+  -H "Content-Type: application/json" -d '{}'
+# 401 -> deployed and healthy
+# 404 -> not deployed (run the deploy command above)
+```
+
+You can also list what is live: `supabase functions list --project-ref ymzdxifedtjwkxkzfwqu`.
+
+If the endpoint returns **502**, the function ran but Resend refused the send
+(most often the account-email mismatch described above). Check the function logs
+in Supabase → Edge Functions → `support-message` → Logs; the reason is logged as
+`[email] resend request failed` or `[email] support message skipped`.
