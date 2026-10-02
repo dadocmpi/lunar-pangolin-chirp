@@ -40,6 +40,11 @@ export async function sendSupportMessage(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        // Supabase's recommended `fetch` invocation sends both headers: `apikey`
+        // identifies the project, `Authorization` carries the JWT. Sending only
+        // `Authorization` happens to work today, but this is the documented form
+        // and survives gateway/JWT configuration changes.
+        apikey: SUPABASE_ANON_KEY,
         Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
       },
       body: JSON.stringify(input),
