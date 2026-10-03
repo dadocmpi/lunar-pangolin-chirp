@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { functionsUrl, supabase } from '@/integrations/supabase/client';
 import { useTranslation } from 'react-i18next';
 import Navbar from '@/components/Navbar';
@@ -139,12 +139,12 @@ const RegisterApplication = () => {
       <Navbar />
       <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
         <div className="mb-8">
-          <a
-            href="/pricing"
+          <Link
+            to="/pricing"
             className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-[#C5A059] transition-colors"
           >
             <span className="text-[10px] font-bold uppercase tracking-widest">{t('nav.pricing')}</span>
-          </a>
+          </Link>
           <h1 className="mt-4 text-3xl font-black uppercase tracking-tighter">
             {t('application.title')} <span className="text-[#C5A059]">{t('application.subtitle')}</span>
           </h1>

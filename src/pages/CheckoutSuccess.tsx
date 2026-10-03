@@ -221,10 +221,10 @@ const CheckoutSuccess = () => {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <Button asChild className="bg-[#C5A059] hover:bg-[#C5A059]/80 text-white rounded-none h-12 px-6 text-[11px] font-black uppercase tracking-[0.2em]">
-                <a href="/dashboard">{t("checkoutSuccess.goToDashboard")}</a>
+                <Link to="/dashboard">{t("checkoutSuccess.goToDashboard")}</Link>
               </Button>
               <Button asChild variant="outline" className="rounded-none h-12 px-6 text-[11px] font-black uppercase tracking-[0.2em] border-white/10 text-white hover:bg-white/5">
-                <a href="/contact">{t("checkoutSuccess.contactSupport")}</a>
+                <Link to="/contact">{t("checkoutSuccess.contactSupport")}</Link>
               </Button>
             </div>
           </div>

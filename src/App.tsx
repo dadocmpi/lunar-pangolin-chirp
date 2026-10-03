@@ -1,10 +1,12 @@
 import { lazy, Suspense } from "react";
+import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { CurrencyProvider } from "./hooks/useCurrency";
 
 const queryClient = new QueryClient({
@@ -41,6 +43,25 @@ const PageTransition = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
+// Themed fallback shown while a lazy page chunk is fetched. It matches the
+// app's black background so a slow network never flashes an unstyled screen.
+const RouteFallback = () => (
+  <div className="min-h-screen bg-[#05070A] flex items-center justify-center">
+    <Loader2 className="animate-spin text-[#C5A059]" size={40} />
+  </div>
+);
+
+// Each route is wrapped in its own ErrorBoundary so a failing page — or a
+// failed dynamic-import chunk — is contained instead of unmounting the whole
+// app into a black screen.
+const RouteView = ({ children }: { children: React.ReactNode }) => (
+  <ErrorBoundary>
+    <Suspense fallback={<RouteFallback />}>
+      <PageTransition>{children}</PageTransition>
+    </Suspense>
+  </ErrorBoundary>
+);
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <CurrencyProvider>
@@ -50,22 +71,22 @@ const App = () => (
         <BrowserRouter>
           <ScrollToTop />
           <Routes>
-            <Route path="/" element={<PageTransition><Index /></PageTransition>} />
-            <Route path="/pricing" element={<PageTransition><Pricing /></PageTransition>} />
-            <Route path="/how-it-works" element={<PageTransition><HowItWorks /></PageTransition>} />
-            <Route path="/about" element={<PageTransition><About /></PageTransition>} />
-            <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-            <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
-            <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
-            <Route path="/register-application" element={<PageTransition><RegisterApplication /></PageTransition>} />
-            <Route path="/auth-callback" element={<PageTransition><AuthCallback /></PageTransition>} />
-            <Route path="/terms" element={<PageTransition><Terms /></PageTransition>} />
-            <Route path="/privacy" element={<PageTransition><Privacy /></PageTransition>} />
-            <Route path="/disclaimer" element={<PageTransition><Disclaimer /></PageTransition>} />
-            <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
-            <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
-            <Route path="/checkout/success" element={<PageTransition><CheckoutSuccess /></PageTransition>} />
-            <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
+            <Route path="/" element={<RouteView><Index /></RouteView>} />
+            <Route path="/pricing" element={<RouteView><Pricing /></RouteView>} />
+            <Route path="/how-it-works" element={<RouteView><HowItWorks /></RouteView>} />
+            <Route path="/about" element={<RouteView><About /></RouteView>} />
+            <Route path="/contact" element={<RouteView><Contact /></RouteView>} />
+            <Route path="/login" element={<RouteView><Login /></RouteView>} />
+            <Route path="/register" element={<RouteView><Register /></RouteView>} />
+            <Route path="/register-application" element={<RouteView><RegisterApplication /></RouteView>} />
+            <Route path="/auth-callback" element={<RouteView><AuthCallback /></RouteView>} />
+            <Route path="/terms" element={<RouteView><Terms /></RouteView>} />
+            <Route path="/privacy" element={<RouteView><Privacy /></RouteView>} />
+            <Route path="/disclaimer" element={<RouteView><Disclaimer /></RouteView>} />
+            <Route path="/dashboard" element={<RouteView><Dashboard /></RouteView>} />
+            <Route path="/checkout" element={<RouteView><Checkout /></RouteView>} />
+            <Route path="/checkout/success" element={<RouteView><CheckoutSuccess /></RouteView>} />
+            <Route path="*" element={<RouteView><NotFound /></RouteView>} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

@@ -41,7 +41,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { functionsUrl, supabase } from '@/integrations/supabase/client';
+import { functionsUrl, supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
 import { notifyOwner } from '@/lib/notifyOwner';
 import { showError, showSuccess } from '@/utils/toast';
 import { cn } from '@/lib/utils';
@@ -115,6 +115,14 @@ const Dashboard = () => {
   const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
+    // Dashboard needs auth to show anything. Without Supabase configured there
+    // is no session to read, so fail closed to the unauthenticated state instead
+    // of throwing from the client proxy.
+    if (!isSupabaseConfigured()) {
+      setLoading(false);
+      return;
+    }
+
     fetchData();
 
     const setupRealtime = async () => {
