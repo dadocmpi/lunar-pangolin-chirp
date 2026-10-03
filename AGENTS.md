@@ -34,6 +34,11 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 ## Payments / Supabase
 - Checkout + CheckoutSuccess fail closed when `isSupabaseConfigured()` is false (render `PaymentsDisabledNotice` or "could not verify" state).
 - Do not touch Stripe price IDs, webhook signature verification, payment/activation logic, Supabase functions, migrations, or RLS.
+- Plan prices live in ONE canonical client table: `src/lib/plans.ts` `PLAN_PRICING` (USD). It MUST mirror the server table `supabase/functions/_shared/plans.ts` `PLANS` (`priceCents` + `managedCapitalUsd`). `npm run check:payments` enforces parity; never hard-code prices in a page again.
+- Managed Capital is always charged in **USD**. Local currency is presentation only.
+- Active checkout methods: `stripe-checkout` (Stripe-verified via webhook), `wise-checkout` (pending_manual), `crypto-checkout` (on-chain confirm). Browser flows never declare the price.
+- `card-checkout` and `paypal-checkout` are **hard-disabled** (HTTP 410): they used to activate a paid service from client-supplied values with no payment verification. Do not re-enable them; card payments go through `stripe-checkout`.
+- Test mode is server-side only (`TEST_PAYMENT_MODE` env). Never trust an `isTest` flag from the request body.
 
 ## Owner notifications (Resend)
 - ONE module sends every owner email: `supabase/functions/_shared/email.ts` → `notifyOwner({ type, subject, data, replyTo, idempotencyKey })`. Never call `api.resend.com` directly from new code; route through `notifyOwner` / `notifyOwnerInBackground`.
