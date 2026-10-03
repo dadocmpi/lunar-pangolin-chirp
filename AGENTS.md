@@ -8,7 +8,7 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `npm run lint` — lint (0 errors; ~11 warnings are baseline fast-refresh/exhaustive-deps).
 - `npm run check:i18n` — i18n integrity gate (all 11 locales, key parity, no empty/interp drift).
 - `npm run check:payments` — payment/checkout contract gate (see Payments below).
-- No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`); Deno is not installed in the default image.
+- No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`, `run-payments-flag-tests.ts`); Deno is not installed in the default image.
 - **Run `npm run check:i18n` and `npm run check:payments` before opening a PR that touches checkout, pricing, or i18n.**
 
 ## Local preview
