@@ -48,10 +48,15 @@ serve(async (req) => {
     });
   }
 
-  const supabaseUrl = Deno.env.get("SUPABASE_URL") ?? "";
-  const dashboardUrl = body.applicationId
-    ? `${supabaseUrl}/operator-dashboard?applicationId=${body.applicationId}`
-    : `${supabaseUrl}/operator-dashboard`;
+  // The operator dashboard is a route on the public site, not on the Supabase
+  // host. Build an absolute link from SITE_URL (the canonical public origin)
+  // when configured; otherwise fall back to the relative path so the email
+  // never points at *.supabase.co.
+  const siteBase = (Deno.env.get("SITE_URL") ?? "").replace(/\/+$/, "");
+  const dashboardPath = body.applicationId
+    ? `/operator-dashboard?applicationId=${encodeURIComponent(body.applicationId)}`
+    : "/operator-dashboard";
+  const dashboardUrl = siteBase ? `${siteBase}${dashboardPath}` : dashboardPath;
 
   // Deliberately omits the full residential address — that stays in the
   // operator dashboard only.

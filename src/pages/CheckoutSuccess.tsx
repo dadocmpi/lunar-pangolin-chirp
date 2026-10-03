@@ -85,19 +85,20 @@ const CheckoutSuccess = () => {
         return;
       }
 
-      // Prefer an exact match on session_id in metadata; fall back to the most
-      // recent stripe pending payment for this user. We never trust the URL.
+      // Require an EXACT match on the Stripe session id in metadata. Falling
+      // back to "the most recent stripe payment" could display the wrong
+      // order's status when a user has several in-flight checkouts, so we
+      // fail closed when no row matches the session in the URL.
       type PendingPaymentRow = {
         id: string;
         metadata: Record<string, unknown> | null;
         status?: string | null;
         status_enum?: string | null;
       };
-      const matched = (rows ?? [] as PendingPaymentRow[]).find((r) => {
+      const chosen = (rows ?? [] as PendingPaymentRow[]).find((r) => {
         const meta = r?.metadata ?? {};
         return meta.stripe_session_id === sessionId;
-      });
-      const chosen = matched ?? (rows ?? [])[0] ?? null;
+      }) ?? null;
 
       if (!chosen) {
         setLookupError(t("checkoutSuccess.couldNotVerify"));

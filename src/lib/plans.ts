@@ -20,6 +20,9 @@ export const PLAN_PRICING: Record<string, PlanPricing> = {
   enterprise: { monthlyUsd: 820, managedCapitalUsd: 150000 },
 };
 
+export type PlanId = keyof typeof PLAN_PRICING;
+export const PLAN_IDS = Object.keys(PLAN_PRICING) as PlanId[];
+
 /** Formats an amount as a fixed USD string, e.g. 200 -> "$200.00". */
 export function formatUsd(amount: number): string {
   return new Intl.NumberFormat("en-US", {

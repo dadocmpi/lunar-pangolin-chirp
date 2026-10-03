@@ -275,7 +275,15 @@ const ApplicationForm = ({ onSubmit, plan }: ApplicationFormProps) => {
             className="mt-1 w-4 h-4 text-[#C5A059]"
           />
           <label htmlFor="terms" className="ml-3 text-slate-400 text-sm leading-none">
-            {t('application.terms_accepted')}
+            {t('application.terms_accepted')}{' '}
+            <a
+              href="/terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#C5A059] underline hover:text-[#D4AF37]"
+            >
+              {t('application.viewTerms')}
+            </a>
           </label>
         </div>
         {errors.terms_accepted && (
@@ -290,7 +298,15 @@ const ApplicationForm = ({ onSubmit, plan }: ApplicationFormProps) => {
             className="mt-1 w-4 h-4 text-[#C5A059]"
           />
           <label htmlFor="privacy" className="ml-3 text-slate-400 text-sm leading-none">
-            {t('application.privacy_accepted')}
+            {t('application.privacy_accepted')}{' '}
+            <a
+              href="/privacy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#C5A059] underline hover:text-[#D4AF37]"
+            >
+              {t('application.viewPrivacy')}
+            </a>
           </label>
         </div>
         {errors.privacy_accepted && (

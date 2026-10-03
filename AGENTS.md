@@ -5,8 +5,11 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 ## Commands
 - `npm run build` — production build (outputs `dist/`). **Exit 0 required before deploy.**
 - `npx tsc --noEmit -p tsconfig.app.json` — typecheck.
-- `npm run lint` — lint (0 errors; ~12 warnings are baseline fast-refresh/exhaustive-deps).
-- No test runner configured (`package.json` has no `test` script).
+- `npm run lint` — lint (0 errors; ~11 warnings are baseline fast-refresh/exhaustive-deps).
+- `npm run check:i18n` — i18n integrity gate (all 11 locales, key parity, no empty/interp drift).
+- `npm run check:payments` — payment/checkout contract gate (see Payments below).
+- No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`); Deno is not installed in the default image.
+- **Run `npm run check:i18n` and `npm run check:payments` before opening a PR that touches checkout, pricing, or i18n.**
 
 ## Local preview
 - `npx vite preview --port 4321 --host 127.0.0.1` after a build (serves `dist/`).

@@ -183,7 +183,7 @@ const enTranslation = {
     select: "SECURE THIS PLAN",
     allocation: "MANAGED CAPITAL",
     month: "monthly fee",
-    detectedCurrency: "Prices shown in your local currency ({{currency}}) based on your location",
+    detectedCurrency: "All prices are charged in USD ({{currency}}) regardless of your location",
     managedCapitalUsdNote: "Managed Capital (Capital Gerenciado) is always quoted in USD."
   },
   plans: {
@@ -648,7 +648,12 @@ const enTranslation = {
     serviceAccess: "Service Access",
     confirmCard: "CONFIRM CARD",
     redirecting: "Redirecting to payment...",
-    testModeBanner: "TEST MODE — No real money. No real bank. No real wallet. No real activation."
+    testModeBanner: "TEST MODE — No real money. No real bank. No real wallet. No real activation.",
+    startFailed: "Could not start the payment. Please try again.",
+    invalidPlanTitle: "INVALID PLAN",
+    invalidPlanDesc: "The selected plan is no longer available. Please choose a plan again.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "Reference",
   },
   application: {
     title: "APPLICATION",
@@ -677,6 +682,8 @@ const enTranslation = {
     phone_placeholder: "Phone number",
     terms_accepted: "I accept the Terms of Service",
     privacy_accepted: "I accept the Privacy Policy",
+    viewTerms: "View Terms",
+    viewPrivacy: "View Privacy Policy",
     customer_note: "Customer Note (optional)",
     customer_note_placeholder: "Any additional information you would like us to know",
     note_limit: "Maximum {{count}} characters",
@@ -1287,7 +1294,7 @@ const ptTranslation = {
     select: "GARANTIR ESTE PLANO",
     allocation: "CAPITAL GERENCIADO",
     month: "taxa mensal",
-    detectedCurrency: "Preços mostrados na sua moeda local ({{currency}}) com base na sua localização",
+    detectedCurrency: "Todos os preços são cobrados em USD ({{currency}}), independentemente da sua localização",
     managedCapitalUsdNote: "O Capital Gerenciado é sempre cotado em USD."
   },
   plans: {
@@ -1679,7 +1686,12 @@ const ptTranslation = {
     confirmCard: "CONFIRMAR CARTÃO",
     redirecting: "Redirecionando para o pagamento...",
     card: "Cartão de Crédito / Débito",
-    testModeBanner: "MODO DE TESTE — Sem dinheiro real. Sem banco real. Sem carteira real. Sem ativação real."
+    testModeBanner: "MODO DE TESTE — Sem dinheiro real. Sem banco real. Sem carteira real. Sem ativação real.",
+    startFailed: "Não foi possível iniciar o pagamento. Tente novamente.",
+    invalidPlanTitle: "PLANO INVÁLIDO",
+    invalidPlanDesc: "O plano selecionado não está mais disponível. Escolha um plano novamente.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "Referência",
   },
   legal: {
     badgeLegal: "JURÍDICO",
@@ -1773,6 +1785,8 @@ const ptTranslation = {
     phone_placeholder: "Número de telefone",
     terms_accepted: "Aceito os Termos de Serviço",
     privacy_accepted: "Aceito a Política de Privacidade",
+    viewTerms: "Ver Termos",
+    viewPrivacy: "Ver Política de Privacidade",
     customer_note: "Observação do Cliente (opcional)",
     customer_note_placeholder: "Qualquer informação adicional que você queira que saibamos",
     note_limit: "Máximo de {{count}} caracteres",
@@ -2357,7 +2371,7 @@ const itTranslation = {
     select: "GARANTISCI QUESTO PIANO",
     allocation: "CAPITALE GESTITO",
     month: "tariffa mensile",
-    detectedCurrency: "Prezzi mostrati nella tua valuta locale ({{currency}}) in base alla tua posizione",
+    detectedCurrency: "Tutti i prezzi sono addebitati in USD ({{currency}}), indipendentemente dalla tua posizione",
     managedCapitalUsdNote: "Il capitale gestito (Capital Gerenciado) è sempre quotato in USD."
   },
   plans: {
@@ -2749,7 +2763,12 @@ const itTranslation = {
     confirmCard: "CONFERMA CARTA",
     redirecting: "Reindirizzamento al pagamento...",
     card: "Carta di credito / debito",
-    testModeBanner: "MODALITÀ TEST — Niente denaro reale. Nessuna banca reale. Nessun wallet reale. Nessuna attivazione reale."
+    testModeBanner: "MODALITÀ TEST — Niente denaro reale. Nessuna banca reale. Nessun wallet reale. Nessuna attivazione reale.",
+    startFailed: "Impossibile avviare il pagamento. Riprova.",
+    invalidPlanTitle: "PIANO NON VALIDO",
+    invalidPlanDesc: "Il piano selezionato non è più disponibile. Scegli di nuovo un piano.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "Riferimento",
   },
   legal: {
     badgeLegal: "LEGALE",
@@ -2823,6 +2842,8 @@ const itTranslation = {
     phone_placeholder: "Numero di telefono",
     terms_accepted: "Accetto i Termini di Servizio",
     privacy_accepted: "Accetto l'Informativa sulla Privacy",
+    viewTerms: "Vedi Termini",
+    viewPrivacy: "Vedi Informativa sulla Privacy",
     customer_note: "Nota del Cliente (opzionale)",
     customer_note_placeholder: "Qualsiasi informazione aggiuntiva che desideri farci sapere",
     note_limit: "Massimo {{count}} caratteri",
@@ -3407,7 +3428,7 @@ const esTranslation = {
     select: "ASEGURAR ESTE PLAN",
     allocation: "CAPITAL GESTIONADO",
     month: "tarifa mensual",
-    detectedCurrency: "Precios mostrados en tu moneda local ({{currency}}) según tu ubicación",
+    detectedCurrency: "Todos los precios se cobran en USD ({{currency}}), independientemente de tu ubicación",
     managedCapitalUsdNote: "El capital gestionado (Capital Gerenciado) siempre se cotiza en USD."
   },
   plans: {
@@ -3799,7 +3820,12 @@ const esTranslation = {
     confirmCard: "CONFIRMAR TARJETA",
     redirecting: "Redirigiendo al pago...",
     card: "Tarjeta de crédito / débito",
-    testModeBanner: "MODO PRUEBA — Sin dinero real. Sin banco real. Sin cartera real. Sin activación real."
+    testModeBanner: "MODO PRUEBA — Sin dinero real. Sin banco real. Sin cartera real. Sin activación real.",
+    startFailed: "No se pudo iniciar el pago. Inténtalo de nuevo.",
+    invalidPlanTitle: "PLAN NO VÁLIDO",
+    invalidPlanDesc: "El plan seleccionado ya no está disponible. Elige un plan de nuevo.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "Referencia",
   },
   legal: {
     badgeLegal: "LEGAL",
@@ -3873,6 +3899,8 @@ const esTranslation = {
     phone_placeholder: "Número de teléfono",
     terms_accepted: "Acepto los Términos de Servicio",
     privacy_accepted: "Acepto la Política de Privacidad",
+    viewTerms: "Ver Términos",
+    viewPrivacy: "Ver Política de Privacidad",
     customer_note: "Nota del Cliente (opcional)",
     customer_note_placeholder: "Cualquier información adicional que desee que conozcamos",
     note_limit: "Máximo {{count}} caracteres",
@@ -4457,7 +4485,7 @@ const frTranslation = {
     select: "SÉCURISER CE PLAN",
     allocation: "CAPITAL GÉRÉ",
     month: "frais mensuels",
-    detectedCurrency: "Prix affichés dans votre devise locale ({{currency}}) selon votre position",
+    detectedCurrency: "Tous les prix sont facturés en USD ({{currency}}), quel que soit votre emplacement",
     managedCapitalUsdNote: "Le capital géré (Capital Gerenciado) est toujours coté en USD."
   },
   plans: {
@@ -4849,7 +4877,12 @@ const frTranslation = {
     confirmCard: "CONFIRMER LA CARTE",
     redirecting: "Redirection vers le paiement...",
     card: "Carte de crédit / débit",
-    testModeBanner: "MODE TEST — Pas d’argent réel. Pas de banque réelle. Pas de portefeuille réel. Pas d’activation réelle."
+    testModeBanner: "MODE TEST — Pas d’argent réel. Pas de banque réelle. Pas de portefeuille réel. Pas d’activation réelle.",
+    startFailed: "Impossible de démarrer le paiement. Veuillez réessayer.",
+    invalidPlanTitle: "FORFAIT INVALIDE",
+    invalidPlanDesc: "Le forfait sélectionné n'est plus disponible. Veuillez en choisir un autre.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "Référence",
   },
   legal: {
     badgeLegal: "JURIDIQUE",
@@ -4923,6 +4956,8 @@ const frTranslation = {
     phone_placeholder: "Numéro de téléphone",
     terms_accepted: "J'accepte les Conditions de Service",
     privacy_accepted: "J'accepte la Politique de Confidentialité",
+    viewTerms: "Voir les Conditions",
+    viewPrivacy: "Voir la Politique de Confidentialité",
     customer_note: "Remarque du client (facultatif)",
     customer_note_placeholder: "Toute information supplémentaire que vous souhaitez nous communiquer",
     note_limit: "Maximum {{count}} caractères",
@@ -5507,7 +5542,7 @@ const deTranslation = {
     select: "DIESEN PLAN SICHERN",
     allocation: "VERWALTETES KAPITAL",
     month: "monatliche Gebühr",
-    detectedCurrency: "Preise in Ihrer Landeswährung ({{currency}}) basierend auf Ihrem Standort",
+    detectedCurrency: "Alle Preise werden in USD ({{currency}}) berechnet, unabhängig von Ihrem Standort",
     managedCapitalUsdNote: "Verwaltetes Kapital (Capital Gerenciado) wird immer in USD angegeben."
   },
   plans: {
@@ -5899,7 +5934,12 @@ const deTranslation = {
     confirmCard: "KARTE BESTÄTIGEN",
     redirecting: "Weiterleitung zur Zahlung...",
     card: "Kredit- / Debitkarte",
-    testModeBanner: "TESTMODUS — Kein echtes Geld. Keine echte Bank. Keine echte Wallet. Keine echte Aktivierung."
+    testModeBanner: "TESTMODUS — Kein echtes Geld. Keine echte Bank. Keine echte Wallet. Keine echte Aktivierung.",
+    startFailed: "Die Zahlung konnte nicht gestartet werden. Bitte erneut versuchen.",
+    invalidPlanTitle: "UNGÜLTIGER TARIF",
+    invalidPlanDesc: "Der ausgewählte Tarif ist nicht mehr verfügbar. Bitte wählen Sie erneut einen Tarif.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "Referenz",
   },
   legal: {
     badgeLegal: "RECHTLICHES",
@@ -5973,6 +6013,8 @@ const deTranslation = {
     phone_placeholder: "Telefonnummer",
     terms_accepted: "Ich akzeptiere die Nutzungsbedingungen",
     privacy_accepted: "Ich akzeptiere die Datenschutzerklärung",
+    viewTerms: "AGB ansehen",
+    viewPrivacy: "Datenschutzerklärung ansehen",
     customer_note: "Kundennotiz (optional)",
     customer_note_placeholder: "Zusätzliche Informationen, die Sie uns mitteilen möchten",
     note_limit: "Maximal {{count}} Zeichen",
@@ -6557,7 +6599,7 @@ const ruTranslation = {
     select: "ВЫБРАТЬ ЭТОТ ПЛАН",
     allocation: "УПРАВЛЯЕМЫЙ КАПИТАЛ",
     month: "ежемесячная плата",
-    detectedCurrency: "Цены в вашей местной валюте ({{currency}}) по вашему местоположению",
+    detectedCurrency: "Все цены указываются в USD ({{currency}}) независимо от вашего местоположения",
     managedCapitalUsdNote: "Управляемый капитал (Capital Gerenciado) всегда указывается в USD."
   },
   plans: {
@@ -6949,7 +6991,12 @@ const ruTranslation = {
     confirmCard: "ПОДТВЕРДИТЬ КАРТУ",
     redirecting: "Перенаправление на оплату...",
     card: "Кредитная / дебетовая карта",
-    testModeBanner: "ТЕСТОВЫЙ РЕЖИМ — Без реальных денег. Без реального банка. Без реального кошелька. Без реальной активации."
+    testModeBanner: "ТЕСТОВЫЙ РЕЖИМ — Без реальных денег. Без реального банка. Без реального кошелька. Без реальной активации.",
+    startFailed: "Не удалось начать оплату. Попробуйте снова.",
+    invalidPlanTitle: "НЕДЕЙСТВИТЕЛЬНЫЙ ТАРИФ",
+    invalidPlanDesc: "Выбранный тариф больше недоступен. Выберите тариф заново.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "Ссылка",
   },
   legal: {
     badgeLegal: "ПРАВОВАЯ ИНФОРМАЦИЯ",
@@ -7023,6 +7070,8 @@ const ruTranslation = {
     phone_placeholder: "Номер телефона",
     terms_accepted: "Я принимаю Условия обслуживания",
     privacy_accepted: "Я принимаю Политику конфиденциальности",
+    viewTerms: "Просмотреть условия",
+    viewPrivacy: "Просмотреть политику конфиденциальности",
     customer_note: "Примечание клиента (необязательно)",
     customer_note_placeholder: "Любая дополнительная информация, которую вы хотите нам сообщить",
     note_limit: "Максимум {{count}} символов",
@@ -7594,7 +7643,7 @@ const zhTranslation = {
     select: "选择此计划",
     allocation: "管理资本",
     month: "月费",
-    detectedCurrency: "价格根据您的位置以当地货币 ({{currency}}) 显示",
+    detectedCurrency: "所有价格均以 USD ({{currency}}) 收取，与您所在的位置无关",
     managedCapitalUsdNote: "管理资本（Capital Gerenciado）始终以美元计价。"
   },
   plans: {
@@ -7986,7 +8035,12 @@ const zhTranslation = {
     confirmCard: "确认银行卡",
     redirecting: "正在跳转到支付页面...",
     card: "信用卡 / 借记卡",
-    testModeBanner: "测试模式 — 无真实资金。无真实银行。无真实钱包。无真实激活。"
+    testModeBanner: "测试模式 — 无真实资金。无真实银行。无真实钱包。无真实激活。",
+    startFailed: "无法开始支付，请重试。",
+    invalidPlanTitle: "无效套餐",
+    invalidPlanDesc: "所选套餐已不可用，请重新选择套餐。",
+    swiftLabel: "SWIFT",
+    referenceLabel: "参考",
   },
   legal: {
     badgeLegal: "法律",
@@ -8073,6 +8127,8 @@ const zhTranslation = {
     phone_placeholder: "电话号码",
     terms_accepted: "我接受服务条款",
     privacy_accepted: "我接受隐私政策",
+    viewTerms: "查看条款",
+    viewPrivacy: "查看隐私政策",
     customer_note: "客户备注（可选）",
     customer_note_placeholder: "您希望我们了解的任何其他信息",
     note_limit: "最多 {{count}} 个字符",
@@ -8644,7 +8700,7 @@ const jaTranslation = {
     select: "このプランを確保",
     allocation: "運用資本",
     month: "月額料金",
-    detectedCurrency: "お客様の位置情報に基づき、現地通貨 ({{currency}}) で価格を表示",
+    detectedCurrency: "すべての価格はお客様の所在地に関わらず USD ({{currency}}) で請求されます",
     managedCapitalUsdNote: "運用資本（Capital Gerenciado）は常にUSDで表示されます。"
   },
   plans: {
@@ -9036,7 +9092,12 @@ const jaTranslation = {
     confirmCard: "カードを確認",
     redirecting: "支払いページへリダイレクト中...",
     card: "クレジット / デビットカード",
-    testModeBanner: "テストモード — 実際の資金・銀行・ウォレット・有効化はありません。"
+    testModeBanner: "テストモード — 実際の資金・銀行・ウォレット・有効化はありません。",
+    startFailed: "支払いを開始できませんでした。もう一度お試しください。",
+    invalidPlanTitle: "無効なプラン",
+    invalidPlanDesc: "選択したプランは利用できなくなりました。もう一度プランを選択してください。",
+    swiftLabel: "SWIFT",
+    referenceLabel: "参照",
   },
   legal: {
     badgeLegal: "法的情報",
@@ -9123,6 +9184,8 @@ const jaTranslation = {
     phone_placeholder: "電話番号",
     terms_accepted: "利用規約に同意します",
     privacy_accepted: "プライバシーポリシーに同意します",
+    viewTerms: "利用規約を見る",
+    viewPrivacy: "プライバシーポリシーを見る",
     customer_note: "お客様メモ（任意）",
     customer_note_placeholder: "当社に知らせたいその他の情報",
     note_limit: "最大{{count}}文字",
@@ -9707,7 +9770,7 @@ const arTranslation = {
     select: "احصل على هذا الخطة",
     allocation: "رأس المال المُدار",
     month: "رسوم شهرية",
-    detectedCurrency: "الأسعار معروضة بعملتك المحلية ({{currency}}) بناءً على موقعك",
+    detectedCurrency: "يتم تحصيل جميع الأسعار بالدولار الأمريكي ({{currency}}) بغض النظر عن موقعك",
     managedCapitalUsdNote: "رأس المال المُدار (Capital Gerenciado) يُسعَّر دائمًا بالدولار الأمريكي."
   },
   plans: {
@@ -10099,7 +10162,12 @@ const arTranslation = {
     confirmCard: "تأكيد البطاقة",
     redirecting: "جارٍ إعادة التوجيه إلى الدفع...",
     card: "بطاقة ائتمان / خصم",
-    testModeBanner: "وضع الاختبار — لا أموال حقيقية. لا بنك حقيقي. لا محفظة حقيقية. لا تفعيل حقيقي."
+    testModeBanner: "وضع الاختبار — لا أموال حقيقية. لا بنك حقيقي. لا محفظة حقيقية. لا تفعيل حقيقي.",
+    startFailed: "تعذر بدء الدفع. يرجى المحاولة مرة أخرى.",
+    invalidPlanTitle: "خطة غير صالحة",
+    invalidPlanDesc: "الخطة المحددة لم تعد متاحة. يرجى اختيار خطة مرة أخرى.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "المرجع",
   },
   legal: {
     badgeLegal: "قانوني",
@@ -10173,6 +10241,8 @@ const arTranslation = {
     phone_placeholder: "رقم الهاتف",
     terms_accepted: "أوافق على شروط الخدمة",
     privacy_accepted: "أوافق على سياسة الخصوصية",
+    viewTerms: "عرض الشروط",
+    viewPrivacy: "عرض سياسة الخصوصية",
     customer_note: "ملاحظة العميل (اختياري)",
     customer_note_placeholder: "أي معلومات إضافية تود إطلاعنا عليها",
     note_limit: "الحد الأقصى {{count}} حرفاً",
@@ -10757,7 +10827,7 @@ const heTranslation = {
     select: "הבטח תוכנית זו",
     allocation: "הון מנוהל",
     month: "עמלה חודשית",
-    detectedCurrency: "המחירים מוצגים במטבע המקומי שלך ({{currency}}) לפי המיקום שלך",
+    detectedCurrency: "כל המחירים מחויבים ב-USD ({{currency}}) ללא תלות במיקומך",
     managedCapitalUsdNote: "הון מנוהל (Capital Gerenciado) נקוב תמיד בדולר ארה\"ב."
   },
   plans: {
@@ -11149,7 +11219,12 @@ const heTranslation = {
     confirmCard: "אשר כרטיס",
     redirecting: "מעביר לתשלום...",
     card: "כרטיס אשראי / חיוב",
-    testModeBanner: "מצב בדיקה — ללא כסף אמיתי. ללא בנק אמיתי. ללא ארנק אמיתי. ללא הפעלה אמיתית."
+    testModeBanner: "מצב בדיקה — ללא כסף אמיתי. ללא בנק אמיתי. ללא ארנק אמיתי. ללא הפעלה אמיתית.",
+    startFailed: "לא ניתן להתחיל את התשלום. נסו שוב.",
+    invalidPlanTitle: "תוכנית לא חוקית",
+    invalidPlanDesc: "התוכנית שנבחרה אינה זמינה עוד. אנא בחרו תוכנית שוב.",
+    swiftLabel: "SWIFT",
+    referenceLabel: "הפניה",
   },
   legal: {
     badgeLegal: "משפטי",
@@ -11223,6 +11298,8 @@ const heTranslation = {
     phone_placeholder: "מספר טלפון",
     terms_accepted: "אני מסכים לתנאי השירות",
     privacy_accepted: "אני מסכים למדיניות הפרטיות",
+    viewTerms: "הצג תנאים",
+    viewPrivacy: "הצג מדיניות פרטיות",
     customer_note: "הערת לקוח (אופציונלי)",
     customer_note_placeholder: "כל מידע נוסף שתרצה שנדע",
     note_limit: "מקסימום {{count}} תווים",

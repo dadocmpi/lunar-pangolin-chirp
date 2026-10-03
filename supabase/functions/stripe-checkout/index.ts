@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import { getPlan } from "../_shared/plans.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -132,6 +133,8 @@ serve(async (req) => {
   }
 
   const { planId, idempotencyKey, applicationId } = body;
+  // Server-side test flag. Never derive test/production from the client body.
+  const testMode = Deno.env.get("TEST_PAYMENT_MODE") === "true";
   if (!planId || !idempotencyKey || !applicationId) {
     return new Response(
       JSON.stringify({ error: "Missing required fields" }),
@@ -162,6 +165,22 @@ serve(async (req) => {
 
   const planKey = application.plan_key;
 
+  // Re-derive the canonical plan server-side so the row we persist carries the
+  // real plan id, name and USD amount instead of placeholders. The
+  // browser-declared price is never used.
+  let canonicalPlan: ReturnType<typeof getPlan>;
+  try {
+    canonicalPlan = getPlan(planKey);
+  } catch {
+    return new Response(
+      JSON.stringify({ error: "Invalid plan on application" }),
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
   // Map plan key to Stripe Price ID from environment variables
   // USD only; local-currency adaptation is presentation only.
   const priceIdMap: Record<string, string> = {
@@ -171,7 +190,7 @@ serve(async (req) => {
     enterprise: Deno.env.get("STRIPE_PRICE_ENTERPRISE_USD") ?? "",
   };
 
-  const priceId = priceIdMap[planKey];
+  const priceId = priceIdMap[canonicalPlan.id];
   if (!priceId) {
     return new Response(
       JSON.stringify({ error: `Price ID not configured for plan ${planKey}` }),
@@ -182,19 +201,23 @@ serve(async (req) => {
     );
   }
 
-  // Create pending payment record
+  // Create pending payment record. Managed Capital is always USD, so the row
+  // records both the canonical USD amount and currency from the start.
   const pendingPaymentData = {
     user_id: user.id,
-    plan_name: planKey, // We'll store the plan key in plan_name for now
-    amount_cents: 0, // Amount will be set by Stripe price
-    currency: "eur",
+    plan_id: canonicalPlan.id,
+    plan_name: canonicalPlan.name,
+    amount_cents: canonicalPlan.priceCents,
+    currency: "USD",
     network: null,
     method: "stripe",
     idempotency_key: idempotencyKey,
     status: "pending",
+    status_enum: "pending",
     metadata: {
       application_id: applicationId,
-      plan_key: planKey,
+      plan_key: canonicalPlan.id,
+      is_test: testMode,
       // We'll add stripe_customer_id and stripe_subscription_id later via webhook
     },
   };

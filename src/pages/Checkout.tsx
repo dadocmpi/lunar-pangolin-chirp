@@ -23,7 +23,7 @@ import { CheckoutStatusBadge } from "@/components/CheckoutStatusBadge";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
 import { notifyOwner } from "@/lib/notifyOwner";
-import { getPlanPricing, formatUsd } from "@/lib/plans";
+import { getPlanPricing, formatUsd, PLAN_PRICING } from "@/lib/plans";
 
 export type CheckoutPaymentStatus =
   | "created"
@@ -106,6 +106,10 @@ const Checkout = () => {
   const [showStripe, setShowStripe] = useState(false);
   const [wiseConfirmed, setWiseConfirmed] = useState(false);
   const [processing, setProcessing] = useState(false);
+  // Guard against double-submits (rapid clicks / slow network). A single
+  // idempotency key plus a single "creating" confirmation makes the checkout
+  // intent creation atomic from the user's point of view.
+  const [creating, setCreating] = useState(false);
   const [wiseResponse, setWiseResponse] = useState<CheckoutResponse | null>(null);
   const [cryptoResponse, setCryptoResponse] = useState<CheckoutResponse | null>(null);
   const [stripeResponse, setStripeResponse] = useState<CheckoutResponse | null>(null);
@@ -174,8 +178,12 @@ const Checkout = () => {
     checkUserAndApplication();
   }, [applicationId, navigate]);
 
-  // Get the plan key from the application data
-  const planKey = application?.plan_key;
+  // Get the plan key from the application data. Only a key present in the
+  // canonical table is accepted — this avoids silently showing the Starter
+  // price for an unknown key while the server would reject the checkout.
+  const rawPlanKey = application?.plan_key;
+  const planKey = rawPlanKey && rawPlanKey in PLAN_PRICING ? rawPlanKey : null;
+  const planIsKnown = planKey !== null;
 
   // The amount due is always USD and comes from the shared plan table, so the
   // checkout total matches the pricing page exactly. The server
@@ -184,10 +192,13 @@ const Checkout = () => {
   const enhancedPlan = planKey
     ? {
         id: planKey,
-        name: t(`plans.${planKey}`, {
-          defaultValue:
-            planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase(),
-        }),
+        // Prefer the plan name stored on the application (created by the
+        // server); fall back to the localized plan label, then to title-case.
+        name: application?.plan_name ||
+          t(`plans.${planKey}`, {
+            defaultValue:
+              planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase(),
+          }),
         price: getPlanPricing(planKey).monthlyUsd,
         features: [],
       }
@@ -230,50 +241,66 @@ const Checkout = () => {
     return json as CheckoutResponse;
   }
 
+  // Normalize an edge-function failure into a localized, user-safe message.
+  // The raw error code is sent to the owner notification, never shown raw.
+  const handleCheckoutError = async (
+    method: "wise" | "crypto" | "stripe",
+    e: unknown,
+  ) => {
+    const code = e instanceof Error ? e.message : String(e);
+    setSubmitError(t("checkout.startFailed"));
+    await notifyOwner({
+      type: "erro",
+      subject: "Falha ao iniciar checkout",
+      replyTo: application?.email,
+      data: {
+        plano: application?.plan_key,
+        email: application?.email,
+        metodo: method,
+        erro: code,
+        origem: "checkout",
+      },
+    });
+  };
+
   const handleWiseSubmit = async () => {
     if (!wiseConfirmed) {
       showError(t("checkout.wiseConfirmRequired"));
       return;
     }
-    if (!application) return;
+    // Re-entrancy guard: one in-flight creation at a time.
+    if (!application || creating) return;
+    setCreating(true);
     setProcessing(true);
     setSubmitError(null);
     try {
       if (!wiseKeyRef.current) wiseKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("wise-checkout", {
         planId: application.plan_key, // Use the plan_key from the application
+        currency: "USD", // server enforces USD; declared explicitly
         idempotencyKey: wiseKeyRef.current,
         isTest: testMode,
       });
       setWiseResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
     } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      await notifyOwner({
-        type: "erro",
-        subject: "Falha ao iniciar checkout",
-        replyTo: application?.email,
-        data: {
-          plano: application?.plan_key,
-          email: application?.email,
-          erro: message,
-          origem: "checkout",
-        },
-      });
-      setSubmitError(message);
+      await handleCheckoutError("wise", e);
     } finally {
       setProcessing(false);
+      setCreating(false);
     }
   };
 
   const handleCryptoSubmit = async () => {
-    if (!application) return;
+    if (!application || creating) return;
+    setCreating(true);
     setProcessing(true);
     setSubmitError(null);
     try {
       if (!cryptoKeyRef.current) cryptoKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("crypto-checkout", {
         planId: application.plan_key,
+        currency: "USD",
         network: selectedCryptoIdRef.current,
         idempotencyKey: cryptoKeyRef.current,
         isTest: testMode,
@@ -281,32 +308,27 @@ const Checkout = () => {
       setCryptoResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
     } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      await notifyOwner({
-        type: "erro",
-        subject: "Falha ao iniciar checkout",
-        replyTo: application?.email,
-        data: {
-          plano: application?.plan_key,
-          email: application?.email,
-          erro: message,
-          origem: "checkout",
-        },
-      });
-      setSubmitError(message);
+      await handleCheckoutError("crypto", e);
     } finally {
       setProcessing(false);
+      setCreating(false);
     }
   };
 
   const handleStripeSubmit = async () => {
-    if (!application) return;
+    if (!application || creating) return;
+    setCreating(true);
     setProcessing(true);
     setSubmitError(null);
     try {
       if (!stripeKeyRef.current) stripeKeyRef.current = newIdempotencyKey();
+      // The application id is required: the server re-derives the plan from
+      // the stored application and verifies ownership. The browser never
+      // declares the price.
       const res = await callEdgeFunction("stripe-checkout", {
         planId: application.plan_key,
+        applicationId: application.id,
+        currency: "USD",
         idempotencyKey: stripeKeyRef.current,
         isTest: testMode,
       });
@@ -319,21 +341,10 @@ const Checkout = () => {
         window.location.href = res.url;
       }
     } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      await notifyOwner({
-        type: "erro",
-        subject: "Falha ao iniciar checkout",
-        replyTo: application?.email,
-        data: {
-          plano: application?.plan_key,
-          email: application?.email,
-          erro: message,
-          origem: "checkout",
-        },
-      });
-      setSubmitError(message);
+      await handleCheckoutError("stripe", e);
     } finally {
       setProcessing(false);
+      setCreating(false);
     }
   };
 
@@ -369,6 +380,32 @@ const Checkout = () => {
             <ArrowLeft size={14} /> {t("nav.pricing")}
           </Link>
           <PaymentsDisabledNotice />
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  // The application carries a plan the server does not recognise. Do not let
+  // the visitor start a checkout that the server will reject; send them back
+  // to re-select a plan. This keeps the displayed price and the charged price
+  // from ever diverging.
+  if (!planIsKnown || !enhancedPlan) {
+    return (
+      <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
+        <Navbar />
+        <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
+          <div className="max-w-xl bg-[#080B12] border border-white/10 p-8">
+            <h1 className="text-lg font-bold uppercase tracking-widest text-yellow-300 mb-4">
+              {t("checkout.invalidPlanTitle")}
+            </h1>
+            <p className="text-[11px] text-slate-400 leading-relaxed mb-8">
+              {t("checkout.invalidPlanDesc")}
+            </p>
+            <Button asChild className="rounded-none h-12 px-6 text-[11px] font-black uppercase tracking-[0.2em] bg-[#C5A059] hover:bg-[#C5A059]/80 text-white">
+              <Link to="/pricing">{t("nav.pricing")}</Link>
+            </Button>
+          </div>
         </div>
         <Footer />
       </div>
@@ -606,7 +643,8 @@ const Checkout = () => {
 
                       <Button
                         onClick={handleCryptoSubmit}
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
+                        disabled={processing || creating}
+                        className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-60"
                       >
                         {t("checkout.confirmCrypto")}
                       </Button>
@@ -633,7 +671,7 @@ const Checkout = () => {
 
                       <Button
                         onClick={handleWiseSubmit}
-                        disabled={!wiseConfirmed}
+                        disabled={!wiseConfirmed || processing || creating}
                         className={`w-full rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] ${
                           wiseConfirmed
                             ? "bg-emerald-500 hover:bg-emerald-600 text-white"
@@ -662,7 +700,8 @@ const Checkout = () => {
 
                       <Button
                         onClick={handleStripeSubmit}
-                        className="w-full bg-[#C5A059] hover:bg-[#C5A059]/80 text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
+                        disabled={processing || creating}
+                        className="w-full bg-[#C5A059] hover:bg-[#C5A059]/80 text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-60"
                       >
                         {t("checkout.confirmCard")}
                       </Button>
@@ -689,6 +728,7 @@ const Checkout = () => {
 };
 
 function WiseAwaitingView({ response }: { response: CheckoutResponse }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-4">
       {response.payment && (
@@ -703,12 +743,12 @@ function WiseAwaitingView({ response }: { response: CheckoutResponse }) {
       ))}
       {response.bank_details && (
         <div className="p-4 bg-white/[0.02] border border-white/10 text-[10px] text-slate-300 font-mono space-y-1">
-          <p>Holder: {response.bank_details.holder_name}</p>
-          <p>Bank: {response.bank_details.bank_name}</p>
-          <p>Account: {response.bank_details.account_number}</p>
-          <p>Routing: {response.bank_details.routing_number}</p>
-          <p>SWIFT: {response.bank_details.swift}</p>
-          <p>Reference: {response.bank_details.reference}</p>
+          <p>{t("checkout.accountHolder")}: {response.bank_details.holder_name}</p>
+          <p>{t("checkout.bankName")}: {response.bank_details.bank_name}</p>
+          <p>{t("checkout.accountNumber")}: {response.bank_details.account_number}</p>
+          <p>{t("checkout.routingNumber")}: {response.bank_details.routing_number}</p>
+          <p>{t("checkout.swiftLabel")}: {response.bank_details.swift}</p>
+          <p>{t("checkout.referenceLabel")}: {response.bank_details.reference}</p>
         </div>
       )}
     </div>
