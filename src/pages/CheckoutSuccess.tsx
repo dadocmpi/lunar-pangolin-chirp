@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
+import { isPaymentsEnabled } from "@/lib/paymentsFlag";
 
 /**
  * Post-Stripe-checkout success page.
@@ -115,10 +116,9 @@ const CheckoutSuccess = () => {
     init();
   }, [sessionId, navigate, t]);
 
-  const testMode = import.meta.env.VITE_TEST_PAYMENT_MODE === "true";
-  const prodMode = import.meta.env.VITE_PAYMENTS_ENABLED === "true";
+  const paymentsEnabled = isPaymentsEnabled();
 
-  if (!testMode && !prodMode) {
+  if (!paymentsEnabled) {
     return (
       <div className="min-h-screen bg-[#05070A] text-white">
         <Navbar />

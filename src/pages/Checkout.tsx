@@ -23,7 +23,8 @@ import { CheckoutStatusBadge } from "@/components/CheckoutStatusBadge";
 import { usePaymentStatus } from "@/hooks/usePaymentStatus";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
 import { notifyOwner } from "@/lib/notifyOwner";
-import { getPlanPricing, formatUsd, PLAN_PRICING } from "@/lib/plans";
+import { formatUsd, PLAN_PRICING } from "@/lib/plans";
+import { isPaymentsEnabled, isTestPaymentMode } from "@/lib/paymentsFlag";
 
 export type CheckoutPaymentStatus =
   | "created"
@@ -125,12 +126,13 @@ const Checkout = () => {
   // Get applicationId from location.state (set by RegisterApplication page)
   const applicationId = location.state?.applicationId;
 
-  // Production gate. When neither is on, render PaymentsDisabledNotice.
-  const testMode = import.meta.env.VITE_TEST_PAYMENT_MODE === "true";
-  const prodMode = import.meta.env.VITE_PAYMENTS_ENABLED === "true";
+  // Production gate. Single source of truth: src/lib/paymentsFlag.ts.
+  // When neither flag is on, render PaymentsDisabledNotice.
+  const testMode = isTestPaymentMode();
+  const paymentsEnabled = isPaymentsEnabled();
 
   const { view: serverStatus } = usePaymentStatus(
-    (testMode || prodMode) ? paymentId : null,
+    paymentsEnabled ? paymentId : null,
     4000,
   );
 
@@ -199,7 +201,7 @@ const Checkout = () => {
             defaultValue:
               planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase(),
           }),
-        price: getPlanPricing(planKey).monthlyUsd,
+        price: PLAN_PRICING[planKey].monthlyUsd,
         features: [],
       }
     : null;
@@ -368,7 +370,7 @@ const Checkout = () => {
   }
 
   // Fail-closed gate
-  if (!testMode && !prodMode) {
+  if (!paymentsEnabled) {
     return (
       <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
         <Navbar />

@@ -33,6 +33,9 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 
 ## Payments / Supabase
 - Checkout + CheckoutSuccess fail closed when `isSupabaseConfigured()` is false (render `PaymentsDisabledNotice` or "could not verify" state).
+- **ONE payments gate.** The frontend reads `src/lib/paymentsFlag.ts` (`isPaymentsEnabled()` = `VITE_PAYMENTS_ENABLED === "true" || VITE_TEST_PAYMENT_MODE === "true"`). Every payment Edge Function reads `supabase/functions/_shared/payments-flag.ts` (`PAYMENTS_ENABLED === "true" || TEST_PAYMENT_MODE === "true"`) and fails closed (503 `payments_disabled`) when off. These two modules MUST stay in sync; `npm run check:payments` enforces it. Never re-introduce a raw `import.meta.env` gate in a page or a per-function `Deno.env` gate.
+- Frontend flags are Vite build-time env vars (Vercel) and need a redeploy to change. Server flags are Supabase Edge Function secrets and take effect on the next invocation. The server flag is the security boundary; the frontend flag only decides which UI renders.
+- `HOW_TO_ENABLE_PAYMENTS.md` is the operator runbook (TEST/LIVE values + rollback).
 - Do not touch Stripe price IDs, webhook signature verification, payment/activation logic, Supabase functions, migrations, or RLS.
 - Plan prices live in ONE canonical client table: `src/lib/plans.ts` `PLAN_PRICING` (USD). It MUST mirror the server table `supabase/functions/_shared/plans.ts` `PLANS` (`priceCents` + `managedCapitalUsd`). `npm run check:payments` enforces parity; never hard-code prices in a page again.
 - Managed Capital is always charged in **USD**. Local currency is presentation only.

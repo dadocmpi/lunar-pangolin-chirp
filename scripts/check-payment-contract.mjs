@@ -164,6 +164,47 @@ check(
   /formatManagedCapital[\s\S]*?formatUsdAmount/.test(currency),
 );
 
+console.log('\n[7] One payments flag governs the whole surface');
+const serverFlag = read('supabase/functions/_shared/payments-flag.ts');
+check(
+  'server flag is PAYMENTS_ENABLED OR TEST_PAYMENT_MODE',
+  /PAYMENTS_ENABLED[\s\S]{0,80}TEST_PAYMENT_MODE/.test(serverFlag) &&
+    /isPaymentsEnabled/.test(serverFlag),
+);
+const clientFlag = read('src/lib/paymentsFlag.ts');
+check(
+  'client flag mirrors the server rule (OR)',
+  /VITE_PAYMENTS_ENABLED[\s\S]{0,120}VITE_TEST_PAYMENT_MODE/.test(clientFlag) &&
+    /export function isPaymentsEnabled/.test(clientFlag),
+);
+for (const fn of ['stripe-checkout', 'wise-checkout', 'crypto-checkout', 'crypto-confirmation', 'payment-status']) {
+  const src = read(`supabase/functions/${fn}/index.ts`);
+  check(
+    `${fn} enforces the shared payments flag`,
+    /from "\.\.\/_shared\/payments-flag\.ts"/.test(src) &&
+      /isPaymentsEnabled\(\)/.test(src),
+  );
+}
+for (const page of ['src/pages/Checkout.tsx', 'src/pages/CheckoutSuccess.tsx']) {
+  const src = read(page);
+  check(
+    `${page} reads the shared client flag (no raw import.meta.env gate)`,
+    /from "@\/lib\/paymentsFlag"/.test(src) &&
+      !/import\.meta\.env\.VITE_(PAYMENTS_ENABLED|TEST_PAYMENT_MODE)/.test(src),
+  );
+}
+// Legacy free-service endpoints must NOT be re-enabled by the flag: they are
+// unconditionally 410 and must not import the gate module.
+for (const fn of ['card-checkout', 'paypal-checkout']) {
+  const src = read(`supabase/functions/${fn}/index.ts`);
+  check(
+    `${fn} stays unconditionally disabled (no flag import)`,
+    !/payments-flag\.ts/.test(src) &&
+      /status:\s*410/.test(src) &&
+      /endpoint_disabled/.test(src),
+  );
+}
+
 if (failures > 0) {
   console.error(`\npayment contract check FAILED (${failures} failure(s))`);
   process.exit(1);

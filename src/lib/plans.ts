@@ -34,7 +34,14 @@ export function formatUsd(amount: number): string {
 }
 
 /** Resolves plan pricing by key (case-insensitive), falling back to Starter. */
-export function getPlanPricing(planKey: string | null | undefined): PlanPricing {
+export function getPlanPricing(
+  planKey: string | null | undefined,
+): PlanPricing {
   const key = (planKey ?? "").toLowerCase();
   return PLAN_PRICING[key] ?? PLAN_PRICING.starter;
+}
+
+/** True when `planKey` is one of the canonical plan keys. */
+export function isKnownPlanKey(planKey: string | null | undefined): boolean {
+  return typeof planKey === "string" && planKey in PLAN_PRICING;
 }

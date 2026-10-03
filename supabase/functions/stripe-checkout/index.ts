@@ -1,6 +1,11 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import {
+  isPaymentsEnabled,
+  isTestPaymentMode,
+  paymentsDisabledBody,
+} from "../_shared/payments-flag.ts";
 import { getPlan } from "../_shared/plans.ts";
 
 const corsHeaders = {
@@ -51,6 +56,17 @@ serve(async (req) => {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Gate — single shared source of truth (PAYMENTS_ENABLED || TEST_PAYMENT_MODE)
+  // Fail closed before any Stripe or DB work when payments are off.
+  // -------------------------------------------------------------------------
+  if (!isPaymentsEnabled()) {
+    return new Response(JSON.stringify(paymentsDisabledBody()), {
+      status: 503,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
@@ -134,7 +150,7 @@ serve(async (req) => {
 
   const { planId, idempotencyKey, applicationId } = body;
   // Server-side test flag. Never derive test/production from the client body.
-  const testMode = Deno.env.get("TEST_PAYMENT_MODE") === "true";
+  const testMode = isTestPaymentMode();
   if (!planId || !idempotencyKey || !applicationId) {
     return new Response(
       JSON.stringify({ error: "Missing required fields" }),
