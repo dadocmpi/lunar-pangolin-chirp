@@ -1058,6 +1058,12 @@ const enTranslation = {
       foreign_passport: "Foreign Passport",
       national_id: "National ID Card"
     }
+  },
+  errorBoundary: {
+    title: "Something went wrong",
+    message: "This page could not be loaded. Please try again.",
+    retry: "Reload page",
+    home: "Back to home"
   }
 };
 
@@ -2102,6 +2108,12 @@ const ptTranslation = {
       foreign_passport: "Passaporte Estrangeiro",
       national_id: "Documento de Identidade Nacional"
     }
+  },
+  errorBoundary: {
+    title: "Algo deu errado",
+    message: "Não foi possível carregar esta página. Tente novamente.",
+    retry: "Recarregar página",
+    home: "Voltar ao início"
   }
 };
 
@@ -3146,6 +3158,12 @@ const itTranslation = {
       foreign_passport: "Passaporto straniero",
       national_id: "Carta d’identità nazionale"
     }
+  },
+  errorBoundary: {
+    title: "Qualcosa è andato storto",
+    message: "Non è stato possibile caricare questa pagina. Riprova.",
+    retry: "Ricarica pagina",
+    home: "Torna alla home"
   }
 };
 
@@ -4190,6 +4208,12 @@ const esTranslation = {
       foreign_passport: "Pasaporte extranjero",
       national_id: "Documento nacional de identidad"
     }
+  },
+  errorBoundary: {
+    title: "Algo salió mal",
+    message: "No se pudo cargar esta página. Inténtalo de nuevo.",
+    retry: "Recargar página",
+    home: "Volver al inicio"
   }
 };
 
@@ -5234,6 +5258,12 @@ const frTranslation = {
       foreign_passport: "Passeport étranger",
       national_id: "Carte d’identité nationale"
     }
+  },
+  errorBoundary: {
+    title: "Une erreur est survenue",
+    message: "Cette page n'a pas pu être chargée. Veuillez réessayer.",
+    retry: "Recharger la page",
+    home: "Retour à l'accueil"
   }
 };
 
@@ -6278,6 +6308,12 @@ const deTranslation = {
       foreign_passport: "Auslandspass",
       national_id: "Nationaler Personalausweis"
     }
+  },
+  errorBoundary: {
+    title: "Etwas ist schiefgelaufen",
+    message: "Diese Seite konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
+    retry: "Seite neu laden",
+    home: "Zurück zur Startseite"
   }
 };
 
@@ -7322,6 +7358,12 @@ const ruTranslation = {
       foreign_passport: "Заграничный паспорт",
       national_id: "Национальное удостоверение личности"
     }
+  },
+  errorBoundary: {
+    title: "Что-то пошло не так",
+    message: "Не удалось загрузить эту страницу. Попробуйте ещё раз.",
+    retry: "Перезагрузить страницу",
+    home: "На главную"
   }
 };
 
@@ -8366,6 +8408,12 @@ const zhTranslation = {
       foreign_passport: "外国护照",
       national_id: "国民身份证"
     }
+  },
+  errorBoundary: {
+    title: "出了点问题",
+    message: "无法加载此页面。请重试。",
+    retry: "重新加载页面",
+    home: "返回首页"
   }
 };
 
@@ -9410,6 +9458,12 @@ const jaTranslation = {
       foreign_passport: "外国パスポート",
       national_id: "国民IDカード"
     }
+  },
+  errorBoundary: {
+    title: "問題が発生しました",
+    message: "このページを読み込めませんでした。もう一度お試しください。",
+    retry: "ページを再読み込み",
+    home: "ホームに戻る"
   }
 };
 
@@ -10454,6 +10508,12 @@ const arTranslation = {
       foreign_passport: "جواز سفر أجنبي",
       national_id: "بطاقة الهوية الوطنية"
     }
+  },
+  errorBoundary: {
+    title: "حدث خطأ ما",
+    message: "تعذّر تحميل هذه الصفحة. يرجى المحاولة مرة أخرى.",
+    retry: "إعادة تحميل الصفحة",
+    home: "العودة إلى الرئيسية"
   }
 };
 
@@ -11498,6 +11558,12 @@ const heTranslation = {
       foreign_passport: "דרכון חוץ",
       national_id: "תעודת זהות לאומית"
     }
+  },
+  errorBoundary: {
+    title: "משהו השתבש",
+    message: "לא ניתן לטעון את הדף הזה. נסה שוב.",
+    retry: "טען מחדש את הדף",
+    home: "חזרה לדף הבית"
   }
 };
 

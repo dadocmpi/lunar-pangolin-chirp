@@ -22,6 +22,12 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `/` home, `/pricing` (four plan cards → `GARANTIR ESTE PLANO` buttons), `/register-application` (pre-registration form; plan passed via router `state.plan`), `/checkout`, `/checkout/success`, `/login`, `/register`, `/about`, `/how-it-works`, `/contact`, `/terms`, `/privacy`, `/disclaimer`.
 - `src/App.tsx` registers `/register-application` (lazy).
 
+## Error handling / no black screens
+- Every route is wrapped by `src/components/ErrorBoundary.tsx` + `Suspense` (`RouteView` in `App.tsx`), and `src/main.tsx` adds a top-level boundary. A render error or failed lazy-chunk import must never unmount the whole app into an empty black page — it shows the localized recovery screen instead.
+- The boundary auto-reloads once (throttled by `braxel-chunk-reload-at` in sessionStorage) when a stale hashed chunk fails after a new deploy.
+- Use `<Link to="...">` for in-app navigation. Raw `<a href="/...">` does a full reload and bypasses the router; only use it for external links or the `window.location.reload()` escape hatch.
+- Return early with a themed loader (`min-h-screen bg-[#05070A]` + `Loader2`), not a bare empty div, for loading states.
+
 ## Payments / Supabase
 - Checkout + CheckoutSuccess fail closed when `isSupabaseConfigured()` is false (render `PaymentsDisabledNotice` or "could not verify" state).
 - Do not touch Stripe price IDs, webhook signature verification, payment/activation logic, Supabase functions, migrations, or RLS.
