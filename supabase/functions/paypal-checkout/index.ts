@@ -151,6 +151,25 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // ---------------------------------------------------------------------------
+  // HARD DISABLE — same free-service vulnerability as card-checkout: a captured
+  // PayPal order was never tied to a server-priced plan, and the service was
+  // created from a client-supplied `accountSize`. This endpoint is not called by
+  // the browser and now fails closed. Real card/PayPal checkout must go through
+  // stripe-checkout (Stripe-verified webhook) or the operator activation path.
+  // ---------------------------------------------------------------------------
+  return new Response(
+    JSON.stringify({
+      error: "endpoint_disabled",
+      message:
+        "paypal-checkout is disabled. It activated services without server-side payment verification.",
+    }),
+    {
+      status: 410,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {

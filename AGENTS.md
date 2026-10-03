@@ -5,8 +5,11 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 ## Commands
 - `npm run build` — production build (outputs `dist/`). **Exit 0 required before deploy.**
 - `npx tsc --noEmit -p tsconfig.app.json` — typecheck.
-- `npm run lint` — lint (0 errors; ~12 warnings are baseline fast-refresh/exhaustive-deps).
-- No test runner configured (`package.json` has no `test` script).
+- `npm run lint` — lint (0 errors; ~11 warnings are baseline fast-refresh/exhaustive-deps).
+- `npm run check:i18n` — i18n integrity gate (all 11 locales, key parity, no empty/interp drift).
+- `npm run check:payments` — payment/checkout contract gate (see Payments below).
+- No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`, `run-payments-flag-tests.ts`); Deno is not installed in the default image.
+- **Run `npm run check:i18n` and `npm run check:payments` before opening a PR that touches checkout, pricing, or i18n.**
 
 ## Local preview
 - `npx vite preview --port 4321 --host 127.0.0.1` after a build (serves `dist/`).
@@ -30,7 +33,15 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 
 ## Payments / Supabase
 - Checkout + CheckoutSuccess fail closed when `isSupabaseConfigured()` is false (render `PaymentsDisabledNotice` or "could not verify" state).
+- **ONE payments gate.** The frontend reads `src/lib/paymentsFlag.ts` (`isPaymentsEnabled()` = `VITE_PAYMENTS_ENABLED === "true" || VITE_TEST_PAYMENT_MODE === "true"`). Every payment Edge Function reads `supabase/functions/_shared/payments-flag.ts` (`PAYMENTS_ENABLED === "true" || TEST_PAYMENT_MODE === "true"`) and fails closed (503 `payments_disabled`) when off. These two modules MUST stay in sync; `npm run check:payments` enforces it. Never re-introduce a raw `import.meta.env` gate in a page or a per-function `Deno.env` gate.
+- Frontend flags are Vite build-time env vars (Vercel) and need a redeploy to change. Server flags are Supabase Edge Function secrets and take effect on the next invocation. The server flag is the security boundary; the frontend flag only decides which UI renders.
+- `HOW_TO_ENABLE_PAYMENTS.md` is the operator runbook (TEST/LIVE values + rollback).
 - Do not touch Stripe price IDs, webhook signature verification, payment/activation logic, Supabase functions, migrations, or RLS.
+- Plan prices live in ONE canonical client table: `src/lib/plans.ts` `PLAN_PRICING` (USD). It MUST mirror the server table `supabase/functions/_shared/plans.ts` `PLANS` (`priceCents` + `managedCapitalUsd`). `npm run check:payments` enforces parity; never hard-code prices in a page again.
+- Managed Capital is always charged in **USD**. Local currency is presentation only.
+- Active checkout methods: `stripe-checkout` (Stripe-verified via webhook), `wise-checkout` (pending_manual), `crypto-checkout` (on-chain confirm). Browser flows never declare the price.
+- `card-checkout` and `paypal-checkout` are **hard-disabled** (HTTP 410): they used to activate a paid service from client-supplied values with no payment verification. Do not re-enable them; card payments go through `stripe-checkout`.
+- Test mode is server-side only (`TEST_PAYMENT_MODE` env). Never trust an `isTest` flag from the request body.
 
 ## Owner notifications (Resend)
 - ONE module sends every owner email: `supabase/functions/_shared/email.ts` → `notifyOwner({ type, subject, data, replyTo, idempotencyKey })`. Never call `api.resend.com` directly from new code; route through `notifyOwner` / `notifyOwnerInBackground`.

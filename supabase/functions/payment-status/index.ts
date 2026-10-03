@@ -1,5 +1,9 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import {
+  isPaymentsEnabled,
+  isTestPaymentMode,
+} from "../_shared/payments-flag.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -35,14 +39,14 @@ serve(async (req) => {
 
   // ---------------------------------------------------------------------
   // Gate — refuse to read when neither test nor production is enabled.
+  // Uses the shared payments flag module (single source of truth).
   // ---------------------------------------------------------------------
-  const testMode = Deno.env.get("TEST_PAYMENT_MODE") === "true";
-  const prodMode = Deno.env.get("PAYMENTS_ENABLED") === "true";
-  if (!testMode && !prodMode) {
+  const testMode = isTestPaymentMode();
+  if (!isPaymentsEnabled()) {
     return new Response(
       JSON.stringify({
         ok: true,
-        mode: "test",
+        mode: "disabled",
         reason: "neither TEST_PAYMENT_MODE nor PAYMENTS_ENABLED is set",
         payment: {
           id: "00000000-0000-0000-0000-000000000000",
