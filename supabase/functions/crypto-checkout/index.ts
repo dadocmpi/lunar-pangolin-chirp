@@ -5,12 +5,17 @@ import {
   upsertPendingPayment,
   validateCheckoutInput,
 } from "../_shared/option_a/payments.ts";
-import { getPlan, TEST_PLACEHOLDER_WALLET } from "../_shared/option_a/plans.ts";
+import { getPlan } from "../_shared/option_a/plans.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import {
   isPaymentsEnabled,
+  isTestPaymentMode,
   paymentsDisabledBody,
 } from "../_shared/payments-flag.ts";
+import {
+  resolveCryptoAddress,
+  testCryptoAddress,
+} from "../_shared/payment-destinations.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -19,12 +24,14 @@ const corsHeaders = {
 };
 
 /**
- * Crypto Checkout — TEST MODE.
+ * Crypto Checkout.
  *
  * Behavior:
- *  1. Reads TEST_PAYMENT_MODE; if not "true", returns 200 with mode="test"
- *     and the safe test wallet placeholder. No row is inserted.
- *  2. If TEST_PAYMENT_MODE is "true", inserts a pending_payments row with:
+ *  1. Gate: PAYMENTS_ENABLED || TEST_PAYMENT_MODE must be on, else 503.
+ *  2. Destination: in TEST mode returns the safe placeholder wallet; in LIVE
+ *     mode resolves the real address from the network's CRYPTO_DESTINATION_*
+ *     secret and fails closed with 503 if it is not configured.
+ *  3. Inserts a pending_payments row with:
  *       - user_id        = authenticated user id
  *       - plan_id/name   = canonical from PLANS
  *       - amount_cents   = canonical from PLANS (browser value ignored)
@@ -32,11 +39,8 @@ const corsHeaders = {
  *       - method         = "crypto"
  *       - status_enum    = "pending"
  *       - idempotency_key= from the browser, required, ≥8 chars
- *       - metadata.is_test = true
- *  3. Writes one row to the audit log via logPaymentEvent.
- *  4. Returns the test wallet placeholder. Production wallets must be
- *     configured via Deno env (TEST_PLACEHOLDER_WALLET is the literal
- *     placeholder string used everywhere in this file).
+ *       - metadata.is_test = whether test mode is on
+ *  4. Writes one row to the audit log via logPaymentEvent.
  *  5. NEVER sets status to "confirmed". NEVER creates a services row.
  *  6. Idempotent on (user_id, idempotency_key).
  */
@@ -60,6 +64,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+  const testMode = isTestPaymentMode();
 
   // -------------------------------------------------------------------------
   // Auth
@@ -122,6 +127,26 @@ serve(async (req) => {
   }
 
   // -------------------------------------------------------------------------
+  // Destination — fail closed in LIVE mode when the network address is unset.
+  // Never hand a live payer the test placeholder wallet.
+  // -------------------------------------------------------------------------
+  const depositAddress = testMode
+    ? testCryptoAddress()
+    : resolveCryptoAddress(validated.network?.id ?? "");
+  if (!depositAddress) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: "payment_destination_unconfigured",
+        mode: "production",
+        message:
+          `No deposit address is configured for network ${validated.network?.id ?? "unknown"}. Set ${validated.network?.addressEnv ?? "the matching CRYPTO_DESTINATION_* secret"}.`,
+      }),
+      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+
+  // -------------------------------------------------------------------------
   // Insert (or return existing) pending_payments row.
   // Status is "pending" on insert; this handler NEVER transitions to
   // confirmed. Only test-confirm-payment (with TEST_CONFIRM_SECRET) does.
@@ -138,7 +163,7 @@ serve(async (req) => {
     network: networkId,
     method: "crypto",
     idempotencyKey: validated.idempotencyKey,
-    metadata: { ...validated.metadata, is_test: true },
+    metadata: { ...validated.metadata, is_test: testMode },
   });
 
   notifyOwnerInBackground({
@@ -158,31 +183,28 @@ serve(async (req) => {
     idempotencyKey: `crypto-order:${payment.id}`,
   });
 
-  return safeTestResponse(payment, TEST_PLACEHOLDER_WALLET, null);
+  return checkoutResponse(payment, depositAddress, testMode);
 });
 
-function safeTestResponse(
+function checkoutResponse(
   payment: unknown,
   wallet: string,
-  reason: string | null,
+  testMode: boolean,
 ) {
   const body: Record<string, unknown> = {
     ok: true,
-    mode: "test",
-    test_mode: true,
+    mode: testMode ? "test" : "production",
+    test_mode: testMode,
     deposit_address: wallet,
-    warnings: [
-      "TEST MODE. No real wallet is configured.",
-      "Sending real funds to this address will not result in service activation.",
-      "Confirmation requires the separate test-admin secret.",
-    ],
+    warnings: testMode
+      ? [
+        "TEST MODE. No real wallet is configured.",
+        "Sending real funds to this address will not result in service activation.",
+        "Confirmation requires the separate test-admin secret.",
+      ]
+      : [],
+    payment: payment ?? null,
   };
-  if (reason) body.reason = reason;
-  if (payment) {
-    body.payment = payment;
-  } else {
-    body.payment = null;
-  }
   return new Response(JSON.stringify(body), {
     status: 200,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
