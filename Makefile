@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-migrations typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -24,6 +24,13 @@ test-tradovate:
 	deno run -A supabase/functions/_test/tradovate-log-safety-tests.ts
 	deno run -A supabase/functions/_test/tradovate-ownership-tests.ts
 	deno run -A supabase/functions/_test/tradovate-e2e-demo-tests.ts
+	deno run -A supabase/functions/_test/feature-flag-tests.ts
+
+# Pending-migration apply-order + idempotency on a fresh Supabase Postgres.
+# Needs sudo docker; reproduces the current production baseline then applies
+# every pending migration in filename order.
+test-migrations:
+	bash supabase/functions/_test/migrations/apply-order.sh
 
 # Row-level-security test. Needs Docker; see supabase/functions/_test/rls/.
 test-tradovate-rls:
