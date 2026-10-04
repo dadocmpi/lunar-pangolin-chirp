@@ -15,10 +15,14 @@ import { cn } from "@/lib/utils";
 
 const TradovateConnectCard = ({ defaultOpen = false }: { defaultOpen?: boolean }) => {
   const { t } = useTranslation();
-  const { loading, connected, integrations, refresh } = useTradovateConnection(true);
+  const { loading, connected, integrations, enabled, refresh } = useTradovateConnection(true);
   const [open, setOpen] = useState(defaultOpen);
 
   const active = integrations.filter((i) => i.status === "connected");
+
+  // Runtime kill switch: when the server reports the feature off, the card
+  // disappears entirely (no redeploy needed).
+  if (!enabled) return null;
 
   return (
     <>

@@ -24,6 +24,8 @@ export interface TradovateConnectionState {
   loading: boolean;
   connected: boolean;
   integrations: TradovateIntegration[];
+  /** False when the server says the feature is switched off (TRADOVATE_ENABLED). */
+  enabled: boolean;
   error: string | null;
   refresh: () => Promise<void>;
 }
@@ -38,6 +40,7 @@ export function useTradovateConnection(enabled = true): TradovateConnectionState
   const [loading, setLoading] = useState(enabled);
   const [connected, setConnected] = useState(false);
   const [integrations, setIntegrations] = useState<TradovateIntegration[]>([]);
+  const [featureEnabled, setFeatureEnabled] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
@@ -66,6 +69,15 @@ export function useTradovateConnection(enabled = true): TradovateConnectionState
         return;
       }
       const data = await res.json();
+      // The server can switch the whole feature off at runtime
+      // (TRADOVATE_ENABLED=false) without a frontend redeploy.
+      if (data.enabled === false) {
+        setFeatureEnabled(false);
+        setIntegrations([]);
+        setConnected(false);
+        return;
+      }
+      setFeatureEnabled(true);
       const list: TradovateIntegration[] = Array.isArray(data.integrations)
         ? data.integrations
         : [];
@@ -90,6 +102,7 @@ export function useTradovateConnection(enabled = true): TradovateConnectionState
     loading,
     connected,
     integrations,
+    enabled: featureEnabled,
     error,
     refresh,
   };
