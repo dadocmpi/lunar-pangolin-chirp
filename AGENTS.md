@@ -87,6 +87,18 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - **Ownership is server-side.** Handlers derive the user from the JWT (`requireUser`); a `user_id` in the body is ignored, and every service-role query is explicitly scoped by `user_id`.
 - Rotation of `TRADOVATE_ENCRYPTION_KEY` is a re-wrap (`key_version` column exists); see `docs/tradovate-runbook.md`.
 
+## Runtime feature switches (2026-10-04)
+- **One module:** `supabase/functions/_shared/features.ts`. Switches are read from Edge Function secrets on every invocation, default **ON**, and only the exact string `"false"` turns a feature off — no redeploy needed to flip. `feature-flag-tests.ts` pins the logic and asserts the wiring in each function.
+  - `TRADOVATE_ENABLED=false` → `tradovate-connect`/`tradovate-data` return 503 `feature_disabled`; `tradovate-status` returns `enabled:false` so the card hides (no redeploy); `tradovate-sync` is a no-op.
+  - `AI_KYC_ENABLED=false` → `kyc-submit` builds no provider, so every submission falls to human manual review (fails closed).
+  - `WITHDRAWAL_KYC_GATE_ENABLED=false` → `withdrawal-request` returns 503. It **refuses** withdrawals rather than allowing KYC-less ones; the gate is never silently bypassed.
+- Add a new kill switch to `features.ts` and its `FeatureEnv`, then assert the wiring in `feature-flag-tests.ts`.
+
+## Migrations & function deploy order (2026-10-04)
+- Pending migrations (this PR, filename order): `20261004000000_tradovate_integration`, `20261004000001_tradovate_sync_schedule`, `20261005000000_kyc_on_withdrawal`, `20261006000000_ai_kyc_checks`, `20261007000000_withdrawal_manual_review`.
+- **Migrations before code.** `deploy-supabase-functions.yml` now has a pre-flight that compares the commit's migration head against the linked DB (`supabase migration list --linked`) and **skips** (fail-safe) the function deploy when migrations are not applied. Needs `SUPABASE_DB_PASSWORD`; without it the deploy is skipped. Runbook: `docs/supabase-deploy-order.md`.
+- **The migration chain is NOT self-contained from an empty DB.** `public.services` / `public.profiles` are pre-existing production tables not created by any tracked migration. `make test-migrations` (`supabase/functions/_test/migrations/apply-order.sh`) reproduces the production baseline (`00_legacy_production_baseline.sql`) and applies all 5 pending migrations in filename order, then re-applies them to prove idempotency. Needs `sudo docker` (`supabase/postgres:15.8.1.085`); the image superuser is `supabase_admin` / password `postgres`, db `postgres`.
+
 ## Deployment
 - Deployment is via Vercel's GitHub integration: pushing to `main` triggers a `Production` deployment for the `braxelmarkets` project (`https://braxelmarkets.vercel.app/`).
 - **Vercel deploys ONLY the SPA.** Supabase Edge Functions are a separate target: `.github/workflows/deploy-supabase-functions.yml` runs `supabase functions deploy` on push to `main` (needs `SUPABASE_ACCESS_TOKEN` + `SUPABASE_PROJECT_ID` repo secrets). Until functions are deployed, calls return `{"code":"NOT_FOUND"}`. Merging `supabase/functions/**` alone does NOT change production.
