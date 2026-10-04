@@ -44,7 +44,7 @@ const KycReminderBanner = ({ status, onOpen }: Props) => {
             ? t('dashboard.kyc.underReview')
             : status === "rejected"
             ? t('dashboard.kyc.rejected')
-            : t('dashboard.kyc.required')}
+            : t('dashboard.kyc.optionalTitle')}
         </p>
         <p className="text-[10px] text-slate-400 mt-0.5">{t('dashboard.kycBannerHint')}</p>
       </div>

@@ -517,6 +517,10 @@ const Dashboard = () => {
                   </Button>
                 </div>
 
+                {/* Prominent Tradovate connect entry point — the first thing
+                    on the terminal. Username + password, no gate. */}
+                <TradovateConnectCard />
+
                 {/* Non-blocking KYC reminder. The terminal is fully usable
                     without it; only withdrawals require verification. */}
                 <KycReminderBanner
@@ -545,9 +549,6 @@ const Dashboard = () => {
                     <p className="text-xl md:text-2xl font-serif font-bold text-white">{services.length}</p>
                   </div>
                 </div>
-
-                {/* Prominent Tradovate connect entry point (username+password). */}
-                <TradovateConnectCard />
 
                 <PerformanceChart />
 
