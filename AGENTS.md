@@ -62,6 +62,16 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - Redaction is automatic by key name (password/secret/token/card/cvv/iban/...) and for card-like digit runs; HTML is escaped before rendering.
 - Owner notifications are fire-and-forget: a provider failure must never break signup, checkout, a form submit, or a webhook.
 
+## KYC (identity verification)
+- The terminal opens for any logged-in user. KYC is **not** required to enter the dashboard.
+- KYC is enforced only when a withdrawal is requested. `src/pages/Dashboard.tsx` (withdraw view) renders `src/components/WithdrawalKycGate.tsx` unless the latest `kyc_submissions.status` is `approved`.
+- Documents are uploaded through the authenticated `kyc-submit` Edge Function into the **private** bucket `kyc-documents` at `<user_id>/<uuid>.<ext>`; only object paths are stored, never public URLs. Object RLS keys on `(storage.foldername(name))[1] = auth.uid()::text`.
+- `withdrawal-request` is the server-side gate: it reads KYC status via the `kyc_status_for_user(uuid)` SECURITY DEFINER RPC for the **JWT** user and returns 403 `kyc_required` unless approved. A `kycStatus`/`userId` in the request body is ignored.
+- `kyc-action` mirrors an owner approve/deny onto the latest submission, records the rejection reason, and emails the user via `_shared/userEmail.ts`.
+- `_shared/userEmail.ts` is the single module for **customer-facing** transactional email (analogous to `_shared/email.ts` for owner notifications); do not call `api.resend.com` directly. `npm run check:payments` enforces both.
+- Schema: `supabase/migrations/*_kyc_on_withdrawal.sql` (`kyc_submissions`, `withdrawal_requests`, gate RPCs, bucket). Gate RPCs are `service_role`-only.
+- Tests: `deno run -A supabase/functions/_test/kyc-gate-tests.ts`, `kyc-document-tests.ts`; RLS/storage isolation `bash supabase/functions/_test/rls-kyc/run.sh` (needs Docker).
+
 ## Deployment
 - Deployment is via Vercel's GitHub integration: pushing to `main` triggers a `Production` deployment for the `braxelmarkets` project (`https://braxelmarkets.vercel.app/`).
 - **Vercel deploys ONLY the SPA.** Supabase Edge Functions are a separate target: `.github/workflows/deploy-supabase-functions.yml` runs `supabase functions deploy` on push to `main` (needs `SUPABASE_ACCESS_TOKEN` + `SUPABASE_PROJECT_ID` repo secrets). Until functions are deployed, calls return `{"code":"NOT_FOUND"}`. Merging `supabase/functions/**` alone does NOT change production.

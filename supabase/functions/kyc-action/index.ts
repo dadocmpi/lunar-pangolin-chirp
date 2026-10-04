@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import { sendUserEmailInBackground } from "../_shared/userEmail.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -151,6 +152,9 @@ serve(async (req) => {
     );
   }
 
+  // Optional reviewer note. Shown to the user when a submission is rejected.
+  const reason = (url.searchParams.get("reason") ?? "").trim().slice(0, 500);
+
   const url_ = Deno.env.get("SUPABASE_URL");
   const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!url_ || !key) {
@@ -189,6 +193,28 @@ serve(async (req) => {
     );
   }
 
+  // Mirror the decision onto the latest submission so the status view and the
+  // withdrawal gate (which reads the latest submission first) agree.
+  const { data: latest } = await admin
+    .from("kyc_submissions")
+    .select("id")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (latest?.id) {
+    await admin
+      .from("kyc_submissions")
+      .update({
+        status: newStatus,
+        review_reason: action === "deny" ? (reason || "documents_unreadable") : null,
+        reviewed_by: "owner_link",
+        reviewed_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", latest.id);
+  }
+
   const verb = action === "approve" ? "approved" : "rejected";
   notifyOwnerInBackground({
     type: "conta",
@@ -197,10 +223,30 @@ serve(async (req) => {
       user_id: userId,
       acao: action,
       novo_status: newStatus,
+      motivo: reason || undefined,
       origem: "kyc-action",
     },
     idempotencyKey: `kyc-action:${userId}:${action}`,
   });
+
+  // Notify the user of the decision (Resend). Recipient is read server-side
+  // from the user record, never from the request.
+  const { data: userData } = await admin.auth.admin.getUserById(userId);
+  const email = userData?.user?.email ?? null;
+  sendUserEmailInBackground({
+    to: email,
+    subject: action === "approve"
+      ? "Verificacao de identidade aprovada — Braxel Markets"
+      : "Verificacao de identidade recusada — Braxel Markets",
+    heading: action === "approve"
+      ? "Verificacao aprovada"
+      : "Verificacao recusada",
+    body: action === "approve"
+      ? "A sua verificacao de identidade foi aprovada. Ja pode solicitar levantamentos."
+      : "A sua verificacao de identidade foi recusada. Pode reenviar os documentos a partir do painel.",
+    details: action === "deny" && reason ? [["Motivo", reason]] : undefined,
+  });
+
   return htmlResponse(
     `KYC ${verb}`,
     `KYC verification <span class="${
