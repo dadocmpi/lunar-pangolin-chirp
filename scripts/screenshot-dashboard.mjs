@@ -80,6 +80,7 @@ page.on("request", async (req) => {
   }
   if (u.startsWith("/rest/v1/kyc_submissions")) return body([]); // no submissions
   if (u.startsWith("/rest/v1/withdrawal_requests")) return body([]);
+  if (u.startsWith("/rest/v1/trades")) return body([]); // no real trades -> empty state
   if (u.startsWith("/functions/v1/tradovate-status")) return body({ integrations: [] });
   return body({});
 });
@@ -143,6 +144,74 @@ if (cardBox) {
     clip: cardBox,
   });
 }
+
+// ---------------------------------------------------------------------------
+// No-invented-numbers proof: a real user with no services and no closed trades
+// must see the empty state, never +12.4% / -2.1% / a $-axis growth chart.
+// ---------------------------------------------------------------------------
+const hasNoDataYet = /no performance data yet/i.test(text);
+const hasInventedProfit = /\+12\.4%|-2\.1%|-4\.2%|\$25,000/.test(text);
+console.log("emptyStateShown:", hasNoDataYet);
+console.log("inventedFiguresShown:", hasInventedProfit);
+await page.screenshot({ path: `${OUT_DIR}/dashboard-no-data-empty-state.png`, fullPage: true });
+
+// ---------------------------------------------------------------------------
+// LIVE ACCOUNT badge: it must appear ONLY after an account is connected.
+// Re-run the dashboard with a mocked connected integration.
+// ---------------------------------------------------------------------------
+const page2 = await browser.newPage();
+await page2.setViewport({ width: 1440, height: 1000, deviceScaleFactor: 2 });
+await page2.evaluateOnNewDocument((session) => {
+  try {
+    localStorage.setItem("braxel-auth-session", JSON.stringify(session));
+  } catch {}
+}, SESSION);
+await page2.setRequestInterception(true);
+page2.on("request", async (req) => {
+  const url = req.url();
+  if (!url.startsWith(SUPABASE)) return req.continue();
+  if (req.method() === "OPTIONS") return req.respond({ status: 204, headers: jsonHeaders, body: "" });
+  const u = url.replace(SUPABASE, "");
+  const body = (obj, status = 200) =>
+    req.respond({ status, headers: jsonHeaders, body: JSON.stringify(obj) });
+  if (u.startsWith("/auth/v1/user")) return body(USER);
+  if (u.startsWith("/auth/v1/token")) return body(SESSION);
+  if (u.startsWith("/auth/v1/logout")) return req.respond({ status: 204, body: "" });
+  if (u.startsWith("/rest/v1/services")) return body([]);
+  if (u.startsWith("/rest/v1/profiles")) return body([{ id: USER.id, first_name: "Mock", last_name: "Audit", kyc_status: null }]);
+  if (u.startsWith("/rest/v1/kyc_submissions")) return body([]);
+  if (u.startsWith("/rest/v1/withdrawal_requests")) return body([]);
+  if (u.startsWith("/rest/v1/trades")) return body([]);
+  if (u.startsWith("/functions/v1/tradovate-status")) {
+    return body({
+      enabled: true,
+      welcome: { show: false, skipped: true },
+      integrations: [
+        {
+          id: "22222222-2222-2222-2222-222222222222",
+          environment: "live",
+          accountId: 987654,
+          accountSpec: "DEMO-ACCT",
+          label: "Demo Funded",
+          status: "connected",
+          lastFillId: 0,
+          tokenExpiresAt: null,
+        },
+      ],
+    });
+  }
+  return body({});
+});
+await page2.goto(`${BASE}/dashboard`, { waitUntil: "networkidle2", timeout: 60000 });
+await new Promise((r) => setTimeout(r, 2500));
+const text2 = await page2.evaluate(() => document.body.innerText);
+const liveBadgeOnConnected = /LIVE ACCOUNT/.test(text2);
+// On the empty (first) page there must be NO live badge.
+const liveBadgeOnEmpty = /LIVE ACCOUNT/.test(text);
+console.log("liveBadgeOnConnected:", liveBadgeOnConnected);
+console.log("liveBadgeOnEmpty:", liveBadgeOnEmpty);
+await page2.screenshot({ path: `${OUT_DIR}/tradovate-live-account-badge.png`, fullPage: true });
+
 console.log("OUT", `${OUT_DIR}/dashboard-mock-user.png`);
 console.log("hasVerificationRequired:", hasVerificationRequired);
 console.log("hasLogInOnTradovate:", hasLogInOnTradovate);

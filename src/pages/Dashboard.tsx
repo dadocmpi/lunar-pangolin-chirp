@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -27,7 +27,6 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
-  Hash,
   TrendingUp,
   TrendingDown,
   BarChart3,
@@ -42,7 +41,6 @@ import {
   ChevronLeft,
   Globe,
   CreditCard,
-  MapPin,
   Plug
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -55,6 +53,29 @@ import { useTranslation } from 'react-i18next';
 import { countriesData, getCountryByCode } from '@/data/kycData';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useTradovateConnection } from '@/hooks/useTradovateConnection';
+import {
+  resolvePerformanceSummary,
+  resolveTransactions,
+  resolveAuditLog,
+  type TradeLike,
+  type WithdrawalLike,
+} from '@/lib/dashboardData';
+
+/** "2026-06" -> a short localized month label, e.g. "Jun 2026". */
+function formatMonthLabel(key: string): string {
+  const m = /^(\d{4})-(\d{2})$/.exec(key);
+  if (!m) return key;
+  const d = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, 1));
+  return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric', timeZone: 'UTC' });
+}
+
+/** ISO timestamp -> short localized date + time, or an em dash when absent. */
+function formatDateTime(iso: string | null | undefined): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '—';
+  return d.toLocaleString(undefined, { dateStyle: 'short', timeStyle: 'short' });
+}
 
 const Dashboard = () => {
   const { t } = useTranslation();
@@ -88,6 +109,10 @@ const Dashboard = () => {
   }
 
   const [services, setServices] = useState<ServiceRecord[]>([]);
+  // Real data for the performance view: closed trades (net PnL) and the user's
+  // withdrawal requests. No mock/demo rows — empty stays empty.
+  const [trades, setTrades] = useState<TradeLike[]>([]);
+  const [withdrawals, setWithdrawals] = useState<WithdrawalLike[]>([]);
   const [profile, setProfile] = useState<ProfileRecord | null>(null);
   const [user, setUser] = useState<{ id: string; email?: string | null; email_confirmed_at?: string | null; user_metadata?: Record<string, unknown> | null } | null>(null);
   const navigate = useNavigate();
@@ -204,6 +229,29 @@ const Dashboard = () => {
         .order('created_at', { ascending: false });
 
       setServices(servicesData || []);
+
+      // Real performance inputs. Both are owner-readable under RLS; a failure
+      // must not blank the dashboard, so each is guarded and falls back to [].
+      try {
+        const { data: tradeData } = await supabase
+          .from('trades')
+          .select('root_symbol, symbol, side, quantity, entry_price, exit_price, opened_at, closed_at, net_pnl, status')
+          .order('opened_at', { ascending: false });
+        setTrades((tradeData as TradeLike[] | null) ?? []);
+      } catch {
+        setTrades([]);
+      }
+
+      try {
+        const { data: withdrawalData } = await supabase
+          .from('withdrawal_requests')
+          .select('id, amount_cents, currency, method, status, created_at')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+        setWithdrawals((withdrawalData as WithdrawalLike[] | null) ?? []);
+      } catch {
+        setWithdrawals([]);
+      }
 
       const { data: profileData } = await supabase
         .from('profiles')
@@ -418,26 +466,14 @@ const Dashboard = () => {
   const canProceedToDocument = selectedMethod !== null;
   const canSubmit = kycDocument !== null && selectedDocument !== null;
 
-  // Mock data for demo purposes
-  const mockTransactions = [
-    { id: 1, type: 'withdrawal', amount: 500, status: 'completed', date: '2026-06-10', hash: '0x7a3f...e92b' },
-    { id: 2, type: 'withdrawal', amount: 1200, status: 'pending', date: '2026-06-14', hash: '' },
-    { id: 3, type: 'deposit', amount: 5000, status: 'completed', date: '2026-06-01', hash: '0x2c1d...a47f' },
-  ];
-
-  const mockAuditLog = [
-    { id: 1, asset: 'BTC/USDT', type: 'LONG', entry: '67,420.50', exit: '67,890.20', profit: '+0.70%', time: '2026-06-14 14:32', status: 'closed' },
-    { id: 2, asset: 'ETH/USDT', type: 'SHORT', entry: '3,842.10', exit: '3,801.50', profit: '+1.06%', time: '2026-06-14 13:18', status: 'closed' },
-    { id: 3, asset: 'SOL/USDT', type: 'LONG', entry: '178.90', exit: '-', profit: '+0.34%', time: '2026-06-14 15:01', status: 'open' },
-    { id: 4, asset: 'BTC/USDT', type: 'LONG', entry: '66,800.00', exit: '67,150.30', profit: '+0.52%', time: '2026-06-13 22:45', status: 'closed' },
-    { id: 5, asset: 'XRP/USDT', type: 'SHORT', entry: '0.5240', exit: '0.5180', profit: '+1.15%', time: '2026-06-13 19:10', status: 'closed' },
-  ];
-
-  const mockSecurityLog = [
-    { eventKey: 'dashboard.kyc.eventLoginNewDevice', timeKey: 'dashboard.kyc.timeHoursAgo', count: 2 },
-    { eventKey: 'dashboard.kyc.eventPasswordChanged', timeKey: 'dashboard.kyc.timeDaysAgo', count: 5 },
-    { eventKey: 'dashboard.kyc.eventAccountCreated', timeKey: 'dashboard.kyc.timeDaysAgo', count: 30 },
-  ];
+  // Derived, real view models. Every figure below comes from the user's own
+  // rows; there is no hardcoded performance number and no demo fallback.
+  const performance = useMemo(
+    () => resolvePerformanceSummary({ services, trades }),
+    [services, trades],
+  );
+  const transactions = useMemo(() => resolveTransactions(withdrawals), [withdrawals]);
+  const auditLog = useMemo(() => resolveAuditLog(trades), [trades]);
 
   // KYC no longer blocks the terminal. It is enforced only at withdrawal time
   // (server-side), and remains optional/voluntary in Settings.
@@ -542,21 +578,33 @@ const Dashboard = () => {
                   onOpen={() => { setActiveView('settings'); setSettingsTab('kyc'); }}
                 />
 
-                {/* Metrics Cards */}
+                {/* Metrics Cards — every value is real or an explicit empty state. */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.balance')}</p>
                     <p className="text-xl md:text-2xl font-serif font-bold text-white">
-                      {convertPrice(services.reduce((acc, s) => acc + parseFloat(String(s.balance ?? 0)), 0))}
+                      {convertPrice(performance.totalBalance)}
                     </p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.totalProfit')}</p>
-                    <p className="text-xl md:text-2xl font-serif font-bold text-emerald-500">+12.4%</p>
+                    {performance.hasData ? (
+                      <p className={cn("text-xl md:text-2xl font-serif font-bold", performance.totalProfit >= 0 ? "text-emerald-500" : "text-red-500")}>
+                        {performance.totalProfit >= 0 ? '+' : ''}{convertPrice(performance.totalProfit)}
+                      </p>
+                    ) : (
+                      <p className="text-sm font-bold text-slate-500 mt-1">{t('dashboard.noPerformanceData')}</p>
+                    )}
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.drawdown')}</p>
-                    <p className="text-xl md:text-2xl font-serif font-bold text-yellow-500">-2.1%</p>
+                    {performance.hasData && performance.maxDrawdown !== null ? (
+                      <p className="text-xl md:text-2xl font-serif font-bold text-yellow-500">
+                        {convertPrice(performance.maxDrawdown)}
+                      </p>
+                    ) : (
+                      <p className="text-sm font-bold text-slate-500 mt-1">{t('dashboard.noPerformanceData')}</p>
+                    )}
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.activeAlgos')}</p>
@@ -564,7 +612,7 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <PerformanceChart />
+                <PerformanceChart series={performance.growthSeries} />
 
                 {services.length === 0 ? (
                   <div className="p-16 border border-dashed border-white/10 bg-[#1A1A1A] text-center">
@@ -612,21 +660,31 @@ const Dashboard = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.balance')}</p>
-                    <p className="text-xl font-serif font-bold text-white">{convertPrice(services.reduce((acc, s) => acc + parseFloat(String(s.balance ?? 0)), 0))}</p>
+                    <p className="text-xl font-serif font-bold text-white">{convertPrice(performance.totalBalance)}</p>
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingUp size={12} className="text-emerald-500" />
                       <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.totalProfit')}</p>
                     </div>
-                    <p className="text-xl font-serif font-bold text-emerald-500">+{convertPrice(3240)}</p>
+                    {performance.hasData ? (
+                      <p className={cn("text-xl font-serif font-bold", performance.totalProfit >= 0 ? "text-emerald-500" : "text-red-500")}>
+                        {performance.totalProfit >= 0 ? '+' : ''}{convertPrice(performance.totalProfit)}
+                      </p>
+                    ) : (
+                      <p className="text-sm font-bold text-slate-500 mt-1">{t('dashboard.noPerformanceData')}</p>
+                    )}
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <div className="flex items-center gap-2 mb-2">
                       <TrendingDown size={12} className="text-yellow-500" />
                       <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.maxDrawdown')}</p>
                     </div>
-                    <p className="text-xl font-serif font-bold text-yellow-500">-4.2%</p>
+                    {performance.hasData && performance.maxDrawdown !== null ? (
+                      <p className="text-xl font-serif font-bold text-yellow-500">{convertPrice(performance.maxDrawdown)}</p>
+                    ) : (
+                      <p className="text-sm font-bold text-slate-500 mt-1">{t('dashboard.noPerformanceData')}</p>
+                    )}
                   </div>
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
                     <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.assetsInOperation')}</p>
@@ -634,24 +692,27 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <PerformanceChart />
+                <PerformanceChart series={performance.growthSeries} />
 
                 <div className="bg-[#1A1A1A] border border-white/10 p-8">
                   <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-6">{t('dashboard.monthlyReturns')}</h3>
-                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
-                    {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'].map((month, i) => {
-                      const returns = [2.1, 1.8, -0.4, 3.2, 2.8, 1.9];
-                      const val = returns[i];
-                      return (
-                        <div key={month} className="text-center p-4 bg-white/[0.02] border border-white/5">
-                          <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{month}</p>
-                          <p className={cn("text-sm font-bold", val >= 0 ? "text-emerald-500" : "text-red-500")}>
-                            {val >= 0 ? '+' : ''}{val}%
+                  {performance.monthlyReturns.length === 0 ? (
+                    <div className="p-10 border border-dashed border-white/10 text-center">
+                      <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest">{t('dashboard.noPerformanceData')}</p>
+                      <p className="text-slate-600 text-[10px] mt-2">{t('dashboard.noPerformanceDataHint')}</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+                      {performance.monthlyReturns.map((r) => (
+                        <div key={r.month} className="text-center p-4 bg-white/[0.02] border border-white/5">
+                          <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{formatMonthLabel(r.month)}</p>
+                          <p className={cn("text-sm font-bold", r.value >= 0 ? "text-emerald-500" : "text-red-500")}>
+                            {r.value >= 0 ? '+' : ''}{convertPrice(r.value)}
                           </p>
                         </div>
-                      );
-                    })}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -712,8 +773,13 @@ const Dashboard = () => {
                   {/* Transaction History */}
                   <div className="bg-[#1A1A1A] border border-white/10 p-8">
                     <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">{t('dashboard.transactionHistory')}</h3>
+                    {transactions.length === 0 ? (
+                      <div className="p-10 border border-dashed border-white/10 text-center">
+                        <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest">{t('dashboard.noTransactions')}</p>
+                      </div>
+                    ) : (
                     <div className="space-y-4">
-                      {mockTransactions.map((tx) => (
+                      {transactions.map((tx) => (
                         <div key={tx.id} className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5">
                           <div className="flex items-center gap-4">
                             {tx.status === 'completed' ? (
@@ -722,23 +788,20 @@ const Dashboard = () => {
                               <Clock size={16} className="text-yellow-500" />
                             )}
                             <div>
-                              <p className="text-[11px] font-bold uppercase tracking-widest">{tx.type}</p>
-                              <p className="text-[9px] text-slate-500">{tx.date}</p>
+                              <p className="text-[11px] font-bold uppercase tracking-widest">{t('dashboard.withdraw')}</p>
+                              <p className="text-[9px] text-slate-500">{formatDateTime(tx.date)}</p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className={cn("text-sm font-bold", tx.type === 'withdrawal' ? "text-red-400" : "text-emerald-500")}>
-                              {tx.type === 'withdrawal' ? '-' : '+'}{convertPrice(tx.amount)}
+                            <p className="text-sm font-bold text-red-400">
+                              -{convertPrice(tx.amount)}
                             </p>
-                            {tx.hash && (
-                              <div className="flex items-center gap-1 text-[8px] text-slate-500 mt-1">
-                                <Hash size={10} /> {tx.hash}
-                              </div>
-                            )}
+                            <p className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">{tx.status}</p>
                           </div>
                         </div>
                       ))}
                     </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -754,6 +817,12 @@ const Dashboard = () => {
                   <p className="text-slate-500 text-[12px] mt-2">{t('dashboard.auditLogDesc')}</p>
                 </div>
 
+                {auditLog.length === 0 ? (
+                  <div className="p-12 border border-dashed border-white/10 bg-[#1A1A1A] text-center">
+                    <Activity size={32} className="mx-auto text-slate-700 mb-4" />
+                    <p className="text-slate-500 text-[11px] font-bold uppercase tracking-widest">{t('dashboard.noAuditLog')}</p>
+                  </div>
+                ) : (
                 <div className="bg-[#1A1A1A] border border-white/10 overflow-x-auto">
                   <table className="w-full min-w-[600px]">
                     <thead>
@@ -768,21 +837,23 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {mockAuditLog.map((op) => (
+                      {auditLog.map((op) => (
                         <tr key={op.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
                           <td className="p-4 text-[11px] font-bold text-white">{op.asset}</td>
                           <td className="p-4">
-                            <span className={cn("text-[10px] font-bold uppercase tracking-widest px-2 py-1", op.type === 'LONG' ? 'text-emerald-500 bg-emerald-500/10' : 'text-red-400 bg-red-500/10')}>
-                              {op.type}
+                            <span className={cn("text-[10px] font-bold uppercase tracking-widest px-2 py-1", op.side === 'long' ? 'text-emerald-500 bg-emerald-500/10' : 'text-red-400 bg-red-500/10')}>
+                              {t(`tradovate.side.${op.side}`)}
                             </span>
                           </td>
                           <td className="p-4 text-[11px] text-slate-300 font-mono">${op.entry}</td>
-                          <td className="p-4 text-[11px] text-slate-300 font-mono">{op.exit === '-' ? '—' : `$${op.exit}`}</td>
-                          <td className="p-4 text-[11px] font-bold text-emerald-500">{op.profit}</td>
-                          <td className="p-4 text-[10px] text-slate-500">{op.time}</td>
+                          <td className="p-4 text-[11px] text-slate-300 font-mono">{op.exit === null ? '—' : `$${op.exit}`}</td>
+                          <td className={cn("p-4 text-[11px] font-bold", op.netPnl >= 0 ? "text-emerald-500" : "text-red-400")}>
+                            {op.netPnl >= 0 ? '+' : ''}{convertPrice(op.netPnl)}
+                          </td>
+                          <td className="p-4 text-[10px] text-slate-500">{formatDateTime(op.time)}</td>
                           <td className="p-4">
                             <span className={cn("text-[9px] font-bold uppercase tracking-widest", op.status === 'open' ? 'text-[#D4AF37]' : 'text-slate-500')}>
-                              {op.status}
+                              {t(`dashboard.${op.status}`)}
                             </span>
                           </td>
                         </tr>
@@ -790,6 +861,7 @@ const Dashboard = () => {
                     </tbody>
                   </table>
                 </div>
+                )}
               </div>
             )}
 
@@ -1292,13 +1364,10 @@ const Dashboard = () => {
                     {/* Security Log */}
                     <div className="bg-[#1A1A1A] border border-white/10 p-8">
                       <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">{t('dashboard.kyc.securityActivityLog')}</h3>
-                      <div className="space-y-3">
-                        {mockSecurityLog.map((log, i) => (
-                          <div key={i} className="flex justify-between items-center p-4 bg-white/[0.02] border border-white/5">
-                            <span className="text-[10px] text-slate-300">{t(log.eventKey)}</span>
-                            <span className="text-[9px] text-slate-500">{t(log.timeKey, { count: log.count })}</span>
-                          </div>
-                        ))}
+                      {/* No security-event feed exists yet. Rather than invent
+                          "login from new device" rows, show an honest empty state. */}
+                      <div className="p-8 border border-dashed border-white/10 text-center">
+                        <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">{t('dashboard.noSecurityEvents')}</p>
                       </div>
                     </div>
                   </div>

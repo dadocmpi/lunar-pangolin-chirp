@@ -12,6 +12,7 @@
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:payments": "node scripts/check-payment-contract.mjs",
     "check:tradovate": "node scripts/check-tradovate-contract.mjs",
+    "check:dashboard": "node scripts/check-dashboard-data.mjs",
     "smoke:functions": "node scripts/smoke-edge-functions.mjs"
   },
   "dependencies": {

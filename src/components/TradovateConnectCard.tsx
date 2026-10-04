@@ -33,9 +33,18 @@ const TradovateConnectCard = ({ defaultOpen = false }: { defaultOpen?: boolean }
               <Plug className="text-[#D4AF37]" size={22} />
             </div>
             <div>
-              <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.3em] block mb-1">
-                {t('tradovate.eyebrow')}
-              </span>
+              <div className="flex items-center gap-3 mb-1">
+                <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.3em]">
+                  {t('tradovate.eyebrow')}
+                </span>
+                {/* "LIVE ACCOUNT" only appears once an account is actually
+                    connected — never on the empty state. */}
+                {connected && (
+                  <span className="px-2 py-0.5 border border-emerald-500/40 bg-emerald-500/10 text-emerald-400 text-[8px] font-bold uppercase tracking-widest">
+                    {t('tradovate.liveAccountBadge')}
+                  </span>
+                )}
+              </div>
               <h3 className="text-lg font-black uppercase tracking-tight text-white">
                 {loading
                   ? t('tradovate.emptyTitle')

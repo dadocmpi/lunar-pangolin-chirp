@@ -92,10 +92,10 @@ const Shell = () => {
 
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { k: t('dashboard.balance'), v: "$25,000.00" },
-            { k: t('dashboard.totalProfit'), v: "+12.4%", c: "text-emerald-500" },
-            { k: t('dashboard.drawdown'), v: "-2.1%", c: "text-yellow-500" },
-            { k: t('dashboard.activeAlgos'), v: "1" },
+            { k: t('dashboard.balance'), v: "$0.00" },
+            { k: t('dashboard.totalProfit'), v: t('dashboard.noPerformanceData'), c: "text-slate-500 text-sm" },
+            { k: t('dashboard.drawdown'), v: t('dashboard.noPerformanceData'), c: "text-slate-500 text-sm" },
+            { k: t('dashboard.activeAlgos'), v: "0" },
           ].map((m) => (
             <div key={m.k} className="bg-[#1A1A1A] border border-white/10 p-6">
               <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{m.k}</p>
@@ -118,7 +118,7 @@ const Shell = () => {
               </div>
             </div>
             <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.balance')}</p>
-            <p className="text-2xl font-serif font-bold text-[#D4AF37]">$25,000.00</p>
+            <p className="text-2xl font-serif font-bold text-[#D4AF37]">$0.00</p>
           </div>
         </div>
       </main>
