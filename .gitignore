@@ -65,3 +65,4 @@ dist-ssr
 *.webp
 *.png
 !.public/
+!docs/assets/*.png

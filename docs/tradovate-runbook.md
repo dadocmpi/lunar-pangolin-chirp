@@ -22,9 +22,87 @@
 | Secret | Purpose |
 | --- | --- |
 | `TRADOVATE_ENCRYPTION_KEY` | AES-256-GCM key for credential envelopes |
+| `TRADOVATE_APP_CID` | App-level API key id (from Tradovate API Access) |
+| `TRADOVATE_APP_SECRET` | App-level API secret |
+| `TRADOVATE_APP_ID` | Optional app label sent as `appId` (default `Braxel`) |
+| `TRADOVATE_APP_VERSION` | Optional version sent as `appVersion` (default `1.3.0`) |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | present by default in Supabase |
 
 Vault secrets for the scheduler: `project_url`, `service_role_key`.
+
+### What Tradovate actually requires for third-party use
+
+`POST {host}/auth/accesstokenrequest` takes a JSON body:
+
+```
+{ name, password, appId, appVersion, deviceId, cid, sec }
+```
+
+- `name` / `password` are the **end user's** Tradovate login. That is all a
+  normal customer ever types.
+- `cid` / `sec` identify the **software**, not the customer. They come from the
+  Tradovate **API Access add-on**: the operator funds a live account (min
+  balance), subscribes to API Access, generates a key pair once, and stores the
+  values as Edge Function secrets. The key is shown a single time.
+- Tradovate's own sample request includes `cid`/`sec`, and API Access is their
+  documented route for a third-party app. We therefore default to the
+  operator's app-level pair and treat a client-supplied pair purely as an
+  advanced override for shops that were issued their own key.
+- Eligibility: a live, funded **personal brokerage** account with the API Access
+  add-on. Prop-firm / evaluation accounts are not eligible. The add-on covers
+  orders and account data but not real-time market data (that needs a separate
+  CME license).
+- Tokens last ~90 minutes; renew via `/auth/renewAccessToken`.
+
+Ask Tradovate support:
+
+1. Is the `cid`/`sec` **app-level** (one pair for our terminal) or **per end
+   user**? This decides whether customers ever need their own key.
+2. Does `/auth/accesstokenrequest` accept `cid`/`sec` omitted when the app is a
+   registered partner app, or are they always required?
+3. Does demo API access require the same funded-account/add-on prerequisites as
+   live?
+4. What `appId` / `appVersion` / `deviceId` values do you expect from our
+   integration, and is device pinning enforced?
+5. Which CID/secret should be used in `demo` vs `live` — the same pair or two
+   separate pairs?
+
+## Go-live order (first production setup)
+
+Do these in order. The Tradovate dashboard tab must stay hidden until step 5.
+
+1. **DB migrations** — from a machine with the Supabase CLI linked to prod:
+   `supabase db push` (creates `integrations`, `integration_credentials`,
+   `tradovate_fills`, `tradovate_trades`, RLS policies, and the sync schedule).
+2. **Edge Function secrets** — set `TRADOVATE_ENCRYPTION_KEY`,
+   `TRADOVATE_APP_CID`, `TRADOVATE_APP_SECRET` (and optionally
+   `TRADOVATE_APP_ID` / `TRADOVATE_APP_VERSION`, `TEST_PAYMENT_MODE`) via
+   `supabase secrets set` or the dashboard. Without the encryption key every
+   connect call fails closed with `encryption_not_configured`.
+3. **Deploy functions** — `supabase functions deploy tradovate-connect
+   tradovate-status tradovate-sync tradovate-disconnect`. Verify with
+   `curl POST .../functions/v1/tradovate-status` returning 401 without a JWT.
+4. **Vault secrets for pg_cron** — the schedule job calls the sync function over
+   `pg_net`; store `project_url` and `service_role_key` in Vault so the job can
+   authenticate. Until these exist the cron job no-ops and sync is manual.
+5. **Unhide the Tradovate dashboard tab** — only after a successful connect
+   against a real demo account. Until then keep the tab hidden by not rendering
+   it (or gating its nav entry); do **not** ship it half-configured, because a
+   visible tab with no app cid/sec just shows a failing connect panel.
+
+## UI reference (rendered from the real components)
+
+Captured headlessly with the actual `TradovateTrades` + `TradovateConnectPanel`
+bundled and mounted (Supabase unconfigured, fail-closed path), ~1280×900:
+
+- `docs/assets/tradovate-empty.png` — empty state + "Connect to Tradovate"
+- `docs/assets/tradovate-panel.png` — connect panel (LTR, "Advanced options" collapsed)
+- `docs/assets/tradovate-empty-rtl.png` — empty state, Arabic (`dir="rtl"`)
+- `docs/assets/tradovate-panel-rtl.png` — panel, Arabic RTL
+
+Regenerate any time with `npx vite build` then screenshotting the served
+`dist/`; the panel's cid/sec fields only appear after expanding "Advanced
+options".
 
 ## Rotating TRADOVATE_ENCRYPTION_KEY
 

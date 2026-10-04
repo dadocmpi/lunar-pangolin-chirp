@@ -18,6 +18,7 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - There is NO `tradovate-stream`. Edge Functions cannot hold a WebSocket; the data path is incremental polling on `integrations.last_fill_id` (idempotent), scheduled by `20261004000001_tradovate_sync_schedule.sql`, with Supabase Realtime pushing diffs to the browser.
 - The connect flow is IN-DASHBOARD, not a gate: login goes straight to the dashboard, the Tradovate view shows an empty state (`TradovateTrades.tsx`) whose "Connect to Tradovate" button opens `TradovateConnectPanel.tsx`. There is no router guard and NO `REQUIRE_TRADOVATE_CONNECTION` flag — do not reintroduce one.
 - Credentials are AES-256-GCM envelopes `{ciphertext, iv, auth_tag, key_version}`; the browser never sees them and RLS gives authenticated roles no read on `integration_credentials`. `docs/tradovate-runbook.md` has the key-rotation plan.
+- App-level API credentials (`cid`/`sec`) are SERVER SECRETS: `TRADOVATE_APP_CID` / `TRADOVATE_APP_SECRET` (plus optional `TRADOVATE_APP_ID` / `TRADOVATE_APP_VERSION`). `resolveAppCredentials()` in `supabase/functions/_shared/tradovate/appCredentials.ts` sends the client-supplied pair if present, else the server pair. The default UX is username + password only; the panel's cid/sec fields are a collapsed "Advanced options" fallback. NEVER add a `VITE_TRADOVATE_APP_*` client env var.
 
 ## Local preview
 - `npx vite preview --port 4321 --host 127.0.0.1` after a build (serves `dist/`).
