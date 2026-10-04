@@ -97,7 +97,10 @@ const USER_EMAIL_ALLOWLIST = new Set([
 const directResend = walk(fnRoot)
   .filter((f) => /api\.resend\.com/.test(readFileSync(f, 'utf8')))
   .map((f) => f.replace(`${fnRoot}/`, ''))
-  .filter((f) => f !== '_shared/email.ts');
+  // _shared/email.ts owns owner notifications; _shared/userEmail.ts owns
+  // customer-facing transactional email. Both are the single sanctioned
+  // modules; every caller routes through them.
+  .filter((f) => f !== '_shared/email.ts' && f !== '_shared/userEmail.ts');
 const unexpected = directResend.filter((f) => !USER_EMAIL_ALLOWLIST.has(f));
 check(
   'no unexpected direct api.resend.com calls',
