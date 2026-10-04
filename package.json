@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "check:i18n": "node scripts/check-i18n.mjs",
     "check:payments": "node scripts/check-payment-contract.mjs",
-    "check:tradovate": "node scripts/check-tradovate-contract.mjs"
+    "check:tradovate": "node scripts/check-tradovate-contract.mjs",
+    "smoke:functions": "node scripts/smoke-edge-functions.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

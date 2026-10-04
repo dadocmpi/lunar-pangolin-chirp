@@ -154,6 +154,24 @@ if (has(welcomePath)) {
       .includes('public.tradovate_welcome_state'));
 }
 
+console.log('\n[10] Welcome FAILS OPEN (never shows on error, never blocks)');
+{
+  const hook = read('src/hooks/useTradovateConnection.ts');
+  const statusFn = read('supabase/functions/tradovate-status/index.ts');
+  const store = read('supabase/functions/_shared/tradovate/credentialStore.ts');
+  check('client decision is a pure, testable module', has('src/lib/tradovateWelcome.ts'));
+  check('hook uses the pure resolveWelcome decision',
+    /const welcome = resolveWelcome\(data\)/.test(hook));
+  check('hook hides welcome on non-ok / network error',
+    /if \(!res\.ok\)[\s\S]{0,220}setWelcomeShow\(false\)/.test(hook) &&
+    /catch \{[\s\S]{0,220}setWelcomeShow\(false\)/.test(hook));
+  check('store throws on ANY welcome-state read error (missing table included)',
+    /if \(error\) \{\s*throw new CredentialStoreError\("welcome_state_read_failed"/.test(store));
+  check('status suppresses welcome when the skip read throws (still 200)',
+    /catch \{\s*welcomeReadable = false;\s*skipped = true;\s*\}/.test(statusFn) &&
+    /showWelcome = welcomeReadable && !connected && !everConnected && !skipped/.test(statusFn));
+}
+
 console.log(
   failures === 0
     ? '\ntradovate contract check passed'

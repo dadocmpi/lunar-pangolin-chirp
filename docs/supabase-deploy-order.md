@@ -58,14 +58,27 @@ automatic deploys.
 1. **Supabase secrets** — set the Edge Function secrets (Tradovate, AI KYC,
    encryption, Resend) with the recommended launch values above.
 2. **Apply migrations** — `supabase db push` (or `supabase migration up --linked`),
-   all 6 pending migrations in filename order. See
-   `supabase/functions/_test/migrations/apply-order.sh` for a fresh-DB
-   reproduction of the exact apply order.
-3. Confirm the migration head matches: `supabase migration list --linked`.
+   all 6 pending migrations in filename order:
+
+   | # | migration | adds |
+   |---|-----------|------|
+   | 1 | `20261004000000_tradovate_integration.sql` | integrations, credentials, fills, trades |
+   | 2 | `20261004000001_tradovate_sync_schedule.sql` | pg_cron poller |
+   | 3 | `20261005000000_kyc_on_withdrawal.sql` | withdrawal KYC |
+   | 4 | `20261006000000_ai_kyc_checks.sql` | AI consistency checks |
+   | 5 | `20261007000000_withdrawal_manual_review.sql` | manual-review threshold |
+   | 6 | `20261008000000_tradovate_welcome_skip.sql` | first-run welcome skip state |
+
+   `make test-migrations` (`supabase/functions/_test/migrations/apply-order.sh`)
+   applies exactly these, in this order, on a fresh production-baseline Postgres
+   and then re-applies them to prove idempotency.
+3. Confirm the migration head matches: `supabase migration list --linked` (the
+   head must be `20261008000000`).
 4. **Deploy functions** — re-run the workflow (Actions -> Deploy Supabase Edge
    Functions -> Run workflow) or push a functions change.
-5. **Smoke test** — confirm no function returns 404 (`{"code":"NOT_FOUND"}` means
-   it is not deployed yet).
+5. **Smoke test** — `SUPABASE_URL=https://<ref>.supabase.co npm run smoke:functions`
+   (`scripts/smoke-edge-functions.mjs`): no function may answer 404
+   (`{"code":"NOT_FOUND"}` means it is not deployed yet).
 6. **Merge PR #47 only** (close #45 and #46).
 7. **Vercel redeploy** the SPA.
 8. **Final test** in an incognito window with a fresh account.

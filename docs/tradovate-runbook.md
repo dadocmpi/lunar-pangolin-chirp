@@ -50,6 +50,16 @@
   Captures `docs/assets/welcome-ltr.png`, `welcome-rtl.png`,
   `dashboard-after-skip.png`, `dashboard-after-connect.png` and
   `dashboard-tradovate-disabled.png`, and asserts the soft-gate behaviour.
+- **FAIL-OPEN (never blocks):** if `tradovate-status` is not deployed (404),
+  errors (500), times out, or the `tradovate_welcome_state` table is missing,
+  the app shows the NORMAL dashboard — never the welcome screen and never a
+  blocking state. `src/lib/tradovateWelcome.ts` resolves `show` only for an
+  explicit `welcome.show === true` with no connection and the feature on;
+  every other shape (null/empty/malformed payload, non-2xx, network error)
+  hides it. Server-side, `hasSkippedWelcome` throws on any read failure
+  (including the missing table) and `tradovate-status` treats that as
+  "suppress the welcome, still return 200". Proven by section [7] of
+  `tradovate-welcome-tests.ts`.
 
 ## Required secrets (Supabase Edge Function secrets)
 

@@ -8,6 +8,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { functionsUrl, isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
+import { resolveWelcome } from "@/lib/tradovateWelcome";
 
 export interface TradovateIntegration {
   id: string;
@@ -75,11 +76,12 @@ export function useTradovateConnection(enabled = true): TradovateConnectionState
     setIntegrations(list);
     // A connection exists as soon as an integration is present; its health
     // is surfaced by `status` (connected / expired / api_disabled / ...).
-    const isConnected = list.length > 0;
-    setConnected(isConnected);
-    const welcome = data.welcome as { show?: unknown; skipped?: unknown } | undefined;
-    setWelcomeShow(!isConnected && welcome?.show === true);
-    setWelcomeSkipped(welcome?.skipped === true);
+    setConnected(list.length > 0);
+    // Fail open: anything short of an explicit welcome.show === true (with no
+    // connection and the feature on) resolves to the normal dashboard.
+    const welcome = resolveWelcome(data);
+    setWelcomeShow(welcome.show);
+    setWelcomeSkipped(welcome.skipped);
   }, []);
 
   const refresh = useCallback(async () => {

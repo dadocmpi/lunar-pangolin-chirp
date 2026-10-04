@@ -56,8 +56,21 @@ serve(async (req) => {
     // A revoked row means the user was already welcomed (and has since
     // disconnected): never re-show the first-run screen for them.
     const everConnected = await hasAnyIntegration(ctx.admin, ctx.user.id);
-    const skipped = await hasSkippedWelcome(ctx.admin, ctx.user.id);
-    const showWelcome = !connected && !everConnected && !skipped;
+
+    // FAIL-OPEN: read the skip state in isolation. A missing welcome-state
+    // table (migration not applied) and any transient read error both throw
+    // here. In either case the welcome state cannot be confirmed, so the
+    // first-run screen is suppressed and the client gets the NORMAL dashboard.
+    // We still return 200 with the real connection state so trades keep working.
+    let skipped = false;
+    let welcomeReadable = true;
+    try {
+      skipped = await hasSkippedWelcome(ctx.admin, ctx.user.id);
+    } catch {
+      welcomeReadable = false;
+      skipped = true;
+    }
+    const showWelcome = welcomeReadable && !connected && !everConnected && !skipped;
 
     if (req.method === "POST") {
       let body: Record<string, unknown> = {};

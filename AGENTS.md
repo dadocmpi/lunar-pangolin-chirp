@@ -6,7 +6,8 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 
 - **Decision:** keep the non-blocking dashboard with the in-dashboard Tradovate connect. On first access the dashboard shows a dedicated **first-run welcome/connect screen** (`TradovateWelcome.tsx`) — a **SOFT gate, not a blocking gate**: no dashboard content behind it, but the sidebar/other views stay reachable and "Skip for now" dismisses it for good (persisted server-side in `tradovate_welcome_state`). The login-flow gate is intentionally **NOT** part of the product — do **not** build one, and do **not** add `REQUIRE_TRADOVATE_CONNECTION` or any router guard that blocks `/dashboard`. This supersedes every earlier connect-gate idea, including "Option A: no first-run screen".
 - **Recommended launch config (Edge secrets):** `TRADOVATE_ENABLED=false` and `AI_KYC_ENABLED=false` until (1) the live Tradovate demo test passes and (2) the AI-provider / ID-data-protection review is signed off. Leave `WITHDRAWAL_KYC_GATE_ENABLED` **unset** (only the exact string `false` disables; `false` refuses withdrawals rather than bypassing KYC — never set it in normal operation).
-- **Go-live order:** Supabase secrets → `supabase db push` (all 6 pending migrations, filename order) → `supabase functions deploy` → smoke test that no function returns 404 → merge **PR #47 only** (close #45 and #46) → Vercel redeploy → final test in an incognito window with a fresh account. Deploy mechanics: `docs/supabase-deploy-order.md`.
+- **Go-live order:** Supabase secrets → `supabase db push` (all 6 pending migrations in filename order, head `20261008000000`) → `supabase functions deploy` → `npm run smoke:functions` (no function returns 404) → merge **PR #47 only** (close #45 and #46) → Vercel redeploy → final test in an incognito window with a fresh account. The exact migration list/order and the smoke command are in `docs/supabase-deploy-order.md`.
+- **Fail-open:** the first-run welcome screen is suppressed — normal dashboard, never a blocking state — whenever the `tradovate-status` call fails (404/500/timeout/network) or the welcome-state table is missing. `src/lib/tradovateWelcome.ts` shows it only for an explicit `welcome.show === true`; the server returns 200 and hides it if the skip read throws.
 
 ## Commands
 - `npm run build` — production build (outputs `dist/`). **Exit 0 required before deploy.**
@@ -15,7 +16,8 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `npm run check:i18n` — i18n integrity gate (all 11 locales, key parity, no empty/interp drift).
 - `npm run check:payments` — payment/checkout contract gate (see Payments below).
 - No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`, `run-payments-flag-tests.ts`, `run-payment-destination-tests.ts`); Deno is not installed in the default image.
-- `npm run check:tradovate` — Tradovate contract gate (no blocking connect gate or flag, JWT-verified handlers that never trust a body `user_id`, encrypted-only credential writes, envelope/migration match, the in-dashboard empty state + connect panel, no password stored/logged client-side, disconnect deletes credentials).
+- `npm run check:tradovate` — Tradovate contract gate (no blocking connect gate or flag, JWT-verified handlers that never trust a body `user_id`, encrypted-only credential writes, envelope/migration match, the in-dashboard empty state + connect panel, the first-run welcome screen as a soft gate, no password stored/logged client-side, disconnect deletes credentials).
+- `npm run smoke:functions` — post-deploy Edge Function smoke test (`scripts/smoke-edge-functions.mjs`); needs `SUPABASE_URL`, fails if any function returns 404/`NOT_FOUND`.
 - **Run `npm run check:i18n` and `npm run check:payments` before opening a PR that touches checkout, pricing, or i18n.**
 
 ## Tradovate integration

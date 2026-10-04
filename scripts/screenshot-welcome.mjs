@@ -6,6 +6,8 @@
 //   * welcome-rtl.png            — first access, Arabic (RTL)
 //   * dashboard-after-skip.png   — after "Skip for now" (normal dashboard)
 //   * dashboard-after-connect.png— after connect, Tradovate view with trades
+//   * dashboard-status-404.png   — FAIL-OPEN: status fn missing (404)
+//   * dashboard-status-500.png   — FAIL-OPEN: status fn erroring (500)
 //
 // No real backend, no credentials. Run: node scripts/screenshot-welcome.mjs
 // (needs a served build: `npx vite build && npx vite preview --port 4321`).
@@ -68,6 +70,10 @@ const SCENARIOS = {
   skip: { status: { enabled: true, connected: false, integrations: [], welcome: { show: false, skipped: true } } },
   connect: { status: { enabled: true, connected: true, integrations: [INTEGRATION], welcome: { show: false, skipped: false } } },
   disabled: { status: { enabled: false, connected: false, integrations: [], welcome: { show: false, skipped: false } } },
+  // FAIL-OPEN: the function is not deployed (404) / errors (500). The dashboard
+  // must render normally — never the welcome screen, never a blocking state.
+  status404: { statusError: 404 },
+  status500: { statusError: 500 },
 };
 
 async function capture(browser, scenario, { lng = "en", clickTradovate = false, file }) {
@@ -104,6 +110,11 @@ async function capture(browser, scenario, { lng = "en", clickTradovate = false, 
     if (u.startsWith("/rest/v1/kyc_submissions")) return body([]);
     if (u.startsWith("/rest/v1/withdrawal_requests")) return body([]);
     if (u.startsWith("/functions/v1/tradovate-status")) {
+      // FAIL-OPEN scenarios: the function is missing/erroring. Answer non-2xx
+      // (404 {"code":"NOT_FOUND"} mirrors an undeployed function).
+      if (SCENARIOS[scenario].statusError) {
+        return body({ code: "NOT_FOUND" }, SCENARIOS[scenario].statusError);
+      }
       // POST { action: "skip" } acknowledges; GET returns the scenario.
       if (req.method() === "POST") {
         return body({ ok: true, enabled: true, connected: false, integrations: [], welcome: { show: false, skipped: true } });
@@ -168,6 +179,10 @@ results.push(await capture(browser, "welcome", { lng: "ar", file: "welcome-rtl.p
 results.push(await capture(browser, "skip", { file: "dashboard-after-skip.png" }));
 results.push(await capture(browser, "connect", { clickTradovate: true, file: "dashboard-after-connect.png" }));
 results.push(await capture(browser, "disabled", { file: "dashboard-tradovate-disabled.png" }));
+// FAIL-OPEN proof: a missing (404) or erroring (500) status function still
+// renders the normal dashboard, never the welcome screen.
+results.push(await capture(browser, "status404", { file: "dashboard-status-404.png" }));
+results.push(await capture(browser, "status500", { file: "dashboard-status-500.png" }));
 
 await browser.close();
 console.log(JSON.stringify(results, null, 2));
@@ -186,6 +201,12 @@ const ok =
   byFile["dashboard-after-skip.png"].hasCta &&
   byFile["dashboard-after-connect.png"].hasTrades &&
   byFile["dashboard-tradovate-disabled.png"].hasActiveServices &&
-  !byFile["dashboard-tradovate-disabled.png"].hasCta;
+  !byFile["dashboard-tradovate-disabled.png"].hasCta &&
+  // FAIL-OPEN: 404/500 status -> normal dashboard content, no welcome screen
+  // (the connect card may still render), no blocking overlay.
+  byFile["dashboard-status-404.png"].hasActiveServices &&
+  !byFile["dashboard-status-404.png"].fixedOverlay &&
+  byFile["dashboard-status-500.png"].hasActiveServices &&
+  !byFile["dashboard-status-500.png"].fixedOverlay;
 console.log("\nASSERTIONS:", ok ? "PASS" : "FAIL");
 process.exit(ok ? 0 : 1);

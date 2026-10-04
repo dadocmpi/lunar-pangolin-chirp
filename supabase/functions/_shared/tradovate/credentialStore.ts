@@ -230,9 +230,14 @@ export async function hasAnyIntegration(
  * Has the user dismissed the first-run welcome screen?
  *
  * Server-side (not just localStorage) so the soft gate does not reappear on
- * every login/device. Fails closed to `false` (show the welcome screen) if the
- * read errors — that is the safe default for a soft gate: it never blocks the
- * dashboard, it just shows the non-blocking welcome again.
+ * every login/device.
+ *
+ * Throws on ANY read failure, including the welcome-state table not existing
+ * yet (migration not applied). The caller treats a throw as "cannot confirm
+ * the welcome state" and FAILS OPEN to the normal dashboard: the first-run
+ * screen is never shown on the strength of a failed read, and a missing table
+ * can never produce a blocking state. `false` is returned only on a clean read
+ * that genuinely found no skip row.
  */
 export async function hasSkippedWelcome(
   admin: SupabaseClient,
@@ -243,7 +248,9 @@ export async function hasSkippedWelcome(
     .select("user_id")
     .eq("user_id", userId)
     .maybeSingle();
-  if (error) return false;
+  if (error) {
+    throw new CredentialStoreError("welcome_state_read_failed", error.message);
+  }
   return Boolean(data);
 }
 

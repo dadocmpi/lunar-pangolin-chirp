@@ -1,7 +1,7 @@
 -- ============================================================================
 -- Production-state baseline for the PENDING migrations.
 --
--- Represents the objects that already exist in production and that the five
+-- Represents the objects that already exist in production and that the six
 -- pending migrations depend on. These are NOT created by any pending migration:
 --
 --   auth.users        Supabase platform (all integrations FK to it)
