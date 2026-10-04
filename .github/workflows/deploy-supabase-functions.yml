@@ -22,6 +22,11 @@ name: Deploy Supabase Edge Functions
 # automatic deploy for the common case (functions-only change, DB already up to
 # date) while making "deploy code before schema" impossible. See
 # docs/supabase-deploy-order.md.
+#
+# There is intentionally NO `workflow_dispatch` trigger here. The manual,
+# one-click release (migrations -> functions -> smoke) lives in
+# supabase-release.yml, and keeping a second manual trigger would allow a
+# double deploy of the same functions.
 
 on:
   push:
@@ -31,7 +36,6 @@ on:
       - "supabase/migrations/**"
       - "supabase/config.toml"
       - ".github/workflows/deploy-supabase-functions.yml"
-  workflow_dispatch:
 
 jobs:
   deploy:

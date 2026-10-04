@@ -25,7 +25,8 @@ deploy order is therefore: **migrations first, then Edge Functions.**
 
 `.github/workflows/deploy-supabase-functions.yml` runs on every push to `main`
 that touches `supabase/functions/**`, `supabase/migrations/**` or
-`supabase/config.toml` (and can be run manually via `workflow_dispatch`).
+`supabase/config.toml`. It has **no manual trigger** — the manual, one-click
+release lives in `supabase-release.yml` (see `docs/go-live.md`).
 
 Before deploying it runs a pre-flight step *Check target DB is migrated to this
 commit*:
@@ -74,9 +75,14 @@ automatic deploys.
    and then re-applies them to prove idempotency.
 3. Confirm the migration head matches: `supabase migration list --linked` (the
    head must be `20261008000000`).
-4. **Deploy functions** — re-run the workflow (Actions -> Deploy Supabase Edge
-   Functions -> Run workflow) or push a functions change.
-5. **Smoke test** — `SUPABASE_URL=https://<ref>.supabase.co npm run smoke:functions`
+4. **Deploy functions** — the one-click release does this for you: Actions ->
+   **Supabase release (migrations + functions + smoke)** -> Run workflow. That
+   single manual workflow runs `supabase db push` (step 1) then
+   `supabase functions deploy` (step 2) then the smoke test (step 3), so schema
+   and code always land together. Click-by-click steps for the owner:
+   `docs/go-live.md`.
+5. **Smoke test** — the release workflow runs it as step 3. To run it by hand:
+   `SUPABASE_URL=https://<ref>.supabase.co npm run smoke:functions`
    (`scripts/smoke-edge-functions.mjs`): no function may answer 404
    (`{"code":"NOT_FOUND"}` means it is not deployed yet).
 6. **Merge PR #47 only** (close #45 and #46).
