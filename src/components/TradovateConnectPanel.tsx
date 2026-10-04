@@ -33,6 +33,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { functionsUrl, isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import { useTradovateConnection } from "@/hooks/useTradovateConnection";
+import {
+  classifyConnectError,
+  type ConnectErrorCode,
+} from "@/lib/tradovateConnectError";
 import { showError, showSuccess } from "@/utils/toast";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -44,19 +48,6 @@ interface AccountOption {
   name: string;
   simulation?: boolean;
 }
-
-/** Server error codes mapped to a UI state, so the message is never generic. */
-type ConnectErrorCode =
-  | "invalid_credentials"
-  | "api_disabled"
-  | "rate_limited"
-  | "circuit_open"
-  | "transport"
-  | "unexpected"
-  | "missing_credentials"
-  | "invalid_environment"
-  | "encryption_not_configured"
-  | null;
 
 interface Props {
   open: boolean;
@@ -77,7 +68,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [errorCode, setErrorCode] = useState<ConnectErrorCode>(null);
+  const [errorCode, setErrorCode] = useState<ConnectErrorCode | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [accounts, setAccounts] = useState<AccountOption[]>([]);
   const [pending, setPending] = useState(false);
@@ -148,7 +139,13 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
         return;
       }
       if (!res.ok || !data?.ok) {
-        setErrorCode((data?.code as ConnectErrorCode) ?? "unexpected");
+        // Classify from OUR HTTP status + the server code, so a missing/broken
+        // Edge Function (404/5xx) is never blamed on Tradovate or the user.
+        setErrorCode(classifyConnectError({
+          status: res.status,
+          serverCode: typeof data?.code === "string" ? data.code : null,
+          online: navigator.onLine,
+        }));
         setErrorMessage(typeof data?.message === "string" ? data.message : null);
         return;
       }
@@ -161,7 +158,12 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
       onChanged();
       onClose();
     } catch {
-      setErrorCode("transport");
+      // fetch() threw: our Edge Function could not be reached. Blame the user's
+      // internet only when the browser actually reports being offline.
+      setErrorCode(classifyConnectError({
+        networkError: true,
+        online: navigator.onLine,
+      }));
       setErrorMessage(null);
     } finally {
       setSubmitting(false);

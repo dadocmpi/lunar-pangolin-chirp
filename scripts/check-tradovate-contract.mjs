@@ -172,6 +172,40 @@ console.log('\n[10] Welcome FAILS OPEN (never shows on error, never blocks)');
     /showWelcome = welcomeReadable && !connected && !everConnected && !skipped/.test(statusFn));
 }
 
+console.log('\n[11] Connect errors are accurate (never blame the user by default)');
+{
+  const classifier = read('src/lib/tradovateConnectError.ts');
+  const panel = read('src/components/TradovateConnectPanel.tsx');
+  check('classifier is a pure, testable module', has('src/lib/tradovateConnectError.ts'));
+  check('panel uses the classifier', /classifyConnectError\(/.test(panel));
+  check('our 404/5xx maps to service_unavailable',
+    /status === 404 \|\|[\s\S]{0,80}status >= 500[\s\S]{0,40}return "service_unavailable"/.test(classifier));
+  check('offline is gated on navigator.onLine being false',
+    /online === false \? "offline" : "service_unavailable"/.test(classifier));
+  check('server auth codes map to distinct UI states',
+    /invalid_credentials: "invalid_credentials"/.test(classifier) &&
+    /api_disabled: "api_disabled"/.test(classifier) &&
+    /rate_limited: "rate_limited"/.test(classifier) &&
+    /circuit_open: "circuit_open"/.test(classifier) &&
+    /transport: "tradovate_unreachable"/.test(classifier));
+  check('the generic "transport" catch is gone from the panel',
+    !/setErrorCode\("transport"\)/.test(panel));
+  const en = read('src/i18n.ts');
+  for (const key of [
+    'service_unavailableTitle',
+    'service_unavailable',
+    'offlineTitle',
+    'offline',
+    'tradovate_unreachableTitle',
+    'tradovate_unreachable',
+    'session_expiredTitle',
+    'session_expired',
+  ]) {
+    check(`i18n has connectTradovate.errors.${key}`, new RegExp(`\\b${key}:`).test(en));
+  }
+}
+
+
 console.log(
   failures === 0
     ? '\ntradovate contract check passed'

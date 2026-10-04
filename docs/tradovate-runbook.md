@@ -147,6 +147,10 @@ bundled and mounted (Supabase unconfigured, fail-closed path), ~1280×900:
 - `docs/assets/tradovate-panel.png` — connect panel (LTR, "Advanced options" collapsed)
 - `docs/assets/tradovate-empty-rtl.png` — empty state, Arabic (`dir="rtl"`)
 - `docs/assets/tradovate-panel-rtl.png` — panel, Arabic RTL
+- `docs/assets/connect-error-service-unavailable.png` — accurate error when OUR
+  Edge Function is not reachable (404/not deployed); the message never blames
+  Tradovate or the user's internet. Regenerate with
+  `node scripts/screenshot-connect-error.mjs` against a served build.
 
 Regenerate any time with `npx vite build` then screenshotting the served
 `dist/`; the panel's cid/sec fields only appear after expanding "Advanced
@@ -181,6 +185,13 @@ Verified locally (see `supabase/functions/_test/` and `make test-tradovate`):
   the provider-reported cash delta.
 - The dashboard always loads without a connection; the empty state renders the
   connect CTA and the connect panel opens (see `tradovate-dashboard-tests.ts`).
+- The connect panel shows an ACCURATE error per failure mode
+  (`tradovate-connect-error-tests.ts`): our Edge Function being unreachable
+  (network failure, 404, 5xx, timeout) reports "our service is unavailable" and
+  never blames Tradovate or the user's internet; the user's internet is blamed
+  only when `navigator.onLine` is false; wrong credentials, a Tradovate outage,
+  a rate limit (p-ticket), a captcha (p-captcha) and an account without API
+  access each get their own message.
 
 Still a risk without live credentials:
 

@@ -25,6 +25,7 @@ test-tradovate:
 	deno run -A supabase/functions/_test/tradovate-log-safety-tests.ts
 	deno run -A supabase/functions/_test/tradovate-ownership-tests.ts
 	deno run -A supabase/functions/_test/tradovate-e2e-demo-tests.ts
+	deno run -A supabase/functions/_test/tradovate-connect-error-tests.ts
 	deno run -A supabase/functions/_test/feature-flag-tests.ts
 
 # Pending-migration apply-order + idempotency on a fresh Supabase Postgres.
