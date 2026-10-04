@@ -50,13 +50,23 @@ serve(async (req) => {
 
     const results = [];
     for (const row of data ?? []) {
-      results.push(
-        await syncIntegration({
-          admin,
-          userId: row.user_id as string,
+      // syncIntegration never throws for provider failures, but guard anyway
+      // so one bad integration can never abort the whole batch.
+      try {
+        results.push(
+          await syncIntegration({
+            admin,
+            userId: row.user_id as string,
+            integrationId: row.id as string,
+          }),
+        );
+      } catch (e) {
+        results.push({
           integrationId: row.id as string,
-        }),
-      );
+          status: "error",
+          errorCode: e instanceof Error ? e.name : "unexpected",
+        });
+      }
     }
     return json({ ok: true, mode: "scheduled", count: results.length, results });
   }
@@ -89,13 +99,21 @@ serve(async (req) => {
 
   const results = [];
   for (const id of targets) {
-    results.push(
-      await syncIntegration({
-        admin,
-        userId: ctx.user.id,
+    try {
+      results.push(
+        await syncIntegration({
+          admin,
+          userId: ctx.user.id,
+          integrationId: id,
+        }),
+      );
+    } catch (e) {
+      results.push({
         integrationId: id,
-      }),
-    );
+        status: "error",
+        errorCode: e instanceof Error ? e.name : "unexpected",
+      });
+    }
   }
   return json({ ok: true, mode: "user", count: results.length, results });
 });

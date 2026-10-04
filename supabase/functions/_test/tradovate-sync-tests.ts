@@ -89,5 +89,50 @@ test("adding a later fill does not change an earlier closed trade's key", () => 
   eq(!!closedLater, true, "earlier closed trade preserved by key");
 });
 
+console.log("\n[3] syncIntegration never lets a provider failure escape");
+await test("a 500 from /fill/list is classified, not thrown", async () => {
+  // Regression: a 500 from /fill/list used to throw out of syncIntegration,
+  // which would abort the whole scheduled fan-out batch. It must classify,
+  // persist status=error, and return.
+  const { syncIntegration } = await import("../_shared/tradovate/sync.ts");
+  const crypto = await import("../_shared/tradovate/crypto.ts");
+  const { TradovateRateLimiter } = await import("../_shared/tradovate/rateLimiter.ts");
+  Deno.env.set("TRADOVATE_ENCRYPTION_KEY", "sync-regression-key");
+  const parts = await crypto.encryptCredentials({ name: "u", password: "p" }, "sync-regression-key");
+
+  const fakeAdmin = () => ({
+    from(table: string) {
+      const b: Record<string, unknown> = {};
+      const chain = () => () => b;
+      b.select = chain(); b.eq = chain(); b.neq = chain();
+      b.update = chain(); b.upsert = chain(); b.order = chain();
+      b.maybeSingle = () => Promise.resolve(
+        table === "integrations"
+          ? { data: { id: "integ", user_id: "u", environment: "demo", tradovate_account_id: 1, tradovate_user_id: 2, account_spec: "D", label: null, status: "connected", last_fill_id: 0, token_expires_at: null }, error: null }
+          : { data: { ciphertext: parts.ciphertext, iv: parts.iv, auth_tag: parts.authTag, key_version: 1 }, error: null },
+      );
+      b.single = () => Promise.resolve({ data: { id: "integ" }, error: null });
+      b.then = (res: (v: unknown) => unknown) => Promise.resolve({ data: null, error: null, count: 0 }).then(res);
+      return b;
+    },
+  } as never);
+
+  const fetchImpl: typeof fetch = async (input) => {
+    const url = String(input);
+    if (url.includes("/auth/accesstokenrequest")) {
+      return new Response(JSON.stringify({ accessToken: "t", expirationTime: new Date(Date.now() + 3600_000).toISOString(), userId: 2, name: "u" }), { status: 200 });
+    }
+    return new Response(JSON.stringify({ errorText: "boom" }), { status: 500 });
+  };
+
+  const r = await syncIntegration({
+    admin: fakeAdmin(), userId: "u", integrationId: "integ",
+    skipLock: true, fetchImpl,
+    limiter: new TradovateRateLimiter({ sleep: async () => {} }),
+  });
+  eq(r.status, "error", "classified as error");
+  eq(r.errorCode, "http_500", "error code records the provider status");
+});
+
 console.log(`\nResult: ${passed} passed, ${failed} failed.`);
 if (failed > 0) Deno.exit(1);

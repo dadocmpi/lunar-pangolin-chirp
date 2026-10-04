@@ -25,8 +25,9 @@
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { authenticate, ensureToken } from "./authService.ts";
 import { loadCredentials, type IntegrationRow } from "./credentialStore.ts";
-import { createDefaultLimiter, TradovateRateLimiter } from "./rateLimiter.ts";
+import { createDefaultLimiter, CircuitOpenError, TradovateRateLimiter } from "./rateLimiter.ts";
 import { contractItem, fillList } from "./restService.ts";
+import { TradovateHttpError } from "./http.ts";
 import {
   type ContractInfo,
   type PnlFill,
@@ -212,6 +213,21 @@ export async function syncIntegration(opts: SyncOptions): Promise<SyncResult> {
       truncated: list.truncated,
       pages: list.pages,
     };
+  } catch (e) {
+    // A provider/transport failure (e.g. a 500 from /fill/list, or a 429 that
+    // outlived the retry budget) must not escape: the scheduled fan-out runs
+    // many integrations in one request, and one failure aborting the batch
+    // would silently starve every later integration. Classify, persist, return.
+    const code = e instanceof TradovateHttpError
+      ? (e.status === 429 ? "rate_limited" : `http_${e.status}`)
+      : e instanceof CircuitOpenError
+      ? "circuit_open"
+      : e instanceof Error
+      ? e.name
+      : "unexpected";
+    const message = e instanceof Error ? e.message : "sync failed";
+    await markStatus(admin, integrationId, "error", code, message).catch(() => {});
+    return { ...base, status: "error", errorCode: code };
   } finally {
     if (!opts.skipLock) {
       await admin
