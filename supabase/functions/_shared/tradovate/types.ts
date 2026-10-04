@@ -84,3 +84,74 @@ export interface TradovateAccount {
   /** True when the account is a simulation (demo) account. */
   simulation?: boolean;
 }
+
+/**
+ * Open position as returned by /position/list.
+ * `netPos` is signed (positive = long, negative = short); 0 means flat.
+ * `netPrice` is the average open price.
+ */
+export interface TradovatePosition {
+  id: number | null;
+  accountId: number;
+  contractId: number | null;
+  timestamp: string | null;
+  netPos: number;
+  netPrice: number | null;
+  bought: number;
+  boughtValue: number;
+  sold: number;
+  soldValue: number;
+  prevPos: number;
+  prevPrice: number | null;
+  raw: Record<string, unknown>;
+}
+
+/**
+ * Order as returned by /order/list. The list carries identity + lifecycle
+ * status only; quantity / price live on /orderVersion/list and are joined in
+ * by `orderId`.
+ */
+export interface TradovateOrder {
+  id: number;
+  accountId: number;
+  contractId: number | null;
+  timestamp: string | null;
+  action: "Buy" | "Sell" | null;
+  ordStatus: string;
+  raw: Record<string, unknown>;
+}
+
+/** OrderVersion as returned by /orderVersion/list (the priced revision). */
+export interface TradovateOrderVersion {
+  id: number | null;
+  orderId: number;
+  orderQty: number | null;
+  orderType: string | null;
+  price: number | null;
+  stopPrice: number | null;
+  limitIfTouchedPrice: number | null;
+  timeInForce: string | null;
+  text: string | null;
+  raw: Record<string, unknown>;
+}
+
+/**
+ * Cash-balance snapshot as returned by /cashBalance/getCashBalanceSnapshot.
+ * Only fields we actually display are normalized; the raw payload is kept.
+ */
+export interface TradovateCashBalance {
+  accountId: number;
+  totalCashValue: number | null;
+  totalPnL: number | null;
+  netLiq: number | null;
+  openPnL: number | null;
+  realizedPnL: number | null;
+  weekRealizedPnL: number | null;
+  initialMargin: number | null;
+  maintenanceMargin: number | null;
+  fullInitialMargin: number | null;
+  autoLiqLevel: number | null;
+  cashUSD: number | null;
+  currencyCashAvailWithdrawalUSD: number | null;
+  raw: Record<string, unknown>;
+}

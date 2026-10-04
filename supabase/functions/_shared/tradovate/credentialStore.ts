@@ -266,3 +266,69 @@ export async function markWelcomeSkipped(
     });
   if (error) throw new CredentialStoreError("welcome_skip_failed", error.message);
 }
+
+/** Load a single non-revoked integration the user owns (no credentials). */
+export async function getIntegration(
+  admin: SupabaseClient,
+  userId: string,
+  integrationId: string,
+): Promise<IntegrationRow | null> {
+  const { data, error } = await admin
+    .from("integrations")
+    .select(
+      "id, user_id, environment, tradovate_account_id, tradovate_user_id, account_spec, label, status, last_fill_id, token_expires_at",
+    )
+    .eq("id", integrationId)
+    .eq("user_id", userId)
+    .neq("status", "revoked")
+    .maybeSingle();
+  if (error) throw new CredentialStoreError("integration_read_failed", error.message);
+  return (data as IntegrationRow | null) ?? null;
+}
+
+export interface SnapshotRow {
+  payload: unknown;
+  warnings: string[];
+  fetched_at: string;
+}
+
+/**
+ * Read the cached live snapshot for an integration. Returns null when there is
+ * no row yet. Throws when the table is missing (migration not applied) so the
+ * caller can decide to fetch live instead of pretending it is fresh.
+ */
+export async function readSnapshot(
+  admin: SupabaseClient,
+  integrationId: string,
+): Promise<SnapshotRow | null> {
+  const { data, error } = await admin
+    .from("tradovate_account_snapshots")
+    .select("payload, warnings, fetched_at")
+    .eq("integration_id", integrationId)
+    .maybeSingle();
+  if (error) throw new CredentialStoreError("snapshot_read_failed", error.message);
+  if (!data) return null;
+  return {
+    payload: data.payload,
+    warnings: Array.isArray(data.warnings) ? (data.warnings as string[]) : [],
+    fetched_at: String(data.fetched_at),
+  };
+}
+
+/** Persist the live snapshot for an integration (service role only). */
+export async function writeSnapshot(
+  admin: SupabaseClient,
+  integrationId: string,
+  payload: unknown,
+  warnings: string[],
+): Promise<void> {
+  const { error } = await admin
+    .from("tradovate_account_snapshots")
+    .upsert({
+      integration_id: integrationId,
+      payload,
+      warnings,
+      fetched_at: new Date().toISOString(),
+    }, { onConflict: "integration_id" });
+  if (error) throw new CredentialStoreError("snapshot_write_failed", error.message);
+}

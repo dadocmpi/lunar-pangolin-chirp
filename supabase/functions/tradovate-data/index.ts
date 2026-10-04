@@ -18,6 +18,7 @@ import {
   UnauthorizedError,
 } from "../_shared/tradovate/auth.ts";
 import { listIntegrations } from "../_shared/tradovate/credentialStore.ts";
+import { computePerformance } from "../_shared/tradovate/performance.ts";
 import { featureDisabledBody, isTradovateEnabled } from "../_shared/features.ts";
 
 interface TradeRow {
@@ -70,25 +71,38 @@ serve(async (req) => {
         closedTrades: 0,
         byAccount: [],
       },
+      performance: computePerformance([]),
     });
   }
 
-  const { data: trades, error } = await ctx.admin
+  // Optional account scope: ?accountId=<n> narrows to one Tradovate account.
+  // A crafted id for another user's account simply matches nothing.
+  const url = new URL(req.url);
+  const requestedAccount = url.searchParams.get("accountId");
+  const accountFilter = requestedAccount && Number.isFinite(Number(requestedAccount))
+    ? Number(requestedAccount)
+    : null;
+
+  let query = ctx.admin
     .from("trades")
     .select(
       "id, integration_id, account_id, root_symbol, symbol, side, quantity, entry_price, exit_price, opened_at, closed_at, realized_pnl, commission, net_pnl, status",
     )
-    .in("integration_id", ids)
+    .in("integration_id", ids);
+  if (accountFilter !== null) query = query.eq("account_id", accountFilter);
+  const { data: trades, error } = await query
     .order("opened_at", { ascending: false })
     .limit(2000);
   if (error) return json({ error: "trades_failed" }, 500);
 
-  const { data: fills } = await ctx.admin
+  let fillsQuery = ctx.admin
     .from("tradovate_fills")
     .select(
       "tradovate_fill_id, integration_id, account_id, contract_id, fill_timestamp, action, quantity, price, commission, active",
     )
-    .in("integration_id", ids)
+    .in("integration_id", ids);
+  if (accountFilter !== null) fillsQuery = fillsQuery.eq("account_id", accountFilter);
+  const { data: fills } = await fillsQuery
     .order("fill_timestamp", { ascending: false })
     .limit(5000);
 
@@ -115,5 +129,21 @@ serve(async (req) => {
       closedTrades: closed.length,
       byAccount: [...byAccountMap.values()].map((a) => ({ ...a, netPnl: round2(a.netPnl) })),
     },
+    // Real performance stats computed from the same closed trades the client
+    // renders, so the numbers shown and the numbers aggregated can't diverge.
+    performance: computePerformance(rows.map((t) => ({
+      root_symbol: t.root_symbol,
+      symbol: t.symbol,
+      side: t.side as "long" | "short",
+      quantity: Number(t.quantity),
+      entry_price: Number(t.entry_price),
+      exit_price: t.exit_price === null ? null : Number(t.exit_price),
+      opened_at: t.opened_at,
+      closed_at: t.closed_at,
+      realized_pnl: Number(t.realized_pnl ?? 0),
+      commission: Number(t.commission ?? 0),
+      net_pnl: Number(t.net_pnl ?? 0),
+      status: t.status as "open" | "closed",
+    }))),
   });
 });

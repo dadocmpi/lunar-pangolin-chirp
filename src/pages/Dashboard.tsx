@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PerformanceChart from '@/components/PerformanceChart';
-import TradovateTrades from '@/components/TradovateTrades';
+import TradingTerminal from '@/components/terminal/TradingTerminal';
+import PerformancePanel from '@/components/terminal/PerformancePanel';
 import TradovateConnectCard from '@/components/TradovateConnectCard';
 import TradovateWelcome from '@/components/TradovateWelcome';
 import KycReminderBanner from '@/components/KycReminderBanner';
@@ -53,6 +54,8 @@ import { useTranslation } from 'react-i18next';
 import { countriesData, getCountryByCode } from '@/data/kycData';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useTradovateConnection } from '@/hooks/useTradovateConnection';
+import { useLanguageLocale } from '@/hooks/useLanguageLocale';
+import { computePerformance } from '@/lib/tradovate/performance';
 import {
   resolvePerformanceSummary,
   resolveTransactions,
@@ -80,6 +83,7 @@ function formatDateTime(iso: string | null | undefined): string {
 const Dashboard = () => {
   const { t } = useTranslation();
   const { convertPrice, currency } = useCurrency();
+  const locale = useLanguageLocale();
   const [activeView, setActiveView] = useState('services');
   // First-run soft gate: drives the welcome screen on the default view only.
   const tradovate = useTradovateConnection(true);
@@ -474,6 +478,8 @@ const Dashboard = () => {
   );
   const transactions = useMemo(() => resolveTransactions(withdrawals), [withdrawals]);
   const auditLog = useMemo(() => resolveAuditLog(trades), [trades]);
+  // Rich performance stats from the same real closed trades.
+  const tradeStats = useMemo(() => computePerformance(trades), [trades]);
 
   // KYC no longer blocks the terminal. It is enforced only at withdrawal time
   // (server-side), and remains optional/voluntary in Settings.
@@ -626,7 +632,7 @@ const Dashboard = () => {
                         <div className="flex justify-between items-start mb-6">
                           <div>
                             <h3 className="text-lg font-bold uppercase tracking-tight mb-1">{service.plan_name}</h3>
-                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">ID: {service.account_id}</p>
+                            <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.serviceId', { id: service.account_id })}</p>
                           </div>
                           <div className="px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[8px] font-bold uppercase tracking-widest">
                             {service.status}
@@ -644,12 +650,13 @@ const Dashboard = () => {
               )
             )}
 
-            {/* Tradovate trades + reconstructed PnL */}
+            {/* Tradovate trading terminal — real data from the user's linked
+                account (balance, positions, orders, journal, performance). */}
             {activeView === 'tradovate' && (
-              <TradovateTrades />
+              <TradingTerminal />
             )}
 
-            {/* Performance View */}
+            {/* Performance View — real stats computed from the user's trades */}
             {activeView === 'performance' && (
               <div className="space-y-8">
                 <div>
@@ -657,42 +664,7 @@ const Dashboard = () => {
                   <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">{t('dashboard.performanceTitle')}</h2>
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-[#1A1A1A] border border-white/10 p-6">
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.balance')}</p>
-                    <p className="text-xl font-serif font-bold text-white">{convertPrice(performance.totalBalance)}</p>
-                  </div>
-                  <div className="bg-[#1A1A1A] border border-white/10 p-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp size={12} className="text-emerald-500" />
-                      <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.totalProfit')}</p>
-                    </div>
-                    {performance.hasData ? (
-                      <p className={cn("text-xl font-serif font-bold", performance.totalProfit >= 0 ? "text-emerald-500" : "text-red-500")}>
-                        {performance.totalProfit >= 0 ? '+' : ''}{convertPrice(performance.totalProfit)}
-                      </p>
-                    ) : (
-                      <p className="text-sm font-bold text-slate-500 mt-1">{t('dashboard.noPerformanceData')}</p>
-                    )}
-                  </div>
-                  <div className="bg-[#1A1A1A] border border-white/10 p-6">
-                    <div className="flex items-center gap-2 mb-2">
-                      <TrendingDown size={12} className="text-yellow-500" />
-                      <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.maxDrawdown')}</p>
-                    </div>
-                    {performance.hasData && performance.maxDrawdown !== null ? (
-                      <p className="text-xl font-serif font-bold text-yellow-500">{convertPrice(performance.maxDrawdown)}</p>
-                    ) : (
-                      <p className="text-sm font-bold text-slate-500 mt-1">{t('dashboard.noPerformanceData')}</p>
-                    )}
-                  </div>
-                  <div className="bg-[#1A1A1A] border border-white/10 p-6">
-                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-2">{t('dashboard.assetsInOperation')}</p>
-                    <p className="text-xl font-serif font-bold text-white">{t('dashboard.assetsList')}</p>
-                  </div>
-                </div>
-
-                <PerformanceChart series={performance.growthSeries} />
+                <PerformancePanel stats={tradeStats} locale={locale} />
 
                 <div className="bg-[#1A1A1A] border border-white/10 p-8">
                   <h3 className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500 mb-6">{t('dashboard.monthlyReturns')}</h3>
@@ -1338,7 +1310,7 @@ const Dashboard = () => {
                           className="w-full bg-white/10 hover:bg-white/20 text-white rounded-none h-12 font-black text-[10px] uppercase tracking-widest"
                         >
                           {changingPassword ? <Loader2 size={16} className="mr-2 animate-spin" /> : <Lock size={16} className="mr-2" />}
-                          Update Password
+                          {t('dashboard.updatePassword')}
                         </Button>
                       </div>
                     </div>
