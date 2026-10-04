@@ -1,5 +1,12 @@
 # Tradovate integration — operator runbook
 
+> **Decision (Option A, closed):** the connect flow is in-dashboard, not a gate.
+> Do not build a login-flow gate and do not add `REQUIRE_TRADOVATE_CONNECTION` or
+> any `/dashboard` guard. **Recommended launch config:** `TRADOVATE_ENABLED=false`
+> until the live demo test passes (the card hides itself, no redeploy needed); set
+> the encryption/app secrets before enabling. Full go-live order:
+> `docs/supabase-deploy-order.md`.
+
 ## Architecture
 
 - Credentials are encrypted server-side with AES-256-GCM and only ever touched
@@ -69,26 +76,30 @@ Ask Tradovate support:
 
 ## Go-live order (first production setup)
 
-Do these in order. The Tradovate dashboard tab must stay hidden until step 5.
+Do these in order. Keep `TRADOVATE_ENABLED=false` (step 1 below) until step 6 —
+the connect card hides itself while the switch is off, so the dashboard stays
+non-blocking with no nav gate and no redeploy.
 
-1. **DB migrations** — from a machine with the Supabase CLI linked to prod:
+1. **Kill switch off** — set `TRADOVATE_ENABLED=false` so the card does not
+   render while the integration is half-configured.
+2. **DB migrations** — from a machine with the Supabase CLI linked to prod:
    `supabase db push` (creates `integrations`, `integration_credentials`,
    `tradovate_fills`, `tradovate_trades`, RLS policies, and the sync schedule).
-2. **Edge Function secrets** — set `TRADOVATE_ENCRYPTION_KEY`,
+3. **Edge Function secrets** — set `TRADOVATE_ENCRYPTION_KEY`,
    `TRADOVATE_APP_CID`, `TRADOVATE_APP_SECRET` (and optionally
    `TRADOVATE_APP_ID` / `TRADOVATE_APP_VERSION`, `TEST_PAYMENT_MODE`) via
    `supabase secrets set` or the dashboard. Without the encryption key every
    connect call fails closed with `encryption_not_configured`.
-3. **Deploy functions** — `supabase functions deploy tradovate-connect
+4. **Deploy functions** — `supabase functions deploy tradovate-connect
    tradovate-status tradovate-sync tradovate-disconnect`. Verify with
    `curl POST .../functions/v1/tradovate-status` returning 401 without a JWT.
-4. **Vault secrets for pg_cron** — the schedule job calls the sync function over
+5. **Vault secrets for pg_cron** — the schedule job calls the sync function over
    `pg_net`; store `project_url` and `service_role_key` in Vault so the job can
    authenticate. Until these exist the cron job no-ops and sync is manual.
-5. **Unhide the Tradovate dashboard tab** — only after a successful connect
-   against a real demo account. Until then keep the tab hidden by not rendering
-   it (or gating its nav entry); do **not** ship it half-configured, because a
-   visible tab with no app cid/sec just shows a failing connect panel.
+6. **Enable after the live demo test** — only after a successful connect against
+   a real demo account, set `TRADOVATE_ENABLED=true`. The card then appears in
+   the dashboard. Do not enable it before the connect flow is proven, because a
+   visible card with no app cid/sec just shows a failing connect panel.
 
 ## UI reference (rendered from the real components)
 

@@ -1,5 +1,20 @@
 # Supabase deploy order (schema before code)
 
+> **Decision (Option A, closed):** keep the non-blocking dashboard with the
+> in-dashboard Tradovate connect card. The login-flow gate is intentionally
+> **NOT** part of the product — do not build one and do not add
+> `REQUIRE_TRADOVATE_CONNECTION` or any `/dashboard` guard.
+>
+> **Recommended launch config (Edge secrets):** `TRADOVATE_ENABLED=false` and
+> `AI_KYC_ENABLED=false` until the live Tradovate demo test and the AI-provider /
+> ID-data-protection review are done. Leave `WITHDRAWAL_KYC_GATE_ENABLED`
+> **unset** (never `false` in normal operation).
+>
+> **Go-live order:** Supabase secrets → `supabase db push` (all 5 migrations,
+> filename order) → `supabase functions deploy` → smoke test no function returns
+> 404 → merge **PR #47 only** (close #45/#46) → Vercel redeploy → final test in an
+> incognito window with a fresh account. See "Manual go-live order" below.
+
 Edge Functions call tables and RPCs introduced by migrations. If a function is
 deployed before its migration, every call fails on a fresh database. The
 deploy order is therefore: **migrations first, then Edge Functions.**
@@ -38,9 +53,17 @@ automatic deploys.
 
 ## Manual go-live order
 
-1. Apply migrations: `supabase db push` (or `supabase migration up --linked`).
-   See `supabase/functions/_test/migrations/apply-order.sh` for a fresh-DB
+1. **Supabase secrets** — set the Edge Function secrets (Tradovate, AI KYC,
+   encryption, Resend) with the recommended launch values above.
+2. **Apply migrations** — `supabase db push` (or `supabase migration up --linked`),
+   all 5 pending migrations in filename order. See
+   `supabase/functions/_test/migrations/apply-order.sh` for a fresh-DB
    reproduction of the exact apply order.
-2. Confirm the migration head matches: `supabase migration list --linked`.
-3. Deploy functions: re-run the workflow (Actions -> Deploy Supabase Edge
+3. Confirm the migration head matches: `supabase migration list --linked`.
+4. **Deploy functions** — re-run the workflow (Actions -> Deploy Supabase Edge
    Functions -> Run workflow) or push a functions change.
+5. **Smoke test** — confirm no function returns 404 (`{"code":"NOT_FOUND"}` means
+   it is not deployed yet).
+6. **Merge PR #47 only** (close #45 and #46).
+7. **Vercel redeploy** the SPA.
+8. **Final test** in an incognito window with a fresh account.

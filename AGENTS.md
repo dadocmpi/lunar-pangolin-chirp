@@ -2,6 +2,12 @@
 
 Vite + React + TS SPA. Single-page app with client-side routing.
 
+## Launch decision & recommended configuration (2026-10-04, FINAL)
+
+- **Decision (Option A, closed):** keep the non-blocking dashboard with the in-dashboard Tradovate connect card. The login-flow gate is intentionally **NOT** part of the product — do **not** build one, and do **not** add `REQUIRE_TRADOVATE_CONNECTION` or any guard that blocks `/dashboard`. This supersedes every earlier connect-gate idea.
+- **Recommended launch config (Edge secrets):** `TRADOVATE_ENABLED=false` and `AI_KYC_ENABLED=false` until (1) the live Tradovate demo test passes and (2) the AI-provider / ID-data-protection review is signed off. Leave `WITHDRAWAL_KYC_GATE_ENABLED` **unset** (only the exact string `false` disables; `false` refuses withdrawals rather than bypassing KYC — never set it in normal operation).
+- **Go-live order:** Supabase secrets → `supabase db push` (all 5 pending migrations, filename order) → `supabase functions deploy` → smoke test that no function returns 404 → merge **PR #47 only** (close #45 and #46) → Vercel redeploy → final test in an incognito window with a fresh account. Deploy mechanics: `docs/supabase-deploy-order.md`.
+
 ## Commands
 - `npm run build` — production build (outputs `dist/`). **Exit 0 required before deploy.**
 - `npx tsc --noEmit -p tsconfig.app.json` — typecheck.

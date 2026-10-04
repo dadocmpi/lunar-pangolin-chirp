@@ -1,5 +1,15 @@
 # AI KYC on withdrawal — runbook
 
+> **Decision (Option A, closed):** KYC is required only at withdrawal; the
+> terminal opens for any logged-in user and there is no login-flow gate (do not
+> build one, do not add `REQUIRE_TRADOVATE_CONNECTION` or a `/dashboard` guard).
+> **Recommended launch config:** `AI_KYC_ENABLED=false` (and leave
+> `KYC_AI_API_KEY` unset) until the AI-provider / ID-data-protection review is
+> signed off — every submission then goes to human manual review. Leave
+> `WITHDRAWAL_KYC_GATE_ENABLED` **unset** (never `false` in normal operation; it
+> refuses withdrawals rather than bypassing KYC). Full go-live order:
+> `docs/supabase-deploy-order.md`.
+
 ## What this adds
 
 The terminal is **fully open** to any logged-in user. Identity verification
