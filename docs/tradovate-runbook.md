@@ -5,12 +5,10 @@
 - Credentials are encrypted server-side with AES-256-GCM and only ever touched
   inside Edge Functions (`supabase/functions/_shared/tradovate/`). The browser
   never sees a username, password, cid/sec, or token.
-- The connect gate is `REQUIRE_TRADOVATE_CONNECTION`, default **ON**. It is only
-  disabled by the literal string `"false"`.
-  - Frontend: `VITE_REQUIRE_TRADOVATE_CONNECTION` (Vite build-time; set in
-    Vercel and redeploy).
-  - Server: `REQUIRE_TRADOVATE_CONNECTION` (Supabase Edge Function secret).
-  - `npm run check:tradovate` asserts both default ON and stay in sync.
+- The connect flow is **in-dashboard**, not a gate. Login goes straight to the
+  dashboard; the Tradovate view shows an empty state with a "Connect to
+  Tradovate" button that opens a modal (username, password, demo/live). There
+  is no router guard and no `REQUIRE_TRADOVATE_CONNECTION` flag.
 - Data path: incremental polling of `/fill/list` keyed on
   `integrations.last_fill_id`, with Supabase Realtime pushing trade/fill diffs
   to the browser. There is no long-lived WebSocket — Edge Functions cannot hold
@@ -24,7 +22,6 @@
 | Secret | Purpose |
 | --- | --- |
 | `TRADOVATE_ENCRYPTION_KEY` | AES-256-GCM key for credential envelopes |
-| `REQUIRE_TRADOVATE_CONNECTION` | `"false"` disables the gate; anything else = ON |
 | `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` | present by default in Supabase |
 
 Vault secrets for the scheduler: `project_url`, `service_role_key`.
@@ -49,13 +46,15 @@ encrypted under a discarded key is unrecoverable and the user must reconnect.
 
 Verified locally (see `supabase/functions/_test/` and `make test-tradovate`):
 
-- PnL engine, rate limiting, auth/REST wiring, sync idempotency, the connect
-  gate, log safety, per-user ownership scoping.
+- PnL engine, rate limiting, auth/REST wiring, sync idempotency, log safety,
+  per-user ownership scoping.
 - RLS isolation with two users against the real migration
   (`make test-tradovate-rls`).
 - A full login → auth → renewal → `/fill/list` → PnL run against an emulated
   provider (`tradovate-e2e-demo-tests.ts`), where the engine's net PnL matched
   the provider-reported cash delta.
+- The dashboard always loads without a connection; the empty state renders the
+  connect CTA and the connect panel opens (see `tradovate-dashboard-tests.ts`).
 
 Still a risk without live credentials:
 

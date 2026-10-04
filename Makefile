@@ -20,7 +20,7 @@ test-tradovate:
 	deno run -A supabase/functions/_test/tradovate-rate-limit-tests.ts
 	deno run -A supabase/functions/_test/tradovate-auth-rest-tests.ts
 	deno run -A supabase/functions/_test/tradovate-sync-tests.ts
-	deno run -A supabase/functions/_test/tradovate-guard-tests.ts
+	deno run -A supabase/functions/_test/tradovate-dashboard-tests.ts
 	deno run -A supabase/functions/_test/tradovate-log-safety-tests.ts
 	deno run -A supabase/functions/_test/tradovate-ownership-tests.ts
 	deno run -A supabase/functions/_test/tradovate-e2e-demo-tests.ts

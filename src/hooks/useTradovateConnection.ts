@@ -8,7 +8,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { functionsUrl, isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
-import { isTradovateConnectionRequired } from "@/lib/tradovateFlag";
 
 export interface TradovateIntegration {
   id: string;
@@ -23,7 +22,6 @@ export interface TradovateIntegration {
 
 export interface TradovateConnectionState {
   loading: boolean;
-  required: boolean;
   connected: boolean;
   integrations: TradovateIntegration[];
   error: string | null;
@@ -72,10 +70,9 @@ export function useTradovateConnection(enabled = true): TradovateConnectionState
         ? data.integrations
         : [];
       setIntegrations(list);
-      setConnected(
-        Boolean(data.connected) ||
-          list.some((i) => i.status === "connected" || i.status === "expired"),
-      );
+      // A connection exists as soon as an integration is present; its health
+      // is surfaced by `status` (connected / expired / api_disabled / ...).
+      setConnected(list.length > 0);
     } catch {
       setConnected(false);
       setIntegrations([]);
@@ -91,7 +88,6 @@ export function useTradovateConnection(enabled = true): TradovateConnectionState
 
   return {
     loading,
-    required: isTradovateConnectionRequired(),
     connected,
     integrations,
     error,

@@ -7,7 +7,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import ErrorBoundary from "./components/ErrorBoundary";
-import ProtectedRoute from "./components/ProtectedRoute";
 import { CurrencyProvider } from "./hooks/useCurrency";
 
 const queryClient = new QueryClient({
@@ -33,7 +32,6 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-const ConnectTradovate = lazy(() => import("./pages/ConnectTradovate"));
 const Checkout = lazy(() => import("./pages/Checkout"));
 const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -85,8 +83,7 @@ const App = () => (
             <Route path="/terms" element={<RouteView><Terms /></RouteView>} />
             <Route path="/privacy" element={<RouteView><Privacy /></RouteView>} />
             <Route path="/disclaimer" element={<RouteView><Disclaimer /></RouteView>} />
-            <Route path="/connect-tradovate" element={<RouteView><ConnectTradovate /></RouteView>} />
-            <Route path="/dashboard" element={<RouteView><ProtectedRoute><Dashboard /></ProtectedRoute></RouteView>} />
+            <Route path="/dashboard" element={<RouteView><Dashboard /></RouteView>} />
             <Route path="/checkout" element={<RouteView><Checkout /></RouteView>} />
             <Route path="/checkout/success" element={<RouteView><CheckoutSuccess /></RouteView>} />
             <Route path="*" element={<RouteView><NotFound /></RouteView>} />

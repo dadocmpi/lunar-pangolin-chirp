@@ -17,7 +17,6 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders, json, requireUser, UnauthorizedError } from "../_shared/tradovate/auth.ts";
 import { syncIntegration } from "../_shared/tradovate/sync.ts";
-import { isTradovateConnectionRequired } from "../_shared/tradovate/flag.ts";
 
 const MAX_INTEGRATIONS_PER_RUN = 25;
 
@@ -69,20 +68,6 @@ serve(async (req) => {
   } catch (e) {
     if (e instanceof UnauthorizedError) return json({ error: "unauthorized" }, 401);
     return json({ error: "unauthorized" }, 401);
-  }
-
-  // Gate parity: when connections are required, a user without one cannot
-  // trigger a sync. (Their own integrations are the only ones ever touched.)
-  if (isTradovateConnectionRequired()) {
-    const { data } = await admin
-      .from("integrations")
-      .select("id")
-      .eq("user_id", ctx.user.id)
-      .neq("status", "revoked")
-      .limit(1);
-    if (!data || data.length === 0) {
-      return json({ error: "no_connection" }, 409);
-    }
   }
 
   let body: Record<string, unknown> = {};

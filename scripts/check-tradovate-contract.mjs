@@ -3,13 +3,16 @@
  * Tradovate contract gate.
  *
  * Static checks that guard the failure modes this integration must not regress:
- *  1. The client and server connect-gate flags agree and both default ON.
+ *  1. There is no blocking connect gate: no REQUIRE_TRADOVATE_CONNECTION flag,
+ *     no router guard, and the dashboard route is not wrapped.
  *  2. Every Tradovate Edge Function verifies the JWT server-side and never
  *     trusts a user_id from the request body.
  *  3. Credentials are only ever persisted through the encrypted store.
  *  4. The credential envelope columns stay in sync with the migration.
- *  5. The dashboard route is wrapped in the connect gate.
- *  6. The browser flag module never reads a server-only secret.
+ *  5. The in-dashboard view owns the empty state and the connect panel.
+ *  6. The browser never stores or logs the password; the panel sends it only to
+ *     the Edge Function.
+ *  7. Disconnect truly deletes credentials.
  *
  * Exits non-zero on any violation. Read-only: parses files, runs nothing.
  *
@@ -22,6 +25,7 @@ import { dirname, resolve, join } from 'node:path';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 const read = (p) => readFileSync(resolve(root, p), 'utf8');
+const has = (p) => existsSync(resolve(root, p));
 
 let failures = 0;
 function check(name, condition, detail = '') {
@@ -33,25 +37,19 @@ function check(name, condition, detail = '') {
   }
 }
 
-console.log('\n[1] Connect-gate flags default ON and stay in sync');
-const clientFlag = read('src/lib/tradovateFlag.ts');
-const serverFlag = read('supabase/functions/_shared/tradovate/flag.ts');
-check(
-  'client flag requires an explicit "false" to disable',
-  clientFlag.includes('VITE_REQUIRE_TRADOVATE_CONNECTION') &&
-    clientFlag.includes('!== "false"'),
-);
-check(
-  'server flag requires an explicit "false" to disable',
-  serverFlag.includes('REQUIRE_TRADOVATE_CONNECTION') &&
-    serverFlag.includes('!== "false"'),
-);
-check(
-  'client flag does not read a server secret',
-  !clientFlag.includes('Deno.env') &&
-    !clientFlag.includes('SERVICE_ROLE') &&
-    !clientFlag.includes('TRADOVATE_ENCRYPTION_KEY'),
-);
+console.log('\n[1] No blocking connect gate remains');
+check('client gate flag module is gone', !has('src/lib/tradovateFlag.ts'));
+check('server gate flag module is gone', !has('supabase/functions/_shared/tradovate/flag.ts'));
+check('router guard component is gone', !has('src/components/ProtectedRoute.tsx'));
+check('blocking gate page is gone', !has('src/pages/ConnectTradovate.tsx'));
+const app = read('src/App.tsx');
+check('dashboard route is not wrapped in a guard',
+  /<Route path="\/dashboard"[\s\S]{0,120}?<Dashboard \/>/.test(app) &&
+    !/ProtectedRoute/.test(app));
+check('no REQUIRE_TRADOVATE_CONNECTION flag anywhere',
+  !/REQUIRE_TRADOVATE_CONNECTION/.test(read('src/App.tsx')) &&
+    !existsSync(resolve(root, 'src/lib/tradovateFlag.ts')) &&
+    !existsSync(resolve(root, 'supabase/functions/_shared/tradovate/flag.ts')));
 
 console.log('\n[2] Edge Functions verify the JWT server-side');
 const fnDir = resolve(root, 'supabase/functions');
@@ -96,15 +94,24 @@ if (mig) {
   check('RLS is enabled', /ENABLE ROW LEVEL SECURITY/i.test(sql));
 }
 
-console.log('\n[5] Dashboard is behind the connect gate');
-const app = read('src/App.tsx');
-check(
-  '/dashboard is wrapped in ProtectedRoute',
-  /<Route path="\/dashboard"[\s\S]{0,120}ProtectedRoute/.test(app),
-);
-check('gate route is registered', app.includes('/connect-tradovate'));
+console.log('\n[5] In-dashboard view owns the empty state and the connect panel');
+const trades = read('src/components/TradovateTrades.tsx');
+const panel = read('src/components/TradovateConnectPanel.tsx');
+check('empty state renders the connect CTA', trades.includes('tradovate.connectCta'));
+check('view opens the connect panel', trades.includes('TradovateConnectPanel'));
+check('panel posts credentials to the Edge Function',
+  panel.includes('functionsUrl("tradovate-connect")'));
+check('panel offers demo/live selection', panel.includes('"demo"') && panel.includes('"live"'));
+check('panel has a trust notice', panel.includes('connectTradovate.trustNotice'));
 
-console.log('\n[6] Disconnect truly deletes credentials');
+console.log('\n[6] The browser never stores or logs the password');
+check('password is never written to web storage',
+  !/localStorage[\s\S]{0,80}password/i.test(panel) &&
+    !/sessionStorage[\s\S]{0,80}password/i.test(panel));
+check('password is never console-logged', !/console\.[a-z]+\([^)]*password/i.test(panel));
+check('password is cleared from memory after use', /setPassword\(""\)/.test(panel));
+
+console.log('\n[7] Disconnect truly deletes credentials');
 const store = read('supabase/functions/_shared/tradovate/credentialStore.ts');
 check(
   'disconnect deletes the credential row',

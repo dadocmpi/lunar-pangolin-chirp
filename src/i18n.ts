@@ -19,6 +19,11 @@ export const supportedLanguages = [
 // Base translations (English)
 const enTranslation = {
   tradovate: {
+    manageConnection: "Manage connection",
+    emptyTitle: "No Tradovate account connected",
+    emptyBody: "Connect your Tradovate account to see your fills, trades and reconstructed PnL here.",
+    connectCta: "Connect to Tradovate",
+    emptyHint: "Your credentials are encrypted and can be disconnected at any time.",
     eyebrow: "Live account",
     title: "TRADES & PnL",
     refresh: "Refresh",
@@ -47,6 +52,7 @@ const enTranslation = {
   },
 
   connectTradovate: {
+    close: "Close",
     badge: "Secure broker connection",
     title: "CONNECT YOUR TRADOVATE ACCOUNT",
     subtitle: "Link your Tradovate account so Braxel can read your fills and reconstruct performance. Credentials are encrypted and never shared.",
@@ -70,7 +76,6 @@ const enTranslation = {
     togglePassword: "Show or hide the password",
     connectButton: "CONNECT ACCOUNT",
     securityNote: "Your credentials are encrypted with AES-256-GCM and stored server-side, bound to your Braxel account. They are never exposed to the browser or shared with other users.",
-    skip: "Skip for now",
     connectionsTitle: "Your connections",
     noConnections: "No Tradovate account is connected yet.",
     disconnect: "Disconnect",
@@ -81,8 +86,10 @@ const enTranslation = {
     statusExpired: "Token expired",
     statusApiDisabled: "API access off",
     statusInvalidCredentials: "Invalid credentials",
-    statusPending: "Pending",
+    statusPending: "Pending",    trustNotice: "Your credentials are encrypted, used only to read your trades, and can be disconnected at any time.",
+
     errors: {
+      retryHint: "Check the username, password and environment, then try again.",
       title: "Could not connect",
       invalid_credentialsTitle: "Wrong credentials",
       invalid_credentials: "Tradovate rejected the username or password. Check them and try again.",
@@ -1167,6 +1174,11 @@ const enTranslation = {
 
 const ptTranslation = {
   tradovate: {
+    manageConnection: "Gerir conexão",
+    emptyTitle: "Nenhuma conta Tradovate conectada",
+    emptyBody: "Conecte a sua conta Tradovate para ver aqui as suas execuções, operações e PnL reconstruído.",
+    connectCta: "Conectar à Tradovate",
+    emptyHint: "As suas credenciais são encriptadas e podem ser desligadas a qualquer momento.",
     eyebrow: "Conta em direto",
     title: "OPERAÇÕES E P&L",
     refresh: "Atualizar",
@@ -1195,6 +1207,7 @@ const ptTranslation = {
   },
 
   connectTradovate: {
+    close: "Fechar",
     badge: "Conexão segura com a corretora",
     title: "CONECTE SUA CONTA TRADOVATE",
     subtitle: "Ligue a sua conta Tradovate para que a Braxel leia as suas execuções e reconstrua o desempenho. As credenciais são encriptadas e nunca são partilhadas.",
@@ -1218,7 +1231,6 @@ const ptTranslation = {
     togglePassword: "Mostrar ou ocultar a palavra-passe",
     connectButton: "CONECTAR CONTA",
     securityNote: "As suas credenciais são encriptadas com AES-256-GCM e guardadas no servidor, associadas à sua conta Braxel. Nunca são expostas ao navegador nem partilhadas com outros utilizadores.",
-    skip: "Saltar por agora",
     connectionsTitle: "As suas conexões",
     noConnections: "Ainda não há nenhuma conta Tradovate conectada.",
     disconnect: "Desconectar",
@@ -1229,8 +1241,10 @@ const ptTranslation = {
     statusExpired: "Token expirado",
     statusApiDisabled: "Acesso API desativado",
     statusInvalidCredentials: "Credenciais inválidas",
-    statusPending: "Pendente",
+    statusPending: "Pendente",    trustNotice: "As suas credenciais são encriptadas, usadas apenas para ler as suas operações e podem ser desligadas a qualquer momento.",
+
     errors: {
+      retryHint: "Verifique o utilizador, a palavra-passe e o ambiente e tente novamente.",
       title: "Não foi possível conectar",
       invalid_credentialsTitle: "Credenciais erradas",
       invalid_credentials: "A Tradovate rejeitou o utilizador ou a palavra-passe. Verifique e tente novamente.",
@@ -2315,6 +2329,11 @@ const ptTranslation = {
 
 const itTranslation = {
   tradovate: {
+    manageConnection: "Gestisci connessione",
+    emptyTitle: "Nessun account Tradovate connesso",
+    emptyBody: "Collega il tuo account Tradovate per vedere qui eseguiti, operazioni e PnL ricostruito.",
+    connectCta: "Connetti a Tradovate",
+    emptyHint: "Le tue credenziali sono crittografate e possono essere disconnesse in qualsiasi momento.",
     eyebrow: "Conto live",
     title: "OPERAZIONI E P&L",
     refresh: "Aggiorna",
@@ -2343,6 +2362,7 @@ const itTranslation = {
   },
 
   connectTradovate: {
+    close: "Chiudi",
     badge: "Connessione sicura al broker",
     title: "COLLEGA IL TUO ACCOUNT TRADOVATE",
     subtitle: "Collega il tuo account Tradovate così che Braxel possa leggere le esecuzioni e ricostruire le performance. Le credenziali sono cifrate e mai condivise.",
@@ -2366,7 +2386,6 @@ const itTranslation = {
     togglePassword: "Mostra o nascondi la password",
     connectButton: "COLLEGA ACCOUNT",
     securityNote: "Le tue credenziali sono cifrate con AES-256-GCM e archiviate sul server, associate al tuo account Braxel. Non vengono mai esposte al browser né condivise con altri utenti.",
-    skip: "Salta per ora",
     connectionsTitle: "Le tue connessioni",
     noConnections: "Nessun account Tradovate è ancora collegato.",
     disconnect: "Disconnetti",
@@ -2377,8 +2396,10 @@ const itTranslation = {
     statusExpired: "Token scaduto",
     statusApiDisabled: "Accesso API disattivato",
     statusInvalidCredentials: "Credenziali non valide",
-    statusPending: "In attesa",
+    statusPending: "In attesa",    trustNotice: "Le tue credenziali sono crittografate, usate solo per leggere le tue operazioni e possono essere disconnesse in qualsiasi momento.",
+
     errors: {
+      retryHint: "Controlla nome utente, password e ambiente, poi riprova.",
       title: "Impossibile collegare",
       invalid_credentialsTitle: "Credenziali errate",
       invalid_credentials: "Tradovate ha rifiutato nome utente o password. Controlla e riprova.",
@@ -3463,6 +3484,11 @@ const itTranslation = {
 
 const esTranslation = {
   tradovate: {
+    manageConnection: "Gestionar conexión",
+    emptyTitle: "Ninguna cuenta de Tradovate conectada",
+    emptyBody: "Conecta tu cuenta de Tradovate para ver aquí tus ejecuciones, operaciones y PnL reconstruido.",
+    connectCta: "Conectar con Tradovate",
+    emptyHint: "Tus credenciales están cifradas y puedes desconectarlas en cualquier momento.",
     eyebrow: "Cuenta en directo",
     title: "OPERACIONES Y P&L",
     refresh: "Actualizar",
@@ -3491,6 +3517,7 @@ const esTranslation = {
   },
 
   connectTradovate: {
+    close: "Cerrar",
     badge: "Conexión segura con el bróker",
     title: "CONECTA TU CUENTA DE TRADOVATE",
     subtitle: "Vincula tu cuenta de Tradovate para que Braxel lea tus ejecuciones y reconstruya el rendimiento. Las credenciales se cifran y nunca se comparten.",
@@ -3514,7 +3541,6 @@ const esTranslation = {
     togglePassword: "Mostrar u ocultar la contraseña",
     connectButton: "CONECTAR CUENTA",
     securityNote: "Tus credenciales se cifran con AES-256-GCM y se guardan en el servidor, vinculadas a tu cuenta de Braxel. Nunca se exponen al navegador ni se comparten con otros usuarios.",
-    skip: "Omitir por ahora",
     connectionsTitle: "Tus conexiones",
     noConnections: "Aún no hay ninguna cuenta de Tradovate conectada.",
     disconnect: "Desconectar",
@@ -3525,8 +3551,10 @@ const esTranslation = {
     statusExpired: "Token caducado",
     statusApiDisabled: "Acceso API desactivado",
     statusInvalidCredentials: "Credenciales no válidas",
-    statusPending: "Pendiente",
+    statusPending: "Pendiente",    trustNotice: "Tus credenciales están cifradas, se usan solo para leer tus operaciones y puedes desconectarlas en cualquier momento.",
+
     errors: {
+      retryHint: "Comprueba el usuario, la contraseña y el entorno, y vuelve a intentarlo.",
       title: "No se pudo conectar",
       invalid_credentialsTitle: "Credenciales incorrectas",
       invalid_credentials: "Tradovate rechazó el usuario o la contraseña. Compruébalos e inténtalo de nuevo.",
@@ -4611,6 +4639,11 @@ const esTranslation = {
 
 const frTranslation = {
   tradovate: {
+    manageConnection: "Gérer la connexion",
+    emptyTitle: "Aucun compte Tradovate connecté",
+    emptyBody: "Connectez votre compte Tradovate pour voir ici vos exécutions, transactions et PnL reconstruit.",
+    connectCta: "Se connecter à Tradovate",
+    emptyHint: "Vos identifiants sont chiffrés et peuvent être déconnectés à tout moment.",
     eyebrow: "Compte en direct",
     title: "OPÉRATIONS ET P&L",
     refresh: "Actualiser",
@@ -4639,6 +4672,7 @@ const frTranslation = {
   },
 
   connectTradovate: {
+    close: "Fermer",
     badge: "Connexion courtier sécurisée",
     title: "CONNECTEZ VOTRE COMPTE TRADOVATE",
     subtitle: "Reliez votre compte Tradovate pour que Braxel lise vos exécutions et reconstitue la performance. Les identifiants sont chiffrés et jamais partagés.",
@@ -4662,7 +4696,6 @@ const frTranslation = {
     togglePassword: "Afficher ou masquer le mot de passe",
     connectButton: "CONNECTER LE COMPTE",
     securityNote: "Vos identifiants sont chiffrés avec AES-256-GCM et stockés côté serveur, liés à votre compte Braxel. Ils ne sont jamais exposés au navigateur ni partagés avec d'autres utilisateurs.",
-    skip: "Passer pour l'instant",
     connectionsTitle: "Vos connexions",
     noConnections: "Aucun compte Tradovate n'est encore connecté.",
     disconnect: "Déconnecter",
@@ -4673,8 +4706,10 @@ const frTranslation = {
     statusExpired: "Jeton expiré",
     statusApiDisabled: "Accès API désactivé",
     statusInvalidCredentials: "Identifiants invalides",
-    statusPending: "En attente",
+    statusPending: "En attente",    trustNotice: "Vos identifiants sont chiffrés, utilisés uniquement pour lire vos transactions et peuvent être déconnectés à tout moment.",
+
     errors: {
+      retryHint: "Vérifiez l'identifiant, le mot de passe et l'environnement, puis réessayez.",
       title: "Connexion impossible",
       invalid_credentialsTitle: "Identifiants incorrects",
       invalid_credentials: "Tradovate a refusé l'identifiant ou le mot de passe. Vérifiez-les et réessayez.",
@@ -5759,6 +5794,11 @@ const frTranslation = {
 
 const deTranslation = {
   tradovate: {
+    manageConnection: "Verbindung verwalten",
+    emptyTitle: "Kein Tradovate-Konto verbunden",
+    emptyBody: "Verbinde dein Tradovate-Konto, um hier Fills, Trades und rekonstruiertes PnL zu sehen.",
+    connectCta: "Mit Tradovate verbinden",
+    emptyHint: "Deine Zugangsdaten sind verschlüsselt und können jederzeit getrennt werden.",
     eyebrow: "Live-Konto",
     title: "TRADES & P&L",
     refresh: "Aktualisieren",
@@ -5787,6 +5827,7 @@ const deTranslation = {
   },
 
   connectTradovate: {
+    close: "Schließen",
     badge: "Sichere Broker-Verbindung",
     title: "VERBINDE DEIN TRADOVATE-KONTO",
     subtitle: "Verbinde dein Tradovate-Konto, damit Braxel deine Ausführungen lesen und die Performance rekonstruieren kann. Zugangsdaten werden verschlüsselt und nie geteilt.",
@@ -5810,7 +5851,6 @@ const deTranslation = {
     togglePassword: "Passwort anzeigen oder verbergen",
     connectButton: "KONTO VERBINDEN",
     securityNote: "Deine Zugangsdaten werden mit AES-256-GCM verschlüsselt und serverseitig gespeichert, verknüpft mit deinem Braxel-Konto. Sie werden nie im Browser offengelegt oder mit anderen Nutzern geteilt.",
-    skip: "Vorerst überspringen",
     connectionsTitle: "Deine Verbindungen",
     noConnections: "Es ist noch kein Tradovate-Konto verbunden.",
     disconnect: "Trennen",
@@ -5821,8 +5861,10 @@ const deTranslation = {
     statusExpired: "Token abgelaufen",
     statusApiDisabled: "API-Zugang aus",
     statusInvalidCredentials: "Ungültige Zugangsdaten",
-    statusPending: "Ausstehend",
+    statusPending: "Ausstehend",    trustNotice: "Deine Zugangsdaten sind verschlüsselt, werden nur zum Lesen deiner Trades verwendet und können jederzeit getrennt werden.",
+
     errors: {
+      retryHint: "Prüfe Benutzername, Passwort und Umgebung und versuche es erneut.",
       title: "Verbindung fehlgeschlagen",
       invalid_credentialsTitle: "Falsche Zugangsdaten",
       invalid_credentials: "Tradovate hat Benutzername oder Passwort abgelehnt. Prüfe sie und versuche es erneut.",
@@ -6907,6 +6949,11 @@ const deTranslation = {
 
 const ruTranslation = {
   tradovate: {
+    manageConnection: "Управление подключением",
+    emptyTitle: "Аккаунт Tradovate не подключён",
+    emptyBody: "Подключите аккаунт Tradovate, чтобы видеть здесь сделки, исполнения и восстановленный PnL.",
+    connectCta: "Подключиться к Tradovate",
+    emptyHint: "Ваши учётные данные зашифрованы, и их можно отключить в любое время.",
     eyebrow: "Реальный счёт",
     title: "СДЕЛКИ И P&L",
     refresh: "Обновить",
@@ -6935,6 +6982,7 @@ const ruTranslation = {
   },
 
   connectTradovate: {
+    close: "Закрыть",
     badge: "Безопасное подключение брокера",
     title: "ПОДКЛЮЧИТЕ ВАШ СЧЁТ TRADOVATE",
     subtitle: "Свяжите свой счёт Tradovate, чтобы Braxel считывал исполнения и восстанавливал показатели. Учётные данные шифруются и никогда не передаются.",
@@ -6958,7 +7006,6 @@ const ruTranslation = {
     togglePassword: "Показать или скрыть пароль",
     connectButton: "ПОДКЛЮЧИТЬ СЧЁТ",
     securityNote: "Ваши учётные данные шифруются AES-256-GCM и хранятся на сервере, привязанные к вашей учётной записи Braxel. Они никогда не попадают в браузер и не передаются другим пользователям.",
-    skip: "Пропустить пока",
     connectionsTitle: "Ваши подключения",
     noConnections: "Пока нет подключённых счетов Tradovate.",
     disconnect: "Отключить",
@@ -6969,8 +7016,10 @@ const ruTranslation = {
     statusExpired: "Токен истёк",
     statusApiDisabled: "API-доступ выключен",
     statusInvalidCredentials: "Неверные данные",
-    statusPending: "В ожидании",
+    statusPending: "В ожидании",    trustNotice: "Ваши учётные данные зашифрованы, используются только для чтения ваших сделок и могут быть отключены в любое время.",
+
     errors: {
+      retryHint: "Проверьте имя пользователя, пароль и среду и повторите попытку.",
       title: "Не удалось подключиться",
       invalid_credentialsTitle: "Неверные данные",
       invalid_credentials: "Tradovate отклонил логин или пароль. Проверьте и попробуйте снова.",
@@ -8055,6 +8104,11 @@ const ruTranslation = {
 
 const zhTranslation = {
   tradovate: {
+    manageConnection: "管理连接",
+    emptyTitle: "尚未连接 Tradovate 账户",
+    emptyBody: "连接您的 Tradovate 账户，即可在此查看成交、交易和重建的盈亏。",
+    connectCta: "连接到 Tradovate",
+    emptyHint: "您的凭据已加密，可随时断开连接。",
     eyebrow: "实时账户",
     title: "交易与盈亏",
     refresh: "刷新",
@@ -8083,6 +8137,7 @@ const zhTranslation = {
   },
 
   connectTradovate: {
+    close: "关闭",
     badge: "安全经纪商连接",
     title: "连接您的 TRADOVATE 账户",
     subtitle: "关联您的 Tradovate 账户，让 Braxel 读取您的成交并重建业绩。凭据将被加密，绝不共享。",
@@ -8106,7 +8161,6 @@ const zhTranslation = {
     togglePassword: "显示或隐藏密码",
     connectButton: "连接账户",
     securityNote: "您的凭据使用 AES-256-GCM 加密并存储在服务器端，与您的 Braxel 账户绑定。它们绝不会暴露给浏览器，也不会与其他用户共享。",
-    skip: "暂时跳过",
     connectionsTitle: "您的连接",
     noConnections: "尚未连接任何 Tradovate 账户。",
     disconnect: "断开连接",
@@ -8117,8 +8171,10 @@ const zhTranslation = {
     statusExpired: "令牌已过期",
     statusApiDisabled: "API 访问已关闭",
     statusInvalidCredentials: "凭据无效",
-    statusPending: "待处理",
+    statusPending: "待处理",    trustNotice: "您的凭据已加密，仅用于读取您的交易，可随时断开连接。",
+
     errors: {
+      retryHint: "请检查用户名、密码和环境，然后重试。",
       title: "无法连接",
       invalid_credentialsTitle: "凭据错误",
       invalid_credentials: "Tradovate 拒绝了用户名或密码。请检查后重试。",
@@ -9203,6 +9259,11 @@ const zhTranslation = {
 
 const jaTranslation = {
   tradovate: {
+    manageConnection: "接続を管理",
+    emptyTitle: "Tradovate アカウントが接続されていません",
+    emptyBody: "Tradovate アカウントを接続すると、約定・取引・再構築した損益がここに表示されます。",
+    connectCta: "Tradovate に接続",
+    emptyHint: "認証情報は暗号化されており、いつでも切断できます。",
     eyebrow: "ライブ口座",
     title: "取引と損益",
     refresh: "更新",
@@ -9231,6 +9292,7 @@ const jaTranslation = {
   },
 
   connectTradovate: {
+    close: "閉じる",
     badge: "安全なブローカー接続",
     title: "TRADOVATE アカウントを接続",
     subtitle: "Tradovate アカウントを連携すると、Braxel が約定を読み取りパフォーマンスを再構築できます。認証情報は暗号化され、共有されることはありません。",
@@ -9254,7 +9316,6 @@ const jaTranslation = {
     togglePassword: "パスワードの表示/非表示",
     connectButton: "アカウントを接続",
     securityNote: "認証情報は AES-256-GCM で暗号化され、お客様の Braxel アカウントに紐づけてサーバー側に保存されます。ブラウザに公開されたり、他のユーザーと共有されたりすることはありません。",
-    skip: "今はスキップ",
     connectionsTitle: "接続一覧",
     noConnections: "Tradovate アカウントはまだ接続されていません。",
     disconnect: "切断",
@@ -9265,8 +9326,10 @@ const jaTranslation = {
     statusExpired: "トークン期限切れ",
     statusApiDisabled: "API アクセス無効",
     statusInvalidCredentials: "認証情報が無効",
-    statusPending: "保留中",
+    statusPending: "保留中",    trustNotice: "認証情報は暗号化され、取引の読み取りにのみ使用され、いつでも切断できます。",
+
     errors: {
+      retryHint: "ユーザー名、パスワード、環境を確認して再試行してください。",
       title: "接続できませんでした",
       invalid_credentialsTitle: "認証情報が誤り",
       invalid_credentials: "Tradovate がユーザー名またはパスワードを拒否しました。確認して再試行してください。",
@@ -10351,6 +10414,11 @@ const jaTranslation = {
 
 const arTranslation = {
   tradovate: {
+    manageConnection: "إدارة الاتصال",
+    emptyTitle: "لا يوجد حساب Tradovate متصل",
+    emptyBody: "اربط حساب Tradovate الخاص بك لعرض عمليات التنفيذ والصفقات والأرباح والخسائر المُعاد بناؤها هنا.",
+    connectCta: "الاتصال بـ Tradovate",
+    emptyHint: "بيانات اعتمادك مشفّرة ويمكن فصلها في أي وقت.",
     eyebrow: "حساب مباشر",
     title: "الصفقات والأرباح والخسائر",
     refresh: "تحديث",
@@ -10379,6 +10447,7 @@ const arTranslation = {
   },
 
   connectTradovate: {
+    close: "إغلاق",
     badge: "اتصال وسيط آمن",
     title: "اربط حساب TRADOVATE الخاص بك",
     subtitle: "اربط حساب Tradovate الخاص بك ليتمكن Braxel من قراءة تنفيذاتك وإعادة بناء الأداء. يتم تشفير بيانات الاعتماد ولا تُشارك أبدًا.",
@@ -10402,7 +10471,6 @@ const arTranslation = {
     togglePassword: "إظهار أو إخفاء كلمة المرور",
     connectButton: "ربط الحساب",
     securityNote: "يتم تشفير بيانات اعتمادك باستخدام AES-256-GCM وتخزينها على الخادم، مرتبطة بحساب Braxel الخاص بك. لا تُعرض أبدًا للمتصفح ولا تُشارك مع مستخدمين آخرين.",
-    skip: "تخطٍ الآن",
     connectionsTitle: "اتصالاتك",
     noConnections: "لم يتم ربط أي حساب Tradovate بعد.",
     disconnect: "قطع الاتصال",
@@ -10413,8 +10481,10 @@ const arTranslation = {
     statusExpired: "انتهت صلاحية الرمز",
     statusApiDisabled: "وصول API معطّل",
     statusInvalidCredentials: "بيانات اعتماد غير صالحة",
-    statusPending: "قيد الانتظار",
+    statusPending: "قيد الانتظار",    trustNotice: "بيانات اعتمادك مشفّرة، وتُستخدم فقط لقراءة صفقاتك، ويمكن فصلها في أي وقت.",
+
     errors: {
+      retryHint: "تحقق من اسم المستخدم وكلمة المرور والبيئة ثم حاول مرة أخرى.",
       title: "تعذّر الاتصال",
       invalid_credentialsTitle: "بيانات اعتماد خاطئة",
       invalid_credentials: "رفض Tradovate اسم المستخدم أو كلمة المرور. تحقق منها وحاول مرة أخرى.",
@@ -11499,6 +11569,11 @@ const arTranslation = {
 
 const heTranslation = {
   tradovate: {
+    manageConnection: "ניהול החיבור",
+    emptyTitle: "לא מחובר חשבון Tradovate",
+    emptyBody: "חבר את חשבון ה-Tradovate שלך כדי לראות כאן ביצועים, עסקאות ו-PnL משוחזר.",
+    connectCta: "התחבר ל-Tradovate",
+    emptyHint: "פרטי הכניסה שלך מוצפנים וניתן לנתקם בכל עת.",
     eyebrow: "חשבון חי",
     title: "עסקאות ורווח/הפסד",
     refresh: "רענן",
@@ -11527,6 +11602,7 @@ const heTranslation = {
   },
 
   connectTradovate: {
+    close: "סגור",
     badge: "חיבור ברוקר מאובטח",
     title: "חבר את חשבון TRADOVATE שלך",
     subtitle: "קשר את חשבון Tradovate שלך כדי ש-Braxel יקרא את הביצועים שלך וישחזר את הביצועים. פרטי ההתחברות מוצפנים ולעולם אינם משותפים.",
@@ -11550,7 +11626,6 @@ const heTranslation = {
     togglePassword: "הצג או הסתר את הסיסמה",
     connectButton: "חבר חשבון",
     securityNote: "פרטי ההתחברות שלך מוצפנים ב-AES-256-GCM ונשמרים בצד השרת, מקושרים לחשבון Braxel שלך. הם לעולם אינם נחשפים לדפדפן ואינם משותפים עם משתמשים אחרים.",
-    skip: "דלג לעת עתה",
     connectionsTitle: "החיבורים שלך",
     noConnections: "עדיין לא מחובר חשבון Tradovate.",
     disconnect: "נתק",
@@ -11561,8 +11636,10 @@ const heTranslation = {
     statusExpired: "אסימון פג תוקף",
     statusApiDisabled: "גישת API כבויה",
     statusInvalidCredentials: "פרטי התחברות שגויים",
-    statusPending: "ממתין",
+    statusPending: "ממתין",    trustNotice: "פרטי הכניסה שלך מוצפנים, משמשים רק לקריאת העסקאות שלך, וניתן לנתקם בכל עת.",
+
     errors: {
+      retryHint: "בדוק את שם המשתמש, הסיסמה והסביבה ונסה שוב.",
       title: "לא ניתן להתחבר",
       invalid_credentialsTitle: "פרטי התחברות שגויים",
       invalid_credentials: "Tradovate דחה את שם המשתמש או הסיסמה. בדוק ונסה שוב.",

@@ -14,7 +14,6 @@ import {
   requireUser,
   UnauthorizedError,
 } from "../_shared/tradovate/auth.ts";
-import { isTradovateConnectionRequired } from "../_shared/tradovate/flag.ts";
 import { listIntegrations } from "../_shared/tradovate/credentialStore.ts";
 
 serve(async (req) => {
@@ -33,12 +32,8 @@ serve(async (req) => {
 
   try {
     const integrations = await listIntegrations(ctx.admin, ctx.user.id);
-    const connected = integrations.some((i) =>
-      i.status === "connected" || i.status === "expired" || i.status === "pending"
-    );
     return json({
-      required: isTradovateConnectionRequired(),
-      connected,
+      connected: integrations.length > 0,
       integrations: integrations.map((i) => ({
         id: i.id,
         environment: i.environment,

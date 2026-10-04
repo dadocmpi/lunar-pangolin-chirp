@@ -1,7 +1,17 @@
-"use client";
+// ============================================================================
+// TradovateConnectPanel — in-dashboard connect modal (black/gold).
+//
+// Opened from the empty state's "Connect to Tradovate" button. The password
+// goes straight to the tradovate-connect Edge Function over HTTPS: it is never
+// stored client-side, never returned, never logged. On success the parent is
+// told to refresh, the first sync runs server-side, and the view fills with
+// trades via Realtime.
+//
+// The panel also lists existing connections and can disconnect them (which
+// deletes the stored credentials server-side).
+// ============================================================================
 
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   AlertCircle,
   AlertTriangle,
@@ -12,18 +22,16 @@ import {
   KeyRound,
   Loader2,
   Lock,
-  LogOut,
   Plug,
   ShieldCheck,
   Unplug,
   User,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { functionsUrl, isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import { useTradovateConnection } from "@/hooks/useTradovateConnection";
-import { isTradovateSkipAllowed } from "@/lib/tradovateFlag";
-import { postGatePath } from "@/lib/tradovate/guard";
 import { showError, showSuccess } from "@/utils/toast";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
@@ -37,7 +45,7 @@ interface AccountOption {
 }
 
 /** Server error codes mapped to a UI state, so the message is never generic. */
-type GateErrorCode =
+type ConnectErrorCode =
   | "invalid_credentials"
   | "api_disabled"
   | "rate_limited"
@@ -49,14 +57,16 @@ type GateErrorCode =
   | "encryption_not_configured"
   | null;
 
-const ConnectTradovate = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = (location.state as { from?: string } | null)?.from || "/dashboard";
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  /** Called after a successful connect or disconnect so the view reloads. */
+  onChanged: () => void;
+}
 
-  const { loading, required, connected, integrations, refresh } =
-    useTradovateConnection(true);
+const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
+  const { t } = useTranslation();
+  const { integrations, refresh } = useTradovateConnection(open);
 
   const [environment, setEnvironment] = useState<Environment>("demo");
   const [name, setName] = useState("");
@@ -65,23 +75,34 @@ const ConnectTradovate = () => {
   const [sec, setSec] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [errorCode, setErrorCode] = useState<GateErrorCode>(null);
+  const [errorCode, setErrorCode] = useState<ConnectErrorCode>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [accounts, setAccounts] = useState<AccountOption[]>([]);
   const [pending, setPending] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
 
-  // Auto-skip: a returning user with a valid connection goes straight on.
+  // Never leave a typed password in memory after the panel closes.
   useEffect(() => {
-    if (!loading && (!required || connected)) {
-      navigate(postGatePath({ loading, required, connected }, from), { replace: true });
+    if (!open) {
+      setPassword("");
+      setSec("");
+      setShowPassword(false);
+      setErrorCode(null);
+      setErrorMessage(null);
+      setPending(false);
     }
-  }, [loading, required, connected, from, navigate]);
+  }, [open]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/login");
-  };
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
 
   const authHeader = async (): Promise<Record<string, string>> => {
     const { data } = await supabase.auth.getSession();
@@ -123,18 +144,18 @@ const ConnectTradovate = () => {
         return;
       }
       if (!res.ok || !data?.ok) {
-        setErrorCode((data?.code as GateErrorCode) ?? "unexpected");
+        setErrorCode((data?.code as ConnectErrorCode) ?? "unexpected");
         setErrorMessage(typeof data?.message === "string" ? data.message : null);
         return;
       }
       // Success — clear secrets from memory immediately.
       setPassword("");
       setSec("");
+      setPending(false);
       showSuccess(t("connectTradovate.connectedToast"));
       await refresh();
-      navigate(postGatePath({ loading: false, required: true, connected: true }, from), {
-        replace: true,
-      });
+      onChanged();
+      onClose();
     } catch {
       setErrorCode("transport");
       setErrorMessage(null);
@@ -154,6 +175,7 @@ const ConnectTradovate = () => {
       if (!res.ok) throw new Error("disconnect_failed");
       showSuccess(t("connectTradovate.disconnectedToast"));
       await refresh();
+      onChanged();
     } catch {
       showError(t("connectTradovate.errors.disconnect"));
     } finally {
@@ -161,66 +183,54 @@ const ConnectTradovate = () => {
     }
   };
 
-  const handleSkip = () => {
-    if (!isTradovateSkipAllowed()) return;
-    navigate("/dashboard", { replace: true });
-  };
-
   const errorText = (() => {
     if (!errorCode) return null;
     const key = `connectTradovate.errors.${errorCode}`;
     const translated = t(key);
-    // Fall back to the server's own message when we have no specific string.
     if (translated === key) return errorMessage || t("connectTradovate.errors.unexpected");
     return translated;
   })();
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#05070A] flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#C5A059]" size={40} />
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#C5A059] selection:text-black">
-      <div className="container mx-auto px-4 md:px-8 py-10 max-w-5xl">
+    <div
+      className="fixed inset-0 z-50 flex items-start md:items-center justify-center p-4 bg-black/70 backdrop-blur-sm overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label={t("connectTradovate.title")}
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-3xl bg-[#121212] border border-[#C5A059]/30 my-8"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between mb-10">
-          <Link to="/" className="flex items-center gap-3.5">
-            <img src="/logo-white.svg" alt="Braxel Markets" className="h-10 w-auto object-contain" />
-            <div className="flex flex-col leading-none">
-              <span className="text-lg font-black tracking-tighter text-white">BRAXEL</span>
-              <span className="text-[#C5A059] text-[8px] font-bold tracking-[0.2em]">MARKETS</span>
+        <div className="flex items-start justify-between p-6 md:p-8 border-b border-white/10">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#C5A059]/30 bg-[#C5A059]/5 mb-4">
+              <ShieldCheck size={14} className="text-[#C5A059]" />
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#C5A059]">
+                {t("connectTradovate.badge")}
+              </span>
             </div>
-          </Link>
+            <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter leading-none">
+              {t("connectTradovate.title")}
+            </h2>
+            <p className="text-slate-400 text-[12px] mt-3 max-w-xl leading-relaxed">
+              {t("connectTradovate.subtitle")}
+            </p>
+          </div>
           <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-white"
+            onClick={onClose}
+            aria-label={t("connectTradovate.close")}
+            className="text-slate-500 hover:text-white transition-colors p-1"
           >
-            <LogOut size={14} /> {t("connectTradovate.signOut")}
+            <X size={22} />
           </button>
         </div>
 
-        <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-[#C5A059]/30 bg-[#C5A059]/5 mb-5">
-            <ShieldCheck size={14} className="text-[#C5A059]" />
-            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#C5A059]">
-              {t("connectTradovate.badge")}
-            </span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tighter leading-none">
-            {t("connectTradovate.title")}
-          </h1>
-          <p className="text-slate-400 text-sm mt-4 max-w-2xl leading-relaxed">
-            {t("connectTradovate.subtitle")}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3">
           {/* Form */}
-          <div className="lg:col-span-2 bg-[#1A1A1A] border border-white/10 p-8">
+          <div className="lg:col-span-2 p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-white/10">
             {/* Environment switch */}
             <div className="mb-7">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -322,6 +332,11 @@ const ConnectTradovate = () => {
                     })}
                   </p>
                   <p className="text-[11px] text-slate-400 mt-1">{errorText}</p>
+                  {(errorCode === "invalid_credentials" || errorCode === "api_disabled") && (
+                    <p className="text-[10px] text-slate-500 mt-2">
+                      {t("connectTradovate.errors.retryHint")}
+                    </p>
+                  )}
                 </div>
               </div>
             )}
@@ -360,22 +375,17 @@ const ConnectTradovate = () => {
                 : <><Plug size={16} className="mr-2" /> {t("connectTradovate.connectButton")}</>}
             </Button>
 
-            <p className="text-[9px] text-slate-600 mt-4 leading-relaxed">
-              {t("connectTradovate.securityNote")}
-            </p>
-
-            {isTradovateSkipAllowed() && (
-              <button
-                onClick={handleSkip}
-                className="w-full mt-4 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-white"
-              >
-                {t("connectTradovate.skip")}
-              </button>
-            )}
+            {/* Trust notice */}
+            <div className="mt-5 p-4 bg-[#C5A059]/[0.04] border border-[#C5A059]/20 flex items-start gap-3">
+              <ShieldCheck size={16} className="text-[#C5A059] mt-0.5 shrink-0" />
+              <p className="text-[10px] text-slate-400 leading-relaxed">
+                {t("connectTradovate.trustNotice")}
+              </p>
+            </div>
           </div>
 
           {/* Existing connections */}
-          <div className="bg-[#1A1A1A] border border-white/10 p-6">
+          <div className="p-6 md:p-8">
             <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] mb-5">
               {t("connectTradovate.connectionsTitle")}
             </h3>
@@ -397,7 +407,7 @@ const ConnectTradovate = () => {
                     <button
                       onClick={() => handleDisconnect(i.id)}
                       disabled={disconnecting}
-                      className="mt-3 flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300"
+                      className="mt-3 flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-red-400 hover:text-red-300 disabled:opacity-50"
                     >
                       <Unplug size={12} /> {t("connectTradovate.disconnect")}
                     </button>
@@ -475,4 +485,4 @@ function StatusPill({ status }: { status: string }) {
   );
 }
 
-export default ConnectTradovate;
+export default TradovateConnectPanel;
