@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -12,6 +12,13 @@ test:
 # Alternative test harness (Option A explicitly named).
 test-payment-option-a:
 	deno run -A supabase/functions/_test/run-tests-option-a.ts
+
+# Tradovate integration unit tests (PnL engine, rate limiting, auth/REST/crypto).
+# No network, no DB, no secrets required.
+test-tradovate:
+	deno run -A supabase/functions/_test/tradovate-pnl-tests.ts
+	deno run -A supabase/functions/_test/tradovate-rate-limit-tests.ts
+	deno run -A supabase/functions/_test/tradovate-auth-rest-tests.ts
 
 # Front-end type check.
 typecheck:
