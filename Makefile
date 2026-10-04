@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -21,6 +21,12 @@ test-tradovate:
 	deno run -A supabase/functions/_test/tradovate-auth-rest-tests.ts
 	deno run -A supabase/functions/_test/tradovate-sync-tests.ts
 	deno run -A supabase/functions/_test/tradovate-guard-tests.ts
+	deno run -A supabase/functions/_test/tradovate-log-safety-tests.ts
+	deno run -A supabase/functions/_test/tradovate-ownership-tests.ts
+
+# Row-level-security test. Needs Docker; see supabase/functions/_test/rls/.
+test-tradovate-rls:
+	bash supabase/functions/_test/rls/run.sh
 
 # Front-end type check.
 typecheck:

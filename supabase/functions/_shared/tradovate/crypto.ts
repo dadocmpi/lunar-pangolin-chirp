@@ -172,8 +172,11 @@ export async function decryptCredentials(
  */
 export function redact(value: unknown): string {
   const s = typeof value === "string" ? value : JSON.stringify(value ?? "");
+  // Bearer first: if a key-based rule ran first it would consume the word
+  // "Bearer" as the value and leave the token behind (e.g. under an
+  // `authorization` key). Then scrub by key name.
   return s
+    .replace(/Bearer\s+[A-Za-z0-9._~+/-]+=*/gi, "Bearer [REDACTED]")
     .replace(/(password|passwd|pwd)"?\s*[:=]\s*"?[^",}\s]+/gi, "$1=[REDACTED]")
-    .replace(/(accessToken|access_token|token|sec|cid|authorization)"?\s*[:=]\s*"?[^",}\s]+/gi, "$1=[REDACTED]")
-    .replace(/Bearer\s+[A-Za-z0-9._-]+/gi, "Bearer [REDACTED]");
+    .replace(/(accessToken|access_token|token|sec|cid|authorization)"?\s*[:=]\s*"?[^",}\s]+/gi, "$1=[REDACTED]");
 }
