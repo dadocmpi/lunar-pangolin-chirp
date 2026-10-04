@@ -32,6 +32,25 @@ You never see the values again after they are saved, and the release log never
 prints them. If one is missing, the release stops immediately and tells you
 which one in red.
 
+### Edge Function secrets (set once, in Supabase)
+
+The Tradovate integration has its own secrets, set in the **Supabase** website
+(Project → Edge Functions → Secrets), never in GitHub and never in the code:
+
+- `TRADOVATE_ENABLED` — leave **unset** to enable, or set the exact string
+  `false` to switch the whole integration off at runtime.
+- `TRADOVATE_ALLOWED_ENVIRONMENTS` — **leave unset for demo-only.** Unset (or
+  empty) means only the DEMO environment is accepted, so **live trading is
+  disabled by default**. Setting it to `demo,live` re-enables live later with no
+  code change. The server rejects a `live` request with `422
+  environment_not_allowed` while it is demo-only.
+- `TRADOVATE_ENCRYPTION_KEY` — encrypts stored credentials (AES-256-GCM).
+- `TRADOVATE_APP_CID` / `TRADOVATE_APP_SECRET` — the app-level API key pair.
+- `AI_KYC_ENABLED` — leave **unset**, or `false` to route every KYC check to
+  manual review.
+- `WITHDRAWAL_KYC_GATE_ENABLED` — leave **unset** (only `false` changes it, and
+  `false` *refuses* withdrawals; never set it in normal operation).
+
 Also, the release workflow is a *manual* workflow. GitHub only shows a manual
 workflow in the Actions list **after its file is on the default branch**
 (`main`). That is why the order below starts by merging.
@@ -103,6 +122,12 @@ are safe to re-run.
 1. Open the site in a private/incognito window: <https://braxelmarkets.vercel.app/>
 2. Create a fresh test account and walk through the dashboard and the Tradovate
    card.
+
+The Tradovate connect panel offers **DEMO only** right now (there is no
+demo/live selector). Live is disabled on the server by default and is only
+turned on later by setting `TRADOVATE_ALLOWED_ENVIRONMENTS=demo,live`. When the
+integration is switched off (`TRADOVATE_ENABLED=false`) the panel says it is
+"not enabled yet" — that is the kill switch working, not an outage.
 
 ---
 

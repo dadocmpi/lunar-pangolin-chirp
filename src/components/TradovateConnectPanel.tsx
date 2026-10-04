@@ -164,10 +164,16 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
       if (!res.ok || !data?.ok) {
         // Classify from OUR HTTP status + the server code, so a missing/broken
         // Edge Function (404/5xx) is never blamed on Tradovate or the user, and
-        // a deliberate kill switch (503 feature_disabled) is not "broken".
+        // a deliberate kill switch (503 feature_disabled) is not "broken". The
+        // canonical disabled body carries `error` (not `code`).
+        const serverCode = typeof data?.code === "string"
+          ? data.code
+          : typeof data?.error === "string"
+          ? data.error
+          : null;
         setErrorCode(classifyConnectError({
           status: res.status,
-          serverCode: typeof data?.code === "string" ? data.code : null,
+          serverCode,
           online: navigator.onLine,
         }));
         setErrorMessage(typeof data?.message === "string" ? data.message : null);
