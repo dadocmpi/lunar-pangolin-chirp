@@ -77,6 +77,16 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - Schema: `supabase/migrations/*_kyc_on_withdrawal.sql` (`kyc_submissions`, `withdrawal_requests`, gate RPCs, bucket), `*_ai_kyc_checks.sql` (`kyc_ai_checks`), `*_withdrawal_manual_review.sql` (status + `manual_review` column). Gate RPCs are `service_role`-only.
 - Tests: `deno run -A supabase/functions/_test/kyc-gate-tests.ts`, `kyc-document-tests.ts`, `ai-kyc-tests.ts`; RLS/storage isolation `bash supabase/functions/_test/rls-kyc/run.sh` (needs Docker).
 
+## Tradovate integration — audit invariants (2026-10-04)
+- **One payments gate, one connect flow.** The terminal opens for any logged-in user; the Tradovate connect card lives in the dashboard (no login gate, no `REQUIRE_TRADOVATE_CONNECTION`). `tradovate-dashboard-tests.ts` pins this.
+- **Sync is polling, never a WebSocket.** Edge Functions have a hard wall-clock limit, so there is no `tradovate-stream`. `tradovate-sync` polls `/fill/list` on a `last_fill_id` cursor (pg_cron every 2 min, or an external scheduler). Realtime pushes diffs to the browser.
+- **A provider failure must never abort the fan-out batch.** `syncIntegration` classifies and returns `status=error` (it must not throw); both loops in `tradovate-sync/index.ts` also guard per integration. Regression: `tradovate-sync-tests.ts` [3].
+- **Real error shapes (probed live against `demo.tradovateapi.com`):** a bad login is **HTTP 200** + `{"errorText":"Incorrect username or password..."}`, not 401; unauthenticated `/account/list` and `/fill/list` return **404**. `authenticate()` classifies the 200-body. Do not assume 4xx.
+- **Redact before storing/returning.** `extractErrorText()` runs provider text through `redact()`; `last_error_message` and API responses must never carry a token/password/cid/sec (a proxy can echo the `Authorization` header).
+- **RLS:** `integrations`/`tradovate_fills`/`trades` are owner-read-only; `integration_credentials` has **no** authenticated policy (service-role only). Real 2-user test: `bash supabase/functions/_test/rls/run.sh` (needs Docker).
+- **Ownership is server-side.** Handlers derive the user from the JWT (`requireUser`); a `user_id` in the body is ignored, and every service-role query is explicitly scoped by `user_id`.
+- Rotation of `TRADOVATE_ENCRYPTION_KEY` is a re-wrap (`key_version` column exists); see `docs/tradovate-runbook.md`.
+
 ## Deployment
 - Deployment is via Vercel's GitHub integration: pushing to `main` triggers a `Production` deployment for the `braxelmarkets` project (`https://braxelmarkets.vercel.app/`).
 - **Vercel deploys ONLY the SPA.** Supabase Edge Functions are a separate target: `.github/workflows/deploy-supabase-functions.yml` runs `supabase functions deploy` on push to `main` (needs `SUPABASE_ACCESS_TOKEN` + `SUPABASE_PROJECT_ID` repo secrets). Until functions are deployed, calls return `{"code":"NOT_FOUND"}`. Merging `supabase/functions/**` alone does NOT change production.

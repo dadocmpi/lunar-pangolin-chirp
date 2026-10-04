@@ -141,3 +141,27 @@ Still a risk without live credentials:
   (`qty`, `action`, `timestamp`), the token payload, and error shapes.
 - The pg_cron schedule only activates once the Vault secrets exist; until then
   sync must be triggered manually or by an external scheduler.
+
+## Live probe results (2026-10-04, no user credentials required)
+
+A single unauthenticated request was made against the real demo host to pin the
+error wire format:
+
+- `POST /v1/auth/accesstokenrequest` with a bad login returns **HTTP 200** and
+  `{"errorText":"Incorrect username or password. Please try again, noting that
+  passwords are case-sensitive."}` — **not** a 401. `authenticate()` was fixed
+  to classify this body into `invalid_credentials`.
+- `POST /v1/account/list` and `/v1/fill/list` without a token return **404**.
+- The `cid`/`sec` question is still open: a bad `cid`/`sec` pair returned the
+  same "Incorrect username or password" text, so the failure was attributed to
+  the user login before the app credentials were evaluated. Confirm with
+  Tradovate whether a wrong app pair is distinguishable.
+
+What the probe could NOT verify without a real DEMO account (username +
+password, API Access enabled):
+
+- the success payload field names (`accessToken`, `expirationTime`, `userId`),
+- `/fill/list` row shape (`qty` vs `quantity`, `action`, `timestamp` format),
+- `/account/list` shape, and the account-without-API-access error text,
+- the PnL-vs-reported-cash comparison on real fills.
+
