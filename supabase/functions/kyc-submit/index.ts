@@ -134,6 +134,7 @@ serve(async (req) => {
   const provider = createAiProviderFromEnv({
     KYC_AI_API_KEY: Deno.env.get("KYC_AI_API_KEY"),
     KYC_AI_MODEL: Deno.env.get("KYC_AI_MODEL"),
+    KYC_AI_PROVIDER: Deno.env.get("KYC_AI_PROVIDER"),
   });
   const declaredName = String(form.get("fullName") ?? "").slice(0, 120);
   const aiImages = await buildAiImages(present);

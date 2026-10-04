@@ -17,10 +17,13 @@ import {
 } from "../_shared/kyc/aiDecision.ts";
 import { runAiCheck } from "../_shared/kyc/aiKyc.ts";
 import {
+  AI_PROVIDER_DATA_FLOW,
+  AI_PROVIDER_REGISTRY,
   buildKycPrompt,
   createAiProviderFromEnv,
   createGeminiProvider,
   extractGeminiJson,
+  registerAiProvider,
   type AiImage,
   type AiProvider,
 } from "../_shared/kyc/aiProvider.ts";
@@ -220,6 +223,30 @@ console.log("\n[10] Gemini provider transport");
 }
 check("no key configured -> null provider", createAiProviderFromEnv({}) === null);
 check("key configured -> provider", createAiProviderFromEnv({ KYC_AI_API_KEY: "x" })?.name === "gemini");
+
+console.log("\n[11] Provider is swappable behind one registry");
+{
+  // A caller that only knows createAiProviderFromEnv can be pointed at a new
+  // vendor by name, without changing kyc-submit.
+  const original = AI_PROVIDER_REGISTRY.gemini;
+  registerAiProvider("acme", () => ({
+    name: "acme",
+    analyze: () => Promise.resolve(allPass()),
+  }));
+  const swapped = createAiProviderFromEnv({ KYC_AI_API_KEY: "k", KYC_AI_PROVIDER: "acme" });
+  check("registry returns the requested provider", swapped?.name === "acme");
+  check("default remains gemini", createAiProviderFromEnv({ KYC_AI_API_KEY: "k" })?.name === "gemini");
+  check("unknown provider -> null (fails closed)", createAiProviderFromEnv({ KYC_AI_API_KEY: "k", KYC_AI_PROVIDER: "nope" }) === null);
+  check("no key -> null even with a known provider", createAiProviderFromEnv({ KYC_AI_PROVIDER: "acme" }) === null);
+  delete AI_PROVIDER_REGISTRY.acme;
+  AI_PROVIDER_REGISTRY.gemini = original;
+}
+
+console.log("\n[12] Provider data-flow contract is declared");
+check("documents what is sent", AI_PROVIDER_DATA_FLOW.sent.includes("front image"));
+check("documents the key is never logged", AI_PROVIDER_DATA_FLOW.neverLogged.includes("api key"));
+check("documents raw output is never logged", AI_PROVIDER_DATA_FLOW.neverLogged.includes("raw model output"));
+check("documents tokens are not sent", AI_PROVIDER_DATA_FLOW.notSent.includes("tradovate tokens"));
 
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed > 0) Deno.exit(1);

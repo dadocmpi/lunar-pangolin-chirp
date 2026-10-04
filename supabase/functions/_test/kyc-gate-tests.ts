@@ -10,6 +10,8 @@
 import {
   evaluateWithdrawalGate,
   handleWithdrawalRequest,
+  manualReviewThresholdCentsFromEnv,
+  requiresManualReview,
   type GateDb,
   normalizeKycStatus,
 } from "../_shared/kyc/gate.ts";
@@ -101,6 +103,58 @@ console.log("\n[5] Endpoint: insert failure is surfaced, not swallowed");
   };
   const res = await handleWithdrawalRequest(db, "user-1", { userId: "user-1", amountCents: 100 });
   check("failed insert -> 500", res.status === 500);
+}
+
+console.log("\n[6] Manual-review threshold (KYC_MANUAL_REVIEW_THRESHOLD_CENTS)");
+check("threshold off -> never manual", requiresManualReview(10_000_000, 0) === false);
+check("below threshold -> not manual", requiresManualReview(999_999, 1_000_000) === false);
+check("at threshold -> manual", requiresManualReview(1_000_000, 1_000_000) === true);
+check("above threshold -> manual", requiresManualReview(2_000_000, 1_000_000) === true);
+{
+  // Threshold off by default: every approved amount auto-processes.
+  const db = fakeDb("approved");
+  const res = await handleWithdrawalRequest(db, "user-1", { userId: "user-1", amountCents: 10_000_000 });
+  check("no threshold -> not manual review", res.body.manualReview === false);
+  check("no threshold -> row status pending", db.inserts[0].status === "pending");
+}
+{
+  // Env parsing: junk / negative / absent are all "off" (0).
+  check("absent env -> 0", manualReviewThresholdCentsFromEnv({}) === 0);
+  check("junk env -> 0", manualReviewThresholdCentsFromEnv({ KYC_MANUAL_REVIEW_THRESHOLD_CENTS: "abc" }) === 0);
+  check("negative env -> 0", manualReviewThresholdCentsFromEnv({ KYC_MANUAL_REVIEW_THRESHOLD_CENTS: "-5" }) === 0);
+  check("valid env -> rounded cents", manualReviewThresholdCentsFromEnv({ KYC_MANUAL_REVIEW_THRESHOLD_CENTS: "1000000" }) === 1_000_000);
+}
+{
+  // At/above the threshold: accepted, but stored for human review.
+  const db = fakeDb("approved");
+  const res = await handleWithdrawalRequest(
+    db, "user-1", { userId: "user-1", amountCents: 1_000_000 },
+    { manualReviewThresholdCents: 1_000_000 },
+  );
+  check("at threshold -> HTTP 201 (still accepted)", res.status === 201);
+  check("at threshold -> manualReview true", res.body.manualReview === true);
+  check("at threshold -> row status manual_review", db.inserts[0].status === "manual_review");
+  check("at threshold -> manual_review column true", db.inserts[0].manual_review === true);
+  check("at threshold -> still bound to the user", db.inserts[0].user_id === "user-1");
+}
+{
+  // Just below the threshold: auto-processes as pending.
+  const db = fakeDb("approved");
+  const res = await handleWithdrawalRequest(
+    db, "user-1", { userId: "user-1", amountCents: 999_999 },
+    { manualReviewThresholdCents: 1_000_000 },
+  );
+  check("below threshold -> manualReview false", res.body.manualReview === false);
+  check("below threshold -> row status pending", db.inserts[0].status === "pending");
+}
+{
+  // The threshold must not let a non-approved user through.
+  const db = fakeDb("submitted");
+  const res = await handleWithdrawalRequest(
+    db, "user-1", { userId: "user-1", amountCents: 9_000_000 },
+    { manualReviewThresholdCents: 1_000_000 },
+  );
+  check("threshold does not bypass KYC", res.status === 403 && db.inserts.length === 0);
 }
 
 console.log(`\nResult: ${passed} passed, ${failed} failed.`);

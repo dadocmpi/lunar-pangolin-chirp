@@ -27,7 +27,7 @@ export function createGateDb(admin: SupabaseLike): GateDb {
       if (error) throw new Error(`kyc_status_for_user failed: ${error.message}`);
       return data;
     },
-    async insertWithdrawal(row: Record<string, unknown>) {
+    async insertWithdrawal(row) {
       const { error } = await admin.from("withdrawal_requests").insert(row);
       if (error) return { ok: false, error: error.message };
       return { ok: true };

@@ -138,18 +138,61 @@ export function createGeminiProvider(opts: GeminiOptions): AiProvider {
 export interface AiEnv {
   KYC_AI_API_KEY?: string;
   KYC_AI_MODEL?: string;
+  /** Provider id; defaults to "gemini". */
+  KYC_AI_PROVIDER?: string;
 }
 
 /**
- * Build the provider from the Edge Function environment. Returns null when no
- * key is configured — the caller must then route to manual review, never
- * auto-approve.
+ * A provider factory: given env + an injectable fetch, build an AiProvider.
+ * Register new vendors here to swap the model without touching callers.
+ */
+export type AiProviderFactory = (
+  env: AiEnv,
+  fetchImpl?: typeof fetch,
+) => AiProvider;
+
+/**
+ * The single registry that every caller goes through. To add a vendor, add one
+ * entry; `createAiProviderFromEnv` needs no change.
+ */
+export const AI_PROVIDER_REGISTRY: Record<string, AiProviderFactory> = {
+  gemini: (env, fetchImpl) =>
+    createGeminiProvider({ apiKey: env.KYC_AI_API_KEY ?? "", model: env.KYC_AI_MODEL, fetchImpl }),
+};
+
+export function registerAiProvider(name: string, factory: AiProviderFactory): void {
+  AI_PROVIDER_REGISTRY[name] = factory;
+}
+
+/**
+ * Build the provider from the Edge Function environment through the registry.
+ * Returns null when no key is configured (caller fails closed) or when the
+ * requested provider is unknown (caller fails closed).
  */
 export function createAiProviderFromEnv(
   env: AiEnv,
   fetchImpl?: typeof fetch,
 ): AiProvider | null {
-  const apiKey = env.KYC_AI_API_KEY;
-  if (!apiKey) return null;
-  return createGeminiProvider({ apiKey, model: env.KYC_AI_MODEL, fetchImpl });
+  if (!env.KYC_AI_API_KEY) return null;
+  const name = (env.KYC_AI_PROVIDER ?? "gemini").toLowerCase();
+  const factory = AI_PROVIDER_REGISTRY[name];
+  if (!factory) return null;
+  return factory(env, fetchImpl);
 }
+
+/**
+ * Documented data-flow for operators:
+ *   SENT to the provider: the ID front/back/selfie image bytes (base64) and the
+ *     user-declared name and the current timestamp, inside the prompt.
+ *   NEVER sent: passwords, Tradovate tokens, Supabase keys, other users' data.
+ *   LOGGED by us: provider name, decision, confidence, per-check pass/flags and
+ *     the reason — written to public.kyc_ai_checks. The raw model output and the
+ *     image bytes are NOT stored or logged. HTTP errors log only the status
+ *     code; the API key travels in a request header, never the URL.
+ */
+export const AI_PROVIDER_DATA_FLOW = {
+  sent: ["front image", "back image (optional)", "selfie (optional)", "declared name", "current timestamp"],
+  notSent: ["passwords", "tradovate tokens", "supabase keys", "other users' data"],
+  logged: ["provider", "decision", "confidence", "checks", "reason", "http status on error"],
+  neverLogged: ["api key", "image bytes", "raw model output"],
+} as const;

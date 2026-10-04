@@ -21,6 +21,36 @@ export interface GateDecision {
     | "kyc_rejected";
 }
 
+export interface WithdrawalGateConfig {
+  /**
+   * When set to a positive number of cents, an otherwise-approved withdrawal
+   * at or above this amount is accepted but flagged for human review instead
+   * of being auto-processed. Read from KYC_MANUAL_REVIEW_THRESHOLD_CENTS.
+   * 0 / undefined = never force review.
+   */
+  manualReviewThresholdCents?: number;
+}
+
+/** Parse the threshold from an env bag. Junk / negative / absent => 0 (off). */
+export function manualReviewThresholdCentsFromEnv(env: {
+  KYC_MANUAL_REVIEW_THRESHOLD_CENTS?: string;
+}): number {
+  const raw = Number(env.KYC_MANUAL_REVIEW_THRESHOLD_CENTS ?? 0);
+  if (!Number.isFinite(raw) || raw <= 0) return 0;
+  return Math.round(raw);
+}
+
+/**
+ * True when an approved withdrawal must be held for human review purely
+ * because of its size. Never true when the threshold is off.
+ */
+export function requiresManualReview(
+  amountCents: number,
+  thresholdCents: number,
+): boolean {
+  return thresholdCents > 0 && amountCents >= thresholdCents;
+}
+
 const KYC_STATUSES: readonly string[] = [
   "pending",
   "submitted",
@@ -59,7 +89,10 @@ export interface GateDb {
   /** Return the server-side KYC status for this user. */
   readKycStatus(userId: string): Promise<unknown>;
   /** Insert a withdrawal request row; returns false when the insert failed. */
-  insertWithdrawal(row: Record<string, unknown>): Promise<{ ok: boolean; error?: string }>;
+  insertWithdrawal(
+    row: Record<string, unknown>,
+    opts?: { status?: string; manualReview?: boolean },
+  ): Promise<{ ok: boolean; error?: string }>;
 }
 
 export interface WithdrawalInput {
@@ -80,12 +113,15 @@ export interface WithdrawalResult {
 /**
  * The server-side enforcement entry point. Rejects unless KYC is approved for
  * the authenticated user. Reads the status from the DB, ignores any
- * client-supplied status.
+ * client-supplied status. When `config.manualReviewThresholdCents` is set and
+ * the amount reaches it, an approved withdrawal is still accepted but is
+ * stored for human review (status `manual_review`) instead of auto-processing.
  */
 export async function handleWithdrawalRequest(
   db: GateDb,
   authenticatedUserId: string | null,
   input: WithdrawalInput,
+  config: WithdrawalGateConfig = {},
 ): Promise<WithdrawalResult> {
   if (!authenticatedUserId) {
     return { status: 401, body: { error: "unauthorized" } };
@@ -107,6 +143,9 @@ export async function handleWithdrawalRequest(
     };
   }
 
+  const thresholdCents = config.manualReviewThresholdCents ?? 0;
+  const manualReview = requiresManualReview(input.amountCents, thresholdCents);
+
   const inserted = await db.insertWithdrawal({
     user_id: authenticatedUserId,
     service_id: input.accountId ?? null,
@@ -116,15 +155,16 @@ export async function handleWithdrawalRequest(
     method: input.method ?? null,
     destination: input.destination ?? null,
     network: input.network ?? null,
-    status: "pending",
+    status: manualReview ? "manual_review" : "pending",
+    manual_review: manualReview,
     kyc_status_at_request: decision.status,
-  });
+  }, { status: manualReview ? "manual_review" : "pending", manualReview });
   if (!inserted.ok) {
     return { status: 500, body: { error: "insert_failed" } };
   }
 
   return {
     status: 201,
-    body: { ok: true, kycStatus: decision.status },
+    body: { ok: true, kycStatus: decision.status, manualReview },
   };
 }

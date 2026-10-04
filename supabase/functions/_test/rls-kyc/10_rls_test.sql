@@ -245,4 +245,21 @@ SELECT
 \gset
 \echo :a
 
+\echo '\n[7] Manual-review status/column applied'
+SELECT
+  CASE WHEN EXISTS (
+         SELECT 1 FROM pg_constraint
+          WHERE conname = 'withdrawal_requests_status_check'
+            AND pg_get_constraintdef(oid) LIKE '%manual_review%')
+       THEN '  PASS  status check accepts manual_review'
+       ELSE '  FAIL  status check missing manual_review' END AS a,
+  CASE WHEN EXISTS (
+         SELECT 1 FROM information_schema.columns
+          WHERE table_name='withdrawal_requests' AND column_name='manual_review')
+       THEN '  PASS  manual_review column exists'
+       ELSE '  FAIL  manual_review column missing' END AS b
+\gset
+\echo :a
+\echo :b
+
 \echo '\nKYC RLS test complete.'

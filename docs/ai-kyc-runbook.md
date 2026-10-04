@@ -28,15 +28,71 @@ on a rejection.
 1. **Apply the migrations** (in order):
    - `20261005000000_kyc_on_withdrawal.sql`
    - `20261006000000_ai_kyc_checks.sql`
+   - `20261007000000_withdrawal_manual_review.sql`
 2. **Deploy the Edge Functions**: `kyc-submit`, `kyc-action`,
    `withdrawal-request` (unchanged files ship with the branch).
 3. **Set Edge Function secrets** (Supabase → Edge Functions → Secrets):
    - `KYC_AI_API_KEY` — a Gemini API key (aistudio.google.com).
    - `KYC_AI_MODEL` — optional, defaults to `gemini-2.0-flash`.
-   - Leave both **unset** to keep 100% human review; the AI step is skipped and
-     every submission goes to manual review. This is the safe default.
+   - `KYC_AI_PROVIDER` — optional, defaults to `gemini` (see swappable providers).
+   - `KYC_MANUAL_REVIEW_THRESHOLD_CENTS` — optional; e.g. `1000000` = $10,000.
+     At/above it an approved withdrawal is stored as `manual_review` instead of
+     auto-processing. Unset/`0` = off.
+   - Leave the AI keys **unset** to keep 100% human review; the AI step is
+     skipped and every submission goes to manual review. This is the safe default.
 4. **Deploy the frontend** (Vercel, via push to `main`).
-5. Verify with the two-user RLS test and the AI unit tests (below).
+5. Verify with the two-user RLS test and the unit tests (below).
+
+## Vercel environment variables (Preview scope)
+
+For a **preview** deployment to actually let you log in, the following must be
+set for the **Preview** environment in Vercel → Project → Settings → Environment
+Variables (a value set only for Production is blank in previews, which makes the
+app render the "payments/supabase not configured" fail-closed state):
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_PAYMENTS_ENABLED` — optional; `"true"` only if you want the payment UI in previews.
+- `VITE_TEST_PAYMENT_MODE` — optional test-mode switch.
+
+These are **build-time** Vite variables: after changing them you must **redeploy**
+the preview (a new commit or "Redeploy") for them to take effect. Server-side
+secrets (`SUPABASE_SERVICE_ROLE_KEY`, `KYC_AI_*`, `TRADOVATE_*`, `RESEND_API_KEY`)
+are Supabase Edge Function secrets and are **not** set in Vercel.
+
+## Swappable AI provider
+
+The model is behind one interface (`AiProvider`) and one registry
+(`AI_PROVIDER_REGISTRY` in `_shared/kyc/aiProvider.ts`). `kyc-submit` only calls
+`createAiProviderFromEnv`, so changing vendors means adding one registry entry —
+no caller changes. `KYC_AI_PROVIDER` selects it; an unknown provider or a missing
+key returns `null` and the submission fails closed to manual review.
+
+### What is sent to the AI provider (Gemini)
+
+- the ID front image, and the back/selfie when provided (base64),
+- the name the user declared,
+- the current timestamp (for expiry/age reasoning), inside the prompt.
+
+Nothing else. Passwords, Tradovate tokens, Supabase keys and other users' data
+are never sent.
+
+### What we log
+
+- to `public.kyc_ai_checks`: provider, model name, decision, confidence, the
+  per-check pass/flags, the reason, and flags for malformed/unavailable.
+- HTTP errors log **only the status code**; the API key is sent in a request
+  header (never the URL) and is never logged or included in an error.
+- the raw model output and the image bytes are **not** stored and **not** logged.
+
+## Manual-review threshold
+
+Config name: **`KYC_MANUAL_REVIEW_THRESHOLD_CENTS`** (Edge Function secret,
+integer cents). When set > 0, an approved withdrawal whose amount is **≥** the
+threshold is accepted but written with `status = 'manual_review'` and
+`manual_review = true`, and the owner email subject is prefixed `[Revisao]`.
+Below the threshold it auto-processes as `pending`. The threshold never lets a
+non-approved user through. Tests: `kyc-gate-tests.ts` section `[6]`.
 
 ## What the operator does for a manual-review submission
 

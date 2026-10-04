@@ -9,7 +9,10 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-import { handleWithdrawalRequest } from "../_shared/kyc/gate.ts";
+import {
+  handleWithdrawalRequest,
+  manualReviewThresholdCentsFromEnv,
+} from "../_shared/kyc/gate.ts";
 import { createGateDb } from "../_shared/kyc/supabaseGateDb.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 
@@ -59,20 +62,29 @@ serve(async (req) => {
   });
   const db = createGateDb(admin as unknown as Parameters<typeof createGateDb>[0]);
 
-  const result = await handleWithdrawalRequest(db, user.id ?? null, {
-    userId: user.id, // informational only; the gate uses the JWT user id
-    accountId: typeof payload.accountId === "string" ? payload.accountId : undefined,
-    amountCents: Number.isFinite(amountCents) ? Math.round(amountCents) : 0,
-    currency: typeof payload.currency === "string" ? payload.currency : "USD",
-    method: typeof payload.method === "string" ? payload.method : undefined,
-    destination: typeof payload.destination === "string" ? payload.destination : undefined,
-    network: typeof payload.network === "string" ? payload.network : undefined,
-  });
+  const result = await handleWithdrawalRequest(
+    db,
+    user.id ?? null,
+    {
+      userId: user.id, // informational only; the gate uses the JWT user id
+      accountId: typeof payload.accountId === "string" ? payload.accountId : undefined,
+      amountCents: Number.isFinite(amountCents) ? Math.round(amountCents) : 0,
+      currency: typeof payload.currency === "string" ? payload.currency : "USD",
+      method: typeof payload.method === "string" ? payload.method : undefined,
+      destination: typeof payload.destination === "string" ? payload.destination : undefined,
+      network: typeof payload.network === "string" ? payload.network : undefined,
+    },
+    {
+      manualReviewThresholdCents: manualReviewThresholdCentsFromEnv({
+        KYC_MANUAL_REVIEW_THRESHOLD_CENTS: Deno.env.get("KYC_MANUAL_REVIEW_THRESHOLD_CENTS") ?? undefined,
+      }),
+    },
+  );
 
   if (result.status === 201) {
     notifyOwnerInBackground({
       type: "pagamento",
-      subject: `Solicitacao de saque — ${amountCents / 100}`,
+      subject: `${result.body.manualReview ? "[Revisao] " : ""}Solicitacao de saque — ${amountCents / 100}`,
       replyTo: user.email ?? undefined,
       data: {
         user_id: user.id,
@@ -81,6 +93,7 @@ serve(async (req) => {
         metodo: payload.method ?? "N/A",
         conta: payload.accountId ?? "N/A",
         kyc_status: result.body.kycStatus,
+        revisao_manual: result.body.manualReview === true,
         origem: "withdrawal-request",
       },
       idempotencyKey: `withdrawal:${user.id}:${Date.now()}`,
