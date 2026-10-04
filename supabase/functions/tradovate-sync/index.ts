@@ -17,6 +17,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { corsHeaders, json, requireUser, UnauthorizedError } from "../_shared/tradovate/auth.ts";
 import { syncIntegration } from "../_shared/tradovate/sync.ts";
+import { isTradovateEnabled } from "../_shared/features.ts";
 
 const MAX_INTEGRATIONS_PER_RUN = 25;
 
@@ -31,6 +32,11 @@ function isServiceRole(req: Request): boolean {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+
+  // Runtime kill switch: stop the scheduled poller with no redeploy.
+  if (!isTradovateEnabled()) {
+    return json({ ok: true, enabled: false, synced: 0 });
+  }
 
   const admin = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",

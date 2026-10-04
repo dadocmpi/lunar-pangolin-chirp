@@ -28,6 +28,7 @@ import {
   upsertIntegrationWithCredentials,
 } from "../_shared/tradovate/credentialStore.ts";
 import type { TradovateEnvironment } from "../_shared/tradovate/types.ts";
+import { featureDisabledBody, isTradovateEnabled } from "../_shared/features.ts";
 
 function isEnvironment(v: unknown): v is TradovateEnvironment {
   return v === "demo" || v === "live";
@@ -36,6 +37,12 @@ function isEnvironment(v: unknown): v is TradovateEnvironment {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+
+  // Runtime kill switch: TRADOVATE_ENABLED="false" disables the feature with
+  // no redeploy. Fails closed before any credential is touched.
+  if (!isTradovateEnabled()) {
+    return json(featureDisabledBody("tradovate"), 503);
+  }
 
   let ctx;
   try {

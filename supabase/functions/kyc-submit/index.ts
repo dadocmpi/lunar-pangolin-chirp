@@ -20,6 +20,7 @@ import {
   type AiImage,
 } from "../_shared/kyc/aiProvider.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import { isAiKycEnabled } from "../_shared/features.ts";
 
 const BUCKET = "kyc-documents";
 /** Largest document we will send to the vision model (base64 inflates ~33%). */
@@ -131,11 +132,13 @@ serve(async (req) => {
   // 4. AI consistency check. Fails closed: if no provider is configured or the
   //    model is unsure, the submission stays "submitted" for a human. A clean
   //    high-confidence pass may auto-approve. The decision is always audited.
-  const provider = createAiProviderFromEnv({
-    KYC_AI_API_KEY: Deno.env.get("KYC_AI_API_KEY"),
-    KYC_AI_MODEL: Deno.env.get("KYC_AI_MODEL"),
-    KYC_AI_PROVIDER: Deno.env.get("KYC_AI_PROVIDER"),
-  });
+  const provider = isAiKycEnabled()
+    ? createAiProviderFromEnv({
+        KYC_AI_API_KEY: Deno.env.get("KYC_AI_API_KEY"),
+        KYC_AI_MODEL: Deno.env.get("KYC_AI_MODEL"),
+        KYC_AI_PROVIDER: Deno.env.get("KYC_AI_PROVIDER"),
+      })
+    : null;
   const declaredName = String(form.get("fullName") ?? "").slice(0, 120);
   const aiImages = await buildAiImages(present);
   const aiResult = aiImages

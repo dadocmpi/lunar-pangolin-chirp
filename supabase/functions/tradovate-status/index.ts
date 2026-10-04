@@ -15,11 +15,18 @@ import {
   UnauthorizedError,
 } from "../_shared/tradovate/auth.ts";
 import { listIntegrations } from "../_shared/tradovate/credentialStore.ts";
+import { isTradovateEnabled } from "../_shared/features.ts";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "GET" && req.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405);
+  }
+
+  // When the runtime switch is off, report it so the client hides the card.
+  // 200 (not 503) so the dashboard keeps working.
+  if (!isTradovateEnabled()) {
+    return json({ enabled: false, connected: false, integrations: [] });
   }
 
   let ctx;

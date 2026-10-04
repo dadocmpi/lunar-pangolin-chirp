@@ -15,6 +15,7 @@ import {
 } from "../_shared/kyc/gate.ts";
 import { createGateDb } from "../_shared/kyc/supabaseGateDb.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import { featureDisabledBody, isWithdrawalKycGateEnabled } from "../_shared/features.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -32,6 +33,12 @@ function json(body: Record<string, unknown>, status = 200): Response {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+
+  // Runtime kill switch. Off => REFUSE withdrawals (fail closed). Never allow
+  // a KYC-less withdrawal just because the gate was switched off.
+  if (!isWithdrawalKycGateEnabled()) {
+    return json(featureDisabledBody("withdrawal_kyc_gate"), 503);
+  }
 
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) return json({ error: "unauthorized" }, 401);

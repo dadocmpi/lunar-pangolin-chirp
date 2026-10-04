@@ -18,6 +18,7 @@ import {
   UnauthorizedError,
 } from "../_shared/tradovate/auth.ts";
 import { listIntegrations } from "../_shared/tradovate/credentialStore.ts";
+import { featureDisabledBody, isTradovateEnabled } from "../_shared/features.ts";
 
 interface TradeRow {
   id: string;
@@ -41,6 +42,10 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "GET" && req.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405);
+  }
+
+  if (!isTradovateEnabled()) {
+    return json(featureDisabledBody("tradovate"), 503);
   }
 
   let ctx;
