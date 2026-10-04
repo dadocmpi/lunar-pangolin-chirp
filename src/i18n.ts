@@ -53,6 +53,15 @@ const enTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "First step",
+    title: "Connect your Tradovate account",
+    body: "Log in with your Tradovate username and password to see your fills, trades and reconstructed PnL inside your Braxel dashboard.",
+    point1: "Live fills, trades and net PnL, rebuilt from your executions.",
+    point2: "Credentials are encrypted with AES-256-GCM and stored server-side.",
+    point3: "You can disconnect and delete your credentials at any time.",
+    skip: "Skip for now",
+  },
   connectTradovate: {
     close: "Close",
     badge: "Secure broker connection",
@@ -1246,6 +1255,15 @@ const ptTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "Primeiro passo",
+    title: "Ligue a sua conta Tradovate",
+    body: "Inicie sessão com o seu utilizador e palavra-passe Tradovate para ver as suas execuções, negociações e PnL reconstruído no seu painel Braxel.",
+    point1: "Execuções, negociações e PnL líquido em tempo real, reconstruídos a partir das suas execuções.",
+    point2: "As credenciais são encriptadas com AES-256-GCM e guardadas no servidor.",
+    point3: "Pode desligar e eliminar as suas credenciais a qualquer momento.",
+    skip: "Ignorar por agora",
+  },
   connectTradovate: {
     close: "Fechar",
     badge: "Conexão segura com a corretora",
@@ -2439,6 +2457,15 @@ const itTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "Primo passo",
+    title: "Collega il tuo account Tradovate",
+    body: "Accedi con il tuo nome utente e password Tradovate per vedere esecuzioni, operazioni e PnL ricostruito nella tua dashboard Braxel.",
+    point1: "Esecuzioni, operazioni e PnL netto in tempo reale, ricostruiti dalle tue esecuzioni.",
+    point2: "Le credenziali sono crittografate con AES-256-GCM e archiviate lato server.",
+    point3: "Puoi scollegare ed eliminare le credenziali in qualsiasi momento.",
+    skip: "Salta per ora",
+  },
   connectTradovate: {
     close: "Chiudi",
     badge: "Connessione sicura al broker",
@@ -3632,6 +3659,15 @@ const esTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "Primer paso",
+    title: "Conecta tu cuenta de Tradovate",
+    body: "Inicia sesión con tu usuario y contraseña de Tradovate para ver tus ejecuciones, operaciones y PnL reconstruido en tu panel de Braxel.",
+    point1: "Ejecuciones, operaciones y PnL neto en tiempo real, reconstruidos a partir de tus ejecuciones.",
+    point2: "Las credenciales se cifran con AES-256-GCM y se almacenan en el servidor.",
+    point3: "Puedes desconectar y eliminar tus credenciales en cualquier momento.",
+    skip: "Omitir por ahora",
+  },
   connectTradovate: {
     close: "Cerrar",
     badge: "Conexión segura con el bróker",
@@ -4825,6 +4861,15 @@ const frTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "Première étape",
+    title: "Connectez votre compte Tradovate",
+    body: "Connectez-vous avec votre identifiant et mot de passe Tradovate pour voir vos exécutions, transactions et PnL reconstruit dans votre tableau de bord Braxel.",
+    point1: "Exécutions, transactions et PnL net en temps réel, reconstruits à partir de vos exécutions.",
+    point2: "Les identifiants sont chiffrés avec AES-256-GCM et stockés côté serveur.",
+    point3: "Vous pouvez déconnecter et supprimer vos identifiants à tout moment.",
+    skip: "Ignorer pour l'instant",
+  },
   connectTradovate: {
     close: "Fermer",
     badge: "Connexion courtier sécurisée",
@@ -6018,6 +6063,15 @@ const deTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "Erster Schritt",
+    title: "Verbinde dein Tradovate-Konto",
+    body: "Melde dich mit deinem Tradovate-Benutzernamen und -Passwort an, um deine Ausführungen, Trades und den rekonstruierten PnL in deinem Braxel-Dashboard zu sehen.",
+    point1: "Live-Ausführungen, Trades und Netto-PnL, aus deinen Ausführungen rekonstruiert.",
+    point2: "Zugangsdaten werden mit AES-256-GCM verschlüsselt und serverseitig gespeichert.",
+    point3: "Du kannst die Verbindung jederzeit trennen und die Zugangsdaten löschen.",
+    skip: "Vorerst überspringen",
+  },
   connectTradovate: {
     close: "Schließen",
     badge: "Sichere Broker-Verbindung",
@@ -7211,6 +7265,15 @@ const ruTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "Первый шаг",
+    title: "Подключите аккаунт Tradovate",
+    body: "Войдите с именем пользователя и паролем Tradovate, чтобы видеть сделки, исполнения и восстановленный PnL в вашей панели Braxel.",
+    point1: "Исполнения, сделки и чистый PnL в реальном времени, восстановленные из ваших исполнений.",
+    point2: "Учётные данные шифруются с помощью AES-256-GCM и хранятся на сервере.",
+    point3: "Вы можете отключить и удалить свои учётные данные в любое время.",
+    skip: "Пропустить пока",
+  },
   connectTradovate: {
     close: "Закрыть",
     badge: "Безопасное подключение брокера",
@@ -8404,6 +8467,15 @@ const zhTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "第一步",
+    title: "连接您的 Tradovate 账户",
+    body: "使用您的 Tradovate 用户名和密码登录，即可在 Braxel 面板中查看您的成交、交易和重建的盈亏。",
+    point1: "根据您的成交实时重建成交、交易和净盈亏。",
+    point2: "凭据使用 AES-256-GCM 加密并存储在服务器端。",
+    point3: "您可以随时断开连接并删除凭据。",
+    skip: "暂时跳过",
+  },
   connectTradovate: {
     close: "关闭",
     badge: "安全经纪商连接",
@@ -9597,6 +9669,15 @@ const jaTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "最初のステップ",
+    title: "Tradovateアカウントを接続",
+    body: "Tradovateのユーザー名とパスワードでログインすると、Braxelダッシュボードで約定、取引、再構築された損益を確認できます。",
+    point1: "約定から再構築されたリアルタイムの約定・取引・純損益。",
+    point2: "認証情報はAES-256-GCMで暗号化され、サーバー側に保存されます。",
+    point3: "いつでも接続を解除して認証情報を削除できます。",
+    skip: "今はスキップ",
+  },
   connectTradovate: {
     close: "閉じる",
     badge: "安全なブローカー接続",
@@ -10790,6 +10871,15 @@ const arTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "الخطوة الأولى",
+    title: "اربط حسابك في Tradovate",
+    body: "سجّل الدخول باسم المستخدم وكلمة المرور الخاصة بـ Tradovate لعرض تنفيذاتك وصفقاتك والربح والخسارة المُعاد بناؤه في لوحة Braxel.",
+    point1: "تنفيذات وصفقات وصافي ربح وخسارة في الوقت الفعلي، مُعاد بناؤها من تنفيذاتك.",
+    point2: "يتم تشفير بيانات الاعتماد باستخدام AES-256-GCM وتخزينها على الخادم.",
+    point3: "يمكنك فصل الاتصال وحذف بيانات الاعتماد في أي وقت.",
+    skip: "تخطٍ الآن",
+  },
   connectTradovate: {
     close: "إغلاق",
     badge: "اتصال وسيط آمن",
@@ -11983,6 +12073,15 @@ const heTranslation = {
     },
   },
 
+  welcome: {
+    eyebrow: "השלב הראשון",
+    title: "חבר את חשבון ה-Tradovate שלך",
+    body: "התחבר עם שם המשתמש והסיסמה של Tradovate כדי לראות ביצועים, עסקאות ו-PnL משוחזר בלוח הבקרה של Braxel.",
+    point1: "ביצועים, עסקאות ו-PnL נטו בזמן אמת, משוחזרים מהביצועים שלך.",
+    point2: "פרטי ההתחברות מוצפנים ב-AES-256-GCM ונשמרים בצד השרת.",
+    point3: "ניתן לנתק ולמחוק את פרטי ההתחברות בכל עת.",
+    skip: "דלג לעת עתה",
+  },
   connectTradovate: {
     close: "סגור",
     badge: "חיבור ברוקר מאובטח",

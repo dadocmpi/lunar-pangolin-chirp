@@ -1,11 +1,14 @@
 # Tradovate integration — operator runbook
 
-> **Decision (Option A, closed):** the connect flow is in-dashboard, not a gate.
-> Do not build a login-flow gate and do not add `REQUIRE_TRADOVATE_CONNECTION` or
-> any `/dashboard` guard. **Recommended launch config:** `TRADOVATE_ENABLED=false`
-> until the live demo test passes (the card hides itself, no redeploy needed); set
-> the encryption/app secrets before enabling. Full go-live order:
-> `docs/supabase-deploy-order.md`.
+> **Decision:** the connect flow is in-dashboard. On first access the dashboard
+> shows a dedicated welcome/connect screen (`TradovateWelcome.tsx`) — a **soft
+> gate, not a blocking gate**: the sidebar and other views stay reachable and
+> "Skip for now" is persisted per user. Do not build a login-flow gate and do not
+> add `REQUIRE_TRADOVATE_CONNECTION` or any `/dashboard` guard (this supersedes
+> the earlier "Option A: no first-run screen"). **Recommended launch config:**
+> `TRADOVATE_ENABLED=false` until the live demo test passes (the welcome screen
+> and card hide themselves, no redeploy needed); set the encryption/app secrets
+> before enabling. Full go-live order: `docs/supabase-deploy-order.md`.
 
 ## Architecture
 
@@ -23,6 +26,30 @@
 - Scheduling: `20261004000001_tradovate_sync_schedule.sql` creates a pg_cron job
   every 2 minutes that calls `tradovate-sync` with the service-role token. It
   no-ops if pg_cron/pg_net/Vault are unavailable.
+
+## First-run welcome screen (soft gate)
+
+- On first access (no connection, never connected, not skipped) the dashboard's
+  default view renders `TradovateWelcome.tsx` **instead of** dashboard content:
+  black/gold, primary "Log in on Tradovate" CTA opening the same connect panel,
+  secondary "Skip for now". It is not a router guard — the sidebar and every
+  other view stay reachable, and no dashboard content renders behind it.
+- `tradovate-status` reports `welcome: { show, skipped }`. `show` is true only
+  when `TRADOVATE_ENABLED` is on, there is no live connection, the user has
+  never had an integration row (a revoked row after a disconnect counts as
+  "already welcomed"), and they have not skipped.
+- "Skip for now" POSTs `{action:"skip"}` to `tradovate-status`, which upserts
+  `tradovate_welcome_state` (one row per user; migration
+  `20261008000000_tradovate_welcome_skip.sql`). RLS is owner-read-only; writes
+  go through the Edge Function (service role). The client also hides the screen
+  optimistically, so a slow request never blocks the dashboard.
+- `TRADOVATE_ENABLED=false` returns `welcome.show=false`, so the welcome screen
+  and the connect card both disappear with no frontend redeploy.
+- Headless proof: `node scripts/screenshot-welcome.mjs` (needs `puppeteer-core`
+  + `/usr/bin/chromium`; serves a build and mocks the user + Edge Functions).
+  Captures `docs/assets/welcome-ltr.png`, `welcome-rtl.png`,
+  `dashboard-after-skip.png`, `dashboard-after-connect.png` and
+  `dashboard-tradovate-disabled.png`, and asserts the soft-gate behaviour.
 
 ## Required secrets (Supabase Edge Function secrets)
 

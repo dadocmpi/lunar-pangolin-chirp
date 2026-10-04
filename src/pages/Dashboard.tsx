@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import PerformanceChart from '@/components/PerformanceChart';
 import TradovateTrades from '@/components/TradovateTrades';
 import TradovateConnectCard from '@/components/TradovateConnectCard';
+import TradovateWelcome from '@/components/TradovateWelcome';
 import KycReminderBanner from '@/components/KycReminderBanner';
 import WithdrawalKycGate, { type KycStatus as WithdrawalKycStatus } from '@/components/WithdrawalKycGate';
 import {
@@ -53,11 +54,14 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { countriesData, getCountryByCode } from '@/data/kycData';
 import { useCurrency } from '@/hooks/useCurrency';
+import { useTradovateConnection } from '@/hooks/useTradovateConnection';
 
 const Dashboard = () => {
   const { t } = useTranslation();
   const { convertPrice, currency } = useCurrency();
   const [activeView, setActiveView] = useState('services');
+  // First-run soft gate: drives the welcome screen on the default view only.
+  const tradovate = useTradovateConnection(true);
   const [settingsTab, setSettingsTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   interface ServiceRecord {
@@ -506,6 +510,16 @@ const Dashboard = () => {
 
             {/* Dashboard Overview */}
             {activeView === 'services' && (
+              tradovate.enabled && tradovate.welcomeShow ? (
+                /* First-run SOFT gate: full-content welcome/connect screen
+                   BEFORE any dashboard content, only on the default view.
+                   Not a router guard — the sidebar and every other view stay
+                   reachable, and "Skip for now" persists server-side. */
+                <TradovateWelcome
+                  onConnected={tradovate.refresh}
+                  onSkip={tradovate.skipWelcome}
+                />
+              ) : (
               <div className="space-y-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                   <div>
@@ -579,6 +593,7 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
+              )
             )}
 
             {/* Tradovate trades + reconstructed PnL */}

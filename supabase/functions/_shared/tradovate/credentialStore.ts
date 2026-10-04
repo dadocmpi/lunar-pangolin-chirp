@@ -206,3 +206,56 @@ export async function hasConnection(
     .limit(1);
   return (data ?? []).length > 0;
 }
+
+/**
+ * Has the user EVER had an integration row, including revoked ones?
+ *
+ * This is what keeps the first-run welcome screen from reappearing after a
+ * disconnect: disconnecting soft-deletes (status='revoked') rather than
+ * removing the row, so a revoked row means "already welcomed — show the card".
+ */
+export async function hasAnyIntegration(
+  admin: SupabaseClient,
+  userId: string,
+): Promise<boolean> {
+  const { data } = await admin
+    .from("integrations")
+    .select("id")
+    .eq("user_id", userId)
+    .limit(1);
+  return (data ?? []).length > 0;
+}
+
+/**
+ * Has the user dismissed the first-run welcome screen?
+ *
+ * Server-side (not just localStorage) so the soft gate does not reappear on
+ * every login/device. Fails closed to `false` (show the welcome screen) if the
+ * read errors — that is the safe default for a soft gate: it never blocks the
+ * dashboard, it just shows the non-blocking welcome again.
+ */
+export async function hasSkippedWelcome(
+  admin: SupabaseClient,
+  userId: string,
+): Promise<boolean> {
+  const { data, error } = await admin
+    .from("tradovate_welcome_state")
+    .select("user_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (error) return false;
+  return Boolean(data);
+}
+
+/** Record the user's "Skip for now" choice for the welcome screen. */
+export async function markWelcomeSkipped(
+  admin: SupabaseClient,
+  userId: string,
+): Promise<void> {
+  const { error } = await admin
+    .from("tradovate_welcome_state")
+    .upsert({ user_id: userId, skipped_at: new Date().toISOString() }, {
+      onConflict: "user_id",
+    });
+  if (error) throw new CredentialStoreError("welcome_skip_failed", error.message);
+}

@@ -134,6 +134,26 @@ check('no client bundle env var named for the app cid/sec',
 check('cid/sec is an explicit advanced section in the panel',
   panel.includes('showAdvanced') && panel.includes('connectTradovate.advancedToggle'));
 
+console.log('\n[9] First-run welcome screen is a SOFT gate (never blocks a route)');
+const welcomePath = 'src/components/TradovateWelcome.tsx';
+check('welcome component exists', has(welcomePath));
+if (has(welcomePath)) {
+  const welcome = read(welcomePath);
+  const dash = read('src/pages/Dashboard.tsx');
+  check('welcome offers the skip link', welcome.includes('t("welcome.skip")'));
+  check('welcome opens the connect panel', welcome.includes('TradovateConnectPanel'));
+  check('welcome is not a fixed full-screen overlay',
+    !/fixed inset-0|position:\s*fixed/.test(welcome));
+  check('dashboard only shows the welcome on the default view',
+    /activeView === 'services' && \([\s\S]{0,120}?tradovate\.enabled && tradovate\.welcomeShow/.test(dash));
+  check('dashboard route is still not wrapped in a guard',
+    /<Route path="\/dashboard"[\s\S]{0,80}?<Dashboard \/>/.test(read('src/App.tsx')));
+  check('skip persists server-side (DB table + RPC)',
+    has('supabase/migrations/20261008000000_tradovate_welcome_skip.sql') &&
+    read('supabase/migrations/20261008000000_tradovate_welcome_skip.sql')
+      .includes('public.tradovate_welcome_state'));
+}
+
 console.log(
   failures === 0
     ? '\ntradovate contract check passed'

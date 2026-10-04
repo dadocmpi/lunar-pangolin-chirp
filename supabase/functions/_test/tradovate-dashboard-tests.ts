@@ -95,7 +95,11 @@ for (const loc of LOCALES) {
   const end = loc === "he" ? i18n.length : i18n.indexOf("const ", start + 10) === -1 ? i18n.length : i18n.indexOf("const ", start + 10);
   const block = i18n.slice(start, end);
   test(`${loc}: has all new tradovate keys`, NEW_KEYS.every((k) => new RegExp(`\\b${k}:`).test(block)));
-  test(`${loc}: has no leftover skip key`, !/\bskip:\s*"Skip for now"/.test(block));
+  // The skip link now lives in the `welcome` namespace (first-run soft gate).
+  // The tradovate namespace must still have no skip key.
+  const tradSeg = block.slice(block.indexOf("tradovate: {"), block.indexOf("welcome: {"));
+  test(`${loc}: welcome has a skip key`, /\bskip:/.test(block.slice(block.indexOf("welcome: {"))));
+  test(`${loc}: no skip key in the tradovate namespace`, !/\bskip:/.test(tradSeg));
 }
 
 console.log("\n[6] App cid/sec resolution: client override, else server secret");

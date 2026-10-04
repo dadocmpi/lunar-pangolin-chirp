@@ -1,16 +1,18 @@
 # Supabase deploy order (schema before code)
 
-> **Decision (Option A, closed):** keep the non-blocking dashboard with the
-> in-dashboard Tradovate connect card. The login-flow gate is intentionally
-> **NOT** part of the product — do not build one and do not add
-> `REQUIRE_TRADOVATE_CONNECTION` or any `/dashboard` guard.
+> **Decision:** keep the non-blocking dashboard with the in-dashboard Tradovate
+> connect. On first access the dashboard shows a dedicated welcome/connect screen
+> (`TradovateWelcome.tsx`) — a **soft gate, not a blocking gate**: the sidebar and
+> other views stay reachable and "Skip for now" is persisted per user. The
+> login-flow gate is intentionally **NOT** part of the product — do not build one
+> and do not add `REQUIRE_TRADOVATE_CONNECTION` or any `/dashboard` guard.
 >
 > **Recommended launch config (Edge secrets):** `TRADOVATE_ENABLED=false` and
 > `AI_KYC_ENABLED=false` until the live Tradovate demo test and the AI-provider /
 > ID-data-protection review are done. Leave `WITHDRAWAL_KYC_GATE_ENABLED`
 > **unset** (never `false` in normal operation).
 >
-> **Go-live order:** Supabase secrets → `supabase db push` (all 5 migrations,
+> **Go-live order:** Supabase secrets → `supabase db push` (all 6 migrations,
 > filename order) → `supabase functions deploy` → smoke test no function returns
 > 404 → merge **PR #47 only** (close #45/#46) → Vercel redeploy → final test in an
 > incognito window with a fresh account. See "Manual go-live order" below.
@@ -56,7 +58,7 @@ automatic deploys.
 1. **Supabase secrets** — set the Edge Function secrets (Tradovate, AI KYC,
    encryption, Resend) with the recommended launch values above.
 2. **Apply migrations** — `supabase db push` (or `supabase migration up --linked`),
-   all 5 pending migrations in filename order. See
+   all 6 pending migrations in filename order. See
    `supabase/functions/_test/migrations/apply-order.sh` for a fresh-DB
    reproduction of the exact apply order.
 3. Confirm the migration head matches: `supabase migration list --linked`.
