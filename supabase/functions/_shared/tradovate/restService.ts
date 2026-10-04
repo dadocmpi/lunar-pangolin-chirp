@@ -19,10 +19,15 @@ import {
 } from "./rateLimiter.ts";
 import type {
   TradovateAccount,
+  TradovateCashBalance,
   TradovateEnvironment,
   TradovateFill,
+  TradovateOrder,
+  TradovateOrderVersion,
+  TradovatePosition,
 } from "./types.ts";
 import { hostFor } from "./authService.ts";
+import { rootFromSymbol } from "./pnl.ts";
 
 export const DEFAULT_FILL_PAGE_LIMIT = 500;
 export const MAX_FILL_PAGES = 40;
@@ -211,6 +216,175 @@ export async function contractItem(
     id: Number(data.id ?? opts.contractId),
     name: String(data.name ?? ""),
     symbol: data.symbol ? String(data.symbol) : undefined,
+  };
+}
+
+/** POST /position/list — open positions visible to the token. */
+export async function positionList(
+  opts: RestOptions,
+): Promise<TradovatePosition[]> {
+  const limiter = opts.limiter ?? createDefaultLimiter();
+  const data = await requestJson<unknown>({
+    url: `${hostFor(opts.environment)}/position/list`,
+    limiter,
+    fetchImpl: opts.fetchImpl,
+    headers: authHeaders(opts.accessToken),
+    body: {},
+  });
+  if (!Array.isArray(data)) return [];
+  return data.map(normalizePosition).filter((p): p is TradovatePosition => !!p);
+}
+
+export function normalizePosition(raw: unknown): TradovatePosition | null {
+  if (!raw || typeof raw !== "object") return null;
+  const rec = raw as Record<string, unknown>;
+  const accountId = Number(rec.accountId);
+  if (!Number.isFinite(accountId)) return null;
+  return {
+    id: finiteOrNull(rec.id),
+    accountId,
+    contractId: finiteOrNull(rec.contractId),
+    timestamp: typeof rec.timestamp === "string" ? rec.timestamp : null,
+    netPos: Number(rec.netPos ?? 0) || 0,
+    netPrice: finiteOrNull(rec.netPrice),
+    bought: Number(rec.bought ?? 0) || 0,
+    boughtValue: Number(rec.boughtValue ?? 0) || 0,
+    sold: Number(rec.sold ?? 0) || 0,
+    soldValue: Number(rec.soldValue ?? 0) || 0,
+    prevPos: Number(rec.prevPos ?? 0) || 0,
+    prevPrice: finiteOrNull(rec.prevPrice),
+    raw: rec,
+  };
+}
+
+/** POST /order/list — orders for the current session (identity + status). */
+export async function orderList(opts: RestOptions): Promise<TradovateOrder[]> {
+  const limiter = opts.limiter ?? createDefaultLimiter();
+  const data = await requestJson<unknown>({
+    url: `${hostFor(opts.environment)}/order/list`,
+    limiter,
+    fetchImpl: opts.fetchImpl,
+    headers: authHeaders(opts.accessToken),
+    body: {},
+  });
+  if (!Array.isArray(data)) return [];
+  return data.map(normalizeOrder).filter((o): o is TradovateOrder => !!o);
+}
+
+export function normalizeOrder(raw: unknown): TradovateOrder | null {
+  if (!raw || typeof raw !== "object") return null;
+  const rec = raw as Record<string, unknown>;
+  const id = Number(rec.id);
+  const accountId = Number(rec.accountId);
+  if (!Number.isFinite(id) || !Number.isFinite(accountId)) return null;
+  const actionRaw = String(rec.action ?? "");
+  return {
+    id,
+    accountId,
+    contractId: finiteOrNull(rec.contractId),
+    timestamp: typeof rec.timestamp === "string" ? rec.timestamp : null,
+    action: actionRaw === "Buy" || actionRaw === "Sell" ? actionRaw : null,
+    ordStatus: String(rec.ordStatus ?? "Unknown"),
+    raw: rec,
+  };
+}
+
+/** POST /orderVersion/list — the priced revision of each order. */
+export async function orderVersionList(
+  opts: RestOptions,
+): Promise<TradovateOrderVersion[]> {
+  const limiter = opts.limiter ?? createDefaultLimiter();
+  const data = await requestJson<unknown>({
+    url: `${hostFor(opts.environment)}/orderVersion/list`,
+    limiter,
+    fetchImpl: opts.fetchImpl,
+    headers: authHeaders(opts.accessToken),
+    body: {},
+  });
+  if (!Array.isArray(data)) return [];
+  return data
+    .map(normalizeOrderVersion)
+    .filter((o): o is TradovateOrderVersion => !!o);
+}
+
+export function normalizeOrderVersion(raw: unknown): TradovateOrderVersion | null {
+  if (!raw || typeof raw !== "object") return null;
+  const rec = raw as Record<string, unknown>;
+  const orderId = Number(rec.orderId);
+  if (!Number.isFinite(orderId)) return null;
+  return {
+    id: finiteOrNull(rec.id),
+    orderId,
+    orderQty: finiteOrNull(rec.orderQty),
+    orderType: rec.orderType ? String(rec.orderType) : null,
+    price: finiteOrNull(rec.price),
+    stopPrice: finiteOrNull(rec.stopPrice),
+    limitIfTouchedPrice: finiteOrNull(rec.limitIfTouchedPrice),
+    timeInForce: rec.timeInForce ? String(rec.timeInForce) : null,
+    text: typeof rec.text === "string" ? rec.text : null,
+    raw: rec,
+  };
+}
+
+/** POST /cashBalance/getCashBalanceSnapshot — account balance snapshot. */
+export async function cashBalanceSnapshot(
+  opts: RestOptions & { accountId: number },
+): Promise<TradovateCashBalance | null> {
+  const limiter = opts.limiter ?? createDefaultLimiter();
+  const data = await requestJson<Record<string, unknown> | null>({
+    url: `${hostFor(opts.environment)}/cashBalance/getCashBalanceSnapshot`,
+    limiter,
+    fetchImpl: opts.fetchImpl,
+    headers: authHeaders(opts.accessToken),
+    body: { accountId: opts.accountId },
+  });
+  if (!data || typeof data !== "object") return null;
+  const errorText = typeof data.errorText === "string" ? data.errorText : "";
+  if (errorText) return null;
+  return {
+    accountId: opts.accountId,
+    totalCashValue: finiteOrNull(data.totalCashValue),
+    totalPnL: finiteOrNull(data.totalPnL),
+    netLiq: finiteOrNull(data.netLiq),
+    openPnL: finiteOrNull(data.openPnL),
+    realizedPnL: finiteOrNull(data.realizedPnL),
+    weekRealizedPnL: finiteOrNull(data.weekRealizedPnL),
+    initialMargin: finiteOrNull(data.initialMargin),
+    maintenanceMargin: finiteOrNull(data.maintenanceMargin),
+    fullInitialMargin: finiteOrNull(data.fullInitialMargin),
+    autoLiqLevel: finiteOrNull(data.autoLiqLevel),
+    cashUSD: finiteOrNull(data.cashUSD),
+    currencyCashAvailWithdrawalUSD: finiteOrNull(data.currencyCashAvailWithdrawalUSD),
+    raw: data,
+  };
+}
+
+/**
+ * Resolve contract ids to symbols, cached for the lifetime of the call.
+ * `resolve()` is synchronous and returns null until `ensure()` has fetched the
+ * contract, so the pure PnL/stat engines keep their synchronous contract.
+ */
+export function makeCachedContractResolver(opts: RestOptions) {
+  const cache = new Map<number, { root: string; symbol: string }>();
+  return {
+    resolve(contractId: number | null) {
+      if (contractId === null) return null;
+      return cache.get(contractId) ?? null;
+    },
+    async ensure(contractIds: number[]): Promise<void> {
+      for (const id of contractIds) {
+        if (cache.has(id)) continue;
+        try {
+          const item = await contractItem({ ...opts, contractId: id });
+          if (item) {
+            const name = item.symbol || item.name || "";
+            cache.set(id, { root: rootFromSymbol(name), symbol: name });
+          }
+        } catch {
+          // Unresolved contracts stay null; the UI shows the raw contract id.
+        }
+      }
+    },
   };
 }
 

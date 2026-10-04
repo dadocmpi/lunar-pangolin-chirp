@@ -224,7 +224,7 @@ const WithdrawalKycGate: React.FC<WithdrawalKycGateProps> = ({
           onClick={onApproved}
           className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
         >
-          <ShieldCheck size={16} className="mr-2" />
+          <ShieldCheck size={16} className="me-2" />
           {t('withdrawal.continueToForm')}
         </Button>
       ) : status === 'submitted' ? (
@@ -283,9 +283,9 @@ const WithdrawalKycGate: React.FC<WithdrawalKycGateProps> = ({
             className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-40"
           >
             {submitting ? (
-              <Loader2 className="animate-spin mr-2" size={16} />
+              <Loader2 className="animate-spin me-2" size={16} />
             ) : (
-              <Upload size={16} className="mr-2" />
+              <Upload size={16} className="me-2" />
             )}
             {t('withdrawal.submitDocs')}
           </Button>

@@ -24,7 +24,7 @@
 
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { authenticate, ensureToken } from "./authService.ts";
-import { loadCredentials, type IntegrationRow } from "./credentialStore.ts";
+import { loadCredentials, storeSessionToken, type IntegrationRow } from "./credentialStore.ts";
 import { createDefaultLimiter, CircuitOpenError, TradovateRateLimiter } from "./rateLimiter.ts";
 import { contractItem, fillList } from "./restService.ts";
 import { TradovateHttpError } from "./http.ts";
@@ -125,19 +125,32 @@ export async function syncIntegration(opts: SyncOptions): Promise<SyncResult> {
       : null;
 
     // 1. Token — renew if needed. token_expires_at is advisory; we always ask
-    //    the auth service which applies the renewal margin.
+    //    the auth service which applies the renewal margin. A cached session
+    //    token (stored in the encrypted envelope) is reused while still valid.
     const auth = await ensureToken({
       credentials,
       environment: env,
       limiter,
       fetchImpl: opts.fetchImpl,
       now,
+      stored: credentials.accessToken
+        ? {
+          accessToken: credentials.accessToken,
+          expirationTime: credentials.accessTokenExpiresAt ?? "",
+        }
+        : null,
     });
     if (!auth.ok) {
       await markStatus(admin, integrationId, statusForAuthError(auth.code), auth.code, auth.message);
       return { ...base, status: statusForAuthError(auth.code), errorCode: auth.code };
     }
     const accessToken = auth.accessToken;
+    if (!credentials.accessToken || credentials.accessToken !== accessToken) {
+      await storeSessionToken(admin, userId, integrationId, {
+        accessToken,
+        expirationTime: auth.expirationTime,
+      });
+    }
 
     // 2. Incremental fills for THIS account only.
     const sinceId = integration.last_fill_id ?? 0;

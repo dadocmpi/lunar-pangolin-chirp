@@ -94,11 +94,13 @@ if (mig) {
   check('RLS is enabled', /ENABLE ROW LEVEL SECURITY/i.test(sql));
 }
 
-console.log('\n[5] In-dashboard view owns the empty state and the connect panel');
-const trades = read('src/components/TradovateTrades.tsx');
+console.log('\n[5] In-dashboard terminal owns the empty state and the connect panel');
+const trades = read('src/components/terminal/TradingTerminal.tsx');
 const panel = read('src/components/TradovateConnectPanel.tsx');
 check('empty state renders the connect CTA', trades.includes('tradovate.connectCta'));
 check('view opens the connect panel', trades.includes('TradovateConnectPanel'));
+check('terminal reads live data through the dashboard function',
+  trades.includes('useTradovateTerminal'));
 check('panel posts credentials to the Edge Function',
   panel.includes('functionsUrl("tradovate-connect")'));
 // DEMO ONLY: no demo/live selector, and the panel always sends demo.

@@ -294,7 +294,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="off"
                   placeholder={t("connectTradovate.usernamePlaceholder")}
-                  className="pl-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
+                  className="ps-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
                 />
               </Field>
 
@@ -305,12 +305,12 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
                   onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
                   placeholder={t("connectTradovate.passwordPlaceholder")}
-                  className="pl-11 pr-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
+                  className="ps-11 pe-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                  className="absolute end-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
                   aria-label={t("connectTradovate.togglePassword")}
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -341,7 +341,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
                         onChange={(e) => setCid(e.target.value)}
                         autoComplete="off"
                         placeholder={t("connectTradovate.cidPlaceholder")}
-                        className="pl-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
+                        className="ps-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
                       />
                     </Field>
                     <Field icon={<KeyRound size={16} />} label={t("connectTradovate.secLabel")}>
@@ -351,7 +351,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
                         onChange={(e) => setSec(e.target.value)}
                         autoComplete="new-password"
                         placeholder={t("connectTradovate.secPlaceholder")}
-                        className="pl-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
+                        className="ps-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
                       />
                     </Field>
                     <p className="md:col-span-2 text-[10px] text-slate-500 leading-relaxed">
@@ -413,7 +413,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
                     disabled={submitting}
                     aria-pressed={selectedAccountId === a.id}
                     className={cn(
-                      "w-full p-4 border text-left flex items-center justify-between transition-all",
+                      "w-full p-4 border text-start flex items-center justify-between transition-all",
                       selectedAccountId === a.id
                         ? "border-[#C5A059] bg-[#C5A059]/5"
                         : "border-white/10 hover:border-white/20 bg-white/[0.02]",
@@ -439,7 +439,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
                 >
                   {submitting
                     ? <Loader2 className="animate-spin" />
-                    : <><Plug size={16} className="mr-2" /> {t("connectTradovate.confirmAccount")}</>}
+                    : <><Plug size={16} className="me-2" /> {t("connectTradovate.confirmAccount")}</>}
                 </Button>
               </div>
             )}
@@ -452,7 +452,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
               >
                 {submitting
                   ? <Loader2 className="animate-spin" />
-                  : <><Plug size={16} className="mr-2" /> {t("connectTradovate.connectButton")}</>}
+                  : <><Plug size={16} className="me-2" /> {t("connectTradovate.connectButton")}</>}
               </Button>
             )}
 
@@ -518,7 +518,7 @@ function Field({
         {label}
       </label>
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600">{icon}</span>
+        <span className="absolute start-4 top-1/2 -translate-y-1/2 text-slate-600">{icon}</span>
         {children}
       </div>
     </div>

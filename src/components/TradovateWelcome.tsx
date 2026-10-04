@@ -58,7 +58,7 @@ const TradovateWelcome = ({ onConnected, onSkip }: Props) => {
           {t("welcome.body")}
         </p>
 
-        <ul className="mt-8 space-y-3 max-w-md mx-auto text-left">
+        <ul className="mt-8 space-y-3 max-w-md mx-auto text-start">
           {points.map((p) => (
             <li key={p.text} className="flex items-start gap-3 text-[11px] text-slate-300 leading-relaxed">
               <span className="text-[#D4AF37] mt-0.5 shrink-0">{p.icon}</span>

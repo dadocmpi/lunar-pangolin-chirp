@@ -3,10 +3,10 @@
  * Dashboard data gate — "no invented numbers".
  *
  * Two things are checked:
- *  1. STATIC: the real dashboard surfaces (Dashboard.tsx, PerformanceChart.tsx)
+ *  1. STATIC: the real dashboard surfaces (Dashboard.tsx, terminal/PerformancePanel.tsx)
  *     contain no hardcoded performance figure (+12.4% / -2.1% / -4.2% /
  *     $25,000 / hardcoded monthly-return arrays / hardcoded chart series), and
- *     the demo path is explicit and off by default.
+ *     the terminal renders an explicit empty state instead of a demo curve.
  *  2. BEHAVIOUR: for a REAL user (no closed trades) the pure resolvers return
  *     an explicit empty state — never a made-up figure — and for a user WITH
  *     trades they return the real, computed values.
@@ -40,7 +40,7 @@ function check(name, condition, detail = '') {
 
 console.log('\n[1] No hardcoded performance figure in the real dashboard');
 const dashboard = read('src/pages/Dashboard.tsx');
-const chart = read('src/components/PerformanceChart.tsx');
+const chart = read('src/components/terminal/PerformancePanel.tsx');
 
 const invented = [
   ['+12.4%', /\+12\.4%/],
@@ -56,14 +56,12 @@ const invented = [
 for (const [label, re] of invented) {
   check(`Dashboard.tsx has no ${label}`, !re.test(dashboard));
 }
-check('PerformanceChart.tsx has no +12.4% badge', !/\+12\.4%/.test(chart));
-check('PerformanceChart.tsx takes a `series` prop', /series\?:/.test(chart));
-check('PerformanceChart.tsx has a no-data empty state',
-  chart.includes('dashboard.noPerformanceData'));
-check('PerformanceChart demo path is explicit + labelled',
-  chart.includes('dashboard.demoData') && /demo\s*=\s*false/.test(chart));
-check('demo is opt-in (default false)',
-  /demo\s*=\s*false/.test(chart));
+check('PerformancePanel.tsx has no +12.4% badge', !/\+12\.4%/.test(chart));
+check('PerformancePanel.tsx takes a `stats` prop', /stats:\s*PerformanceStats/.test(chart));
+check('PerformancePanel.tsx has a no-data empty state',
+  chart.includes('terminal.performanceEmpty'));
+check('PerformancePanel has no hardcoded sample series',
+  !/SAMPLE|Jan.*value:\s*2000/.test(chart));
 
 console.log('\n[2] A real user with no trades gets an explicit empty state');
 const empty = resolvePerformanceSummary({ services: [{ balance: 0 }], trades: [] });

@@ -329,7 +329,7 @@ const ApplicationForm = ({ onSubmit, plan }: ApplicationFormProps) => {
           <p className="text-red-400 text-sm mt-1">{errors.customer_note}</p>
         )}
         <p className="text-xs text-slate-400 mt-1">
-          {t('application.note_limit', { count: 500 })} {t('application.characters')}
+          {t('application.note_limit', { count: 500 })}
         </p>
       </div>
 
