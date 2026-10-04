@@ -14,9 +14,16 @@ import {
   type KycDocumentKind,
   validateKycFile,
 } from "../_shared/kyc/limits.ts";
+import { runAiCheck } from "../_shared/kyc/aiKyc.ts";
+import {
+  createAiProviderFromEnv,
+  type AiImage,
+} from "../_shared/kyc/aiProvider.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 
 const BUCKET = "kyc-documents";
+/** Largest document we will send to the vision model (base64 inflates ~33%). */
+const AI_MAX_BYTES = 6 * 1024 * 1024;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -103,19 +110,66 @@ serve(async (req) => {
 
   // 3. Persist the submission bound to the authenticated user.
   const now = new Date().toISOString();
-  const { error: insertError } = await admin.from("kyc_submissions").insert({
-    user_id: user.id,
-    status: "submitted",
-    country,
-    method,
-    document_type: documentType,
-    document_front_path: paths.front ?? null,
-    document_back_path: paths.back ?? null,
-    selfie_path: paths.selfie ?? null,
-    submitted_at: now,
-    updated_at: now,
+  const { data: inserted, error: insertError } = await admin
+    .from("kyc_submissions")
+    .insert({
+      user_id: user.id,
+      status: "submitted",
+      country,
+      method,
+      document_type: documentType,
+      document_front_path: paths.front ?? null,
+      document_back_path: paths.back ?? null,
+      selfie_path: paths.selfie ?? null,
+      submitted_at: now,
+      updated_at: now,
+    })
+    .select("id")
+    .single();
+  if (insertError || !inserted) return json({ error: "insert_failed" }, 500);
+
+  // 4. AI consistency check. Fails closed: if no provider is configured or the
+  //    model is unsure, the submission stays "submitted" for a human. A clean
+  //    high-confidence pass may auto-approve. The decision is always audited.
+  const provider = createAiProviderFromEnv({
+    KYC_AI_API_KEY: Deno.env.get("KYC_AI_API_KEY"),
+    KYC_AI_MODEL: Deno.env.get("KYC_AI_MODEL"),
   });
-  if (insertError) return json({ error: "insert_failed" }, 500);
+  const declaredName = String(form.get("fullName") ?? "").slice(0, 120);
+  const aiImages = await buildAiImages(present);
+  const aiResult = aiImages
+    ? await runAiCheck(provider, { ...aiImages, declaredName, nowIso: now })
+    : ({
+        decision: "manual_review",
+        confidence: 0,
+        checks: {},
+        reason: "no_image_for_ai",
+        malformed: true,
+        provider: provider?.name ?? "none",
+        providerUnavailable: true,
+      } as const);
+
+  await admin.from("kyc_ai_checks").insert({
+    submission_id: inserted.id,
+    user_id: user.id,
+    provider: aiResult.provider,
+    model: Deno.env.get("KYC_AI_MODEL") ?? null,
+    decision: aiResult.decision,
+    confidence: aiResult.confidence,
+    checks: aiResult.checks,
+    raw_output: null, // never store the raw document-derived model text
+    reason: aiResult.reason,
+    malformed: aiResult.malformed,
+    provider_unavailable: aiResult.providerUnavailable,
+  });
+
+  if (aiResult.decision === "approved") {
+    await admin
+      .from("kyc_submissions")
+      .update({ status: "approved", reviewed_by: "ai", reviewed_at: now, updated_at: now })
+      .eq("id", inserted.id)
+      .eq("user_id", user.id);
+  }
 
   // Owner notification for review. Includes object paths (not public URLs);
   // a reviewer mints short-lived signed URLs server-side.
@@ -130,11 +184,53 @@ serve(async (req) => {
       metodo: method,
       documento: documentType,
       arquivos: Object.values(paths).join(", "),
+      ai_decision: aiResult.decision,
+      ai_confidence: aiResult.confidence,
+      ai_reason: aiResult.reason,
       revisar: `kyc-action?userId=${user.id}`,
       origem: "kyc-submit",
     },
     idempotencyKey: `kyc-submit:${user.id}:${now}`,
   });
 
-  return json({ ok: true, status: "submitted" }, 201);
+  return json(
+    { ok: true, status: aiResult.decision === "approved" ? "approved" : "submitted", aiDecision: aiResult.decision },
+    201,
+  );
 });
+
+/**
+ * Convert the uploaded files into base64 images for the vision model. Only
+ * image mime types are sent (a PDF is not a supported inline image); anything
+ * too large is skipped, which routes the submission to manual review. Returns
+ * null when no front image can be sent.
+ */
+async function buildAiImages(
+  files: Array<[KycDocumentKind, File | null]>,
+): Promise<{ front: AiImage; back?: AiImage; selfie?: AiImage } | null> {
+  const toImage = async (file: File | null): Promise<AiImage | null> => {
+    if (!file) return null;
+    const mime = (file.type || "").toLowerCase();
+    if (!mime.startsWith("image/") || file.size > AI_MAX_BYTES) return null;
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    return { mime, base64: base64FromBytes(bytes) };
+  };
+  const map = new Map<KycDocumentKind, AiImage | null>();
+  for (const [kind, file] of files) map.set(kind, await toImage(file));
+  const front = map.get("front");
+  if (!front) return null;
+  return {
+    front,
+    back: map.get("back") ?? undefined,
+    selfie: map.get("selfie") ?? undefined,
+  };
+}
+
+function base64FromBytes(bytes: Uint8Array): string {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}

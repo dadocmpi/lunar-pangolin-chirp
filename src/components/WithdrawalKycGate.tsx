@@ -40,6 +40,7 @@ const WithdrawalKycGate: React.FC<WithdrawalKycGateProps> = ({
   const [front, setFront] = useState<File | null>(null);
   const [back, setBack] = useState<File | null>(null);
   const [selfie, setSelfie] = useState<File | null>(null);
+  const [fullName, setFullName] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
   const statusColor =
@@ -90,6 +91,10 @@ const WithdrawalKycGate: React.FC<WithdrawalKycGateProps> = ({
       showError(t('withdrawal.frontRequired'));
       return;
     }
+    if (!fullName.trim()) {
+      showError(t('withdrawal.fullNameRequired'));
+      return;
+    }
     setSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -101,6 +106,7 @@ const WithdrawalKycGate: React.FC<WithdrawalKycGateProps> = ({
       form.append('country', 'unknown');
       form.append('method', 'document_upload');
       form.append('documentType', 'government_id');
+      form.append('fullName', fullName.trim());
       form.append('front', front);
       if (back) form.append('back', back);
       if (selfie) form.append('selfie', selfie);
@@ -233,6 +239,21 @@ const WithdrawalKycGate: React.FC<WithdrawalKycGateProps> = ({
             {status === 'rejected' ? t('withdrawal.resubmit') : t('withdrawal.submitDocs')}
           </h3>
 
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              {t('withdrawal.fullNameLabel')}
+            </label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder={t('withdrawal.fullNamePlaceholder')}
+              autoComplete="name"
+              className="w-full bg-black/40 border border-white/10 px-4 py-3 text-[12px] text-white placeholder:text-slate-600 focus:border-[#D4AF37]/50 focus:outline-none"
+            />
+            <p className="text-[9px] text-slate-500">{t('withdrawal.fullNameHint')}</p>
+          </div>
+
           {fileBox(
 
             front,
@@ -258,7 +279,7 @@ const WithdrawalKycGate: React.FC<WithdrawalKycGateProps> = ({
 
           <Button
             onClick={handleSubmit}
-            disabled={submitting || !front}
+            disabled={submitting || !front || !fullName.trim()}
             className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-40"
           >
             {submitting ? (

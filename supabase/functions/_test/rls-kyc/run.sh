@@ -8,6 +8,7 @@ CONTAINER="${RLS_CONTAINER:-rls-kyc-pg}"
 PORT="${RLS_PORT:-55433}"
 ROOT="$(cd "$(dirname "$0")/../../../.." && pwd)"
 MIGRATION="$(ls "$ROOT"/supabase/migrations/*kyc_on_withdrawal*.sql | head -1)"
+AI_MIGRATION="$(ls "$ROOT"/supabase/migrations/*ai_kyc_checks*.sql | head -1)"
 DOCKER="docker"
 docker info >/dev/null 2>&1 || DOCKER="sudo docker"
 
@@ -22,11 +23,13 @@ done
 
 $DOCKER cp "$(dirname "$0")/00_setup.sql" "$CONTAINER:/tmp/00_setup.sql"
 $DOCKER cp "$MIGRATION" "$CONTAINER:/tmp/migration.sql"
+$DOCKER cp "$AI_MIGRATION" "$CONTAINER:/tmp/ai_migration.sql"
 $DOCKER cp "$(dirname "$0")/10_rls_test.sql" "$CONTAINER:/tmp/10_rls_test.sql"
 
 echo "Applying shim + migration..."
 $DOCKER exec "$CONTAINER" psql -U postgres -q -v ON_ERROR_STOP=1 -f /tmp/00_setup.sql
 $DOCKER exec "$CONTAINER" psql -U postgres -q -v ON_ERROR_STOP=1 -f /tmp/migration.sql
+$DOCKER exec "$CONTAINER" psql -U postgres -q -v ON_ERROR_STOP=1 -f /tmp/ai_migration.sql
 
 # Supabase grants these table privileges; RLS filters the rows.
 $DOCKER exec "$CONTAINER" psql -U postgres -q -c "

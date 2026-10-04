@@ -204,4 +204,45 @@ SELECT
 \echo :a
 \echo :b
 
+\echo '\n[6] AI check audit table (kyc_ai_checks) is server-only'
+-- Seed one AI check per user through the service role.
+INSERT INTO public.kyc_ai_checks (submission_id, user_id, provider, decision, confidence, checks, reason)
+SELECT id, user_id, 'gemini', 'manual_review', 0.5, '{}'::jsonb, 'seeded'
+  FROM public.kyc_submissions;
+SELECT
+  CASE WHEN (SELECT count(*) FROM public.kyc_ai_checks) = 2
+       THEN '  PASS  service_role sees both AI checks'
+       ELSE '  FAIL  service_role AI check count wrong' END AS a
+\gset
+\echo :a
+
+BEGIN;
+SET LOCAL ROLE authenticated;
+SELECT set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', true);
+SELECT
+  CASE WHEN (SELECT count(*) FROM public.kyc_ai_checks) = 0
+       THEN '  PASS  A sees no AI checks (not even their own)'
+       ELSE '  FAIL  A can read AI checks' END AS a,
+  CASE WHEN NOT public._rls_try($$
+         INSERT INTO public.kyc_ai_checks (submission_id, user_id, provider, decision)
+         SELECT id, user_id, 'forged', 'approved' FROM public.kyc_submissions LIMIT 1$$)
+       THEN '  PASS  A cannot insert a forged AI approval'
+       ELSE '  FAIL  A inserted a forged AI approval' END AS b,
+  CASE WHEN public._rls_affected($$
+         UPDATE public.kyc_ai_checks SET decision='approved'$$) = 0
+       THEN '  PASS  A cannot update an AI decision'
+       ELSE '  FAIL  A updated an AI decision' END AS c
+\gset
+\echo :a
+\echo :b
+\echo :c
+ROLLBACK;
+
+SELECT
+  CASE WHEN (SELECT bool_and(relrowsecurity) FROM pg_class WHERE relname='kyc_ai_checks')
+       THEN '  PASS  RLS enabled on kyc_ai_checks'
+       ELSE '  FAIL  RLS not enabled on kyc_ai_checks' END AS a
+\gset
+\echo :a
+
 \echo '\nKYC RLS test complete.'
