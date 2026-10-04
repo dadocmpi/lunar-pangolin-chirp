@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PerformanceChart from '@/components/PerformanceChart';
+import WithdrawalKycGate, { type KycStatus as WithdrawalKycStatus } from '@/components/WithdrawalKycGate';
 import {
   LayoutDashboard,
   Wallet,
@@ -85,6 +86,7 @@ const Dashboard = () => {
 
   // KYC state - NEW IMPROVED FLOW
   const [kycStatus, setKycStatus] = useState<'pending' | 'submitted' | 'approved' | 'rejected'>('pending');
+  const [kycReviewReason, setKycReviewReason] = useState<string | null>(null);
   const [kycStep, setKycStep] = useState<'country' | 'method' | 'document' | 'review'>('country');
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
@@ -207,13 +209,23 @@ const Dashboard = () => {
       setEditLastName(p.last_name || '');
       setEditEmail(user.email || '');
 
-      // Check KYC status from profile metadata
-      const kyc = (profileData as { kyc_status?: string | null } | null)?.kyc_status;
-      if (kyc === 'approved' || kyc === 'submitted' || kyc === 'rejected') {
-        setKycStatus(kyc);
-      } else {
-        setKycStatus('pending');
-      }
+      // KYC status: the latest submission wins over the profile fallback, so a
+      // resubmission or a reviewer decision is reflected immediately.
+      const { data: submission } = await supabase
+        .from('kyc_submissions')
+        .select('status, review_reason, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      const fromProfile = (profileData as { kyc_status?: string | null } | null)?.kyc_status;
+      const effective = (submission?.status as string | undefined) ??
+        (fromProfile === 'approved' || fromProfile === 'submitted' || fromProfile === 'rejected'
+          ? fromProfile
+          : 'pending');
+      setKycStatus(effective as 'pending' | 'submitted' | 'approved' | 'rejected');
+      setKycReviewReason((submission?.review_reason as string | null) ?? null);
     } catch (error: unknown) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -608,8 +620,15 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* Withdrawal View */}
+            {/* Withdrawal View — KYC gate first, form only when approved */}
             {activeView === 'withdraw' && (
+              kycStatus !== 'approved' ? (
+                <WithdrawalKycGate
+                  status={kycStatus as WithdrawalKycStatus}
+                  reviewReason={kycReviewReason}
+                  onApproved={() => setKycStatus('approved')}
+                />
+              ) : (
               <div className="space-y-8">
                 <div>
                   <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('dashboard.liquidity')}</span>
@@ -687,6 +706,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
+              )
             )}
 
             {/* Audit Log View */}

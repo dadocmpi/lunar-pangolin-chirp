@@ -13,19 +13,7 @@ from pathlib import Path
 PATH = Path(__file__).resolve().parent.parent / "src" / "i18n.ts"
 ANCHOR = "    verifiedAccount: "
 KEYS = {
-    "accountStandard": {
-        "en": "Standard Account",
-        "pt": "Conta Padrão",
-        "it": "Account Standard",
-        "es": "Cuenta Estándar",
-        "fr": "Compte Standard",
-        "de": "Standardkonto",
-        "ru": "Стандартный аккаунт",
-        "zh": "标准账户",
-        "ja": "スタンダードアカウント",
-        "ar": "حساب قياسي",
-        "he": "חשבון רגיל",
-    },
+    "gravity": {},
 }
 
 LOCALE_ORDER = ["en", "pt", "it", "es", "fr", "de", "ru", "zh", "ja", "ar", "he"]
