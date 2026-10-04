@@ -83,6 +83,14 @@ CREATE TABLE IF NOT EXISTS payment_audit_log (
   created_at       timestamptz NOT NULL DEFAULT now()
 );
 
+-- A pre-existing payment_audit_log (legacy production) may lack payment_table
+-- and user_id; the unique index below is keyed on payment_table and the RLS
+-- policy below reads user_id, so add both before they are used.
+ALTER TABLE payment_audit_log
+  ADD COLUMN IF NOT EXISTS payment_table text NOT NULL DEFAULT 'pending_payments',
+  ADD COLUMN IF NOT EXISTS user_id uuid REFERENCES auth.users(id) ON DELETE RESTRICT;
+
+
 CREATE OR REPLACE FUNCTION block_audit_mutation() RETURNS trigger AS $$
 BEGIN
   RAISE EXCEPTION 'payment_audit_log is append-only';
@@ -134,7 +142,7 @@ WHERE status_enum IS NULL;
 UPDATE pending_payments
 SET amount_cents = CASE
   WHEN amount_usd IS NOT NULL
-       AND amount_usd ~ '^[0-9]+(\.[0-9]+)?$'
+       AND amount_usd::text ~ '^[0-9]+(\.[0-9]+)?$'
     THEN round(amount_usd::numeric * 100)::bigint
   WHEN account_size IS NOT NULL
        AND account_size ~ '^[0-9]+(\.[0-9]+)?$'
@@ -242,7 +250,10 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ---------------------------------------------------------------------------
 -- 10. read_payment_status(text) RPC — read-only, user sees their own payment.
+--     DROP first: an earlier migration may have defined this name with a
+--     different OUT row type, which CREATE OR REPLACE cannot change.
 -- ---------------------------------------------------------------------------
+DROP FUNCTION IF EXISTS read_payment_status(text);
 CREATE OR REPLACE FUNCTION read_payment_status(p_legacy_id text)
 RETURNS TABLE (
   id             text,
@@ -261,7 +272,7 @@ SET search_path = public
 AS $$
   SELECT
     pp.id::text               AS id,
-    pp.status_enum            AS status,
+    pp.status_enum::payment_status AS status,
     pp.plan_name              AS plan_name,
     pp.amount_cents          AS amount_cents,
     'USD'::text              AS currency,
@@ -270,7 +281,7 @@ AS $$
     pp.created_at            AS created_at,
     COALESCE(pp.confirmed_at, pp.created_at) AS updated_at
   FROM pending_payments pp
-  WHERE pp.id = p_legacy_id
+  WHERE pp.id::text = p_legacy_id
     AND pp.user_id = auth.uid();
 $$;
 

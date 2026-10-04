@@ -33,10 +33,19 @@ CREATE TABLE IF NOT EXISTS applications (
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Add check constraint for activation_status
-ALTER TABLE applications
-    ADD CONSTRAINT applications_activation_status_check
-    CHECK (activation_status IN ('pending', 'activation_pending', 'account_active', 'rejected', 'manual_review'));
+-- Add check constraint for activation_status (idempotent: skip if present)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint
+        WHERE conname = 'applications_activation_status_check'
+          AND conrelid = 'public.applications'::regclass
+    ) THEN
+        ALTER TABLE applications
+            ADD CONSTRAINT applications_activation_status_check
+            CHECK (activation_status IN ('pending', 'activation_pending', 'account_active', 'rejected', 'manual_review'));
+    END IF;
+END $$;
 
 -- Create indexes for common queries
 CREATE INDEX IF NOT EXISTS applications_user_id_idx ON applications(user_id);
