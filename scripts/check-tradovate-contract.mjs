@@ -101,7 +101,10 @@ check('empty state renders the connect CTA', trades.includes('tradovate.connectC
 check('view opens the connect panel', trades.includes('TradovateConnectPanel'));
 check('panel posts credentials to the Edge Function',
   panel.includes('functionsUrl("tradovate-connect")'));
-check('panel offers demo/live selection', panel.includes('"demo"') && panel.includes('"live"'));
+// DEMO ONLY: no demo/live selector, and the panel always sends demo.
+check('panel has NO demo/live selector',
+  !/setEnvironment\(/.test(panel) && !/\["demo",\s*"live"\]/.test(panel));
+check('panel always sends environment demo', /environment:\s*"demo"/.test(panel));
 check('panel has a trust notice', panel.includes('connectTradovate.trustNotice'));
 
 console.log('\n[6] The browser never stores or logs the password');
@@ -205,6 +208,33 @@ console.log('\n[11] Connect errors are accurate (never blame the user by default
   }
 }
 
+
+console.log("\n[12] Demo-only is enforced on the SERVER; accounts auto-selected");
+{
+  const envPolicy = read('supabase/functions/_shared/tradovate/environment.ts');
+  const connect = read('supabase/functions/tradovate-connect/index.ts');
+  check('server environment policy module exists',
+    has('supabase/functions/_shared/tradovate/environment.ts'));
+  check('policy reads TRADOVATE_ALLOWED_ENVIRONMENTS',
+    envPolicy.includes('TRADOVATE_ALLOWED_ENVIRONMENTS'));
+  check('policy defaults to demo-only',
+    /DEFAULT_ALLOWED_ENVIRONMENTS[\s\S]{0,60}\[?"demo"?\]/.test(envPolicy));
+  check('connect enforces the environment server-side',
+    connect.includes('resolveRequestedEnvironment(') &&
+    /envDecision\.ok[\s\S]{0,400}422/.test(connect));
+  check('connect uses the pure account selector',
+    has('supabase/functions/_shared/tradovate/accountSelection.ts') &&
+    connect.includes('selectAccount(accounts, requestedAccountId)'));
+  check('connect preselects the first active account',
+    /preselectAccountId/.test(connect));
+  check('connect returns no_accounts / no_active_account accurately',
+    connect.includes('no_accounts') && connect.includes('no_active_account'));
+  check('classifier maps feature_disabled to not_enabled',
+    /feature_disabled:\s*"not_enabled"/.test(read('src/lib/tradovateConnectError.ts')));
+  check('sync scopes fills to the selected account',
+    read('supabase/functions/_shared/tradovate/sync.ts').includes('accountId: scopedAccountId') &&
+    read('supabase/functions/_shared/tradovate/restService.ts').includes('accountId'));
+}
 
 console.log(
   failures === 0

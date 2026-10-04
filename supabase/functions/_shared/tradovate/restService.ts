@@ -132,18 +132,23 @@ export interface FillListResult {
  * at `limit`. We keep requesting pages until a page comes back short/empty or
  * the page budget is hit, so a long outage drains in a few worker runs.
  * Duplicate ids across pages are collapsed defensively.
+ *
+ * When `accountId` is set, only that account's fills are requested and any
+ * account-less row is dropped, so a multi-account login never mixes accounts.
  */
 export async function fillList(
   opts: RestOptions & {
     sinceId?: number;
     limit?: number;
     maxPages?: number;
+    accountId?: number;
   },
 ): Promise<FillListResult> {
   const limiter = opts.limiter ?? createDefaultLimiter();
   const limit = opts.limit ?? DEFAULT_FILL_PAGE_LIMIT;
   const maxPages = opts.maxPages ?? MAX_FILL_PAGES;
   const url = `${hostFor(opts.environment)}/fill/list`;
+  const accountId = opts.accountId && Number.isFinite(opts.accountId) ? opts.accountId : undefined;
 
   let sinceId = opts.sinceId ?? 0;
   let pages = 0;
@@ -156,7 +161,7 @@ export async function fillList(
       limiter,
       fetchImpl: opts.fetchImpl,
       headers: authHeaders(opts.accessToken),
-      body: { sinceId, limit },
+      body: accountId === undefined ? { sinceId, limit } : { sinceId, limit, accountId },
     });
     pages += 1;
     const rows = Array.isArray(data) ? data : [];
@@ -166,6 +171,11 @@ export async function fillList(
     for (const row of rows) {
       const fill = normalizeFill(row);
       if (!fill) continue;
+      // Defense in depth: if the provider ignores the accountId filter, never
+      // persist another account's fills into this integration.
+      if (accountId !== undefined && fill.accountId !== null && fill.accountId !== accountId) {
+        continue;
+      }
       if (!byId.has(fill.tradovateFillId)) {
         byId.set(fill.tradovateFillId, fill);
       }

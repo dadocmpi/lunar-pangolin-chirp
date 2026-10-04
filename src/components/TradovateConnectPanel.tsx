@@ -7,6 +7,15 @@
 // told to refresh, the first sync runs server-side, and the view fills with
 // trades via Realtime.
 //
+// DEMO ONLY for now: the panel offers no environment switch. The server also
+// enforces this (TRADOVATE_ALLOWED_ENVIRONMENTS), so a crafted "live" request
+// is rejected even though the UI never sends one.
+//
+// The user signs in with their Tradovate username/password; the accounts that
+// belong to that login come back from the server. One account auto-completes;
+// with several, the first ACTIVE one is preselected and the user confirms. The
+// user is never asked to type an account id.
+//
 // The panel also lists existing connections and can disconnect them (which
 // deletes the stored credentials server-side).
 // ============================================================================
@@ -14,7 +23,6 @@
 import React, { useEffect, useState } from "react";
 import {
   AlertCircle,
-  AlertTriangle,
   CheckCircle2,
   ChevronDown,
   Clock,
@@ -41,12 +49,11 @@ import { showError, showSuccess } from "@/utils/toast";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
 
-type Environment = "demo" | "live";
-
 interface AccountOption {
   id: number;
   name: string;
   simulation?: boolean;
+  active?: boolean;
 }
 
 interface Props {
@@ -60,7 +67,6 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
   const { t } = useTranslation();
   const { integrations, refresh } = useTradovateConnection(open);
 
-  const [environment, setEnvironment] = useState<Environment>("demo");
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [cid, setCid] = useState("");
@@ -71,6 +77,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
   const [errorCode, setErrorCode] = useState<ConnectErrorCode | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [accounts, setAccounts] = useState<AccountOption[]>([]);
+  const [selectedAccountId, setSelectedAccountId] = useState<number | null>(null);
   const [pending, setPending] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
 
@@ -84,6 +91,8 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
       setShowAdvanced(false);
       setErrorCode(null);
       setErrorMessage(null);
+      setAccounts([]);
+      setSelectedAccountId(null);
       setPending(false);
     }
   }, [open]);
@@ -118,12 +127,20 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
     setSubmitting(true);
     setErrorCode(null);
     setErrorMessage(null);
+    // A fresh attempt discards any previous account list.
+    if (accountId === undefined) {
+      setAccounts([]);
+      setSelectedAccountId(null);
+      setPending(false);
+    }
     try {
       const res = await fetch(functionsUrl("tradovate-connect"), {
         method: "POST",
         headers: { "Content-Type": "application/json", ...(await authHeader()) },
         body: JSON.stringify({
-          environment,
+          // DEMO ONLY for now. The server enforces this too
+          // (TRADOVATE_ALLOWED_ENVIRONMENTS); the UI never offers live.
+          environment: "demo",
           name,
           password,
           cid: cid || undefined,
@@ -134,13 +151,20 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
       const data = await res.json().catch(() => ({}));
 
       if (data?.code === "account_selection_required") {
-        setAccounts(Array.isArray(data.accounts) ? data.accounts : []);
+        const list: AccountOption[] = Array.isArray(data.accounts) ? data.accounts : [];
+        setAccounts(list);
+        // Preselect the account the server chose (first active), else the first.
+        const preselect = typeof data.preselectAccountId === "number"
+          ? data.preselectAccountId
+          : list[0]?.id ?? null;
+        setSelectedAccountId(preselect);
         setPending(true);
         return;
       }
       if (!res.ok || !data?.ok) {
         // Classify from OUR HTTP status + the server code, so a missing/broken
-        // Edge Function (404/5xx) is never blamed on Tradovate or the user.
+        // Edge Function (404/5xx) is never blamed on Tradovate or the user, and
+        // a deliberate kill switch (503 feature_disabled) is not "broken".
         setErrorCode(classifyConnectError({
           status: res.status,
           serverCode: typeof data?.code === "string" ? data.code : null,
@@ -153,6 +177,8 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
       setPassword("");
       setSec("");
       setPending(false);
+      setAccounts([]);
+      setSelectedAccountId(null);
       showSuccess(t("connectTradovate.connectedToast"));
       await refresh();
       onChanged();
@@ -237,39 +263,22 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
         <div className="grid grid-cols-1 lg:grid-cols-3">
           {/* Form */}
           <div className="lg:col-span-2 p-6 md:p-8 border-b lg:border-b-0 lg:border-r border-white/10">
-            {/* Environment switch */}
+            {/* Environment: DEMO ONLY. No selector — the server enforces this too. */}
             <div className="mb-7">
               <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                 {t("connectTradovate.environmentLabel")}
               </label>
-              <div className="grid grid-cols-2 gap-3 mt-3">
-                {(["demo", "live"] as Environment[]).map((env) => (
-                  <button
-                    key={env}
-                    type="button"
-                    onClick={() => setEnvironment(env)}
-                    className={cn(
-                      "p-4 border text-left transition-all",
-                      environment === env
-                        ? "border-[#C5A059] bg-[#C5A059]/5"
-                        : "border-white/10 hover:border-white/20 bg-white/[0.02]",
-                    )}
-                  >
-                    <span className="text-[11px] font-black uppercase tracking-widest block">
-                      {t(`connectTradovate.environment.${env}`)}
-                    </span>
-                    <span className="text-[9px] text-slate-500 mt-1 block">
-                      {t(`connectTradovate.environment.${env}Desc`)}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              {environment === "live" && (
-                <div className="mt-3 flex items-start gap-2 text-[10px] text-amber-400/90">
-                  <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-                  <span>{t("connectTradovate.liveWarning")}</span>
+              <div className="mt-3 p-4 border border-[#C5A059]/30 bg-[#C5A059]/5 flex items-start gap-3">
+                <ShieldCheck size={16} className="text-[#C5A059] mt-0.5 shrink-0" />
+                <div>
+                  <span className="text-[11px] font-black uppercase tracking-widest block text-[#C5A059]">
+                    {t("connectTradovate.environment.demo")}
+                  </span>
+                  <span className="text-[10px] text-slate-400 mt-1 block leading-relaxed">
+                    {t("connectTradovate.demoOnlyNotice")}
+                  </span>
                 </div>
-              )}
+              </div>
             </div>
 
             <div className="space-y-5">
@@ -347,14 +356,27 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
               </div>
             </div>
 
-            {/* Error states */}
+            {/* Error states. "not_enabled" is a deliberate switch, so it is shown
+                in a neutral/amber tone — disabled is not "broken". */}
             {errorCode && (
-              <div className="mt-6 p-4 border border-red-500/30 bg-red-500/5 flex items-start gap-3">
-                {errorCode === "rate_limited" || errorCode === "circuit_open"
+              <div
+                className={cn(
+                  "mt-6 p-4 border flex items-start gap-3",
+                  errorCode === "not_enabled"
+                    ? "border-amber-500/30 bg-amber-500/5"
+                    : "border-red-500/30 bg-red-500/5",
+                )}
+              >
+                {errorCode === "rate_limited" || errorCode === "circuit_open" || errorCode === "not_enabled"
                   ? <Clock size={16} className="text-amber-400 mt-0.5 shrink-0" />
                   : <AlertCircle size={16} className="text-red-400 mt-0.5 shrink-0" />}
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-red-300">
+                  <p
+                    className={cn(
+                      "text-[11px] font-bold uppercase tracking-widest",
+                      errorCode === "not_enabled" ? "text-amber-300" : "text-red-300",
+                    )}
+                  >
                     {t(`connectTradovate.errors.${errorCode}Title`, {
                       defaultValue: t("connectTradovate.errors.title"),
                     })}
@@ -369,7 +391,9 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
               </div>
             )}
 
-            {/* Account selection (multiple accounts) */}
+            {/* Account selection (multiple accounts). The first ACTIVE account is
+                preselected by the server; the user confirms or changes it. The
+                user never types an account id. */}
             {pending && accounts.length > 0 && (
               <div className="mt-6 space-y-3">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
@@ -378,30 +402,53 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
                 {accounts.map((a) => (
                   <button
                     key={a.id}
-                    onClick={() => submit(a.id)}
+                    type="button"
+                    onClick={() => setSelectedAccountId(a.id)}
                     disabled={submitting}
-                    className="w-full p-4 border border-white/10 hover:border-[#C5A059] bg-white/[0.02] text-left flex items-center justify-between"
+                    aria-pressed={selectedAccountId === a.id}
+                    className={cn(
+                      "w-full p-4 border text-left flex items-center justify-between transition-all",
+                      selectedAccountId === a.id
+                        ? "border-[#C5A059] bg-[#C5A059]/5"
+                        : "border-white/10 hover:border-white/20 bg-white/[0.02]",
+                    )}
                   >
-                    <span className="text-[12px] font-bold uppercase tracking-widest">{a.name}</span>
+                    <span className="flex items-center gap-2">
+                      {selectedAccountId === a.id
+                        ? <CheckCircle2 size={14} className="text-[#C5A059]" />
+                        : <span className="inline-block w-[14px]" />}
+                      <span className="text-[12px] font-bold uppercase tracking-widest">{a.name}</span>
+                    </span>
                     <span className="text-[9px] text-slate-500">
-                      {a.simulation
-                        ? t("connectTradovate.environment.demo")
-                        : t("connectTradovate.environment.live")}
+                      {a.active === false
+                        ? t("connectTradovate.accountInactive")
+                        : t("connectTradovate.accountActive")}
                     </span>
                   </button>
                 ))}
+                <Button
+                  onClick={() => selectedAccountId !== null && submit(selectedAccountId)}
+                  disabled={submitting || selectedAccountId === null}
+                  className="w-full mt-2 bg-[#C5A059] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-50"
+                >
+                  {submitting
+                    ? <Loader2 className="animate-spin" />
+                    : <><Plug size={16} className="mr-2" /> {t("connectTradovate.confirmAccount")}</>}
+                </Button>
               </div>
             )}
 
-            <Button
-              onClick={() => submit()}
-              disabled={submitting}
-              className="w-full mt-7 bg-[#C5A059] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-50"
-            >
-              {submitting
-                ? <Loader2 className="animate-spin" />
-                : <><Plug size={16} className="mr-2" /> {t("connectTradovate.connectButton")}</>}
-            </Button>
+            {!pending && (
+              <Button
+                onClick={() => submit()}
+                disabled={submitting}
+                className="w-full mt-7 bg-[#C5A059] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-50"
+              >
+                {submitting
+                  ? <Loader2 className="animate-spin" />
+                  : <><Plug size={16} className="mr-2" /> {t("connectTradovate.connectButton")}</>}
+              </Button>
+            )}
 
             {/* Trust notice */}
             <div className="mt-5 p-4 bg-[#C5A059]/[0.04] border border-[#C5A059]/20 flex items-start gap-3">

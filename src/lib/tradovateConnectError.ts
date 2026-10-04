@@ -7,18 +7,26 @@
 // timeout): the user's internet is fine and Tradovate is fine.
 //
 // This module separates the real cases:
-//   1. service_unavailable   our service (network failure, 404, 5xx, timeout)
-//   2. offline               navigator.onLine === false (only then blame the net)
-//   3. invalid_credentials   Tradovate rejected the username/password
-//   4. tradovate_unreachable Tradovate itself is unreachable
-//   5. rate_limited          Tradovate rate limit (p-ticket)
-//   6. circuit_open          Tradovate asked for a captcha (p-captcha)
-//   7. api_disabled          account without API access
+//   1. not_enabled           the feature is switched off (503 feature_disabled)
+//   2. service_unavailable   our service (network failure, 404, 5xx, timeout)
+//   3. offline               navigator.onLine === false (only then blame the net)
+//   4. invalid_credentials   Tradovate rejected the username/password
+//   5. tradovate_unreachable Tradovate itself is unreachable
+//   6. rate_limited          Tradovate rate limit (p-ticket)
+//   7. circuit_open          Tradovate asked for a captcha (p-captcha)
+//   8. api_disabled          account without API access
+//   9. accounts_unavailable  the account listing call failed (our/provider side)
+//  10. no_accounts           the login has no accounts at all
+//  11. environment_not_allowed  the requested environment is disabled server-side
+//
+// "disabled" is NOT "broken": a 503 feature_disabled is a deliberate switch and
+// gets its own message, never "Service unavailable".
 //
 // Pure and dependency-free so it can be unit-tested from Node and Deno.
 // ============================================================================
 
 export type ConnectErrorCode =
+  | "not_enabled"
   | "service_unavailable"
   | "offline"
   | "invalid_credentials"
@@ -26,6 +34,11 @@ export type ConnectErrorCode =
   | "rate_limited"
   | "circuit_open"
   | "api_disabled"
+  | "accounts_unavailable"
+  | "no_accounts"
+  | "no_active_account"
+  | "account_not_available"
+  | "environment_not_allowed"
   | "session_expired"
   | "unexpected"
   | "missing_credentials"
@@ -43,13 +56,20 @@ export interface ConnectErrorInput {
   online?: boolean;
 }
 
-/** Server auth codes that describe Tradovate, not our service. */
+/** Server codes that describe Tradovate, our service, or the product state. */
 const SERVER_CODE_MAP: Record<string, ConnectErrorCode> = {
+  feature_disabled: "not_enabled",
   invalid_credentials: "invalid_credentials",
   api_disabled: "api_disabled",
   rate_limited: "rate_limited",
   circuit_open: "circuit_open",
   transport: "tradovate_unreachable",
+  accounts_unavailable: "accounts_unavailable",
+  no_accounts: "no_accounts",
+  no_active_account: "no_active_account",
+  account_not_available: "account_not_available",
+  invalid_account: "account_not_available",
+  environment_not_allowed: "environment_not_allowed",
   encryption_not_configured: "encryption_not_configured",
   missing_credentials: "missing_credentials",
   invalid_environment: "invalid_environment",
@@ -61,6 +81,12 @@ const SERVER_CODE_MAP: Record<string, ConnectErrorCode> = {
  */
 export function classifyConnectError(input: ConnectErrorInput): ConnectErrorCode {
   const { networkError, status, serverCode, online } = input;
+
+  // A deliberate kill switch is not a fault. Check it BEFORE the generic 5xx
+  // rule so a 503 feature_disabled says "not enabled yet", not "unavailable".
+  if (serverCode && SERVER_CODE_MAP[serverCode]) {
+    return SERVER_CODE_MAP[serverCode];
+  }
 
   // The request never produced an HTTP response: either we are genuinely
   // offline, or our Edge Function could not be reached.
@@ -76,10 +102,6 @@ export function classifyConnectError(input: ConnectErrorInput): ConnectErrorCode
   // Our function rejected the Braxel session (not Tradovate).
   if (status === 401 || status === 403) {
     return "session_expired";
-  }
-
-  if (serverCode && SERVER_CODE_MAP[serverCode]) {
-    return SERVER_CODE_MAP[serverCode];
   }
 
   return "unexpected";

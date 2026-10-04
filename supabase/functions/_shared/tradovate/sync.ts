@@ -117,6 +117,12 @@ export async function syncIntegration(opts: SyncOptions): Promise<SyncResult> {
     }
 
     const env = integration.environment as TradovateEnvironment;
+    // Account scope: fills/PnL/commission stay tied to the account chosen at
+    // connect time. A missing/zero id (older row) falls back to no filter.
+    const scopedAccountId = Number.isFinite(integration.tradovate_account_id) &&
+        integration.tradovate_account_id > 0
+      ? integration.tradovate_account_id
+      : null;
 
     // 1. Token — renew if needed. token_expires_at is advisory; we always ask
     //    the auth service which applies the renewal margin.
@@ -133,7 +139,7 @@ export async function syncIntegration(opts: SyncOptions): Promise<SyncResult> {
     }
     const accessToken = auth.accessToken;
 
-    // 2. Incremental fills.
+    // 2. Incremental fills for THIS account only.
     const sinceId = integration.last_fill_id ?? 0;
     const list = await fillList({
       environment: env,
@@ -141,6 +147,7 @@ export async function syncIntegration(opts: SyncOptions): Promise<SyncResult> {
       limiter,
       fetchImpl: opts.fetchImpl,
       sinceId,
+      accountId: scopedAccountId ?? undefined,
     });
 
     // 3. Idempotent persistence.

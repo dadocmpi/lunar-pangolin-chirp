@@ -7,8 +7,19 @@
 // are encrypted (AES-256-GCM) and stored server-side; the response never
 // echoes the password or the access token.
 //
-// Responses map to the connect-gate UI states:
-//   200 { ok: true,  status: "connected", accounts: [...] }
+// Environment policy is enforced on the SERVER (see _shared/tradovate/
+// environment.ts): only the environments in TRADOVATE_ALLOWED_ENVIRONMENTS are
+// accepted, defaulting to demo-only. A crafted request for "live" is rejected
+// even when the UI never offers it.
+//
+// Account selection: after a successful login the accounts that belong to the
+// Tradovate user are listed. With exactly one account the connection completes
+// with no extra click; with several the client is asked to choose (the first
+// ACTIVE account is the preselect the UI shows). The client never types an id.
+//
+// Responses map to the connect-panel UI states:
+//   200 { ok: true,  status: "connected", accounts: [...], accountId }
+//   200 { ok: false, code: "account_selection_required", accounts: [...] }
 //   401 unauthorized
 //   422 { ok: false, code: "invalid_credentials" | "api_disabled" | ... }
 // ============================================================================
@@ -27,11 +38,14 @@ import {
   CredentialStoreError,
   upsertIntegrationWithCredentials,
 } from "../_shared/tradovate/credentialStore.ts";
-import type { TradovateEnvironment } from "../_shared/tradovate/types.ts";
+import type { TradovateAccount } from "../_shared/tradovate/types.ts";
+import { resolveRequestedEnvironment } from "../_shared/tradovate/environment.ts";
+import { selectAccount } from "../_shared/tradovate/accountSelection.ts";
 import { featureDisabledBody, isTradovateEnabled } from "../_shared/features.ts";
 
-function isEnvironment(v: unknown): v is TradovateEnvironment {
-  return v === "demo" || v === "live";
+/** Serialize an account for the client (no secrets, no raw payload). */
+function accountPayload(a: TradovateAccount) {
+  return { id: a.id, name: a.name, simulation: a.simulation, active: a.active };
 }
 
 serve(async (req) => {
@@ -59,7 +73,7 @@ serve(async (req) => {
     return json({ error: "invalid_json" }, 400);
   }
 
-  const environment = body.environment;
+  const requestedEnvironment = body.environment;
   const name = typeof body.name === "string" ? body.name.trim() : "";
   const password = typeof body.password === "string" ? body.password : "";
   // Advanced override only. Normally absent: the app's own cid/sec come from
@@ -71,16 +85,25 @@ serve(async (req) => {
     ? null
     : Number(body.accountId);
 
-  if (!isEnvironment(environment)) {
-    return json({ ok: false, code: "invalid_environment" }, 422);
+  // Server-side environment policy: demo-only by default. A crafted "live"
+  // request is rejected here even though the UI no longer offers it.
+  const envDecision = resolveRequestedEnvironment(requestedEnvironment);
+  if (!envDecision.ok) {
+    return json({
+      ok: false,
+      code: envDecision.code,
+      message: envDecision.message,
+      allowedEnvironments: envDecision.allowed,
+    }, 422);
   }
+  const environment = envDecision.environment;
   if (!name || !password) {
     return json({ ok: false, code: "missing_credentials" }, 422);
   }
 
   const limiter = createDefaultLimiter();
 
-  // 1. Authenticate against the chosen environment.
+  // 1. Authenticate against the allowed environment with the Tradovate login.
   const auth = await authenticate({
     credentials: { name, password, cid, sec },
     environment,
@@ -91,51 +114,67 @@ serve(async (req) => {
     return json({ ok: false, code: auth.code, message: auth.message }, 422);
   }
 
-  // 2. Discover accounts so the user can pick when they have several.
-  let accounts: Array<{ id: number; name: string; simulation?: boolean }> = [];
+  // 2. Discover the accounts that belong to this Tradovate user. The user is
+  //    never asked to type an account id.
+  let accounts: TradovateAccount[] = [];
   try {
-    const list = await accountList({
+    accounts = await accountList({
       environment,
       accessToken: auth.accessToken,
       limiter,
     });
-    accounts = list.map((a) => ({
-      id: a.id,
-      name: a.name,
-      simulation: a.simulation,
-    }));
   } catch {
+    // Our call to Tradovate failed — not the user's fault and not a bad login.
     return json({
       ok: false,
-      code: "api_disabled",
-      message: "Could not list accounts; API access may not be enabled",
-    }, 422);
+      code: "accounts_unavailable",
+      message: "Could not read your Tradovate accounts right now. Try again shortly.",
+    }, 502);
   }
 
   if (accounts.length === 0) {
     return json({
       ok: false,
-      code: "api_disabled",
-      message: "No Tradovate accounts are visible to this login",
+      code: "no_accounts",
+      message: "This Tradovate login has no accounts. Contact Tradovate support.",
     }, 422);
   }
 
-  // 3. Pick the requested account, or require a choice when ambiguous.
-  const chosen = requestedAccountId !== null
-    ? accounts.find((a) => a.id === requestedAccountId)
-    : accounts.length === 1
-    ? accounts[0]
-    : null;
-
-  if (!chosen) {
-    return json({
-      ok: false,
-      code: "account_selection_required",
-      accounts,
-    }, 200);
+  // 3. Select the account. Explicit request wins (validated); otherwise the
+  //    single account auto-completes, and multiple accounts require a choice.
+  const selection = selectAccount(accounts, requestedAccountId);
+  switch (selection.kind) {
+    case "no_accounts":
+      return json({ ok: false, code: "no_accounts" }, 422);
+    case "invalid_account":
+      return json({ ok: false, code: "invalid_account" }, 422);
+    case "not_available":
+      return json({
+        ok: false,
+        code: "account_not_available",
+        message: "That account is not available for this login.",
+        accounts: accounts.map(accountPayload),
+      }, 422);
+    case "no_active":
+      return json({
+        ok: false,
+        code: "no_active_account",
+        message: "None of your Tradovate accounts are active. Contact Tradovate support.",
+      }, 422);
+    case "required":
+      return json({
+        ok: false,
+        code: "account_selection_required",
+        accounts: accounts.map(accountPayload),
+        preselectAccountId: selection.preselectAccountId,
+      }, 200);
+    case "chosen":
+      break;
   }
+  const chosen = selection.account;
 
-  // 4. Persist encrypted credentials, bound to the verified user.
+  // 4. Persist encrypted credentials, bound to the verified user and to the
+  //    selected account (fills/PnL/commission stay scoped to it).
   try {
     const integrationId = await upsertIntegrationWithCredentials(ctx.admin, {
       userId: ctx.user.id,
@@ -151,7 +190,7 @@ serve(async (req) => {
       ok: true,
       status: "connected",
       integrationId,
-      accounts,
+      accounts: accounts.map(accountPayload),
       accountId: chosen.id,
     });
   } catch (e) {

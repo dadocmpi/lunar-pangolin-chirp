@@ -58,10 +58,15 @@ test("empty state shows the connect CTA", trades.includes("tradovate.connectCta"
 test("connect button opens the panel", /setPanelOpen\(true\)/.test(trades));
 test("view renders the connect panel", trades.includes("<TradovateConnectPanel"));
 
-console.log("\n[3] Panel is username/password, demo/live, no OAuth");
+console.log("\n[3] Panel is username/password, DEMO ONLY, no OAuth");
 const panel = read("src/components/TradovateConnectPanel.tsx");
 test("panel posts to tradovate-connect", panel.includes('functionsUrl("tradovate-connect")'));
-test("panel offers demo and live", /"demo"/.test(panel) && /"live"/.test(panel));
+test("panel has NO demo/live selector",
+  !/setEnvironment\(/.test(panel) && !/\["demo",\s*"live"\]/.test(panel));
+test("panel always sends environment demo", /environment:\s*"demo"/.test(panel));
+test("panel has no manual account id input", !/accountId[^:]*<\s*Input/.test(panel));
+test("panel preselects and confirms an account",
+  panel.includes("preselectAccountId") && panel.includes("connectTradovate.confirmAccount"));
 test("panel has a password field", /type=\{showPassword \? "text" : "password"\}/.test(panel));
 test("no OAuth / redirect sign-in flow", !/oauth|signInWithOAuth/i.test(panel));
 test("password is cleared after success", /setPassword\(""\)/.test(panel));
