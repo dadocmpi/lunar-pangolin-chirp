@@ -419,8 +419,8 @@ const Dashboard = () => {
     { eventKey: 'dashboard.kyc.eventAccountCreated', timeKey: 'dashboard.kyc.timeDaysAgo', count: 30 },
   ];
 
-  // KYC blocking overlay
-  const isKycBlocking = kycStatus !== 'approved' && activeView !== 'settings';
+  // KYC no longer blocks the terminal. It is enforced only at withdrawal time
+  // (server-side), and remains optional/voluntary in Settings.
 
   if (loading) {
     return (
@@ -435,45 +435,6 @@ const Dashboard = () => {
       <Navbar />
 
       <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
-        {/* KYC Required Banner */}
-        {kycStatus !== 'approved' && (
-          <div className={cn(
-            "mb-8 p-6 flex items-center gap-4 border",
-            kycStatus === 'submitted' ? "bg-yellow-500/10 border-yellow-500/20" : kycStatus === 'rejected' ? "bg-red-500/10 border-red-500/20" : "bg-[#D4AF37]/10 border-[#D4AF37]/20"
-          )}>
-            <AlertTriangle size={24} className={cn(
-              "shrink-0",
-              kycStatus === 'submitted' ? "text-yellow-500" : kycStatus === 'rejected' ? "text-red-500" : "text-[#D4AF37]"
-            )} />
-            <div className="flex-1">
-              {kycStatus === 'pending' && (
-                <>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-[#D4AF37]">{t('dashboard.kycRequired')}</p>
-                  <p className="text-[10px] text-slate-400 mt-1">{t('dashboard.kycRequiredDesc')}</p>
-                </>
-              )}
-              {kycStatus === 'submitted' && (
-                <>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-yellow-500">{t('dashboard.kycUnderReview')}</p>
-                  <p className="text-[10px] text-slate-400 mt-1">{t('dashboard.kycUnderReviewDesc')}</p>
-                </>
-              )}
-              {kycStatus === 'rejected' && (
-                <>
-                  <p className="text-[11px] font-bold uppercase tracking-widest text-red-500">{t('dashboard.kycRejected')}</p>
-                  <p className="text-[10px] text-slate-400 mt-1">{t('dashboard.kycRejectedDesc')}</p>
-                </>
-              )}
-            </div>
-            <Button
-              onClick={() => { setActiveView('settings'); setSettingsTab('kyc'); }}
-              className="bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-10 text-[9px] font-black uppercase tracking-widest shrink-0"
-            >
-              {kycStatus === 'rejected' ? t('dashboard.resubmitDocs') : t('dashboard.completeVerification')}
-            </Button>
-          </div>
-        )}
-
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
           <aside className="w-full lg:w-64 shrink-0 space-y-2">
@@ -493,7 +454,7 @@ const Dashboard = () => {
                 ) : kycStatus === 'submitted' ? (
                   <><div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse" /> <span className="text-yellow-500">{t('dashboard.kycUnderReview')}</span></>
                 ) : (
-                  <><div className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" /> <span className="text-red-500">{t('dashboard.kycRequiredBanner')}</span></>
+                  <><div className="w-1.5 h-1.5 bg-slate-500 rounded-full" /> <span className="text-slate-400">{t('dashboard.accountStandard')}</span></>
                 )}
               </div>
             </div>
@@ -525,24 +486,6 @@ const Dashboard = () => {
 
           {/* Main Content */}
           <main className="flex-1 min-w-0 relative">
-            {/* KYC Blocking Overlay */}
-            {isKycBlocking && (
-              <div className="absolute inset-0 bg-[#121212]/80 backdrop-blur-sm z-10 flex items-center justify-center">
-                <div className="text-center p-12 max-w-md">
-                  <Shield size={48} className="mx-auto text-[#D4AF37] mb-6" />
-                  <h3 className="text-lg font-black uppercase tracking-tight mb-3">{t('dashboard.verificationRequired')}</h3>
-                  <p className="text-slate-400 text-[12px] leading-relaxed mb-6">
-                    {t('dashboard.kycCompleteDesc')}
-                  </p>
-                  <Button
-                    onClick={() => { setActiveView('settings'); setSettingsTab('kyc'); }}
-                    className="bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-12 text-[10px] font-black uppercase tracking-widest"
-                  >
-                    {t('dashboard.goToVerification')}
-                  </Button>
-                </div>
-              </div>
-            )}
 
             {/* Dashboard Overview */}
             {activeView === 'services' && (
