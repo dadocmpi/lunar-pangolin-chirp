@@ -277,8 +277,16 @@ ALTER TABLE payment_audit_log
 -- pending_payments ids or applications ids. Drop the legacy FK to payments
 -- FIRST (ALTER COLUMN TYPE would otherwise try to re-implement it against the
 -- text column), then widen the column if an older migration created it as uuid.
+-- The older chain also created RLS policies that reference payment_id, so drop
+-- those first too: Postgres refuses to alter a column used in a policy.
 ALTER TABLE payment_audit_log
   DROP CONSTRAINT IF EXISTS payment_audit_log_payment_id_fkey;
+DROP POLICY IF EXISTS payment_audit_log_self_read ON payment_audit_log;
+DROP POLICY IF EXISTS payment_audit_log_service_insert ON payment_audit_log;
+DROP POLICY IF EXISTS payment_audit_log_service_select ON payment_audit_log;
+DROP POLICY IF EXISTS payment_audit_log_no_write ON payment_audit_log;
+DROP POLICY IF EXISTS payment_audit_log_no_update ON payment_audit_log;
+DROP POLICY IF EXISTS payment_audit_log_no_delete ON payment_audit_log;
 
 DO $$
 BEGIN

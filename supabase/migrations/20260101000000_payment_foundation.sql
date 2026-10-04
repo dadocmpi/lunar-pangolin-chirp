@@ -95,15 +95,20 @@ CREATE UNIQUE INDEX payment_audit_log_event_id_unique
   ON payment_audit_log (payment_id, event_id);
 
 -- ---------------------------------------------------------------------------
--- services: add source_payment_id and activated
+-- services: add source_payment_id, activated and plan_id
 -- ---------------------------------------------------------------------------
+-- The legacy production services table carries plan_name but no plan_id (the
+-- canonical plan key, e.g. 'starter'). The activation code writes plan_id and
+-- services_user_plan_activated_unique below is keyed on it, so add the column
+-- BEFORE the index. Additive and idempotent: no existing row is modified.
 ALTER TABLE services
   ADD COLUMN IF NOT EXISTS source_payment_id uuid REFERENCES payments(id),
-  ADD COLUMN IF NOT EXISTS activated boolean NOT NULL DEFAULT false;
+  ADD COLUMN IF NOT EXISTS activated boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS plan_id text;
 
 -- A user can have at most one ACTIVE service per plan. This is the second
 -- layer of defense against accidental duplicate activations.
-CREATE UNIQUE INDEX services_user_plan_activated_unique
+CREATE UNIQUE INDEX IF NOT EXISTS services_user_plan_activated_unique
   ON services (user_id, plan_id)
   WHERE activated = true;
 

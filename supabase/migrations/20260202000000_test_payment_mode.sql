@@ -61,10 +61,14 @@ CREATE INDEX IF NOT EXISTS pending_payments_is_test_idx
 -- ---------------------------------------------------------------------------
 -- services — add test-only columns
 -- ---------------------------------------------------------------------------
+-- plan_id is also added here (idempotently) because the legacy production
+-- services table has plan_name only; this migration must not assume the
+-- earlier payment_foundation migration already added it.
 ALTER TABLE services
   ADD COLUMN IF NOT EXISTS is_test                  boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS managed_capital_label    text NOT NULL DEFAULT 'REAL',
-  ADD COLUMN IF NOT EXISTS source_payment_id        uuid;
+  ADD COLUMN IF NOT EXISTS source_payment_id        uuid,
+  ADD COLUMN IF NOT EXISTS plan_id                  text;
 
 -- Unique partial index: one TEST service per (user_id, plan_id)
 CREATE UNIQUE INDEX IF NOT EXISTS services_test_user_plan_uniq
@@ -117,6 +121,9 @@ CREATE POLICY payment_audit_log_service_select ON payment_audit_log
 -- ---------------------------------------------------------------------------
 -- read_payment_status RPC — called by payment-status Edge Function
 -- ---------------------------------------------------------------------------
+-- DROP first: earlier migrations defined this name with a different OUT row
+-- type, which CREATE OR REPLACE cannot change.
+DROP FUNCTION IF EXISTS read_payment_status(text);
 CREATE OR REPLACE FUNCTION read_payment_status(p_legacy_id text)
 RETURNS TABLE (
   id            uuid,

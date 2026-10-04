@@ -6,9 +6,11 @@
 # extensions and roles that Supabase migrations depend on).
 #
 #   1. start a fresh supabase/postgres container
-#   2. apply every migration already on main  == current production schema
-#   3. apply the pending (branch-only) migrations in filename order
-#   4. report PASS/FAIL
+#   2. apply the production baseline (the real live schema: legacy services
+#      without plan_id, plus the out-of-band payment/application tables)
+#   3. apply every migration in filename order
+#   4. re-apply them to prove idempotency
+#   5. report PASS/FAIL
 set -u
 
 CONTAINER="${MIG_CONTAINER:-mig-pg}"
@@ -54,9 +56,10 @@ apply() {
   if [ $rc -ne 0 ]; then echo "APPLY FAILED: $(basename "$f") (exit $rc)"; exit 1; fi
 }
 
-# The baseline every pending migration assumes already exists in production.
-# The pending migrations do not touch the payments tables, so we do not replay
-# the (pre-existing, separately-authored) payment chain here.
+# The baseline every migration assumes already exists in production. It now
+# also emulates the live payment/application tables (created out-of-band) and
+# the real legacy services shape (plan_name, no plan_id), so the payment
+# migrations are exercised against the true production precondition.
 PROD_FILES=""
 
 echo; echo "===== [1] Apply CURRENT PRODUCTION state (baseline objects) ====="
