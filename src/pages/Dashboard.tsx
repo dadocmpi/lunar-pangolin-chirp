@@ -472,7 +472,7 @@ const Dashboard = () => {
                     <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">{t('dashboard.activeServices')}</h2>
                   </div>
                   <Button onClick={() => navigate('/pricing')} className="bg-[#D4AF37] text-black hover:bg-[#B08D48] rounded-none h-12 text-[10px] font-black uppercase tracking-widest">
-                    {t('dashboard.newAllocation')} <ArrowUpRight size={16} className="ml-2" />
+                    {t('dashboard.newAllocation')} <ArrowUpRight size={16} className="ms-2" />
                   </Button>
                 </div>
 
@@ -667,7 +667,7 @@ const Dashboard = () => {
                               <p className="text-[9px] text-slate-500">{formatDateTime(tx.date)}</p>
                             </div>
                           </div>
-                          <div className="text-right">
+                          <div className="text-end">
                             <p className="text-sm font-bold text-red-400">
                               -{convertPrice(tx.amount)}
                             </p>
@@ -702,13 +702,13 @@ const Dashboard = () => {
                   <table className="w-full min-w-[600px]">
                     <thead>
                       <tr className="border-b border-white/5">
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.asset')}</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.type')}</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.entry')}</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.exit')}</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.profit')}</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.time')}</th>
-                        <th className="text-left p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.status')}</th>
+                        <th className="text-start p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.asset')}</th>
+                        <th className="text-start p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.type')}</th>
+                        <th className="text-start p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.entry')}</th>
+                        <th className="text-start p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.exit')}</th>
+                        <th className="text-start p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.profit')}</th>
+                        <th className="text-start p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.time')}</th>
+                        <th className="text-start p-4 text-[9px] font-bold uppercase tracking-widest text-slate-500">{t('dashboard.status')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -799,7 +799,7 @@ const Dashboard = () => {
                         disabled={savingProfile}
                         className="bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-12 font-black text-[10px] uppercase tracking-widest"
                       >
-                        {savingProfile ? <Loader2 size={16} className="mr-2 animate-spin" /> : <Save size={16} className="mr-2" />}
+                        {savingProfile ? <Loader2 size={16} className="me-2 animate-spin" /> : <Save size={16} className="me-2" />}
                         {t('dashboard.saveChanges')}
                       </Button>
                     </div>
@@ -837,7 +837,7 @@ const Dashboard = () => {
                             onClick={handleEmailChange}
                             className="bg-white/10 hover:bg-white/20 text-white rounded-none h-12 font-black text-[10px] uppercase tracking-widest"
                           >
-                            <Mail size={16} className="mr-2" /> {t('dashboard.sendConfirmationLink')}
+                            <Mail size={16} className="me-2" /> {t('dashboard.sendConfirmationLink')}
                           </Button>
                         </>
                       ) : (
@@ -1003,12 +1003,12 @@ const Dashboard = () => {
                               value={newPassword}
                               onChange={(e) => setNewPassword(e.target.value)}
                               placeholder={t('dashboard.minPasswordPlaceholder')}
-                              className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white pr-12"
+                              className="bg-white/5 border-white/10 rounded-none h-14 text-[14px] font-medium text-white pe-12"
                             />
                             <button
                               type="button"
                               onClick={() => setShowNewPassword(!showNewPassword)}
-                              className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
+                              className="absolute end-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white"
                             >
                               {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                             </button>
@@ -1031,7 +1031,7 @@ const Dashboard = () => {
                           disabled={changingPassword || !newPassword || !confirmNewPassword}
                           className="w-full bg-white/10 hover:bg-white/20 text-white rounded-none h-12 font-black text-[10px] uppercase tracking-widest"
                         >
-                          {changingPassword ? <Loader2 size={16} className="mr-2 animate-spin" /> : <Lock size={16} className="mr-2" />}
+                          {changingPassword ? <Loader2 size={16} className="me-2 animate-spin" /> : <Lock size={16} className="me-2" />}
                           {t('dashboard.updatePassword')}
                         </Button>
                       </div>

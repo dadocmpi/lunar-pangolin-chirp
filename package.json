@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "check:i18n": "node scripts/check-i18n.mjs",
+    "check:no-hardcoded": "node scripts/check-no-hardcoded-text.mjs",
     "check:payments": "node scripts/check-payment-contract.mjs",
     "check:tradovate": "node scripts/check-tradovate-contract.mjs",
     "check:dashboard": "node scripts/check-dashboard-data.mjs",
