@@ -8,7 +8,7 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `npm run lint` — lint (0 errors; ~11 warnings are baseline fast-refresh/exhaustive-deps).
 - `npm run check:i18n` — i18n integrity gate (all 11 locales, key parity, no empty/interp drift).
 - `npm run check:payments` — payment/checkout contract gate (see Payments below).
-- No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`, `run-payments-flag-tests.ts`); Deno is not installed in the default image.
+- No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`, `run-payments-flag-tests.ts`, `run-payment-destination-tests.ts`); Deno is not installed in the default image.
 - **Run `npm run check:i18n` and `npm run check:payments` before opening a PR that touches checkout, pricing, or i18n.**
 
 ## Local preview
@@ -40,6 +40,7 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - Plan prices live in ONE canonical client table: `src/lib/plans.ts` `PLAN_PRICING` (USD). It MUST mirror the server table `supabase/functions/_shared/plans.ts` `PLANS` (`priceCents` + `managedCapitalUsd`). `npm run check:payments` enforces parity; never hard-code prices in a page again.
 - Managed Capital is always charged in **USD**. Local currency is presentation only.
 - Active checkout methods: `stripe-checkout` (Stripe-verified via webhook), `wise-checkout` (pending_manual), `crypto-checkout` (on-chain confirm). Browser flows never declare the price.
+- Real payout destinations come from ONE server resolver: `supabase/functions/_shared/payment-destinations.ts` (Wise `WISE_*` secrets, crypto `CRYPTO_DESTINATION_*` secrets). TEST mode returns the safe placeholders; LIVE mode with a missing destination fails closed (503 `payment_destination_unconfigured`) and must never fall back to the test placeholder. The destination check runs after auth.
 - `card-checkout` and `paypal-checkout` are **hard-disabled** (HTTP 410): they used to activate a paid service from client-supplied values with no payment verification. Do not re-enable them; card payments go through `stripe-checkout`.
 - Test mode is server-side only (`TEST_PAYMENT_MODE` env). Never trust an `isTest` flag from the request body.
 
@@ -54,5 +55,6 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 
 ## Deployment
 - Deployment is via Vercel's GitHub integration: pushing to `main` triggers a `Production` deployment for the `braxelmarkets` project (`https://braxelmarkets.vercel.app/`).
+- **Vercel deploys ONLY the SPA.** Supabase Edge Functions are a separate target: `.github/workflows/deploy-supabase-functions.yml` runs `supabase functions deploy` on push to `main` (needs `SUPABASE_ACCESS_TOKEN` + `SUPABASE_PROJECT_ID` repo secrets). Until functions are deployed, calls return `{"code":"NOT_FOUND"}`. Merging `supabase/functions/**` alone does NOT change production.
 - No local Vercel CLI/auth; do not attempt `vercel deploy` — push to `main` instead.
 - `.github/workflows/deploy.yml` deploys docs to GitHub Pages (separate; repo has `has_pages: false`, unused).

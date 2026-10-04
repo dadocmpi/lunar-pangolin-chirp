@@ -12,6 +12,39 @@ Functions required to flip modes.
 
 ---
 
+## 0. FIRST: the Edge Functions must actually be deployed
+
+This is a separate deploy target from the frontend. **Vercel deploys the SPA;
+it does not deploy Supabase Edge Functions.** Merging `supabase/functions/**`
+to `main` changes nothing in production until the functions are deployed with
+the Supabase CLI.
+
+How to tell whether they are deployed: an unauthenticated `POST` to a function
+that exists returns `401 Unauthorized`; a function that is **not deployed**
+returns:
+
+```json
+{"code":"NOT_FOUND","message":"Requested function was not found"}
+```
+
+```bash
+# Deploy every function in supabase/functions/ to the project
+supabase functions deploy --project-ref ymzdxifedtjwkxkzfwqu
+```
+
+`.github/workflows/deploy-supabase-functions.yml` automates this on push to
+`main`, but it needs two repository secrets (GitHub → Settings → Secrets and
+variables → Actions):
+
+- `SUPABASE_ACCESS_TOKEN` — a Supabase personal access token (`sbp_…`)
+- `SUPABASE_PROJECT_ID` — `ymzdxifedtjwkxkzfwqu`
+
+Until the functions are deployed, the frontend flag can be on and the UI will
+still fail: the calls 404. Deploy the functions **before** expecting checkout
+to work.
+
+---
+
 ## 1. The single source of truth
 
 The gate is ON when **either** flag is the exact string `"true"`:
@@ -82,15 +115,15 @@ subscribe at minimum to `checkout.session.completed` (plus `invoice.paid`,
 
 ### 2d. Wise / crypto test configuration
 
-The shipping Wise and crypto flows return **test placeholders**
+In TEST mode the Wise and crypto flows return **test placeholders**
 (`TEST HOLDER — DO NOT TRANSFER REAL FUNDS`, `tb1qtest…`) and never
-auto-confirm. To exercise the admin confirmation path in test mode set:
+auto-confirm, regardless of whether real destinations are configured. To
+exercise the admin confirmation path set:
 
 - `TEST_CONFIRM_SECRET` = a long random string (guards `test-confirm-payment`)
 - `ADMIN_SECRET` = a long random string (guards `crypto-confirmation`)
 
-Real bank details / deposit addresses are a separate integration and are
-deliberately **not** configured here.
+Real bank details / deposit addresses are only used in LIVE mode (section 3).
 
 ---
 
@@ -112,10 +145,23 @@ Do this only after a successful TEST run. Change **both** sides in one go.
    - `STRIPE_SUCCESS_URL` / `STRIPE_CANCEL_URL` as above
 4. Stripe Dashboard (live mode) → Developers → Webhooks → the same
    `…/functions/v1/stripe-webhook` URL, live events.
+5. **Wise bank account (Supabase secrets)** — required, or `wise-checkout`
+   fails closed with `503 payment_destination_unconfigured`:
+   - `WISE_HOLDER_NAME` = account holder name
+   - `WISE_BANK_NAME` = bank name
+   - `WISE_ACCOUNT_NUMBER` **or** `WISE_IBAN` = the account to receive funds
+   - `WISE_ROUTING_NUMBER`, `WISE_SWIFT` = optional, for US/SWIFT rails
+6. **Crypto deposit addresses (Supabase secrets)** — set one per network you
+   accept. A network with no address fails closed with `503
+   payment_destination_unconfigured`; it is never shown a placeholder address:
+   - `CRYPTO_DESTINATION_BTC`, `CRYPTO_DESTINATION_TRC20`,
+     `CRYPTO_DESTINATION_ETH`, `CRYPTO_DESTINATION_BNB`,
+     `CRYPTO_DESTINATION_POLYGON`, `CRYPTO_DESTINATION_SOL`
 
 > Rule of thumb: `sk_test_…` + `TEST_PAYMENT_MODE` go together, and
 > `sk_live_…` + `PAYMENTS_ENABLED` go together. Never mix a live secret key
-> with test mode or vice versa.
+> with test mode or vice versa. In LIVE mode a missing Wise/crypto destination
+> is a **hard 503**, never a silent fallback to the test placeholder.
 
 ---
 
@@ -147,8 +193,8 @@ Before TEST or LIVE can complete a payment, provide these (values only — do
 | 4 Stripe price IDs (`price_…`) | Supabase secrets `STRIPE_PRICE_<PLAN>_USD` | one per plan, in **USD** |
 | Stripe success/cancel URLs | `STRIPE_SUCCESS_URL`, `STRIPE_CANCEL_URL` | point at `/checkout/success` and `/pricing` |
 | Admin secrets | `ADMIN_SECRET`, `TEST_CONFIRM_SECRET` | long random strings |
-| Real Wise bank details | separate integration (not in this task) | current flow shows test placeholders |
-| Real crypto deposit addresses | separate integration (not in this task) | current flow shows test placeholders |
+| Real Wise bank details | Supabase secrets `WISE_*` | LIVE only; missing ⇒ 503 |
+| Real crypto deposit addresses | Supabase secrets `CRYPTO_DESTINATION_*` | LIVE only; missing ⇒ 503 |
 
 Canonical plan prices (server source of truth, `supabase/functions/_shared/plans.ts`):
 Starter **$200**, Professional **$350**, Business **$600**, Enterprise **$820**
