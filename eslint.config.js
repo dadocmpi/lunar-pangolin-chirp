@@ -5,7 +5,9 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist"] },
+  // `docs/edge-functions/*` are generated copy/paste bundles (see
+  // scripts/bundle-edge-functions.mjs) — not source, so they are not linted.
+  { ignores: ["dist", "docs/edge-functions"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
