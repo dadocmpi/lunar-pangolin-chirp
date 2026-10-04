@@ -61,8 +61,9 @@ GRANT USAGE ON SCHEMA storage TO authenticated, service_role, anon;
 GRANT ALL ON storage.objects, storage.buckets TO service_role;
 GRANT SELECT, INSERT, UPDATE, DELETE ON storage.objects TO authenticated;
 
--- profiles is referenced by the KYC gate fallback.
+-- profiles is referenced by the KYC gate fallback. Its live shape has NO
+-- kyc_status column; the KYC migration adds it additively before the gate RPCs
+-- read it. Declaring it here would hide that requirement.
 CREATE TABLE IF NOT EXISTS public.profiles (
-  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  kyc_status text
+  id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE
 );

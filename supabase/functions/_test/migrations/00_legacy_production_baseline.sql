@@ -7,7 +7,12 @@
 --   auth.users        Supabase platform (all integrations FK to it)
 --   storage.buckets   Supabase platform (kyc migration inserts a bucket)
 --   storage.objects   Supabase platform (kyc migration adds RLS policies)
---   public.profiles   legacy table, read by the KYC gate RPCs (kyc migration)
+--   public.profiles   legacy table, read by the KYC gate RPCs (kyc migration).
+--                     Its live shape is (id, created_at) -- notably there is NO
+--                     kyc_status column, so the KYC migration must ADD it
+--                     before the gate RPCs reference it. (This mirrors
+--                     production; the earlier baseline wrongly declared
+--                     kyc_status, which hid the bug.)
 --   public.services   legacy table, ALTERed by the payment migrations. Its live
 --                     shape is (id, user_id, plan_name, account_id, status,
 --                     balance, created_at) -- notably there is NO plan_id, so
@@ -33,7 +38,6 @@ CREATE TABLE IF NOT EXISTS public.services (
 
 CREATE TABLE IF NOT EXISTS public.profiles (
   id          uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  kyc_status  text,
   created_at  timestamptz NOT NULL DEFAULT now()
 );
 

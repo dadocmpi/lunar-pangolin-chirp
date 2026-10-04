@@ -66,18 +66,27 @@ echo; echo "===== [1] Apply CURRENT PRODUCTION state (baseline objects) ====="
 apply "$ROOT/supabase/functions/_test/migrations/00_legacy_production_baseline.sql"
 echo "Production baseline applied."
 
-echo; echo "===== [2] Apply PENDING migrations (branch), filename order ====="
-PENDING=$(git -C "$ROOT" diff --name-only origin/main...HEAD -- supabase/migrations/ | sort)
-echo "Pending order:"; echo "$PENDING" | sed 's/^/  /'
-for f in $PENDING; do apply "$ROOT/$f"; done
+echo; echo "===== [2] Apply ALL migrations (filename order) ====="
+# Apply every tracked migration in filename order, exactly as `supabase db push`
+# does against a fresh database at the current production state. Using the full
+# set (not only the diff vs origin/main) keeps the test self-contained on the
+# shallow clone and guarantees the whole chain is exercised on every run.
+ALL=$(ls -1 "$ROOT"/supabase/migrations/*.sql | sort)
+echo "Apply order:"; echo "$ALL" | xargs -n1 basename | sed 's/^/  /'
+for f in $ALL; do apply "$f"; done
+echo "All migrations applied."
 
-echo; echo "===== [3] Re-apply PENDING migrations (idempotency check) ====="
-for f in $PENDING; do apply "$ROOT/$f"; done
+echo; echo "===== [3] Re-apply ALL migrations (idempotency check) ====="
+for f in $ALL; do apply "$f"; done
 echo "Idempotent re-apply OK."
 
 echo; echo "===== [4] Verify resulting objects ====="
 $DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
-  "SELECT 'tables: ' || string_agg(tablename, ',') FROM pg_tables WHERE schemaname='public' AND tablename IN ('integrations','integration_credentials','tradovate_fills','trades','kyc_submissions','withdrawal_requests','kyc_ai_checks');"
+  "SELECT 'tables: ' || string_agg(tablename, ',') FROM pg_tables WHERE schemaname='public' AND tablename IN ('integrations','integration_credentials','tradovate_fills','trades','kyc_submissions','withdrawal_requests','kyc_ai_checks','tradovate_welcome_state');"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'profiles.kyc_status: ' || CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='kyc_status') THEN 'present' ELSE 'MISSING' END;"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'gate RPCs: ' || count(*) FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND p.proname IN ('kyc_require_approved','kyc_status_for_user','withdrawal_kyc_gate');"
 $DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
   "SELECT 'rls_enabled: ' || count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ('integrations','integration_credentials','tradovate_fills','trades') AND c.relrowsecurity;"
 $DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \

@@ -4,10 +4,11 @@
 -- Adds:
 --   1. kyc_submissions         — user-submitted identity documents + review state
 --   2. withdrawal_requests     — withdrawal requests, created only when KYC approved
---   3. kyc_require_approved()  — SQL predicate the withdrawal function calls
---   4. RPCs: kyc_status_for_user(uuid), withdrawal_kyc_gate(uuid)
---   5. Private storage bucket 'kyc-documents' + owner-only policies
---   6. RLS policies (self-read; no authenticated write — writes go through the
+--   3. profiles.kyc_status     — legacy profile fallback the gate RPCs read
+--   4. kyc_require_approved()  — SQL predicate the withdrawal function calls
+--   5. RPCs: kyc_status_for_user(uuid), withdrawal_kyc_gate(uuid)
+--   6. Private storage bucket 'kyc-documents' + owner-only policies
+--   7. RLS policies (self-read; no authenticated write — writes go through the
 --      service role behind a JWT-verified Edge Function)
 --
 -- Idempotent. No data is dropped. No policy denies existing reads on other
@@ -61,7 +62,18 @@ CREATE TABLE IF NOT EXISTS withdrawal_requests (
 CREATE INDEX IF NOT EXISTS withdrawal_requests_user_id_idx ON withdrawal_requests (user_id);
 
 -- ---------------------------------------------------------------------------
--- 3. Gate predicate + RPCs
+-- 3. profiles.kyc_status (legacy profile fallback)
+-- ---------------------------------------------------------------------------
+-- The gate RPCs below read the user's legacy profile status as a fallback when
+-- no kyc_submissions row exists yet. On the live database public.profiles is a
+-- pre-existing table that never had this column, so create it additively. This
+-- is idempotent and non-destructive: it only adds a nullable text column and
+-- never rewrites existing rows. Existing profile data is left untouched.
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS kyc_status text;
+
+-- ---------------------------------------------------------------------------
+-- 4. Gate predicate + RPCs
 -- ---------------------------------------------------------------------------
 -- A user is KYC-approved only when their latest submission (or the profile
 -- fallback) is 'approved'. SECURITY DEFINER so the Edge Function reads the
@@ -128,7 +140,7 @@ GRANT EXECUTE ON FUNCTION kyc_status_for_user(uuid) TO service_role;
 GRANT EXECUTE ON FUNCTION withdrawal_kyc_gate(uuid) TO service_role;
 
 -- ---------------------------------------------------------------------------
--- 4. RLS
+-- 5. RLS
 -- ---------------------------------------------------------------------------
 ALTER TABLE kyc_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE withdrawal_requests ENABLE ROW LEVEL SECURITY;
@@ -156,7 +168,7 @@ DROP POLICY IF EXISTS withdrawal_requests_no_delete ON withdrawal_requests;
 CREATE POLICY withdrawal_requests_no_delete ON withdrawal_requests FOR DELETE USING (false);
 
 -- ---------------------------------------------------------------------------
--- 5. Private storage bucket + owner-only object policies
+-- 6. Private storage bucket + owner-only object policies
 -- ---------------------------------------------------------------------------
 INSERT INTO storage.buckets (id, name, public)
 VALUES ('kyc-documents', 'kyc-documents', false)

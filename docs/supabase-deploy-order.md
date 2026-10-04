@@ -65,7 +65,7 @@ automatic deploys.
    |---|-----------|------|
    | 1 | `20261004000000_tradovate_integration.sql` | integrations, credentials, fills, trades |
    | 2 | `20261004000001_tradovate_sync_schedule.sql` | pg_cron poller |
-   | 3 | `20261005000000_kyc_on_withdrawal.sql` | withdrawal KYC |
+   | 3 | `20261005000000_kyc_on_withdrawal.sql` | withdrawal KYC (+ additive `profiles.kyc_status` column) |
    | 4 | `20261006000000_ai_kyc_checks.sql` | AI consistency checks |
    | 5 | `20261007000000_withdrawal_manual_review.sql` | manual-review threshold |
    | 6 | `20261008000000_tradovate_welcome_skip.sql` | first-run welcome skip state |
