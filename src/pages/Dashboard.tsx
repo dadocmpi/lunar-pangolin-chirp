@@ -6,6 +6,8 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PerformanceChart from '@/components/PerformanceChart';
 import TradovateTrades from '@/components/TradovateTrades';
+import TradovateConnectCard from '@/components/TradovateConnectCard';
+import KycReminderBanner from '@/components/KycReminderBanner';
 import WithdrawalKycGate, { type KycStatus as WithdrawalKycStatus } from '@/components/WithdrawalKycGate';
 import {
   LayoutDashboard,
@@ -468,7 +470,7 @@ const Dashboard = () => {
                 ) : kycStatus === 'submitted' ? (
                   <><div className="w-1.5 h-1.5 bg-yellow-500 rounded-full animate-pulse" /> <span className="text-yellow-500">{t('dashboard.kycUnderReview')}</span></>
                 ) : (
-                  <><div className="w-1.5 h-1.5 bg-slate-500 rounded-full" /> <span className="text-slate-400">{t('dashboard.accountStandard')}</span></>
+                  <><div className="w-1.5 h-1.5 bg-[#D4AF37] rounded-full" /> <span className="text-[#D4AF37]">{t('dashboard.kycBadgeRequired')}</span></>
                 )}
               </div>
             </div>
@@ -515,6 +517,13 @@ const Dashboard = () => {
                   </Button>
                 </div>
 
+                {/* Non-blocking KYC reminder. The terminal is fully usable
+                    without it; only withdrawals require verification. */}
+                <KycReminderBanner
+                  status={kycStatus}
+                  onOpen={() => { setActiveView('settings'); setSettingsTab('kyc'); }}
+                />
+
                 {/* Metrics Cards */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="bg-[#1A1A1A] border border-white/10 p-6">
@@ -536,6 +545,9 @@ const Dashboard = () => {
                     <p className="text-xl md:text-2xl font-serif font-bold text-white">{services.length}</p>
                   </div>
                 </div>
+
+                {/* Prominent Tradovate connect entry point (username+password). */}
+                <TradovateConnectCard />
 
                 <PerformanceChart />
 
