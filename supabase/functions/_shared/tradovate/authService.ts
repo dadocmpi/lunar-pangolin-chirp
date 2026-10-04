@@ -15,6 +15,7 @@
 
 import { TradovateHttpError, requestJson } from "./http.ts";
 import { resolveAppCredentials } from "./appCredentials.ts";
+import { redact } from "./crypto.ts";
 import {
   CircuitOpenError,
   createDefaultLimiter,
@@ -95,10 +96,21 @@ export async function authenticate(
       ? data.accessToken
       : null;
     if (!accessToken) {
+      // Tradovate reports auth failures as HTTP 200 with an `errorText` body
+      // (verified against demo.tradovateapi.com), NOT as a 4xx. Classify from
+      // the body so a wrong password maps to invalid_credentials instead of a
+      // generic "unexpected".
+      const text = extractErrorText(data);
+      if (text && /incorrect username or password|invalid (username|password|credentials)|bad credentials/i.test(text)) {
+        return { ok: false, code: "invalid_credentials", message: text };
+      }
+      if (text && /api access|not enabled|entitlement|subscription|not entitled/i.test(text)) {
+        return { ok: false, code: "api_disabled", message: text };
+      }
       return {
         ok: false,
         code: "unexpected",
-        message: "Tradovate returned no access token",
+        message: text ?? "Tradovate returned no access token",
       };
     }
     return {
@@ -162,12 +174,12 @@ export function classifyAuthError(err: unknown): TradovateAuthResult {
 /** Extract a provider error string without leaking secrets. */
 export function extractErrorText(body: unknown): string | null {
   if (!body) return null;
-  if (typeof body === "string") return body.slice(0, 200);
+  if (typeof body === "string") return redact(body.slice(0, 200));
   if (typeof body === "object") {
     const rec = body as Record<string, unknown>;
     for (const key of ["errorText", "error", "message", "detail"]) {
       const v = rec[key];
-      if (typeof v === "string" && v) return v.slice(0, 200);
+      if (typeof v === "string" && v) return redact(v.slice(0, 200));
     }
   }
   return null;

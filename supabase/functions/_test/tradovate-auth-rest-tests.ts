@@ -12,6 +12,7 @@
 import {
   authenticate,
   ensureToken,
+  extractErrorText,
   hostFor,
   needsRenewal,
   TOKEN_RENEW_MARGIN_MS,
@@ -109,6 +110,34 @@ await test("401 -> invalid_credentials", async () => {
 await test("403 -> api_disabled", async () => {
   const fake = (() =>
     Promise.resolve(jsonResponse({ errorText: "API access not enabled" }, 403))) as unknown as typeof fetch;
+  const res = await authenticate({
+    credentials: { name: "u", password: "p" },
+    environment: "live",
+    limiter: limiter(),
+    fetchImpl: fake,
+  });
+  ok(!res.ok, "failed");
+  if (!res.ok) eq(res.code, "api_disabled", "code");
+});
+await test("200 with errorText (real Tradovate shape) -> invalid_credentials", async () => {
+  // Verified live: demo.tradovateapi.com returns HTTP 200 +
+  // {"errorText":"Incorrect username or password..."}, not a 401.
+  const fake = (() =>
+    Promise.resolve(jsonResponse({
+      errorText: "Incorrect username or password. Please try again, noting that passwords are case-sensitive.",
+    }, 200))) as unknown as typeof fetch;
+  const res = await authenticate({
+    credentials: { name: "u", password: "bad" },
+    environment: "demo",
+    limiter: limiter(),
+    fetchImpl: fake,
+  });
+  ok(!res.ok, "failed");
+  if (!res.ok) eq(res.code, "invalid_credentials", "code");
+});
+await test("200 with API-access errorText -> api_disabled", async () => {
+  const fake = (() =>
+    Promise.resolve(jsonResponse({ errorText: "API access is not enabled for this account" }, 200))) as unknown as typeof fetch;
   const res = await authenticate({
     credentials: { name: "u", password: "p" },
     environment: "live",
@@ -292,6 +321,17 @@ await test("redact removes secrets from a log string", () => {
   ok(!s.includes("hunter2"), "password gone");
   ok(!s.includes("tok-abc"), "token gone");
   ok(!s.includes("xyz.123"), "bearer gone");
+});
+
+await test("extractErrorText redacts a provider error that echoes a secret", () => {
+  // A provider (or proxy) can echo the Authorization header back in the error
+  // body; that text is stored in last_error_message and returned to the client.
+  const text = extractErrorText({
+    errorText: "Invalid token: Bearer eyJ.SECRET-CANARY.xyz for cid=CID-CANARY",
+  });
+  ok(!!text, "extracted a string");
+  ok(!text!.includes("eyJ.SECRET-CANARY.xyz"), "bearer token redacted");
+  ok(!text!.includes("CID-CANARY"), "cid redacted");
 });
 
 console.log(`\nResult: ${passed} passed, ${failed} failed.`);
