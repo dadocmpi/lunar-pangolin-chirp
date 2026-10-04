@@ -64,6 +64,9 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 
 ## KYC (identity verification)
 - The terminal opens for any logged-in user. KYC is **not** required to enter the dashboard.
+- The in-dashboard KYC banner (`src/components/KycReminderBanner.tsx`) is **non-blocking** and must never read "required" for an unverified user — its headline uses `dashboard.kyc.optionalTitle` ("…required only for withdrawals"). The old gating copy (`dashboard.kyc.required` = "Verification Required") must not be rendered anywhere that blocks the terminal.
+- The prominent Tradovate card (`src/components/TradovateConnectCard.tsx`, CTA `tradovate.connectCta` = "Log in on Tradovate" in all 11 locales) is the **first** element in the dashboard services view, above the KYC banner.
+- Headless proof of the above: `node scripts/screenshot-dashboard.mjs` (needs `puppeteer-core` + `/usr/bin/chromium`; serves a build and mocks a KYC-less user). Output in `docs/assets/`. Vercel *preview* URLs are behind deployment protection (`<title>Login – Vercel</title>`) and cannot be built/screenshotted without a Vercel token; the branch build must be served locally instead.
 - KYC is enforced only when a withdrawal is requested. `src/pages/Dashboard.tsx` (withdraw view) renders `src/components/WithdrawalKycGate.tsx` unless the latest `kyc_submissions.status` is `approved`.
 - Documents are uploaded through the authenticated `kyc-submit` Edge Function into the **private** bucket `kyc-documents` at `<user_id>/<uuid>.<ext>`; only object paths are stored, never public URLs. Object RLS keys on `(storage.foldername(name))[1] = auth.uid()::text`.
 - `withdrawal-request` is the server-side gate: it reads KYC status via the `kyc_status_for_user(uuid)` SECURITY DEFINER RPC for the **JWT** user and returns 403 `kyc_required` unless approved. A `kycStatus`/`userId` in the request body is ignored.
