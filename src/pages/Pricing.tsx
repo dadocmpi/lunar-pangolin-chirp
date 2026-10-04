@@ -11,27 +11,26 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useDocumentMeta } from '@/hooks/useDocumentMeta';
 import { useCurrency } from '@/hooks/useCurrency';
-
-const PRICES_USD = {
-  starter: { monthly: 200, account: 25000 },
-  professional: { monthly: 350, account: 50000 },
-  business: { monthly: 600, account: 100000 },
-  enterprise: { monthly: 820, account: 150000 },
-};
+import { PLAN_PRICING, formatUsd } from '@/lib/plans';
 
 const Pricing = () => {
   const { t } = useTranslation();
   useDocumentMeta('pricing');
   const navigate = useNavigate();
-  const { convertPrice, currency, isLoading, formatManagedCapital } = useCurrency();
+  const { isLoading, formatManagedCapital } = useCurrency();
+
+  // Single source of truth: the canonical client plan table (src/lib/plans.ts),
+  // which mirrors the server table. Prices are rendered in USD, matching the
+  // amount actually charged at checkout.
+  const USD = PLAN_PRICING;
 
   const plans = [
     {
       id: "starter",
       name: t('plans.starter'),
-      price: convertPrice(PRICES_USD.starter.monthly),
-      priceUSD: PRICES_USD.starter.monthly,
-      managedCapital: formatManagedCapital(PRICES_USD.starter.account),
+      price: formatUsd(USD.starter.monthlyUsd),
+      priceUSD: USD.starter.monthlyUsd,
+      managedCapital: formatManagedCapital(USD.starter.managedCapitalUsd),
       iconType: "zap",
       features: [
         t('plans.features.automation'),
@@ -43,9 +42,9 @@ const Pricing = () => {
     {
       id: "professional",
       name: t('plans.professional'),
-      price: convertPrice(PRICES_USD.professional.monthly),
-      priceUSD: PRICES_USD.professional.monthly,
-      managedCapital: formatManagedCapital(PRICES_USD.professional.account),
+      price: formatUsd(USD.professional.monthlyUsd),
+      priceUSD: USD.professional.monthlyUsd,
+      managedCapital: formatManagedCapital(USD.professional.managedCapitalUsd),
       iconType: "award",
       features: [
         t('plans.features.starterFeatures'),
@@ -57,9 +56,9 @@ const Pricing = () => {
     {
       id: "business",
       name: t('plans.business'),
-      price: convertPrice(PRICES_USD.business.monthly),
-      priceUSD: PRICES_USD.business.monthly,
-      managedCapital: formatManagedCapital(PRICES_USD.business.account),
+      price: formatUsd(USD.business.monthlyUsd),
+      priceUSD: USD.business.monthlyUsd,
+      managedCapital: formatManagedCapital(USD.business.managedCapitalUsd),
       iconType: "shield",
       features: [
         t('plans.features.proFeatures'),
@@ -70,9 +69,9 @@ const Pricing = () => {
     {
       id: "enterprise",
       name: t('plans.enterprise'),
-      price: convertPrice(PRICES_USD.enterprise.monthly),
-      priceUSD: PRICES_USD.enterprise.monthly,
-      managedCapital: formatManagedCapital(PRICES_USD.enterprise.account),
+      price: formatUsd(USD.enterprise.monthlyUsd),
+      priceUSD: USD.enterprise.monthlyUsd,
+      managedCapital: formatManagedCapital(USD.enterprise.managedCapitalUsd),
       iconType: "crown",
       features: [
         t('plans.features.advancedFeatures'),
@@ -127,7 +126,7 @@ const Pricing = () => {
           {!isLoading && (
             <div className="text-center mb-8 text-xs text-slate-500 space-y-1">
               <p>
-                {t('pricing.detectedCurrency', 'Prices shown in your local currency ({{currency}}) based on your location', { currency: currency })}
+                {t('pricing.detectedCurrency', 'All prices are charged in USD ({{currency}}) regardless of your location', { currency: 'USD' })}
               </p>
               <p className="text-[#D4AF37]/70">{t('pricing.managedCapitalUsdNote')}</p>
             </div>

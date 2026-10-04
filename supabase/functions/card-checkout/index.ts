@@ -187,6 +187,29 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // ---------------------------------------------------------------------------
+  // HARD DISABLE — this legacy endpoint activated a paid service directly from
+  // client-supplied `planName`/`accountSize`, with no payment verification and
+  // no linkage to a confirmed payment. That is a free-service vulnerability.
+  //
+  // It is not called by the browser (the Checkout page uses stripe-checkout,
+  // wise-checkout and crypto-checkout). It is retained only as source so the
+  // records/emails can be reviewed, and it fails closed. Real card payments
+  // must go through stripe-checkout + stripe-webhook (Stripe-verified) or the
+  // operator activation path.
+  // ---------------------------------------------------------------------------
+  return new Response(
+    JSON.stringify({
+      error: "endpoint_disabled",
+      message:
+        "card-checkout is disabled. Card payments are processed via stripe-checkout with server-verified webhooks.",
+    }),
+    {
+      status: 410,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    },
+  );
+
   try {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {

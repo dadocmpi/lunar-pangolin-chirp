@@ -7,6 +7,10 @@ import {
 } from "../_shared/option_a/payments.ts";
 import { getPlan, TEST_PLACEHOLDER_WALLET } from "../_shared/option_a/plans.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import {
+  isPaymentsEnabled,
+  paymentsDisabledBody,
+} from "../_shared/payments-flag.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -48,15 +52,13 @@ serve(async (req) => {
   }
 
   // -------------------------------------------------------------------------
-  // Gate
+  // Gate — single shared source of truth (PAYMENTS_ENABLED || TEST_PAYMENT_MODE)
   // -------------------------------------------------------------------------
-  const testMode = Deno.env.get("TEST_PAYMENT_MODE") === "true";
-  if (!testMode) {
-    return safeTestResponse(
-      null,
-      TEST_PLACEHOLDER_WALLET,
-      "TEST_PAYMENT_MODE is not 'true'",
-    );
+  if (!isPaymentsEnabled()) {
+    return new Response(JSON.stringify(paymentsDisabledBody()), {
+      status: 503,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   // -------------------------------------------------------------------------

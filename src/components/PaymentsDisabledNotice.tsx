@@ -8,11 +8,12 @@ import { useTranslation } from 'react-i18next';
 /**
  * Fail-closed gate for payments.
  *
- * Rendered when VITE_PAYMENTS_ENABLED is not set to the string "true".
- * No payment buttons, forms, or checkout flow are rendered.
+ * Rendered when the payments flag is off. The rule lives in ONE place:
+ * `src/lib/paymentsFlag.ts` — `isPaymentsEnabled()` is true when either
+ * `VITE_PAYMENTS_ENABLED` (live) or `VITE_TEST_PAYMENT_MODE` (test) is "true".
  *
- * This is NOT test-mode UI. It is the production default.
- * Test mode is a separate runtime concern enabled by PAYMENTS_ENABLED = "true".
+ * No payment buttons, forms, or checkout flow are rendered. This is NOT
+ * test-mode UI; it is the production default.
  */
 export const PaymentsDisabledNotice = () => {
   const { t } = useTranslation();

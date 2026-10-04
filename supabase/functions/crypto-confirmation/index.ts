@@ -28,6 +28,10 @@ import {
 } from "../_shared/option_a/payments.ts";
 import { logPaymentEvent } from "../_shared/option_a/audit.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import {
+  isPaymentsEnabled,
+  paymentsDisabledBody,
+} from "../_shared/payments-flag.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -38,10 +42,6 @@ const corsHeaders = {
 // ---------------------------------------------------------------------------
 // Gate helpers — fail-closed
 // ---------------------------------------------------------------------------
-
-function isPaymentsEnabled(): boolean {
-  return Deno.env.get("PAYMENTS_ENABLED") === "true";
-}
 
 function getAdminSecret(): string {
   const val = Deno.env.get("ADMIN_SECRET");
@@ -67,20 +67,13 @@ serve(async (req) => {
   }
 
   // -------------------------------------------------------------------------
-  // PAYMENTS_ENABLED gate — fail-closed
+  // Payments gate — single shared source of truth, fail-closed
   // -------------------------------------------------------------------------
   if (!isPaymentsEnabled()) {
-    return new Response(
-      JSON.stringify({
-        error: "payments_disabled",
-        message:
-          "PAYMENTS_ENABLED is not set to 'true'. No payment was modified.",
-      }),
-      {
-        status: 503,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    return new Response(JSON.stringify(paymentsDisabledBody()), {
+      status: 503,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 
   // -------------------------------------------------------------------------
