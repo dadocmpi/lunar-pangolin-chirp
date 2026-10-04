@@ -1,0 +1,115 @@
+name: Supabase release (migrations + functions + smoke)
+
+# One-click, MANUAL release for the Supabase backend. Nothing here runs by
+# itself: this workflow changes the live database, so a human must click
+# "Run workflow" in the Actions tab. See docs/go-live.md for the click-by-click
+# steps.
+#
+# It runs three steps in this exact order and STOPS at the first failure:
+#   1. supabase db push          -> apply every pending migration (schema first)
+#   2. supabase functions deploy -> deploy every Edge Function (code second)
+#   3. smoke test                -> fail if any function answers 404 / NOT_FOUND
+#
+# Schema before code is the whole point: Edge Functions call tables and RPCs
+# introduced by the migrations, so deploying them first would break every call
+# on a fresh database.
+#
+# Double-deploy avoidance: this is the ONLY workflow with a manual trigger.
+# Push-triggered, functions-only deploys stay in
+# deploy-supabase-functions.yml, which keeps its migration pre-flight safety
+# gate (it SKIPS when the DB is not yet at the commit's migration head). Its
+# `workflow_dispatch` trigger was removed so one click can never deploy the
+# functions twice.
+#
+# Required repository secrets (Settings -> Secrets and variables -> Actions):
+#   SUPABASE_ACCESS_TOKEN  - Supabase personal access token (sbp_...)
+#   SUPABASE_PROJECT_ID    - target project ref, e.g. ymzdxifedtjwkxkzfwqu
+#   SUPABASE_DB_PASSWORD   - database password (lets db push connect)
+# Secret values are never echoed; GitHub also masks them in the logs.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Check required secrets are present
+        run: |
+          set -euo pipefail
+          missing=""
+          [ -n "${SUPABASE_ACCESS_TOKEN:-}" ] || missing="$missing SUPABASE_ACCESS_TOKEN"
+          [ -n "${SUPABASE_PROJECT_ID:-}" ] || missing="$missing SUPABASE_PROJECT_ID"
+          [ -n "${SUPABASE_DB_PASSWORD:-}" ] || missing="$missing SUPABASE_DB_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing — add them under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+          echo "All required secrets are present (values not printed)."
+
+      - name: List pending migrations (filename order)
+        run: |
+          set -euo pipefail
+          echo "Migrations in this commit, in the order they will be applied:"
+          ls -1 supabase/migrations/*.sql | xargs -n1 basename | sort
+
+      - name: Link the Supabase project
+        run: |
+          set -euo pipefail
+          supabase link --project-ref "$SUPABASE_PROJECT_ID" --password "$SUPABASE_DB_PASSWORD"
+
+      - name: "Step 1/3 - apply migrations (supabase db push)"
+        id: migrations
+        run: |
+          set -euo pipefail
+          supabase db push --linked --password "$SUPABASE_DB_PASSWORD" --yes
+          echo "Applied migration head:"
+          supabase migration list --linked --password "$SUPABASE_DB_PASSWORD"
+
+      - name: "Step 2/3 - deploy all Edge Functions"
+        id: functions
+        run: |
+          set -euo pipefail
+          supabase functions deploy --project-ref "$SUPABASE_PROJECT_ID" --use-api
+
+      - name: "Step 3/3 - smoke test every function (fail on any 404)"
+        id: smoke
+        env:
+          SUPABASE_URL: https://${{ secrets.SUPABASE_PROJECT_ID }}.supabase.co
+        run: node scripts/smoke-edge-functions.mjs
+
+      - name: Release summary
+        if: always()
+        run: |
+          {
+            echo "## Supabase release summary"
+            echo ""
+            echo "| Step | Result |"
+            echo "|---|---|"
+            echo "| 1. Migrations applied | ${{ steps.migrations.outcome }} |"
+            echo "| 2. Edge Functions deployed | ${{ steps.functions.outcome }} |"
+            echo "| 3. Smoke test (no function returned 404) | ${{ steps.smoke.outcome }} |"
+            echo ""
+            echo "Migration head in this commit: \`$(ls -1 supabase/migrations/*.sql | xargs -n1 basename | sort | tail -1)\`"
+            echo ""
+            if [ "${{ steps.smoke.outcome }}" != "success" ]; then
+              echo "> The release did NOT finish cleanly. Nothing after the first failure ran. Fix the cause and run the workflow again; migrations are idempotent."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
