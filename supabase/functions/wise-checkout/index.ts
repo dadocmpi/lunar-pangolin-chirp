@@ -6,12 +6,17 @@ import {
   upsertPendingPayment,
   validateCheckoutInput,
 } from "../_shared/option_a/payments.ts";
-import { getPlan, TEST_PLACEHOLDER_BANK } from "../_shared/option_a/plans.ts";
+import { getPlan } from "../_shared/option_a/plans.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import {
   isPaymentsEnabled,
+  isTestPaymentMode,
   paymentsDisabledBody,
 } from "../_shared/payments-flag.ts";
+import {
+  resolveBankDetails,
+  testBankDetails,
+} from "../_shared/payment-destinations.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -20,23 +25,22 @@ const corsHeaders = {
 };
 
 /**
- * Wise Checkout — TEST MODE.
+ * Wise Checkout.
  *
  * Behavior:
- *  1. Reads TEST_PAYMENT_MODE; if not "true", returns 200 with mode="test"
- *     and the safe test bank placeholder. No row is inserted.
- *  2. If TEST_PAYMENT_MODE is "true", inserts a pending_payments row with:
+ *  1. Gate: PAYMENTS_ENABLED || TEST_PAYMENT_MODE must be on, else 503.
+ *  2. Destination: in TEST mode returns the safe placeholder bank; in LIVE
+ *     mode resolves the real bank from secrets (WISE_*) and fails closed with
+ *     503 if it is not configured.
+ *  3. Inserts a pending_payments row with:
  *       - user_id        = authenticated user id
  *       - plan_id/name   = canonical from PLANS
  *       - amount_cents   = canonical from PLANS (browser value ignored)
  *       - method         = "wise"
  *       - status_enum    = "pending_manual"
  *       - idempotency_key= from the browser, required, ≥8 chars
- *       - metadata.is_test = true
- *  3. Writes one row to the audit log via the same helper as crypto.
- *  4. Returns the test bank placeholder. Production bank details must be
- *     configured via Deno env (TEST_PLACEHOLDER_BANK is the literal
- *     placeholder string used everywhere in this file).
+ *       - metadata.is_test = whether test mode is on
+ *  4. Writes one row to the audit log via the same helper as crypto.
  *  5. NEVER sets status to "confirmed". NEVER creates a services row.
  *  6. Idempotent on (user_id, idempotency_key).
  */
@@ -84,6 +88,25 @@ serve(async (req) => {
   const user = userData.user;
 
   // -------------------------------------------------------------------------
+  // Destination — fail closed in LIVE mode when no real bank is configured.
+  // Never hand a live payer the test placeholder.
+  // -------------------------------------------------------------------------
+  const testMode = isTestPaymentMode();
+  const bankDetails = testMode ? testBankDetails() : resolveBankDetails();
+  if (!bankDetails) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: "payment_destination_unconfigured",
+        mode: "production",
+        message:
+          "No Wise bank account is configured. Set WISE_HOLDER_NAME, WISE_BANK_NAME and WISE_ACCOUNT_NUMBER (or WISE_IBAN).",
+      }),
+      { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
+
+  // -------------------------------------------------------------------------
   // Parse body
   // -------------------------------------------------------------------------
   let body: unknown;
@@ -107,7 +130,7 @@ serve(async (req) => {
       clientCurrency: b.currency,
       network: null,
       idempotencyKey: b.idempotencyKey,
-      metadata: { method: "wise", is_test: true },
+      metadata: { method: "wise", is_test: testMode },
     });
     validated.userId = user.id;
     validated.userEmail = user.email ?? null;
@@ -136,7 +159,7 @@ serve(async (req) => {
     network: null,
     method: "wise",
     idempotencyKey: validated.idempotencyKey,
-    metadata: { ...validated.metadata, is_test: true },
+    metadata: { ...validated.metadata, is_test: testMode },
   });
 
   // For new rows, force the status into pending_manual.
@@ -172,38 +195,28 @@ serve(async (req) => {
     });
   }
 
-  return safeTestResponse(final, TEST_PLACEHOLDER_BANK, null);
+  return checkoutResponse(final, bankDetails, testMode);
 });
 
-function safeTestResponse(
+function checkoutResponse(
   payment: unknown,
-  bank: string,
-  reason: string | null,
+  bank: import("../_shared/payment-destinations.ts").BankDetails,
+  testMode: boolean,
 ) {
   const body: Record<string, unknown> = {
     ok: true,
-    mode: "test",
-    test_mode: true,
-    bank_details: {
-      holder_name: "TEST HOLDER — DO NOT TRANSFER REAL FUNDS",
-      bank_name: bank,
-      account_number: "TEST-ACCOUNT-0000",
-      routing_number: "TEST-ROUTING-0000",
-      swift: "TESTSWIFTXX",
-      reference: "Include your user email in the transfer reference",
-    },
-    warnings: [
-      "TEST MODE. No real bank account is configured.",
-      "Sending real funds will not result in service activation.",
-      "Wise confirmation requires an authorized test-admin path.",
-    ],
+    mode: testMode ? "test" : "production",
+    test_mode: testMode,
+    bank_details: bank,
+    warnings: testMode
+      ? [
+        "TEST MODE. No real bank account is configured.",
+        "Sending real funds will not result in service activation.",
+        "Wise confirmation requires an authorized test-admin path.",
+      ]
+      : [],
+    payment: payment ?? null,
   };
-  if (reason) body.reason = reason;
-  if (payment) {
-    body.payment = payment;
-  } else {
-    body.payment = null;
-  }
   return new Response(JSON.stringify(body), {
     status: 200,
     headers: { ...corsHeaders, "Content-Type": "application/json" },

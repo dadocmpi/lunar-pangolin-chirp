@@ -250,7 +250,11 @@ const Checkout = () => {
     e: unknown,
   ) => {
     const code = e instanceof Error ? e.message : String(e);
-    setSubmitError(t("checkout.startFailed"));
+    setSubmitError(
+      code === "payment_destination_unconfigured"
+        ? t("checkout.notConfigured")
+        : t("checkout.startFailed"),
+    );
     await notifyOwner({
       type: "erro",
       subject: "Falha ao iniciar checkout",
