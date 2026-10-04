@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "check:i18n": "node scripts/check-i18n.mjs",
-    "check:payments": "node scripts/check-payment-contract.mjs"
+    "check:payments": "node scripts/check-payment-contract.mjs",
+    "check:tradovate": "node scripts/check-tradovate-contract.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

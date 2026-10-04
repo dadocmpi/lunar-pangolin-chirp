@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import PerformanceChart from '@/components/PerformanceChart';
+import TradovateTrades from '@/components/TradovateTrades';
 import {
   LayoutDashboard,
   Wallet,
@@ -37,7 +38,8 @@ import {
   ChevronLeft,
   Globe,
   CreditCard,
-  MapPin
+  MapPin,
+  Plug
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -500,6 +502,7 @@ const Dashboard = () => {
 
             {[
               { id: 'services', label: t('nav.dashboard'), icon: <LayoutDashboard size={18} /> },
+              { id: 'tradovate', label: t('nav.tradovate'), icon: <Plug size={18} /> },
               { id: 'performance', label: t('dashboard.navPerformance'), icon: <BarChart3 size={18} /> },
               { id: 'withdraw', label: t('dashboard.withdraw'), icon: <Wallet size={18} /> },
               { id: 'auditlog', label: t('dashboard.navAuditLog'), icon: <Activity size={18} /> },
@@ -608,6 +611,11 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
+            )}
+
+            {/* Tradovate trades + reconstructed PnL */}
+            {activeView === 'tradovate' && (
+              <TradovateTrades />
             )}
 
             {/* Performance View */}
