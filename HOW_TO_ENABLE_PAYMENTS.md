@@ -12,6 +12,39 @@ Functions required to flip modes.
 
 ---
 
+## 0. FIRST: the Edge Functions must actually be deployed
+
+This is a separate deploy target from the frontend. **Vercel deploys the SPA;
+it does not deploy Supabase Edge Functions.** Merging `supabase/functions/**`
+to `main` changes nothing in production until the functions are deployed with
+the Supabase CLI.
+
+How to tell whether they are deployed: an unauthenticated `POST` to a function
+that exists returns `401 Unauthorized`; a function that is **not deployed**
+returns:
+
+```json
+{"code":"NOT_FOUND","message":"Requested function was not found"}
+```
+
+```bash
+# Deploy every function in supabase/functions/ to the project
+supabase functions deploy --project-ref ymzdxifedtjwkxkzfwqu
+```
+
+`.github/workflows/deploy-supabase-functions.yml` automates this on push to
+`main`, but it needs two repository secrets (GitHub → Settings → Secrets and
+variables → Actions):
+
+- `SUPABASE_ACCESS_TOKEN` — a Supabase personal access token (`sbp_…`)
+- `SUPABASE_PROJECT_ID` — `ymzdxifedtjwkxkzfwqu`
+
+Until the functions are deployed, the frontend flag can be on and the UI will
+still fail: the calls 404. Deploy the functions **before** expecting checkout
+to work.
+
+---
+
 ## 1. The single source of truth
 
 The gate is ON when **either** flag is the exact string `"true"`:
