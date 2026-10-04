@@ -8,8 +8,17 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `npm run lint` — lint (0 errors; ~11 warnings are baseline fast-refresh/exhaustive-deps).
 - `npm run check:i18n` — i18n integrity gate (all 11 locales, key parity, no empty/interp drift).
 - `npm run check:payments` — payment/checkout contract gate (see Payments below).
-- No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`, `run-payments-flag-tests.ts`); Deno is not installed in the default image.
+- No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`, `run-payments-flag-tests.ts`, `run-payment-destination-tests.ts`); Deno is not installed in the default image.
+- `npm run check:tradovate` — Tradovate contract gate (no blocking connect gate or flag, JWT-verified handlers that never trust a body `user_id`, encrypted-only credential writes, envelope/migration match, the in-dashboard empty state + connect panel, no password stored/logged client-side, disconnect deletes credentials).
 - **Run `npm run check:i18n` and `npm run check:payments` before opening a PR that touches checkout, pricing, or i18n.**
+
+## Tradovate integration
+- Server code lives in `supabase/functions/_shared/tradovate/` (crypto, authService, restService, http, rateLimiter, credentialStore, sync, pnl) and the `supabase/functions/tradovate-*` Edge Functions.
+- `make test-tradovate` runs every Deno suite (pnl, rate-limit, auth-rest, sync, dashboard, log-safety, ownership, e2e-demo). `make test-tradovate-rls` runs the 2-user RLS test against a real Postgres (needs Docker; see `supabase/functions/_test/rls/`).
+- There is NO `tradovate-stream`. Edge Functions cannot hold a WebSocket; the data path is incremental polling on `integrations.last_fill_id` (idempotent), scheduled by `20261004000001_tradovate_sync_schedule.sql`, with Supabase Realtime pushing diffs to the browser.
+- The connect flow is IN-DASHBOARD, not a gate: login goes straight to the dashboard, the Tradovate view shows an empty state (`TradovateTrades.tsx`) whose "Connect to Tradovate" button opens `TradovateConnectPanel.tsx`. There is no router guard and NO `REQUIRE_TRADOVATE_CONNECTION` flag — do not reintroduce one.
+- Credentials are AES-256-GCM envelopes `{ciphertext, iv, auth_tag, key_version}`; the browser never sees them and RLS gives authenticated roles no read on `integration_credentials`. `docs/tradovate-runbook.md` has the key-rotation plan.
+- App-level API credentials (`cid`/`sec`) are SERVER SECRETS: `TRADOVATE_APP_CID` / `TRADOVATE_APP_SECRET` (plus optional `TRADOVATE_APP_ID` / `TRADOVATE_APP_VERSION`). `resolveAppCredentials()` in `supabase/functions/_shared/tradovate/appCredentials.ts` sends the client-supplied pair if present, else the server pair. The default UX is username + password only; the panel's cid/sec fields are a collapsed "Advanced options" fallback. NEVER add a `VITE_TRADOVATE_APP_*` client env var.
 
 ## Local preview
 - `npx vite preview --port 4321 --host 127.0.0.1` after a build (serves `dist/`).
@@ -40,6 +49,7 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - Plan prices live in ONE canonical client table: `src/lib/plans.ts` `PLAN_PRICING` (USD). It MUST mirror the server table `supabase/functions/_shared/plans.ts` `PLANS` (`priceCents` + `managedCapitalUsd`). `npm run check:payments` enforces parity; never hard-code prices in a page again.
 - Managed Capital is always charged in **USD**. Local currency is presentation only.
 - Active checkout methods: `stripe-checkout` (Stripe-verified via webhook), `wise-checkout` (pending_manual), `crypto-checkout` (on-chain confirm). Browser flows never declare the price.
+- Real payout destinations come from ONE server resolver: `supabase/functions/_shared/payment-destinations.ts` (Wise `WISE_*` secrets, crypto `CRYPTO_DESTINATION_*` secrets). TEST mode returns the safe placeholders; LIVE mode with a missing destination fails closed (503 `payment_destination_unconfigured`) and must never fall back to the test placeholder. The destination check runs after auth.
 - `card-checkout` and `paypal-checkout` are **hard-disabled** (HTTP 410): they used to activate a paid service from client-supplied values with no payment verification. Do not re-enable them; card payments go through `stripe-checkout`.
 - Test mode is server-side only (`TEST_PAYMENT_MODE` env). Never trust an `isTest` flag from the request body.
 
@@ -54,5 +64,6 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 
 ## Deployment
 - Deployment is via Vercel's GitHub integration: pushing to `main` triggers a `Production` deployment for the `braxelmarkets` project (`https://braxelmarkets.vercel.app/`).
+- **Vercel deploys ONLY the SPA.** Supabase Edge Functions are a separate target: `.github/workflows/deploy-supabase-functions.yml` runs `supabase functions deploy` on push to `main` (needs `SUPABASE_ACCESS_TOKEN` + `SUPABASE_PROJECT_ID` repo secrets). Until functions are deployed, calls return `{"code":"NOT_FOUND"}`. Merging `supabase/functions/**` alone does NOT change production.
 - No local Vercel CLI/auth; do not attempt `vercel deploy` — push to `main` instead.
 - `.github/workflows/deploy.yml` deploys docs to GitHub Pages (separate; repo has `has_pages: false`, unused).

@@ -10,3 +10,12 @@
 # authenticity is enforced inside the function via STRIPE_WEBHOOK_SECRET.
 [functions.stripe-webhook]
 verify_jwt = false
+
+# card-checkout and paypal-checkout are hard-disabled (HTTP 410). JWT
+# verification is left off to preserve their historical invocation behaviour;
+# they never process a payment, so there is nothing to authorise.
+[functions.card-checkout]
+verify_jwt = false
+
+[functions.paypal-checkout]
+verify_jwt = false
