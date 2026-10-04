@@ -4,7 +4,6 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import PerformanceChart from '@/components/PerformanceChart';
 import TradingTerminal from '@/components/terminal/TradingTerminal';
 import PerformancePanel from '@/components/terminal/PerformancePanel';
 import TradovateConnectCard from '@/components/TradovateConnectCard';
@@ -28,8 +27,6 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
-  TrendingUp,
-  TrendingDown,
   BarChart3,
   Settings,
   Mail,
@@ -46,12 +43,11 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { functionsUrl, supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
+import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client';
 import { notifyOwner } from '@/lib/notifyOwner';
 import { showError, showSuccess } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
-import { countriesData, getCountryByCode } from '@/data/kycData';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useTradovateConnection } from '@/hooks/useTradovateConnection';
 import { useLanguageLocale } from '@/hooks/useLanguageLocale';
@@ -124,19 +120,6 @@ const Dashboard = () => {
   // KYC state - NEW IMPROVED FLOW
   const [kycStatus, setKycStatus] = useState<'pending' | 'submitted' | 'approved' | 'rejected'>('pending');
   const [kycReviewReason, setKycReviewReason] = useState<string | null>(null);
-  const [kycStep, setKycStep] = useState<'country' | 'method' | 'document' | 'review'>('country');
-  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
-  const [selectedDocument, setSelectedDocument] = useState<string | null>(null);
-  const [kycDocument, setKycDocument] = useState<File | null>(null);
-  const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
-  const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
-  const [submittingKyc, setSubmittingKyc] = useState(false);
-
-  // Get current country data
-  const countryData = selectedCountry ? getCountryByCode(selectedCountry) : null;
-  const methodData = countryData?.methods.find(m => m.id === selectedMethod);
-
   // Profile edit state
   const [editFirstName, setEditFirstName] = useState('');
   const [editLastName, setEditLastName] = useState('');
@@ -389,86 +372,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleKycSubmit = async () => {
-    if (!kycDocument) {
-      showError(t('dashboard.uploadDocument'));
-      return;
-    }
-    if (!selectedCountry || !selectedMethod || !selectedDocument) {
-      showError(t('dashboard.completeSteps'));
-      return;
-    }
-
-    setSubmittingKyc(true);
-    try {
-      // Upload document to Supabase Storage
-      const fileName = `${user.id}/${Date.now()}_${kycDocument.name}`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('kyc-documents')
-        .upload(fileName, kycDocument);
-
-      if (uploadError) {
-        console.error('Upload error:', uploadError);
-        // Continue anyway for demo - in production you might want to handle this differently
-      }
-
-      // Get public URL for the uploaded document
-      const { data: urlData } = supabase.storage
-        .from('kyc-documents')
-        .getPublicUrl(fileName);
-
-      // Save KYC data to profile
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          kyc_status: 'submitted',
-          kyc_country: selectedCountry,
-          kyc_method: selectedMethod,
-          kyc_document_type: selectedDocument,
-          kyc_document_url: urlData?.publicUrl || '',
-          kyc_submitted_at: new Date().toISOString()
-        });
-
-      if (error) throw error;
-
-      setKycStatus('submitted');
-
-      // Trigger email notification via edge function
-      try {
-        await fetch(functionsUrl('kyc-notification'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: user.id,
-            fullName: profile?.first_name + ' ' + profile?.last_name,
-            email: user.email,
-            country: selectedCountry,
-            verificationMethod: selectedMethod,
-            documentType: selectedDocument,
-            documentUrl: urlData?.publicUrl || ''
-          })
-        });
-      } catch (emailError) {
-        console.error('Email notification error (non-blocking):', emailError);
-      }
-
-      showSuccess(t('dashboard.documentsSubmitted'));
-    } catch (err: unknown) {
-      showError(t('dashboard.failedDocuments'));
-    } finally {
-      setSubmittingKyc(false);
-    }
-  };
-
-  // KYC step navigation
-  const goToKycStep = (step: 'country' | 'method' | 'document' | 'review') => {
-    setKycStep(step);
-  };
-
-  const canProceedToMethod = selectedCountry !== null;
-  const canProceedToDocument = selectedMethod !== null;
-  const canSubmit = kycDocument !== null && selectedDocument !== null;
 
   // Derived, real view models. Every figure below comes from the user's own
   // rows; there is no hardcoded performance number and no demo fallback.
@@ -618,7 +521,7 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                <PerformanceChart series={performance.growthSeries} />
+                <PerformancePanel stats={tradeStats} locale={locale} />
 
                 {services.length === 0 ? (
                   <div className="p-16 border border-dashed border-white/10 bg-[#1A1A1A] text-center">
@@ -961,7 +864,8 @@ const Dashboard = () => {
                 {/* KYC Tab - NEW IMPROVED FLOW */}
                 {settingsTab === 'kyc' && (
                   <div className="space-y-8">
-                    {/* KYC Status Banner */}
+                    {/* KYC status banner. Verification is only required to
+                        request a withdrawal; the terminal never blocks on it. */}
                     <div className={cn(
                       "p-6 flex items-center gap-4 border",
                       kycStatus === 'approved' ? "bg-emerald-500/10 border-emerald-500/20" :
@@ -982,250 +886,68 @@ const Dashboard = () => {
                           {kycStatus === 'approved' ? t('dashboard.kyc.approved') :
                            kycStatus === 'submitted' ? t('dashboard.kyc.underReview') :
                            kycStatus === 'rejected' ? t('dashboard.kyc.rejected') :
-                           t('dashboard.kyc.required')}
+                           t('dashboard.kyc.optionalTitle')}
                         </p>
                         <p className="text-[10px] text-slate-400 mt-1">
                           {kycStatus === 'approved' ? t('dashboard.kyc.descApproved') :
                            kycStatus === 'submitted' ? t('dashboard.kyc.descSubmitted') :
                            kycStatus === 'rejected' ? t('dashboard.kyc.descRejected') :
-                           t('dashboard.kyc.descRequired')}
+                           t('dashboard.kycBannerHint')}
                         </p>
                       </div>
                     </div>
 
-                    {/* Verification Flow - Only show when not approved/submitted */}
-                    {kycStatus !== 'approved' && kycStatus !== 'submitted' && (
-                      <div className="bg-[#1A1A1A] border border-white/10 p-8">
-                        {/* Progress Steps */}
-                        <div className="flex items-center justify-between mb-8">
+                    {/* One verification flow: the withdrawal gate. This tab
+                        explains it and links there instead of duplicating it. */}
+                    <div className="bg-[#1A1A1A] border border-white/10 p-8 space-y-6">
+                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white">
+                        {t('dashboard.kyc.tabInfoTitle')}
+                      </h3>
+                      <p className="text-[12px] text-slate-400 leading-relaxed">
+                        {t('dashboard.kyc.tabInfoBody')}
+                      </p>
+
+                      <div className="bg-white/[0.02] border border-white/5 p-6">
+                        <h4 className="text-[10px] font-bold uppercase tracking-widest text-white mb-4">
+                          {t('dashboard.kyc.progressTitle')}
+                        </h4>
+                        <div className="space-y-4">
                           {[
-                            { id: 'country', label: t('dashboard.kyc.stepCountry'), icon: Globe },
-                            { id: 'method', label: t('dashboard.kyc.stepMethod'), icon: CreditCard },
-                            { id: 'document', label: t('dashboard.kyc.stepDocument'), icon: FileText },
-                            { id: 'review', label: t('dashboard.kyc.stepReview'), icon: CheckCircle2 },
-                          ].map((step, i) => (
-                            <React.Fragment key={step.id}>
-                              <div className="flex flex-col items-center">
-                                <div className={cn(
-                                  "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all",
-                                  kycStep === step.id ? "border-[#D4AF37] bg-[#D4AF37]/10" :
-                                  (kycStep === 'method' && step.id === 'country') ||
-                                  (kycStep === 'document' && (step.id === 'country' || step.id === 'method')) ||
-                                  (kycStep === 'review' && (step.id === 'country' || step.id === 'method' || step.id === 'document'))
-                                    ? "border-emerald-500 bg-emerald-500/10"
-                                    : "border-white/10 bg-white/5"
-                                )}>
-                                  <step.icon size={16} className={cn(
-                                    kycStep === step.id ? "text-[#D4AF37]" :
-                                    (kycStep === 'method' && step.id === 'country') ||
-                                    (kycStep === 'document' && (step.id === 'country' || step.id === 'method')) ||
-                                    (kycStep === 'review' && (step.id === 'country' || step.id === 'method' || step.id === 'document'))
-                                      ? "text-emerald-500" : "text-slate-500"
-                                  )} />
-                                </div>
-                                <span className={cn("text-[9px] mt-2 font-bold uppercase tracking-wider",
-                                  kycStep === step.id ? "text-[#D4AF37]" : "text-slate-500"
-                                )}>{step.label}</span>
-                              </div>
-                              {i < 3 && (
-                                <div className={cn(
-                                  "flex-1 h-0.5 mx-2",
-                                  (kycStep === 'method' && step.id === 'country') ||
-                                  (kycStep === 'document' && step.id === 'method') ||
-                                  (kycStep === 'review' && step.id === 'document')
-                                    ? "bg-emerald-500" : "bg-white/10"
-                                )} />
-                              )}
-                            </React.Fragment>
+                            { step: t('dashboard.kyc.stepEmailVerification'), status: user?.email_confirmed_at ? 'approved' : 'pending' },
+                            { step: t('dashboard.kyc.stepIdentityDocument'), status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : 'pending' },
+                            { step: t('dashboard.kyc.stepComplianceReview'), status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : 'pending' },
+                            { step: t('dashboard.kyc.stepAccountActivation'), status: kycStatus === 'approved' ? 'approved' : 'pending' },
+                          ].map((item, i) => (
+                            <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5">
+                              {item.status === 'approved' && <CheckCircle2 size={16} className="text-emerald-500" />}
+                              {item.status === 'submitted' && <Clock size={16} className="text-yellow-500" />}
+                              {item.status === 'pending' && <Clock size={16} className="text-slate-500" />}
+                              <span className="text-[11px] font-bold uppercase tracking-widest">{item.step}</span>
+                              <span className={cn("ms-auto text-[9px] font-bold uppercase tracking-widest",
+                                item.status === 'approved' ? 'text-emerald-500' :
+                                item.status === 'submitted' ? 'text-yellow-500' :
+                                'text-slate-500'
+                              )}>
+                                {item.status === 'submitted' ? t('dashboard.kyc.statusInProgress') : item.status === 'approved' ? t('dashboard.kyc.statusComplete') : t('dashboard.kyc.statusPending')}
+                              </span>
+                            </div>
                           ))}
                         </div>
-
-                        {/* Step 1: Select Country */}
-                        {kycStep === 'country' && (
-                          <div className="space-y-6">
-                            <div>
-                              <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">{t('dashboard.kyc.selectCountry')}</h3>
-                              <p className="text-[11px] text-slate-400">{t('dashboard.kyc.selectCountryDesc')}</p>
-                            </div>
-                            <div className="relative">
-                              <button
-                                onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
-                                className="w-full flex items-center justify-between p-4 bg-white/5 border border-white/10 hover:border-[#D4AF37]/30 transition-colors"
-                              >
-                                <span className="text-[12px] font-medium">
-                                  {selectedCountry ? `${getCountryByCode(selectedCountry)?.flag} ${t('kyc.country.' + selectedCountry, { defaultValue: getCountryByCode(selectedCountry)?.name })}` : t('dashboard.kyc.selectCountryPlaceholder')}
-                                </span>
-                                <ChevronDown size={16} className={cn("text-slate-400 transition-transform", countryDropdownOpen && "rotate-180")} />
-                              </button>
-                              {countryDropdownOpen && (
-                                <div className="absolute z-10 w-full mt-1 bg-[#1A1A1A] border border-white/10 max-h-64 overflow-y-auto">
-                                  {countriesData.map((country) => (
-                                    <button
-                                      key={country.code}
-                                      onClick={() => {
-                                        setSelectedCountry(country.code);
-                                        setSelectedMethod(null);
-                                        setSelectedDocument(null);
-                                        setCountryDropdownOpen(false);
-                                      }}
-                                      className="w-full flex items-center gap-3 p-3 hover:bg-white/5 text-left transition-colors"
-                                    >
-                                      <span className="text-lg">{country.flag}</span>
-                                      <span className="text-[11px] font-medium text-white">{t('kyc.country.' + country.code, { defaultValue: country.name })}</span>
-                                    </button>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <Button
-                              onClick={() => goToKycStep('method')}
-                              disabled={!canProceedToMethod}
-                              className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-12 font-black text-[10px] uppercase tracking-widest disabled:opacity-50"
-                            >
-                              {t('dashboard.continueToMethod')}
-                            </Button>
-                          </div>
-                        )}
-
-                        {/* Step 2: Select Verification Method */}
-                        {kycStep === 'method' && countryData && (
-                          <div className="space-y-6">
-                            <div className="flex items-center gap-3">
-                              <button onClick={() => goToKycStep('country')} className="text-slate-400 hover:text-white">
-                                <ChevronLeft size={20} />
-                              </button>
-                              <div>
-                                <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">{t('dashboard.kyc.selectMethod')}</h3>
-                                <p className="text-[11px] text-slate-400">{t('dashboard.kyc.selectMethodDesc', { country: countryData.name })}</p>
-                              </div>
-                            </div>
-                            <div className="space-y-3">
-                              {countryData.methods.map((method) => (
-                                <button
-                                  key={method.id}
-                                  onClick={() => {
-                                    setSelectedMethod(method.id);
-                                    setSelectedDocument(null);
-                                    goToKycStep('document');
-                                  }}
-                                  className={cn(
-                                    "w-full p-4 border text-left transition-all",
-                                    selectedMethod === method.id
-                                      ? "border-[#D4AF37] bg-[#D4AF37]/5"
-                                      : "border-white/10 hover:border-white/20 bg-white/[0.02]"
-                                  )}
-                                >
-                                  <span className="text-[12px] font-bold uppercase tracking-widest">{t('kyc.method.' + selectedCountry + '.' + method.id, { defaultValue: t('kyc.methodName.' + method.id, { defaultValue: method.name }) })}</span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Step 3: Select Document and Upload */}
-                        {kycStep === 'document' && methodData && (
-                          <div className="space-y-6">
-                            <div className="flex items-center gap-3">
-                              <button onClick={() => goToKycStep('method')} className="text-slate-400 hover:text-white">
-                                <ChevronLeft size={20} />
-                              </button>
-                              <div>
-                                <h3 className="text-[14px] font-bold uppercase tracking-widest mb-2">{t('dashboard.kyc.uploadDocument')}</h3>
-                                <p className="text-[11px] text-slate-400">{t('dashboard.kyc.uploadDocumentDesc')}</p>
-                              </div>
-                            </div>
-
-                            {/* Document Type Selection */}
-                            <div className="space-y-3">
-                              {methodData.documents.map((doc) => (
-                                <button
-                                  key={doc.id}
-                                  onClick={() => setSelectedDocument(doc.id)}
-                                  className={cn(
-                                    "w-full p-4 border text-left transition-all",
-                                    selectedDocument === doc.id
-                                      ? "border-[#D4AF37] bg-[#D4AF37]/5"
-                                      : "border-white/10 hover:border-white/20 bg-white/[0.02]"
-                                  )}
-                                >
-                                  <span className="text-[12px] font-bold uppercase tracking-widest block">{t('kyc.doc.' + doc.id + '.name', { defaultValue: doc.name })}</span>
-                                  <span className="text-[10px] text-slate-500 mt-1 block">{t('kyc.doc.' + doc.id + '.desc', { defaultValue: doc.description })}</span>
-                                </button>
-                              ))}
-                            </div>
-
-                            {/* File Upload */}
-                            {selectedDocument && (
-                              <div className="mt-6">
-                                <label className={cn(
-                                  "block border-2 border-dashed p-8 text-center cursor-pointer transition-all",
-                                  kycDocument ? "border-emerald-500/50 bg-emerald-500/5" : "border-white/10 hover:border-[#D4AF37]/30"
-                                )}>
-                                  <input
-                                    type="file"
-                                    accept="image/*,.pdf"
-                                    className="hidden"
-                                    onChange={(e) => setKycDocument(e.target.files?.[0] || null)}
-                                  />
-                                  {kycDocument ? (
-                                    <div className="space-y-2">
-                                      <CheckCircle2 size={32} className="mx-auto text-emerald-500" />
-                                      <p className="text-[11px] font-bold text-emerald-500 uppercase tracking-widest">{kycDocument.name}</p>
-                                      <p className="text-[9px] text-slate-500">{(kycDocument.size / 1024 / 1024).toFixed(2)} MB</p>
-                                    </div>
-                                  ) : (
-                                    <div className="space-y-2">
-                                      <Upload size={32} className="mx-auto text-slate-600" />
-                                      <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">{t('dashboard.kyc.clickToUpload')}</p>
-                                      <p className="text-[9px] text-slate-600">{t('dashboard.uploadHint')}</p>
-                                    </div>
-                                  )}
-                                </label>
-                              </div>
-                            )}
-
-                            <Button
-                              onClick={handleKycSubmit}
-                              disabled={!canSubmit || submittingKyc}
-                              className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-50"
-                            >
-                              {submittingKyc ? <Loader2 className="animate-spin mr-2" /> : <Upload size={16} className="mr-2" />}
-                              {submittingKyc ? t('dashboard.kyc.submitting') : t('dashboard.kyc.submitForVerification')}
-                            </Button>
-                          </div>
-                        )}
                       </div>
-                    )}
 
-                    {/* Verification Steps - Simplified */}
-                    <div className="bg-[#1A1A1A] border border-white/10 p-8">
-                      <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-white mb-6">{t('dashboard.kyc.progressTitle')}</h3>
-                      <div className="space-y-4">
-                        {[
-                          { step: t('dashboard.kyc.stepEmailVerification'), status: user?.email_confirmed_at ? 'approved' : 'pending' },
-                          { step: t('dashboard.kyc.stepIdentityDocument'), status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : selectedCountry ? 'submitted' : 'pending' },
-                          { step: t('dashboard.kyc.stepComplianceReview'), status: kycStatus === 'approved' ? 'approved' : kycStatus === 'submitted' ? 'submitted' : 'pending' },
-                          { step: t('dashboard.kyc.stepAccountActivation'), status: kycStatus === 'approved' ? 'approved' : 'pending' },
-                        ].map((item, i) => (
-                          <div key={i} className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5">
-                            {item.status === 'approved' && <CheckCircle2 size={16} className="text-emerald-500" />}
-                            {item.status === 'submitted' && <Clock size={16} className="text-yellow-500" />}
-                            {item.status === 'pending' && <Clock size={16} className="text-slate-500" />}
-                            {item.status === 'rejected' && <XCircle size={16} className="text-red-500" />}
-                            <span className="text-[11px] font-bold uppercase tracking-widest">{item.step}</span>
-                            <span className={cn("ml-auto text-[9px] font-bold uppercase tracking-widest",
-                              item.status === 'approved' ? 'text-emerald-500' :
-                              item.status === 'submitted' ? 'text-yellow-500' :
-                              item.status === 'rejected' ? 'text-red-500' : 'text-slate-500'
-                            )}>
-                              {item.status === 'submitted' ? t('dashboard.kyc.statusInProgress') : item.status === 'approved' ? t('dashboard.kyc.statusComplete') : t('dashboard.kyc.statusPending')}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                      {kycStatus !== 'approved' && (
+                        <Button
+                          onClick={() => setActiveView('withdraw')}
+                          className="w-full bg-[#D4AF37] hover:bg-[#B08D48] text-black rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em]"
+                        >
+                          <FileText size={16} className="me-2" />
+                          {t('dashboard.kyc.goToWithdrawal')}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 )}
+
 
                 {/* Security Tab */}
                 {settingsTab === 'security' && (

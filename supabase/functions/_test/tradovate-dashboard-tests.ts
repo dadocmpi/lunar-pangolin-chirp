@@ -51,12 +51,14 @@ test(
     !exists("supabase/functions/_shared/tradovate/flag.ts"),
 );
 
-console.log("\n[2] Empty state + connect CTA live in the dashboard view");
-const trades = read("src/components/TradovateTrades.tsx");
-test("empty state is gated on !connection.connected", /!connection\.connected/.test(trades));
+console.log("\n[2] Empty state + connect CTA live in the dashboard terminal view");
+const trades = read("src/components/terminal/TradingTerminal.tsx");
+test("empty state is gated on the connection flag", /!terminal\.connected/.test(trades));
 test("empty state shows the connect CTA", trades.includes("tradovate.connectCta"));
 test("connect button opens the panel", /setPanelOpen\(true\)/.test(trades));
 test("view renders the connect panel", trades.includes("<TradovateConnectPanel"));
+test("terminal consumes the live data hook", trades.includes("useTradovateTerminal"));
+test("terminal exposes a manual refresh", trades.includes("terminal.refresh(true)"));
 
 console.log("\n[3] Panel is username/password, DEMO ONLY, no OAuth");
 const panel = read("src/components/TradovateConnectPanel.tsx");
