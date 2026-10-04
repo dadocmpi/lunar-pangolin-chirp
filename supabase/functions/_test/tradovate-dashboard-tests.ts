@@ -123,5 +123,27 @@ test("appId/appVersion default to Braxel when unset", () => {
   return r.appId === "Braxel" && !!r.appVersion;
 });
 
+console.log("\n[7] Dashboard renders the Tradovate card first; KYC never blocks");
+const dash = read("src/pages/Dashboard.tsx");
+const banner = read("src/components/KycReminderBanner.tsx");
+const card = read("src/components/TradovateConnectCard.tsx");
+test("Tradovate card is the first element in the services view",
+  dash.indexOf("<TradovateConnectCard />") < dash.indexOf("<KycReminderBanner"));
+test("card renders exactly once", (dash.match(/<TradovateConnectCard \/>/g) || []).length === 1);
+test("dashboard never gates on kycStatus === 'approved' for entry",
+  !/kycStatus\s*!==\s*'approved'\s*\?\s*\(/.test(dash) || dash.includes("WithdrawalKycGate"));
+test("card uses the localized log-in CTA", card.includes("tradovate.connectCta"));
+test("banner shows the optional (withdrawal-only) title, never 'required'",
+  banner.includes("dashboard.kyc.optionalTitle") && !banner.includes("dashboard.kyc.required"));
+test("banner headline is not the gating phrase", !/VERIFICATION REQUIRED/i.test(banner));
+
+console.log("\n[8] The CTA reads 'Log in on Tradovate' in every locale");
+for (const loc of LOCALES) {
+  const start = i18n.indexOf(`const ${loc}Translation = `);
+  const block = i18n.slice(start, start + 4000);
+  const m = block.match(/connectCta: "([^"]*)"/);
+  test(`${loc}: connectCta is a log-in label`, !!m && /log ?in|entrar|accedi|iniciar sesión|connecter|anmelden|войти|登录|ログイン|دخول|התחבר/i.test(m[1]));
+}
+
 console.log(`\nResult: ${passed} passed, ${failed} failed.`);
 if (failed > 0) Deno.exit(1);
