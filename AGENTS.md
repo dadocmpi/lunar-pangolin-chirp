@@ -69,8 +69,10 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `withdrawal-request` is the server-side gate: it reads KYC status via the `kyc_status_for_user(uuid)` SECURITY DEFINER RPC for the **JWT** user and returns 403 `kyc_required` unless approved. A `kycStatus`/`userId` in the request body is ignored.
 - `kyc-action` mirrors an owner approve/deny onto the latest submission, records the rejection reason, and emails the user via `_shared/userEmail.ts`.
 - `_shared/userEmail.ts` is the single module for **customer-facing** transactional email (analogous to `_shared/email.ts` for owner notifications); do not call `api.resend.com` directly. `npm run check:payments` enforces both.
-- Schema: `supabase/migrations/*_kyc_on_withdrawal.sql` (`kyc_submissions`, `withdrawal_requests`, gate RPCs, bucket). Gate RPCs are `service_role`-only.
-- Tests: `deno run -A supabase/functions/_test/kyc-gate-tests.ts`, `kyc-document-tests.ts`; RLS/storage isolation `bash supabase/functions/_test/rls-kyc/run.sh` (needs Docker).
+- AI consistency check at submission (`_shared/kyc/aiDecision.ts`, `aiProvider.ts`, `aiKyc.ts`): advisory, **fails closed** — no key / provider error / malformed / low-confidence / failed check -> manual review; only a clean high-confidence pass auto-approves. Decisions are audited in `kyc_ai_checks` (service-role only). Provider is swappable via `AI_PROVIDER_REGISTRY` + `KYC_AI_PROVIDER` (default `gemini`); `KYC_AI_API_KEY` unset = 100% human review.
+- `KYC_MANUAL_REVIEW_THRESHOLD_CENTS` (Edge secret) forces human review for an approved withdrawal at/above that amount (`status=manual_review`).
+- Schema: `supabase/migrations/*_kyc_on_withdrawal.sql` (`kyc_submissions`, `withdrawal_requests`, gate RPCs, bucket), `*_ai_kyc_checks.sql` (`kyc_ai_checks`), `*_withdrawal_manual_review.sql` (status + `manual_review` column). Gate RPCs are `service_role`-only.
+- Tests: `deno run -A supabase/functions/_test/kyc-gate-tests.ts`, `kyc-document-tests.ts`, `ai-kyc-tests.ts`; RLS/storage isolation `bash supabase/functions/_test/rls-kyc/run.sh` (needs Docker).
 
 ## Deployment
 - Deployment is via Vercel's GitHub integration: pushing to `main` triggers a `Production` deployment for the `braxelmarkets` project (`https://braxelmarkets.vercel.app/`).
