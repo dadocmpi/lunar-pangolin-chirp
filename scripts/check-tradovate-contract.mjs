@@ -119,6 +119,21 @@ check(
 );
 check('disconnect revokes the integration', /status:\s*["']revoked["']/.test(store));
 
+console.log('\n[8] App cid/sec are server secrets, not client env');
+const appCreds = read('supabase/functions/_shared/tradovate/appCredentials.ts');
+const authSvc = read('supabase/functions/_shared/tradovate/authService.ts');
+check('app credential resolver reads Edge Function secrets',
+  appCreds.includes('TRADOVATE_APP_CID') && appCreds.includes('TRADOVATE_APP_SECRET'));
+check('resolver implements client-override then server fallback',
+  /clientCid[\s\S]*TRADOVATE_APP_CID[\s\S]*TRADOVATE_APP_SECRET/.test(appCreds));
+check('authService resolves cid/sec (not a raw spread)',
+  authSvc.includes('resolveAppCredentials(credentials.cid, credentials.sec)'));
+check('no client bundle env var named for the app cid/sec',
+  !/VITE_TRADOVATE_APP_(CID|SECRET)/.test(panel) &&
+    !/VITE_TRADOVATE_APP_(CID|SECRET)/.test(trades));
+check('cid/sec is an explicit advanced section in the panel',
+  panel.includes('showAdvanced') && panel.includes('connectTradovate.advancedToggle'));
+
 console.log(
   failures === 0
     ? '\ntradovate contract check passed'

@@ -16,6 +16,7 @@ import {
   AlertCircle,
   AlertTriangle,
   CheckCircle2,
+  ChevronDown,
   Clock,
   Eye,
   EyeOff,
@@ -74,6 +75,7 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
   const [cid, setCid] = useState("");
   const [sec, setSec] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorCode, setErrorCode] = useState<ConnectErrorCode>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -86,7 +88,9 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
     if (!open) {
       setPassword("");
       setSec("");
+      setCid("");
       setShowPassword(false);
+      setShowAdvanced(false);
       setErrorCode(null);
       setErrorMessage(null);
       setPending(false);
@@ -296,26 +300,48 @@ const TradovateConnectPanel = ({ open, onClose, onChanged }: Props) => {
                 </button>
               </Field>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <Field icon={<KeyRound size={16} />} label={t("connectTradovate.cidLabel")}>
-                  <Input
-                    value={cid}
-                    onChange={(e) => setCid(e.target.value)}
-                    autoComplete="off"
-                    placeholder={t("connectTradovate.cidPlaceholder")}
-                    className="pl-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
+              {/* Advanced: only needed when Tradovate issues a per-app key.
+                  Normal users never see this. The app's own cid/sec are server
+                  secrets, so the default flow is username + password only. */}
+              <div className="pt-2 border-t border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced((v) => !v)}
+                  className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-slate-300"
+                  aria-expanded={showAdvanced}
+                >
+                  <ChevronDown
+                    size={12}
+                    className={cn("transition-transform", showAdvanced && "rotate-180")}
                   />
-                </Field>
-                <Field icon={<KeyRound size={16} />} label={t("connectTradovate.secLabel")}>
-                  <Input
-                    type="password"
-                    value={sec}
-                    onChange={(e) => setSec(e.target.value)}
-                    autoComplete="new-password"
-                    placeholder={t("connectTradovate.secPlaceholder")}
-                    className="pl-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
-                  />
-                </Field>
+                  {t("connectTradovate.advancedToggle")}
+                </button>
+                {showAdvanced && (
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <Field icon={<KeyRound size={16} />} label={t("connectTradovate.cidLabel")}>
+                      <Input
+                        value={cid}
+                        onChange={(e) => setCid(e.target.value)}
+                        autoComplete="off"
+                        placeholder={t("connectTradovate.cidPlaceholder")}
+                        className="pl-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
+                      />
+                    </Field>
+                    <Field icon={<KeyRound size={16} />} label={t("connectTradovate.secLabel")}>
+                      <Input
+                        type="password"
+                        value={sec}
+                        onChange={(e) => setSec(e.target.value)}
+                        autoComplete="new-password"
+                        placeholder={t("connectTradovate.secPlaceholder")}
+                        className="pl-11 bg-white/5 border-white/10 rounded-none h-14 text-white placeholder:text-slate-700 focus:border-[#C5A059]"
+                      />
+                    </Field>
+                    <p className="md:col-span-2 text-[10px] text-slate-500 leading-relaxed">
+                      {t("connectTradovate.advancedHint")}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -8,13 +8,17 @@
 
 export type TradovateEnvironment = "demo" | "live";
 
-/** Credentials the user types into the connect gate. Never logged. */
+/** Credentials the user types into the connect panel. Never logged. */
 export interface TradovateCredentials {
   /** Tradovate account username (the `name` field in the auth request). */
   name: string;
   /** Tradovate account password. */
   password: string;
-  /** App API key pair from Tradovate API Access. */
+  /**
+   * Advanced override: app API key pair supplied by the client. Normally
+   * omitted — the app's own cid/sec come from server secrets
+   * (TRADOVATE_APP_CID / TRADOVATE_APP_SECRET) via resolveAppCredentials().
+   */
   cid?: string;
   sec?: string;
   /** Optional device id so Tradovate can distinguish sessions. */

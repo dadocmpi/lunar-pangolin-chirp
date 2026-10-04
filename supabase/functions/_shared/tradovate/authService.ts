@@ -14,6 +14,7 @@
 // ============================================================================
 
 import { TradovateHttpError, requestJson } from "./http.ts";
+import { resolveAppCredentials } from "./appCredentials.ts";
 import {
   CircuitOpenError,
   createDefaultLimiter,
@@ -69,15 +70,18 @@ export async function authenticate(
   const { credentials, environment } = opts;
   const url = `${hostFor(environment)}/auth/accesstokenrequest`;
 
+  // cid/sec identify the app; a normal user only supplies name+password.
+  const app = resolveAppCredentials(credentials.cid, credentials.sec);
+
   const body: Record<string, unknown> = {
     name: credentials.name,
     password: credentials.password,
+    appId: credentials.appId ?? app.appId,
+    appVersion: credentials.appVersion ?? app.appVersion,
+    deviceId: credentials.deviceId ?? "braxel-terminal",
   };
-  if (credentials.cid) body.cid = credentials.cid;
-  if (credentials.sec) body.sec = credentials.sec;
-  if (credentials.deviceId) body.deviceId = credentials.deviceId;
-  if (credentials.appId) body.appId = credentials.appId;
-  if (credentials.appVersion) body.appVersion = credentials.appVersion;
+  if (app.cid) body.cid = app.cid;
+  if (app.sec) body.sec = app.sec;
 
   try {
     const data = await requestJson<Record<string, unknown>>({

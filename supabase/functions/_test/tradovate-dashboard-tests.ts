@@ -87,6 +87,8 @@ const NEW_KEYS = [
   "emptyBody",
   "connectCta",
   "emptyHint",
+  "advancedToggle",
+  "advancedHint",
 ];
 for (const loc of LOCALES) {
   const start = i18n.indexOf(`const ${loc}Translation = `);
@@ -95,6 +97,31 @@ for (const loc of LOCALES) {
   test(`${loc}: has all new tradovate keys`, NEW_KEYS.every((k) => new RegExp(`\\b${k}:`).test(block)));
   test(`${loc}: has no leftover skip key`, !/\bskip:\s*"Skip for now"/.test(block));
 }
+
+console.log("\n[6] App cid/sec resolution: client override, else server secret");
+const { resolveAppCredentials } = await import(
+  "../_shared/tradovate/appCredentials.ts"
+);
+test("client-supplied cid/sec wins (advanced override)", () => {
+  const r = resolveAppCredentials("u-cid", "u-sec", (k) =>
+    k === "TRADOVATE_APP_CID" ? "srv-cid" : k === "TRADOVATE_APP_SECRET" ? "srv-sec" : undefined
+  );
+  return r.cid === "u-cid" && r.sec === "u-sec" && r.source === "client";
+});
+test("falls back to server secrets when client omits them", () => {
+  const r = resolveAppCredentials(undefined, undefined, (k) =>
+    k === "TRADOVATE_APP_CID" ? "srv-cid" : k === "TRADOVATE_APP_SECRET" ? "srv-sec" : undefined
+  );
+  return r.cid === "srv-cid" && r.sec === "srv-sec" && r.source === "server";
+});
+test("no cid/sec anywhere resolves to none (API decides)", () => {
+  const r = resolveAppCredentials(undefined, undefined, () => undefined);
+  return r.cid === undefined && r.sec === undefined && r.source === "none";
+});
+test("appId/appVersion default to Braxel when unset", () => {
+  const r = resolveAppCredentials("c", "s", () => undefined);
+  return r.appId === "Braxel" && !!r.appVersion;
+});
 
 console.log(`\nResult: ${passed} passed, ${failed} failed.`);
 if (failed > 0) Deno.exit(1);

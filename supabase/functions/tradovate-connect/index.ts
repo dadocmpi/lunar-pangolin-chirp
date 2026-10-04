@@ -55,8 +55,10 @@ serve(async (req) => {
   const environment = body.environment;
   const name = typeof body.name === "string" ? body.name.trim() : "";
   const password = typeof body.password === "string" ? body.password : "";
-  const cid = typeof body.cid === "string" ? body.cid : undefined;
-  const sec = typeof body.sec === "string" ? body.sec : undefined;
+  // Advanced override only. Normally absent: the app's own cid/sec come from
+  // server secrets (TRADOVATE_APP_CID / TRADOVATE_APP_SECRET).
+  const cid = typeof body.cid === "string" && body.cid.trim() ? body.cid.trim() : undefined;
+  const sec = typeof body.sec === "string" && body.sec.trim() ? body.sec.trim() : undefined;
   const label = typeof body.label === "string" ? body.label.slice(0, 80) : undefined;
   const requestedAccountId = body.accountId === undefined || body.accountId === null
     ? null
