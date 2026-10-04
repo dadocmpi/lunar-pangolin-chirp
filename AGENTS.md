@@ -9,7 +9,15 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `npm run check:i18n` — i18n integrity gate (all 11 locales, key parity, no empty/interp drift).
 - `npm run check:payments` — payment/checkout contract gate (see Payments below).
 - No test runner configured (`package.json` has no `test` script). Deno tests live under `supabase/functions/_test/` (`deno run -A supabase/functions/_test/run-tests.ts`, `run-tests-option-a.ts`, `run-payments-flag-tests.ts`, `run-payment-destination-tests.ts`); Deno is not installed in the default image.
+- `npm run check:tradovate` — Tradovate contract gate (gate flag parity, JWT-verified handlers that never trust a body `user_id`, encrypted-only credential writes, envelope/migration match, dashboard behind the gate, disconnect deletes credentials).
 - **Run `npm run check:i18n` and `npm run check:payments` before opening a PR that touches checkout, pricing, or i18n.**
+
+## Tradovate integration
+- Server code lives in `supabase/functions/_shared/tradovate/` (crypto, authService, restService, http, rateLimiter, credentialStore, sync, pnl, flag) and the `supabase/functions/tradovate-*` Edge Functions.
+- `make test-tradovate` runs every Deno suite (pnl, rate-limit, auth-rest, sync, guard, log-safety, ownership, e2e-demo). `make test-tradovate-rls` runs the 2-user RLS test against a real Postgres (needs Docker; see `supabase/functions/_test/rls/`).
+- There is NO `tradovate-stream`. Edge Functions cannot hold a WebSocket; the data path is incremental polling on `integrations.last_fill_id` (idempotent), scheduled by `20261004000001_tradovate_sync_schedule.sql`, with Supabase Realtime pushing diffs to the browser.
+- Connect gate flag: `REQUIRE_TRADOVATE_CONNECTION` (frontend `VITE_REQUIRE_TRADOVATE_CONNECTION`), default ON, only `"false"` disables it. Both sides must stay in sync.
+- Credentials are AES-256-GCM envelopes `{ciphertext, iv, auth_tag, key_version}`; the browser never sees them and RLS gives authenticated roles no read on `integration_credentials`. `docs/tradovate-runbook.md` has the key-rotation plan.
 
 ## Local preview
 - `npx vite preview --port 4321 --host 127.0.0.1` after a build (serves `dist/`).
