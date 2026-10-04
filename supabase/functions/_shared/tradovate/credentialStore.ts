@@ -138,6 +138,45 @@ export async function loadCredentials(
   return { integration: integ as IntegrationRow, credentials };
 }
 
+/**
+ * Cache a freshly minted session token inside the integration's encrypted
+ * envelope so the next poll/sync can reuse it. Best-effort: a failure here is
+ * never fatal (the caller still has a valid in-memory token for this request).
+ * Ownership is enforced on the read before the write.
+ */
+export async function storeSessionToken(
+  admin: SupabaseClient,
+  userId: string,
+  integrationId: string,
+  token: { accessToken: string; expirationTime: string },
+): Promise<void> {
+  try {
+    const { integration, credentials } = await loadCredentials(admin, userId, integrationId);
+    const merged: TradovateCredentials = {
+      ...credentials,
+      accessToken: token.accessToken,
+      accessTokenExpiresAt: token.expirationTime,
+    };
+    const parts = await encryptCredentials(merged, Deno.env.get("TRADOVATE_ENCRYPTION_KEY") ?? "");
+    await admin
+      .from("integration_credentials")
+      .update({
+        ciphertext: parts.ciphertext,
+        iv: parts.iv,
+        auth_tag: parts.authTag,
+        key_version: parts.keyVersion,
+      })
+      .eq("integration_id", integration.id);
+    await admin
+      .from("integrations")
+      .update({ token_expires_at: token.expirationTime })
+      .eq("id", integrationId)
+      .eq("user_id", userId);
+  } catch {
+    // Non-fatal: the token is still used for the current request.
+  }
+}
+
 /** List a user's integrations (no credentials). */
 export async function listIntegrations(
   admin: SupabaseClient,

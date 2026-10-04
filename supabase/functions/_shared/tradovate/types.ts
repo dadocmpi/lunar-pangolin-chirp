@@ -25,6 +25,15 @@ export interface TradovateCredentials {
   deviceId?: string;
   appId?: string;
   appVersion?: string;
+  /**
+   * SERVER-MANAGED session token, cached inside the same AES-256-GCM envelope
+   * so a poll/sync can reuse a still-valid token instead of re-authenticating
+   * (fewer "novel" auth calls = fewer rate-limit penalties). Never set from
+   * the client and never returned to the browser.
+   */
+  accessToken?: string;
+  /** ISO-8601 UTC expiry for `accessToken`. */
+  accessTokenExpiresAt?: string;
 }
 
 /** Result of a successful /auth/accesstokenrequest. */

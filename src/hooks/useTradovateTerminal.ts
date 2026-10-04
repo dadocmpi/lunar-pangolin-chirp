@@ -288,6 +288,19 @@ export function useTradovateTerminal(): TerminalState {
     };
   }, [load, selectedId]);
 
+  // Fallback poll: refreshes the LIVE panel from the server cache (never a
+  // direct Tradovate call) so the terminal stays current when Realtime is not
+  // available. Interval is configurable; 0 disables it.
+  useEffect(() => {
+    const configured = Number(import.meta.env.VITE_TERMINAL_POLL_MS ?? 30000);
+    const ms = Number.isFinite(configured) && configured >= 0 ? configured : 30000;
+    if (ms === 0) return;
+    const id = window.setInterval(() => {
+      load(selectedId, false);
+    }, ms);
+    return () => window.clearInterval(id);
+  }, [load, selectedId]);
+
   return {
     loading,
     loaded,

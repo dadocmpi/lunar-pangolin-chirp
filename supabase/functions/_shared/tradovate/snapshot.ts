@@ -21,7 +21,11 @@
 
 import type { SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { ensureToken } from "./authService.ts";
-import { loadCredentials, type IntegrationRow } from "./credentialStore.ts";
+import {
+  loadCredentials,
+  storeSessionToken,
+  type IntegrationRow,
+} from "./credentialStore.ts";
 import {
   cashBalanceSnapshot,
   makeCachedContractResolver,
@@ -138,11 +142,24 @@ export async function fetchAccountSnapshot(
     limiter,
     fetchImpl: opts.fetchImpl,
     now,
+    stored: opts.credentials.accessToken
+      ? {
+        accessToken: opts.credentials.accessToken,
+        expirationTime: opts.credentials.accessTokenExpiresAt ?? "",
+      }
+      : null,
   });
   if (!auth.ok) {
     return { ...base, warnings: ["auth"] };
   }
   const accessToken = auth.accessToken;
+  // Persist a freshly minted token for the next poll/sync (best-effort).
+  if (!opts.credentials.accessToken || opts.credentials.accessToken !== accessToken) {
+    await storeSessionToken(opts.admin, opts.userId, opts.integrationId, {
+      accessToken,
+      expirationTime: auth.expirationTime,
+    });
+  }
   const rest = { environment: env, accessToken, limiter, fetchImpl: opts.fetchImpl };
   const resolver = makeCachedContractResolver(rest);
 
