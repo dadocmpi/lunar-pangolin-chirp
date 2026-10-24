@@ -112,6 +112,12 @@ table:
 
 If all three say **success**, the backend is live.
 
+**Release of 2026-10-24 completed:** the 7 pending migrations were applied and
+all 34 Edge Functions deployed. You can confirm the live state at any time with
+`SUPABASE_URL=https://ymzdxifedtjwkxkzfwqu.supabase.co npm run smoke:functions`.
+A function that answers 404 is missing; a table that answers 404 does not exist
+(an existing table with RLS answers `200 []` or `400`).
+
 If any step is not `success`, the release stopped there and the steps after it
 did **not** run. Open the red step, read the last few lines (they are written
 in plain language), fix the cause, and click **Run workflow** again. Migrations
