@@ -179,6 +179,8 @@ const ActivateAccountView = () => {
       if (!res.ok) {
         if (json?.error === "already_pending") {
           showError(t("activation.errors.alreadyPending"));
+        } else if (json?.error === "waitlist") {
+          showError(t("activation.errors.waitlist"));
         } else if (json?.error === "invalid_receipt") {
           showError(t("activation.errors.invalidReceipt"));
         } else if (json?.error === "feature_disabled") {
@@ -216,6 +218,26 @@ const ActivateAccountView = () => {
   // Approved: the plan is active. Show the onboarding checklist instead of the form.
   if (isApproved(latest?.status)) {
     return <PlanActiveChecklist activation={latest} firmName={firmName(latest?.firm ?? "")} />;
+  }
+
+  // Pilot full and the customer has no open request: show the waitlist instead
+  // of the form. A customer with an open request still sees their status below,
+  // so an in-flight request is never hidden by a capacity change.
+  const hasOpenRequest = latest && (latest.status === "pending" || latest.status === "in_review");
+  if (config.waitlistEnabled && !hasOpenRequest) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <span className="text-[#D4AF37] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t("activation.eyebrow")}</span>
+          <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter">{t("activation.waitlistTitle")}</h2>
+          <p className="text-slate-500 text-[12px] mt-2 max-w-2xl leading-relaxed">{t("activation.waitlistBody")}</p>
+        </div>
+        <div className="p-5 border border-[#D4AF37]/30 bg-[#D4AF37]/5 flex items-start gap-3">
+          <AlertTriangle className="text-[#D4AF37] shrink-0 mt-0.5" size={18} aria-hidden="true" />
+          <p className="text-[11px] text-slate-300 leading-relaxed">{t("activation.waitlistNotice")}</p>
+        </div>
+      </div>
+    );
   }
 
   return (

@@ -229,7 +229,10 @@ const configFn = read("supabase/functions/activation-config/index.ts");
 check("GET only", configFn.includes('req.method !== "GET"'));
 check("uses the server-side config resolver", configFn.includes("activationConfigFromEnv()"));
 check("returns firms + plan only", configFn.includes("firms:") && configFn.includes("plan:"));
-check("no secret is read", !/SERVICE_ROLE|RESEND|TRADOVATE_APP_SECRET|ENCRYPTION_KEY/.test(configFn));
+// The service-role key is read ONLY to count approved activations server-side
+// for the waitlist; it is never returned. No other secret is touched.
+check("no other secret is read", !/RESEND_API_KEY|TRADOVATE_APP_SECRET|ENCRYPTION_KEY/.test(configFn));
+check("the response body carries no token", !/json\(\{[\s\S]*SERVICE_ROLE/.test(configFn));
 
 // ---------------------------------------------------------------------------
 console.log("\n[11] Wiring: ACTIVATION_FLOW_ENABLED is a registered switch");

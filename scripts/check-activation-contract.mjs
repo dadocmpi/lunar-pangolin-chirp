@@ -189,6 +189,30 @@ check('the browser never declares the price',
 check('the subscription UI is not shown for a non-approved activation',
   read('src/components/ActivateAccountView.tsx').includes('isApproved(latest?.status)'));
 
+console.log('\n[11] TradersPost onboarding + pilot capacity');
+check('TradersPost onboarding function exists', has('supabase/functions/activation-strategy-confirm/index.ts'));
+check('TradersPost onboarding migration exists', has('supabase/migrations/20261012000000_traderspost_onboarding.sql'));
+const confirmFn = code('supabase/functions/activation-strategy-confirm/index.ts');
+check('the share URL is configuration, not a literal',
+  config.includes('TRADERSPOST_STRATEGY_SHARE_URL') &&
+    !/traderspost\.(io|com)/i.test(code('src/components/PlanActiveChecklist.tsx')));
+check('capacity is configuration', config.includes('ACTIVATION_MAX_ACTIVE'));
+check('a positive capacity turns on the waitlist', /isAtCapacity\(/.test(config));
+check('activation-submit enforces capacity', submit.includes('isAtCapacity(') && /waitlist[\s\S]{0,60}409/.test(submit));
+check('activation-config reports the waitlist state', configFn.includes('waitlist:') && configFn.includes('shareUrl:'));
+check('strategy-confirm derives the user from the JWT', confirmFn.includes('requireUser(req)'));
+check('strategy-confirm never reads a body user id', !/body\.user_?id/.test(confirmFn));
+check('strategy-confirm requires an approved activation', /status !== "approved"[\s\S]{0,80}403/.test(confirmFn));
+check('strategy-confirm is idempotent', confirmFn.includes('alreadyConfirmed') && confirmFn.includes('strategy_confirmed_at'));
+check('strategy-confirm writes the audit log', confirmFn.includes('payment_audit_log'));
+check('strategy-confirm stores no credential', !/password|cid|secret/i.test(confirmFn));
+check('strategy-confirm makes no Tradovate call', !/restService|authService|tradovateapi/.test(confirmFn));
+check('the onboarding migration is additive',
+  sqlCode('supabase/migrations/20261012000000_traderspost_onboarding.sql').includes('ADD COLUMN IF NOT EXISTS') &&
+    !/DROP COLUMN/i.test(sqlCode('supabase/migrations/20261012000000_traderspost_onboarding.sql')));
+check('the onboarding migration has no credential column',
+  !/password|cid|secret/i.test(sqlCode('supabase/migrations/20261012000000_traderspost_onboarding.sql')));
+
 console.log(
   failures === 0
     ? '\nactivation contract check passed'

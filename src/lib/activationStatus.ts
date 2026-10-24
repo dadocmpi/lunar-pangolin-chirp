@@ -31,6 +31,9 @@ export interface ActivationRow {
   // Signals-plan subscription (written by the Stripe webhook, never the client).
   subscription_status?: string | null;
   subscription_current_period_end?: string | null;
+  // TradersPost onboarding: set when the customer confirms they subscribed to
+  // OUR strategy in their own account. Written by activation-strategy-confirm.
+  strategy_confirmed_at?: string | null;
 }
 
 export function isActivationStatus(value: unknown): value is ActivationStatus {

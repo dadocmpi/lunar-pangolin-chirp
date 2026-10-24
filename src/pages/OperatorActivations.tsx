@@ -38,6 +38,7 @@ interface Row {
   submitted_at: string | null;
   reviewed_at: string | null;
   created_at: string;
+  strategy_confirmed_at: string | null;
 }
 
 const OperatorActivations = () => {
@@ -59,7 +60,7 @@ const OperatorActivations = () => {
     setLoading(true);
     let query = supabase
       .from("account_activations")
-      .select("id, user_id, firm, plan_name, account_login, purchase_email, receipt_path, status, operator_note, submitted_at, reviewed_at, created_at")
+      .select("id, user_id, firm, plan_name, account_login, purchase_email, receipt_path, status, operator_note, submitted_at, reviewed_at, created_at, strategy_confirmed_at")
       .order("created_at", { ascending: false });
     if (firmFilter !== "all") query = query.eq("firm", firmFilter);
     if (statusFilter === "open") query = query.in("status", ["pending", "in_review", "info_requested"]);
@@ -236,6 +237,14 @@ const OperatorActivations = () => {
               <Detail label={t("activation.planNameLabel")} value={detail.row.plan_name} />
               <Detail label={t("activation.accountLoginLabel")} value={detail.row.account_login} />
               <Detail label={t("activation.purchaseEmailLabel")} value={detail.row.purchase_email} />
+
+              {/* TradersPost strategy self-declaration (execution tool) */}
+              <Detail
+                label={t("planActive.traderspostTitle")}
+                value={detail.row.strategy_confirmed_at
+                  ? `${t("planActive.traderspostConfirmed")} · ${detail.row.strategy_confirmed_at}`
+                  : "—"}
+              />
 
               {/* Receipt */}
               <div className="space-y-2">

@@ -19,6 +19,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import {
   activationConfigFromEnv,
+  isAtCapacity,
   isConfiguredFirm,
 } from "../_shared/activation/config.ts";
 import {
@@ -120,6 +121,20 @@ serve(async (req) => {
   if (existingError) return json({ error: "lookup_failed" }, 500);
   if (existing && isOpenStatus(existing.status)) {
     return json({ error: "already_pending", status: existing.status }, 409);
+  }
+
+  // Pilot capacity. When a positive limit is configured and the number of
+  // already-approved activations has reached it, refuse new submissions and
+  // tell the client to show the waitlist. Fail-soft on a count error: a
+  // transient DB problem must not turn every submit into a waitlist.
+  if (config.maxActive > 0) {
+    const { count } = await admin
+      .from("account_activations")
+      .select("id", { count: "exact", head: true })
+      .eq("status", "approved");
+    if (isAtCapacity(config.maxActive, count ?? 0)) {
+      return json({ error: "waitlist", maxActive: config.maxActive }, 409);
+    }
   }
 
   // Upload the receipt (non-guessable uuid path, never the original name).
