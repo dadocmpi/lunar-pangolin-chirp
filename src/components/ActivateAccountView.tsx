@@ -95,7 +95,7 @@ const ActivateAccountView = () => {
     }
     const { data } = await supabase
       .from("account_activations")
-      .select("id, firm, plan_name, account_login, purchase_email, receipt_path, status, operator_note, submitted_at, reviewed_at, created_at")
+      .select("id, firm, plan_name, account_login, purchase_email, receipt_path, status, operator_note, submitted_at, reviewed_at, created_at, subscription_status, subscription_current_period_end")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
     setRows((data as ActivationRow[] | null) ?? []);

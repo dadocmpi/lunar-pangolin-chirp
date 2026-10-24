@@ -127,6 +127,68 @@ check('the connect card is behind tradovate.enabled',
 check('the terminal view is behind tradovate.enabled',
   /activeView === 'tradovate' && tradovate\.enabled/.test(dashboard));
 
+console.log('\n[10] Signals subscription: active only from a verified Stripe webhook');
+check('shared subscription status module', has('supabase/functions/_shared/signals/status.ts'));
+check('signals-checkout function', has('supabase/functions/signals-checkout/index.ts'));
+check('subscription migration', has('supabase/migrations/20261011000000_signals_subscription.sql'));
+const subStatus = code('supabase/functions/_shared/signals/status.ts');
+check('the plan is active for exactly one status',
+  /isPlanActive\([\s\S]{0,160}===\s*"active"/.test(subStatus));
+check('an unknown Stripe status is never active',
+  /default:\s*\n?\s*return\s*"incomplete"/.test(subStatus));
+const signalsCheckout = code('supabase/functions/signals-checkout/index.ts');
+check('signals-checkout enforces the shared payments gate',
+  /from "\.\.\/_shared\/payments-flag\.ts"/.test(signalsCheckout) &&
+    /isPaymentsEnabled\(\)/.test(signalsCheckout));
+check('signals-checkout fails closed when disabled (503)',
+  /!isPaymentsEnabled\(\)[\s\S]{0,160}503/.test(signalsCheckout));
+check('signals-checkout requires the activation flow to be on',
+  /!config\.enabled[\s\S]{0,160}503/.test(signalsCheckout));
+check('signals-checkout derives the user from the JWT',
+  signalsCheckout.includes('requireUser(req)'));
+check('signals-checkout never reads a body user id',
+  !/body\.user_?id|json\.user_?id/.test(signalsCheckout));
+check('signals-checkout requires an APPROVED activation',
+  /status !== "approved"[\s\S]{0,120}403/.test(signalsCheckout));
+check('the Stripe price comes from a secret, never the request',
+  signalsCheckout.includes('STRIPE_PRICE_SIGNALS_MONTHLY') &&
+    !/body\.price|json\.price/.test(signalsCheckout));
+check('signals-checkout creates a subscription-mode session',
+  /"mode",\s*"subscription"/.test(signalsCheckout));
+check('signals-checkout records only pending (never active)',
+  /subscription_status:\s*"pending"/.test(signalsCheckout) &&
+    !/subscription_status:\s*"active"/.test(signalsCheckout));
+check('signals-checkout makes no Tradovate call',
+  !/restService|authService|tradovateapi/.test(signalsCheckout));
+const webhook = code('supabase/functions/stripe-webhook/index.ts');
+check('the webhook handles the subscription lifecycle events',
+  webhook.includes('invoice.payment_failed') &&
+    webhook.includes('customer.subscription.updated') &&
+    webhook.includes('customer.subscription.deleted') &&
+    webhook.includes('invoice.paid'));
+check('the webhook maps statuses through the shared module',
+  webhook.includes('stripeSubscriptionToStatus('));
+check('the webhook is the only writer of the active status',
+  /new_status:\s*info\.status/.test(webhook) && !/subscription_status:\s*"active"/.test(signalsCheckout));
+check('a failed payment deactivates the plan (past_due)',
+  /invoice\.payment_failed[\s\S]{0,200}"past_due"/.test(webhook));
+check('the webhook keeps the legacy pending_payments flow intact',
+  webhook.includes('pending_payment_id') && webhook.includes('checkout.session.completed'));
+const subMigration = sqlCode('supabase/migrations/20261011000000_signals_subscription.sql');
+check('the migration is additive (ADD COLUMN IF NOT EXISTS only)',
+  /ADD COLUMN IF NOT EXISTS/.test(subMigration) && !/DROP TABLE|DROP COLUMN/.test(subMigration));
+check('the subscription status is constrained',
+  /subscription_status IN \(/.test(subMigration));
+check('the schema has no credential column',
+  !/password|cid|secret/i.test(subMigration));
+check('the client mirrors the server status module',
+  has('src/lib/subscriptionStatus.ts') &&
+    /===\s*"active"/.test(read('src/lib/subscriptionStatus.ts')));
+check('the browser never declares the price',
+  !/priceId|price_id/.test(read('src/lib/signalsBilling.ts')));
+check('the subscription UI is not shown for a non-approved activation',
+  read('src/components/ActivateAccountView.tsx').includes('isApproved(latest?.status)'));
+
 console.log(
   failures === 0
     ? '\nactivation contract check passed'

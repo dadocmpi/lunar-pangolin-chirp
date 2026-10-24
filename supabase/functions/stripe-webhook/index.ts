@@ -1,6 +1,13 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import { sendUserEmailInBackground } from "../_shared/userEmail.ts";
+import {
+  isPlanActive,
+  isSubscriptionStatus,
+  stripeSubscriptionToStatus,
+  type SubscriptionStatus,
+} from "../_shared/signals/status.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -191,6 +198,9 @@ serve(async (req) => {
   interface StripeSubscription {
     id?: unknown;
     status?: unknown;
+    customer?: unknown;
+    metadata?: Record<string, unknown> | null;
+    current_period_end?: unknown;
   }
   interface StripeCharge {
     id?: unknown;
@@ -247,6 +257,14 @@ serve(async (req) => {
 
   // Handle the event
   try {
+    // Signals-subscription events are handled by a dedicated, additive hook
+    // that only touches public.account_activations. The pending_payments /
+    // applications flow below is untouched. Both run for
+    // checkout.session.completed: the legacy handler ignores a session with no
+    // pending_payment_id, and the signals hook ignores a session with no
+    // signals metadata.
+    await handleSignalsSubscriptionEvent(event, supabase);
+
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as StripeSession;
@@ -1146,6 +1164,228 @@ serve(async (req) => {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
+
+// ---------------------------------------------------------------------------
+// Signals-subscription handling (additive).
+//
+// The monthly signals fee is billed as a Stripe subscription whose metadata
+// carries { kind: 'signals_subscription', activation_id, user_id }. These
+// handlers only ever touch public.account_activations; the legacy
+// pending_payments / applications flow is untouched. The plan becomes 'active'
+// solely from a verified webhook event, and drops back to an inactive status
+// the moment a charge fails or the subscription is cancelled. Idempotency is
+// enforced by the append-only audit log's UNIQUE (payment_id, event_id) index.
+// ---------------------------------------------------------------------------
+
+interface SignalsEventInfo {
+  activationId: string | null;
+  subscriptionId: string | null;
+  customerId: string | null;
+  status: SubscriptionStatus;
+  currentPeriodEnd: string | null;
+}
+
+function asString(value: unknown): string | null {
+  return typeof value === "string" && value.length > 0 ? value : null;
+}
+
+function unixToIso(value: unknown): string | null {
+  const n = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(n) || n <= 0) return null;
+  return new Date(n * 1000).toISOString();
+}
+
+/**
+ * Extract the signals-subscription facts from a Stripe event, or null when the
+ * event is not one we handle. The mapping to our status vocabulary is done here
+ * so the rest of the hook deals in one type.
+ */
+function extractSignalsEvent(event: { type: string; data: { object: unknown } }): SignalsEventInfo | null {
+  const obj = event.data.object as Record<string, unknown>;
+  switch (event.type) {
+    case "checkout.session.completed": {
+      const meta = (obj.metadata ?? {}) as Record<string, unknown>;
+      if (meta.kind !== "signals_subscription") return null;
+      return {
+        activationId: asString(meta.activation_id),
+        subscriptionId: asString(obj.subscription),
+        customerId: asString(obj.customer),
+        // A paid subscription Checkout confirms the first payment; otherwise it
+        // is still pending and the subscription.* events will finalise it.
+        status: obj.payment_status === "paid" ? "active" : "pending",
+        currentPeriodEnd: null,
+      };
+    }
+    case "invoice.paid":
+      return {
+        activationId: null,
+        subscriptionId: asString(obj.subscription),
+        customerId: asString(obj.customer),
+        status: "active",
+        currentPeriodEnd: unixToIso(obj.period_end),
+      };
+    case "invoice.payment_failed":
+      return {
+        activationId: null,
+        subscriptionId: asString(obj.subscription),
+        customerId: asString(obj.customer),
+        status: "past_due",
+        currentPeriodEnd: null,
+      };
+    case "customer.subscription.updated": {
+      const meta = (obj.metadata ?? {}) as Record<string, unknown>;
+      return {
+        activationId: asString(meta.activation_id),
+        subscriptionId: asString(obj.id),
+        customerId: asString(obj.customer),
+        status: stripeSubscriptionToStatus(obj.status),
+        currentPeriodEnd: unixToIso(obj.current_period_end),
+      };
+    }
+    case "customer.subscription.deleted": {
+      const meta = (obj.metadata ?? {}) as Record<string, unknown>;
+      return {
+        activationId: asString(meta.activation_id),
+        subscriptionId: asString(obj.id),
+        customerId: asString(obj.customer),
+        status: "canceled",
+        currentPeriodEnd: null,
+      };
+    }
+    default:
+      return null;
+  }
+}
+
+interface SignalsActivationRow {
+  id: string;
+  user_id: string;
+  subscription_status: string | null;
+}
+
+async function findSignalsActivation(
+  supabase: ReturnType<typeof createClient>,
+  info: SignalsEventInfo,
+): Promise<SignalsActivationRow | null> {
+  const columns = "id, user_id, subscription_status";
+  if (info.activationId) {
+    const { data } = await supabase
+      .from("account_activations").select(columns)
+      .eq("id", info.activationId).maybeSingle();
+    if (data) return data as SignalsActivationRow;
+  }
+  if (info.subscriptionId) {
+    const { data } = await supabase
+      .from("account_activations").select(columns)
+      .eq("stripe_subscription_id", info.subscriptionId).maybeSingle();
+    if (data) return data as SignalsActivationRow;
+  }
+  if (info.customerId) {
+    const { data } = await supabase
+      .from("account_activations").select(columns)
+      .eq("stripe_customer_id", info.customerId)
+      .order("created_at", { ascending: false }).limit(1).maybeSingle();
+    if (data) return data as SignalsActivationRow;
+  }
+  return null;
+}
+
+async function handleSignalsSubscriptionEvent(
+  event: { id: string; type: string; data: { object: unknown } },
+  supabase: ReturnType<typeof createClient>,
+): Promise<void> {
+  const info = extractSignalsEvent(event);
+  if (!info || !isSubscriptionStatus(info.status)) return;
+
+  const row = await findSignalsActivation(supabase, info);
+  // No activation for these ids => this is not a signals subscription (e.g. a
+  // legacy plan subscription). Nothing to do.
+  if (!row) return;
+
+  const previous = isSubscriptionStatus(row.subscription_status)
+    ? row.subscription_status
+    : "none";
+  const now = new Date().toISOString();
+
+  // Idempotency gate: the append-only audit log has UNIQUE (payment_id,
+  // event_id). A duplicate insert means we already processed this event, so we
+  // stop before re-sending any email. A failure for another reason is logged
+  // but never blocks the status update (the log is best-effort).
+  const { error: auditError } = await supabase.from("payment_audit_log").insert({
+    payment_table: "account_activations",
+    payment_id: row.id,
+    user_id: row.user_id,
+    actor: "system",
+    source: "stripe",
+    event_id: event.id,
+    previous_status: previous,
+    new_status: info.status,
+    reason: `Signals subscription ${event.type} -> ${info.status}`.slice(0, 200),
+    created_at: now,
+  });
+  if (auditError) {
+    if ((auditError as { code?: string }).code === "23505") return; // already handled
+    console.error("signals audit log failed", { activationId: row.id, eventId: event.id });
+  }
+
+  const update: Record<string, unknown> = {
+    subscription_status: info.status,
+    subscription_updated_at: now,
+    updated_at: now,
+  };
+  if (info.subscriptionId) update.stripe_subscription_id = info.subscriptionId;
+  if (info.customerId) update.stripe_customer_id = info.customerId;
+  if (info.currentPeriodEnd) update.subscription_current_period_end = info.currentPeriodEnd;
+
+  const { error: updateError } = await supabase
+    .from("account_activations").update(update).eq("id", row.id);
+  if (updateError) {
+    console.error("signals subscription update failed", { activationId: row.id, error: updateError.message });
+    return;
+  }
+
+  // Notify only on a real transition, so a duplicate status does not re-email.
+  const becameActive = isPlanActive(info.status) && !isPlanActive(previous);
+  const becameInactive = !isPlanActive(info.status) && isPlanActive(previous);
+
+  if (becameActive || becameInactive) {
+    const { data: userData } = await supabase.auth.admin.getUserById(row.user_id);
+    const email = userData?.user?.email ?? null;
+    sendUserEmailInBackground(
+      becameActive
+        ? {
+          to: email,
+          subject: "Assinatura de sinais ativa — Braxel Markets",
+          heading: "Plano de sinais ativo",
+          body:
+            "Confirmámos o seu pagamento e o seu plano de sinais está ativo. Já pode seguir os próximos passos no painel para conectar a sua ferramenta de execução.",
+        }
+        : {
+          to: email,
+          subject: "Assinatura de sinais inativa — Braxel Markets",
+          heading: "O seu plano de sinais está inativo",
+          body:
+            "Não conseguimos confirmar o pagamento da sua assinatura, por isso o plano de sinais foi suspenso. No painel pode atualizar o seu cartão para reativar o plano.",
+        },
+    );
+
+    notifyOwnerInBackground({
+      type: "pagamento",
+      subject: becameActive
+        ? "Assinatura de sinais ativada (Stripe)"
+        : "Assinatura de sinais desativada (Stripe)",
+      data: {
+        activation_id: row.id,
+        user_id: row.user_id,
+        status_anterior: previous,
+        status_novo: info.status,
+        stripe_event_id: event.id,
+        origem: "stripe-webhook",
+      },
+      idempotencyKey: `signals:${event.id}`,
+    });
+  }
+}
 
 // Helper function to convert hex string to Uint8Array
 function hexToUint8Array(hex: string): Uint8Array<ArrayBuffer> {

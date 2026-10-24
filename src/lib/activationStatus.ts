@@ -28,6 +28,9 @@ export interface ActivationRow {
   submitted_at: string | null;
   reviewed_at: string | null;
   created_at: string;
+  // Signals-plan subscription (written by the Stripe webhook, never the client).
+  subscription_status?: string | null;
+  subscription_current_period_end?: string | null;
 }
 
 export function isActivationStatus(value: unknown): value is ActivationStatus {

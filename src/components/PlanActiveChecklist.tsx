@@ -10,12 +10,15 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Wrench, Radio, ShieldAlert, ExternalLink } from "lucide-react";
+import { CheckCircle2, Wrench, Radio, ShieldAlert, ExternalLink, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/plans";
 import { useActivationConfig } from "@/lib/activationConfig";
 import type { ActivationRow } from "@/lib/activationStatus";
+import { isPlanActive, resolveSubscriptionStatus } from "@/lib/subscriptionStatus";
+import { cn } from "@/lib/utils";
+import SignalsSubscriptionNotice from "@/components/SignalsSubscriptionNotice";
 
 interface Props {
   activation: ActivationRow | null;
@@ -29,13 +32,30 @@ const PlanActiveChecklist = ({ activation, firmName }: Props) => {
   const tools = (t("planActive.tools", { returnObjects: true }) as unknown as Array<{ name: string; steps: string[] }>);
   const steps = Array.isArray(tools) ? tools : [];
 
+  // The plan is truly active only once the Stripe webhook confirmed payment.
+  // An approved activation with an unpaid subscription shows the checklist as a
+  // preview plus the subscription notice, never a false "active" badge.
+  const subscriptionActive = isPlanActive(resolveSubscriptionStatus(activation?.subscription_status));
+
   return (
     <div className="space-y-8">
-      {/* Active banner */}
-      <div className="p-8 border border-emerald-500/30 bg-emerald-500/[0.06]">
+      {/* Banner: active only when the subscription payment is confirmed. */}
+      <div className={cn(
+        "p-8 border",
+        subscriptionActive
+          ? "border-emerald-500/30 bg-emerald-500/[0.06]"
+          : "border-[#D4AF37]/30 bg-[#D4AF37]/[0.06]",
+      )}>
         <div className="flex items-center gap-3 mb-2">
-          <CheckCircle2 size={20} className="text-emerald-500" />
-          <span className="text-emerald-500 text-[11px] font-black uppercase tracking-[0.3em]">{t("planActive.badge")}</span>
+          {subscriptionActive
+            ? <CheckCircle2 size={20} className="text-emerald-500" />
+            : <Clock size={20} className="text-[#D4AF37]" />}
+          <span className={cn(
+            "text-[11px] font-black uppercase tracking-[0.3em]",
+            subscriptionActive ? "text-emerald-500" : "text-[#D4AF37]",
+          )}>
+            {subscriptionActive ? t("planActive.badge") : t("planActive.approvedBadge")}
+          </span>
         </div>
         <h2 className="text-2xl md:text-3xl font-black uppercase tracking-tighter text-white">
           {config.plan.name || t("planActive.planFallback")}
@@ -52,6 +72,9 @@ const PlanActiveChecklist = ({ activation, firmName }: Props) => {
           </p>
         )}
       </div>
+
+      {/* Monthly fee: pay / resume / manage. Active only after webhook. */}
+      <SignalsSubscriptionNotice subscriptionStatus={activation?.subscription_status} />
 
       {/* Checklist */}
       <div className="space-y-4">

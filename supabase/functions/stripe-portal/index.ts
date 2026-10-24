@@ -127,20 +127,26 @@ serve(async (req) => {
     }))
     .find((pp) => pp.metadata.stripe_customer_id);
 
-  if (!pendingPayment) {
-    return new Response(
-      JSON.stringify({ error: "No Stripe customer found for this user" }),
-      {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
-  }
-
-  const stripeCustomerId =
-    typeof pendingPayment.metadata.stripe_customer_id === "string"
+  // Signals subscriptions store the Stripe customer on the activation row
+  // instead of a pending payment. Fall back to it so a customer who only has a
+  // signals subscription can still open the billing portal.
+  let stripeCustomerId =
+    typeof pendingPayment?.metadata.stripe_customer_id === "string"
       ? pendingPayment.metadata.stripe_customer_id
       : null;
+  if (!stripeCustomerId) {
+    const { data: activation } = await supabase
+      .from("account_activations")
+      .select("stripe_customer_id")
+      .eq("user_id", user.id)
+      .not("stripe_customer_id", "is", null)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const value = (activation as { stripe_customer_id?: unknown } | null)?.stripe_customer_id;
+    if (typeof value === "string") stripeCustomerId = value;
+  }
+
   if (!stripeCustomerId) {
     return new Response(
       JSON.stringify({ error: "Stripe customer ID missing" }),

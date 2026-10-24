@@ -31,12 +31,15 @@ test-tradovate:
 	deno run -A supabase/functions/_test/feature-flag-tests.ts
 	deno run -A supabase/functions/_test/activation-submit-tests.ts
 	deno run -A supabase/functions/_test/activation-review-tests.ts
+	deno run -A supabase/functions/_test/signals-subscription-tests.ts
 
 # Account-activation unit tests (submit validation, operator predicate,
-# status state machine, migration/function wiring). No network, no DB.
+# status state machine, signals subscription, migration/function wiring).
+# No network, no DB.
 test-activation:
 	deno run -A supabase/functions/_test/activation-submit-tests.ts
 	deno run -A supabase/functions/_test/activation-review-tests.ts
+	deno run -A supabase/functions/_test/signals-subscription-tests.ts
 
 # Account-activation RLS + private receipt bucket test. Needs Docker.
 test-activation-rls:
