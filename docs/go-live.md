@@ -6,7 +6,7 @@ Follow it top to bottom.
 
 The whole backend release is **one button** in GitHub Actions. That button:
 
-1. applies the 6 pending database migrations, in order;
+1. applies the 7 pending database migrations, in order;
 2. deploys every Supabase Edge Function;
 3. runs a smoke test that fails if any function is missing.
 
@@ -97,7 +97,7 @@ The run does the three steps in order:
 
 | Step | What it does |
 |---|---|
-| 1/3 Apply migrations | `supabase db push` — applies the 6 pending migrations in filename order |
+| 1/3 Apply migrations | `supabase db push` — applies the 7 pending migrations in filename order |
 | 2/3 Deploy Edge Functions | `supabase functions deploy` — deploys every function |
 | 3/3 Smoke test | Calls every function; fails if any answers 404 (missing) |
 

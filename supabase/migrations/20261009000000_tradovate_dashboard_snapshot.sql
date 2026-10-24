@@ -62,6 +62,8 @@ CREATE POLICY tradovate_account_snapshots_no_update
   FOR UPDATE TO authenticated USING (false);
 
 DROP POLICY IF EXISTS tradovate_account_snapshots_no_delete
+  ON public.tradovate_account_snapshots;
+CREATE POLICY tradovate_account_snapshots_no_delete
   ON public.tradovate_account_snapshots
   FOR DELETE TO authenticated USING (false);
 
