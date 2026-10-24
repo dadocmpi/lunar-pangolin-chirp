@@ -62,6 +62,7 @@ const Navbar = () => {
 
   const navLinks = [
     { name: t('nav.pricing'), path: '/pricing' },
+    { name: t('nav.buyAccount'), path: '/accounts' },
     { name: t('nav.howItWorks'), path: '/how-it-works' },
     { name: t('nav.about'), path: '/about' },
     { name: t('nav.contact'), path: '/contact' },

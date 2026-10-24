@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type MetaKey = 'home' | 'pricing' | 'about' | 'howItWorks' | 'contact' | 'terms' | 'privacy' | 'disclaimer';
+type MetaKey = 'home' | 'pricing' | 'about' | 'howItWorks' | 'contact' | 'terms' | 'privacy' | 'disclaimer' | 'accounts';
 
 /** Map an i18next base code to an Open Graph locale (e.g. pt -> pt_BR). */
 const OG_LOCALE: Record<string, string> = {
