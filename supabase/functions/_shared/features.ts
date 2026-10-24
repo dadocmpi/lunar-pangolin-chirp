@@ -13,15 +13,19 @@
 //                                             that silently allows KYC-less
 //                                             withdrawals would be a compliance
 //                                             hole.
+//   ACTIVATION_FLOW_ENABLED        "false" -> the buy-account / activate flow is
+//                                             refused (503) and hidden in the UI.
 //
-// The server flag is the boundary. A Vite build-time mirror (see
-// src/lib/featureFlags.ts) only decides which UI renders and needs a redeploy.
+// The server flag is the boundary. The client reads the public
+// `activation-config` Edge Function (src/lib/activationConfig.ts) purely to
+// decide which UI renders; the server re-checks every request and fails closed.
 // ============================================================================
 
 export interface FeatureEnv {
   TRADOVATE_ENABLED?: string;
   AI_KYC_ENABLED?: string;
   WITHDRAWAL_KYC_GATE_ENABLED?: string;
+  ACTIVATION_FLOW_ENABLED?: string;
 }
 
 /** A feature is off only when its switch is exactly "false". Default ON. */
@@ -41,6 +45,10 @@ export function isWithdrawalKycGateEnabled(env: FeatureEnv = defaultEnv()): bool
   return flagEnabled(env.WITHDRAWAL_KYC_GATE_ENABLED);
 }
 
+export function isActivationFlowEnabled(env: FeatureEnv = defaultEnv()): boolean {
+  return flagEnabled(env.ACTIVATION_FLOW_ENABLED);
+}
+
 /** Canonical fail-closed body for a disabled feature. Never contains a secret. */
 export function featureDisabledBody(feature: string) {
   return {
@@ -56,5 +64,6 @@ function defaultEnv(): FeatureEnv {
     TRADOVATE_ENABLED: Deno.env.get("TRADOVATE_ENABLED") ?? undefined,
     AI_KYC_ENABLED: Deno.env.get("AI_KYC_ENABLED") ?? undefined,
     WITHDRAWAL_KYC_GATE_ENABLED: Deno.env.get("WITHDRAWAL_KYC_GATE_ENABLED") ?? undefined,
+    ACTIVATION_FLOW_ENABLED: Deno.env.get("ACTIVATION_FLOW_ENABLED") ?? undefined,
   };
 }

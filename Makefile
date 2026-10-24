@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-migrations typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-activation-rls test-migrations typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -29,6 +29,18 @@ test-tradovate:
 	deno run -A supabase/functions/_test/tradovate-account-environment-tests.ts
 	deno run -A supabase/functions/_test/tradovate-performance-tests.ts
 	deno run -A supabase/functions/_test/feature-flag-tests.ts
+	deno run -A supabase/functions/_test/activation-submit-tests.ts
+	deno run -A supabase/functions/_test/activation-review-tests.ts
+
+# Account-activation unit tests (submit validation, operator predicate,
+# status state machine, migration/function wiring). No network, no DB.
+test-activation:
+	deno run -A supabase/functions/_test/activation-submit-tests.ts
+	deno run -A supabase/functions/_test/activation-review-tests.ts
+
+# Account-activation RLS + private receipt bucket test. Needs Docker.
+test-activation-rls:
+	bash supabase/functions/_test/rls-activation/run.sh
 
 # Pending-migration apply-order + idempotency on a fresh Supabase Postgres.
 # Needs sudo docker; reproduces the current production baseline then applies

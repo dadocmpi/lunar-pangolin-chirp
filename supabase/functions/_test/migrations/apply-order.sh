@@ -93,6 +93,12 @@ $DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postg
   "SELECT 'withdrawal_status_check: ' || pg_get_constraintdef(oid) FROM pg_constraint WHERE conname LIKE '%withdrawal_requests_status%' LIMIT 1;"
 $DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
   "SELECT 'tradovate-sync cron job: ' || count(*) FROM cron.job WHERE jobname='tradovate-sync';" 2>&1 || true
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'account_activations: ' || CASE WHEN EXISTS (SELECT 1 FROM pg_tables WHERE schemaname='public' AND tablename='account_activations') THEN 'present' ELSE 'MISSING' END;"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'account_activations RLS: ' || CASE WHEN EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname='account_activations' AND c.relrowsecurity) THEN 'enabled' ELSE 'MISSING' END;"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'activation-receipts bucket: ' || CASE WHEN EXISTS (SELECT 1 FROM storage.buckets WHERE id='activation-receipts' AND public=false) THEN 'private' ELSE 'MISSING/PUBLIC' END;"
 
 echo; echo "MIGRATION APPLY TEST PASSED"
 $DOCKER rm -f "$CONTAINER" >/dev/null 2>&1

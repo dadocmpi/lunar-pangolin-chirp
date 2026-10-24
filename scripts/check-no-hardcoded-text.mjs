@@ -23,7 +23,11 @@ const TARGETS = [
   'src/components/TradovateConnectCard.tsx',
   'src/components/KycReminderBanner.tsx',
   'src/components/WithdrawalKycGate.tsx',
+  'src/components/ActivateAccountView.tsx',
+  'src/components/PlanActiveChecklist.tsx',
   'src/pages/Dashboard.tsx',
+  'src/pages/Accounts.tsx',
+  'src/pages/OperatorActivations.tsx',
 ];
 
 // Attributes that render user-visible text.

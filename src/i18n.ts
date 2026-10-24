@@ -253,6 +253,7 @@ usernameLabel: "Tradovate username",
   },
 
   nav: {
+    buyAccount: "BUY ACCOUNT",
     tradovate: "TRADOVATE",
     pricing: "INVESTMENT PLANS",
     howItWorks: "INFRASTRUCTURE",
@@ -1153,6 +1154,10 @@ usernameLabel: "Tradovate username",
     disclaimer: "* Disclaimer: Past performance does not guarantee future results. Projections are for illustrative purposes only."
   },
   meta: {
+    accounts: {
+      title: "Buy a Prop Firm Account | Braxel Markets",
+      description: "Buy your evaluation or funded account directly from the prop firm through our link, then activate your signals plan in the panel."
+    },
     home: {
       title: "Braxel Markets | Institutional Algorithmic Capital Management",
       description: "Institutional-grade algorithmic trading infrastructure, prop firm capital access, CopyTrade authorization and full MetaTrader automation for XAU/USD and US500."
@@ -1345,6 +1350,148 @@ usernameLabel: "Tradovate username",
       residence: "Residence Permit",
       foreign_passport: "Foreign Passport",
       national_id: "National ID Card"
+    }
+  },
+  accounts: {
+    "badge": "PROP FIRM ACCOUNTS",
+    "title": "Buy your evaluation or funded account",
+    "subtitle": "Choose a prop firm, buy your account directly from them through our link, then request activation of your signals plan in the panel.",
+    "affiliateNotice": "Braxel Markets receives an affiliate commission when you buy an account through the links on this page. This does not change the price you pay to the firm.",
+    "firmsTitle": "Choose your firm",
+    "firmBody": "You buy and own the account directly from the firm. Braxel does not operate your account and never has access to it.",
+    "buyCta": "Buy at {{firm}}",
+    "loading": "LOADING...",
+    "noFirms": "No firms available right now",
+    "noFirmsHint": "Please check back later or contact support.",
+    "planEyebrow": "MONTHLY SIGNALS PLAN",
+    "perMonth": "/month",
+    "planBody": "After your account is approved, the signals plan gives you our trade signals. You execute them yourself in your own account using a third-party tool.",
+    "stepsTitle": "How it works",
+    "step1Title": "Buy the account",
+    "step1Body": "Buy your evaluation or funded account directly from the firm through our affiliate link.",
+    "step2Title": "Request activation",
+    "step2Body": "Come back to the panel and request activation, attaching your purchase receipt.",
+    "step3Title": "Connect your tool",
+    "step3Body": "Once approved, connect your execution tool to your firm account and follow the signals.",
+    "ctaTitle": "Already bought your account?",
+    "ctaBody": "Log in to the panel and request activation. We review every request manually.",
+    "ctaButton": "GO TO PANEL",
+    "riskTitle": "Risk warning",
+    "riskBody": "Trading in financial markets involves a substantial risk of loss and is not suitable for all investors. Signals are informational and are not investment advice. You execute every operation yourself, in your own account and at your own risk. Past performance is not indicative of future results.",
+    "disabledTitle": "Not available",
+    "disabledBody": "The account activation flow is not available at the moment. Please contact support for more information.",
+    "disabledCta": "CONTACT SUPPORT"
+  },
+  activation: {
+    "navLabel": "ACTIVATE ACCOUNT",
+    "eyebrow": "SIGNALS PLAN",
+    "title": "Activate your account",
+    "intro": "You bought your account directly from the firm. Tell us which account it is and attach your purchase receipt. We review every request manually.",
+    "noPasswordNotice": "Never enter your broker password here. We only need your account login/ID and a purchase receipt. Braxel never asks for your password, CID or secret.",
+    "formTitle": "Activation request",
+    "firmLabel": "Firm",
+    "planNameLabel": "Plan you bought",
+    "planNamePlaceholder": "e.g. 50K Evaluation",
+    "accountLoginLabel": "Account login/ID at the firm",
+    "accountLoginPlaceholder": "Your account ID or login",
+    "accountLoginHint": "This is not your password. It is only the ID or login you see at the firm.",
+    "purchaseEmailLabel": "Email used in the purchase",
+    "purchaseEmailPlaceholder": "you@example.com",
+    "receiptLabel": "Proof of purchase",
+    "receiptPlaceholder": "Choose an image or PDF",
+    "receiptHint": "Image or PDF, up to 10 MB. This is your purchase receipt, not a credential.",
+    "noteLabel": "Notes (optional)",
+    "notePlaceholder": "Anything we should know about your request.",
+    "confirmOwnership": "The account is mine.",
+    "confirmResponsibility": "I keep control and full responsibility for every operation in my account.",
+    "confirmFirmRules": "I confirmed that my firm's rules allow automation and signal execution.",
+    "confirmRisk": "I read the risk warning and the terms.",
+    "submit": "SUBMIT REQUEST",
+    "submitted": "Request submitted. We will review it shortly.",
+    "pendingHint": "Your request is awaiting review. You can submit a new one after a decision.",
+    "history": "Your requests",
+    "operatorNote": "Operator note",
+    "riskDraft": "Draft text — pending legal review. Braxel Markets provides signals only. We do not operate your account, do not hold your funds and do not guarantee any result. Trading involves risk of loss.",
+    "status": {
+      "pending": "Pending",
+      "in_review": "In review",
+      "info_requested": "Information needed",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "errors": {
+      "missingFields": "Please fill in the firm, plan, account ID and purchase email.",
+      "receiptRequired": "Please attach your proof of purchase.",
+      "confirmationsRequired": "Please confirm all the statements before submitting.",
+      "badFileType": "Unsupported file type. Use an image or a PDF.",
+      "fileTooLarge": "The file is too large. The limit is 10 MB.",
+      "alreadyPending": "You already have a request awaiting review.",
+      "invalidReceipt": "We could not accept that receipt file. Please try another image or PDF.",
+      "disabled": "The activation flow is not available right now.",
+      "submitFailed": "We could not submit your request. Please try again.",
+      "unauthorized": "Please log in again to submit your request."
+    }
+  },
+  planActive: {
+    "badge": "PLAN ACTIVE",
+    "planFallback": "Signals Plan",
+    "summary": "Your signals plan is active. You execute the signals yourself in your own account, with a tool of your choice. Braxel does not operate your account.",
+    "checklistTitle": "Next steps",
+    "step1Title": "Connect your execution tool",
+    "step1Body": "Connect a third-party execution tool to your firm account. Follow the provider's instructions; the steps below are a placeholder.",
+    "tools": [
+      {
+        "name": "Execution tool A (placeholder)",
+        "steps": [
+          "Install the tool and connect it to your firm account.",
+          "Follow the provider's guide to link signals or webhooks.",
+          "Set your own risk limits before enabling automation."
+        ]
+      },
+      {
+        "name": "Execution tool B (placeholder)",
+        "steps": [
+          "Create an account with the provider.",
+          "Link your firm account using the provider's instructions.",
+          "Confirm each signal before it is executed, if you prefer."
+        ]
+      }
+    ],
+    "step2Title": "How the signals arrive",
+    "step2Body": "Signals are published in the panel and delivered to your chosen tool. You decide whether to act on each one. Nothing is executed without your setup.",
+    "step3Title": "Risk warning",
+    "step3Body": "Signals are informational and are not investment advice. You are responsible for every operation in your account. Trading involves a substantial risk of loss.",
+    "buyAnother": "Buy another account"
+  },
+  operatorActivations: {
+    "activationsTitle": "ACCOUNT ACTIVATIONS",
+    "activationsSubtitle": "Review account activation requests",
+    "refresh": "REFRESH",
+    "filterFirm": "Firm",
+    "allFirms": "All firms",
+    "filterStatus": "Status",
+    "statusOpen": "Open only",
+    "allStatuses": "All statuses",
+    "noActivations": "No activation requests",
+    "review": "REVIEW",
+    "detailTitle": "Activation details",
+    "close": "Close",
+    "openReceipt": "Open receipt (PDF)",
+    "receiptAlt": "Purchase receipt",
+    "receiptUnavailable": "Receipt not available",
+    "notePlaceholder": "Note shown to the customer (required to reject or request info).",
+    "startReview": "START REVIEW",
+    "approve": "APPROVE",
+    "requestInfo": "REQUEST INFO",
+    "reject": "REJECT",
+    "action_done": "Done.",
+    "errors": {
+      "note_required": "A note is required to reject or request information.",
+      "invalid_transition": "That action is not allowed for the current status.",
+      "forbidden": "You are not allowed to review activations.",
+      "action_failed": "The action failed. Please try again.",
+      "unauthorized": "Please log in again.",
+      "load_failed": "Could not load activation requests."
     }
   },
   errorBoundary: {
@@ -1646,6 +1793,7 @@ usernameLabel: "Utilizador Tradovate",
   },
 
   nav: {
+    buyAccount: "COMPRAR CONTA",
     tradovate: "TRADOVATE",
     pricing: "PLANOS DE INVESTIMENTO",
     howItWorks: "INFRAESTRUTURA",
@@ -2493,6 +2641,10 @@ usernameLabel: "Utilizador Tradovate",
     disclaimer: "* Aviso: O desempenho passado não garante resultados futuros. As projeções são apenas ilustrativas."
   },
   meta: {
+    accounts: {
+      title: "Comprar Conta de Mesa | Braxel Markets",
+      description: "Compre a sua conta de avaliação ou fundeada diretamente com a mesa pelo nosso link e ative o plano de sinais no painel."
+    },
     home: {
       title: "Braxel Markets | Gestão de Capital Algorítmica Institucional",
       description: "Infraestrutura de negociação algorítmica de nível institucional, acesso a capital de prop firm, autorização de CopyTrade e automação completa do MetaTrader para XAU/USD e US500."
@@ -2685,6 +2837,148 @@ usernameLabel: "Utilizador Tradovate",
       residence: "Autorização de Residência",
       foreign_passport: "Passaporte Estrangeiro",
       national_id: "Documento de Identidade Nacional"
+    }
+  },
+  accounts: {
+    "badge": "CONTAS DE MESA PROPRIETÁRIA",
+    "title": "Compre a sua conta de avaliação ou fundeada",
+    "subtitle": "Escolha uma mesa, compre a conta diretamente com ela pelo nosso link e depois solicite a ativação do seu plano de sinais no painel.",
+    "affiliateNotice": "A Braxel Markets recebe uma comissão de afiliado quando compra uma conta através dos links desta página. Isto não altera o preço que paga à mesa.",
+    "firmsTitle": "Escolha a sua mesa",
+    "firmBody": "Compra e é proprietário da conta diretamente com a mesa. A Braxel não opera a sua conta e nunca tem acesso a ela.",
+    "buyCta": "Comprar na {{firm}}",
+    "loading": "A CARREGAR...",
+    "noFirms": "Nenhuma mesa disponível neste momento",
+    "noFirmsHint": "Volte mais tarde ou contacte o suporte.",
+    "planEyebrow": "PLANO DE SINAIS MENSAL",
+    "perMonth": "/mês",
+    "planBody": "Depois de a sua conta ser aprovada, o plano de sinais dá-lhe os nossos sinais de negociação. É você que os executa, na sua própria conta, com uma ferramenta de terceiros.",
+    "stepsTitle": "Como funciona",
+    "step1Title": "Compre a conta",
+    "step1Body": "Compre a sua conta de avaliação ou fundeada diretamente com a mesa pelo nosso link de afiliado.",
+    "step2Title": "Solicite a ativação",
+    "step2Body": "Volte ao painel e solicite a ativação, anexando o comprovativo de compra.",
+    "step3Title": "Conecte a sua ferramenta",
+    "step3Body": "Após a aprovação, conecte a sua ferramenta de execução à conta da mesa e siga os sinais.",
+    "ctaTitle": "Já comprou a sua conta?",
+    "ctaBody": "Entre no painel e solicite a ativação. Analisamos cada pedido manualmente.",
+    "ctaButton": "IR PARA O PAINEL",
+    "riskTitle": "Aviso de risco",
+    "riskBody": "Negociar em mercados financeiros envolve um risco substancial de perda e não é adequado a todos os investidores. Os sinais são informativos e não constituem aconselhamento de investimento. É você que executa cada operação, na sua conta e por sua conta e risco. O desempenho passado não é indicativo de resultados futuros.",
+    "disabledTitle": "Indisponível",
+    "disabledBody": "O fluxo de ativação de conta não está disponível neste momento. Contacte o suporte para mais informações.",
+    "disabledCta": "CONTACTAR SUPORTE"
+  },
+  activation: {
+    "navLabel": "ATIVAR CONTA",
+    "eyebrow": "PLANO DE SINAIS",
+    "title": "Ative a sua conta",
+    "intro": "Comprou a sua conta diretamente com a mesa. Diga-nos qual é a conta e anexe o comprovativo de compra. Analisamos cada pedido manualmente.",
+    "noPasswordNotice": "Nunca introduza aqui a sua senha da corretora. Precisamos apenas do ID/login da conta e do comprovativo de compra. A Braxel nunca pede a sua senha, CID ou secret.",
+    "formTitle": "Pedido de ativação",
+    "firmLabel": "Mesa",
+    "planNameLabel": "Plano que comprou",
+    "planNamePlaceholder": "ex.: Avaliação 50K",
+    "accountLoginLabel": "Login/ID da conta na mesa",
+    "accountLoginPlaceholder": "O ID ou login da sua conta",
+    "accountLoginHint": "Isto não é a sua senha. É apenas o ID ou login que vê na mesa.",
+    "purchaseEmailLabel": "E-mail usado na compra",
+    "purchaseEmailPlaceholder": "voce@exemplo.com",
+    "receiptLabel": "Comprovativo de compra",
+    "receiptPlaceholder": "Escolha uma imagem ou PDF",
+    "receiptHint": "Imagem ou PDF, até 10 MB. É o comprovativo de compra, não uma credencial.",
+    "noteLabel": "Observações (opcional)",
+    "notePlaceholder": "Algo que devamos saber sobre o seu pedido.",
+    "confirmOwnership": "A conta é minha.",
+    "confirmResponsibility": "Mantenho o controlo e a total responsabilidade por todas as operações na minha conta.",
+    "confirmFirmRules": "Confirmei que as regras da minha mesa permitem automação e execução de sinais.",
+    "confirmRisk": "Li o aviso de risco e os termos.",
+    "submit": "ENVIAR PEDIDO",
+    "submitted": "Pedido enviado. Vamos analisá-lo em breve.",
+    "pendingHint": "O seu pedido aguarda análise. Pode enviar um novo após uma decisão.",
+    "history": "Os seus pedidos",
+    "operatorNote": "Nota do operador",
+    "riskDraft": "Texto provisório — aguarda revisão jurídica. A Braxel Markets fornece apenas sinais. Não operamos a sua conta, não detemos os seus fundos e não garantimos qualquer resultado. Negociar envolve risco de perda.",
+    "status": {
+      "pending": "Pendente",
+      "in_review": "Em análise",
+      "info_requested": "Precisa de informação",
+      "approved": "Aprovada",
+      "rejected": "Recusada"
+    },
+    "errors": {
+      "missingFields": "Preencha a mesa, o plano, o ID da conta e o e-mail da compra.",
+      "receiptRequired": "Anexe o seu comprovativo de compra.",
+      "confirmationsRequired": "Confirme todas as declarações antes de enviar.",
+      "badFileType": "Tipo de ficheiro não suportado. Use uma imagem ou um PDF.",
+      "fileTooLarge": "O ficheiro é demasiado grande. O limite é 10 MB.",
+      "alreadyPending": "Já tem um pedido a aguardar análise.",
+      "invalidReceipt": "Não foi possível aceitar esse comprovativo. Tente outra imagem ou PDF.",
+      "disabled": "O fluxo de ativação não está disponível neste momento.",
+      "submitFailed": "Não foi possível enviar o seu pedido. Tente novamente.",
+      "unauthorized": "Inicie sessão novamente para enviar o pedido."
+    }
+  },
+  planActive: {
+    "badge": "PLANO ATIVO",
+    "planFallback": "Plano de Sinais",
+    "summary": "O seu plano de sinais está ativo. É você que executa os sinais, na sua própria conta, com uma ferramenta à sua escolha. A Braxel não opera a sua conta.",
+    "checklistTitle": "Próximos passos",
+    "step1Title": "Conecte a sua ferramenta de execução",
+    "step1Body": "Conecte uma ferramenta de execução de terceiros à conta da sua mesa. Siga as instruções do fornecedor; os passos abaixo são um exemplo.",
+    "tools": [
+      {
+        "name": "Ferramenta de execução A (exemplo)",
+        "steps": [
+          "Instale a ferramenta e conecte-a à conta da sua mesa.",
+          "Siga o guia do fornecedor para ligar sinais ou webhooks.",
+          "Defina os seus próprios limites de risco antes de ativar a automação."
+        ]
+      },
+      {
+        "name": "Ferramenta de execução B (exemplo)",
+        "steps": [
+          "Crie uma conta com o fornecedor.",
+          "Ligue a conta da sua mesa seguindo as instruções do fornecedor.",
+          "Confirme cada sinal antes de ser executado, se preferir."
+        ]
+      }
+    ],
+    "step2Title": "Como chegam os sinais",
+    "step2Body": "Os sinais são publicados no painel e entregues à ferramenta que escolher. Decide se age em cada um. Nada é executado sem a sua configuração.",
+    "step3Title": "Aviso de risco",
+    "step3Body": "Os sinais são informativos e não constituem aconselhamento de investimento. É responsável por todas as operações na sua conta. Negociar envolve um risco substancial de perda.",
+    "buyAnother": "Comprar outra conta"
+  },
+  operatorActivations: {
+    "activationsTitle": "ATIVAÇÕES DE CONTA",
+    "activationsSubtitle": "Analisar pedidos de ativação de conta",
+    "refresh": "ATUALIZAR",
+    "filterFirm": "Mesa",
+    "allFirms": "Todas as mesas",
+    "filterStatus": "Estado",
+    "statusOpen": "Apenas abertos",
+    "allStatuses": "Todos os estados",
+    "noActivations": "Sem pedidos de ativação",
+    "review": "ANALISAR",
+    "detailTitle": "Detalhes da ativação",
+    "close": "Fechar",
+    "openReceipt": "Abrir comprovativo (PDF)",
+    "receiptAlt": "Comprovativo de compra",
+    "receiptUnavailable": "Comprovativo indisponível",
+    "notePlaceholder": "Nota mostrada ao cliente (obrigatória para recusar ou pedir informação).",
+    "startReview": "INICIAR ANÁLISE",
+    "approve": "APROVAR",
+    "requestInfo": "PEDIR INFORMAÇÃO",
+    "reject": "RECUSAR",
+    "action_done": "Concluído.",
+    "errors": {
+      "note_required": "É necessária uma nota para recusar ou pedir informação.",
+      "invalid_transition": "Essa ação não é permitida para o estado atual.",
+      "forbidden": "Não tem permissão para analisar ativações.",
+      "action_failed": "A ação falhou. Tente novamente.",
+      "unauthorized": "Inicie sessão novamente.",
+      "load_failed": "Não foi possível carregar os pedidos de ativação."
     }
   },
   errorBoundary: {
@@ -2986,6 +3280,7 @@ usernameLabel: "Nome utente Tradovate",
   },
 
   nav: {
+    buyAccount: "ACQUISTA ACCOUNT",
     tradovate: "TRADOVATE",
     pricing: "PIANI DI INVESTIMENTO",
     howItWorks: "INFRASTRUTTURA",
@@ -3833,6 +4128,10 @@ usernameLabel: "Nome utente Tradovate",
     disclaimer: "* Avvertenza: I risultati passati non garantiscono quelli futuri. Le proiezioni sono solo a scopo illustrativo."
   },
   meta: {
+    accounts: {
+      title: "Acquista un Account Prop Firm | Braxel Markets",
+      description: "Acquista il tuo account di valutazione o funded direttamente dalla firm tramite il nostro link, poi attiva il piano di segnali nel pannello."
+    },
     home: {
       title: "Braxel Markets | Gestione algoritmica del capitale istituzionale",
       description: "Infrastruttura di trading algoritmico di livello istituzionale, accesso al capitale di prop firm, autorizzazione CopyTrade e automazione completa di MetaTrader per XAU/USD e US500."
@@ -4025,6 +4324,148 @@ usernameLabel: "Nome utente Tradovate",
       residence: "Permesso di soggiorno",
       foreign_passport: "Passaporto straniero",
       national_id: "Carta d’identità nazionale"
+    }
+  },
+  accounts: {
+    "badge": "ACCOUNT DI PROP FIRM",
+    "title": "Acquista il tuo account di valutazione o funded",
+    "subtitle": "Scegli una prop firm, acquista l'account direttamente da loro tramite il nostro link, poi richiedi l'attivazione del tuo piano di segnali nel pannello.",
+    "affiliateNotice": "Braxel Markets riceve una commissione di affiliazione quando acquisti un account tramite i link di questa pagina. Questo non modifica il prezzo che paghi alla firm.",
+    "firmsTitle": "Scegli la tua firm",
+    "firmBody": "Acquisti e possiedi l'account direttamente dalla firm. Braxel non gestisce il tuo account e non vi ha mai accesso.",
+    "buyCta": "Acquista su {{firm}}",
+    "loading": "CARICAMENTO...",
+    "noFirms": "Nessuna firm disponibile al momento",
+    "noFirmsHint": "Riprova più tardi o contatta il supporto.",
+    "planEyebrow": "PIANO DI SEGNALI MENSILE",
+    "perMonth": "/mese",
+    "planBody": "Dopo l'approvazione del tuo account, il piano di segnali ti fornisce i nostri segnali di trading. Sei tu a eseguirli, nel tuo account, con uno strumento di terze parti.",
+    "stepsTitle": "Come funziona",
+    "step1Title": "Acquista l'account",
+    "step1Body": "Acquista il tuo account di valutazione o funded direttamente dalla firm tramite il nostro link di affiliazione.",
+    "step2Title": "Richiedi l'attivazione",
+    "step2Body": "Torna nel pannello e richiedi l'attivazione, allegando la ricevuta di acquisto.",
+    "step3Title": "Collega il tuo strumento",
+    "step3Body": "Dopo l'approvazione, collega il tuo strumento di esecuzione all'account della firm e segui i segnali.",
+    "ctaTitle": "Hai già acquistato il tuo account?",
+    "ctaBody": "Accedi al pannello e richiedi l'attivazione. Esaminiamo ogni richiesta manualmente.",
+    "ctaButton": "VAI AL PANNELLO",
+    "riskTitle": "Avviso di rischio",
+    "riskBody": "Il trading sui mercati finanziari comporta un rischio sostanziale di perdita e non è adatto a tutti gli investitori. I segnali sono informativi e non costituiscono consulenza di investimento. Sei tu a eseguire ogni operazione, nel tuo account e a tuo rischio. I risultati passati non sono indicativi di quelli futuri.",
+    "disabledTitle": "Non disponibile",
+    "disabledBody": "Il flusso di attivazione dell'account non è disponibile al momento. Contatta il supporto per maggiori informazioni.",
+    "disabledCta": "CONTATTA IL SUPPORTO"
+  },
+  activation: {
+    "navLabel": "ATTIVA ACCOUNT",
+    "eyebrow": "PIANO DI SEGNALI",
+    "title": "Attiva il tuo account",
+    "intro": "Hai acquistato il tuo account direttamente dalla firm. Dicci quale account è e allega la ricevuta di acquisto. Esaminiamo ogni richiesta manualmente.",
+    "noPasswordNotice": "Non inserire mai qui la password del tuo broker. Ci servono solo il login/ID dell'account e una ricevuta di acquisto. Braxel non chiede mai la password, il CID o il secret.",
+    "formTitle": "Richiesta di attivazione",
+    "firmLabel": "Firm",
+    "planNameLabel": "Piano acquistato",
+    "planNamePlaceholder": "es. Valutazione 50K",
+    "accountLoginLabel": "Login/ID dell'account presso la firm",
+    "accountLoginPlaceholder": "L'ID o il login del tuo account",
+    "accountLoginHint": "Questa non è la tua password. È solo l'ID o il login che vedi presso la firm.",
+    "purchaseEmailLabel": "E-mail usata per l'acquisto",
+    "purchaseEmailPlaceholder": "tu@esempio.com",
+    "receiptLabel": "Prova di acquisto",
+    "receiptPlaceholder": "Scegli un'immagine o un PDF",
+    "receiptHint": "Immagine o PDF, fino a 10 MB. È la ricevuta di acquisto, non una credenziale.",
+    "noteLabel": "Note (opzionale)",
+    "notePlaceholder": "Qualcosa che dovremmo sapere sulla tua richiesta.",
+    "confirmOwnership": "L'account è mio.",
+    "confirmResponsibility": "Mantengo il controllo e la piena responsabilità di ogni operazione nel mio account.",
+    "confirmFirmRules": "Ho confermato che le regole della mia firm consentono l'automazione e l'esecuzione dei segnali.",
+    "confirmRisk": "Ho letto l'avviso di rischio e i termini.",
+    "submit": "INVIA RICHIESTA",
+    "submitted": "Richiesta inviata. La esamineremo a breve.",
+    "pendingHint": "La tua richiesta è in attesa di esame. Puoi inviarne una nuova dopo una decisione.",
+    "history": "Le tue richieste",
+    "operatorNote": "Nota dell'operatore",
+    "riskDraft": "Testo provvisorio — in attesa di revisione legale. Braxel Markets fornisce solo segnali. Non gestiamo il tuo account, non deteniamo i tuoi fondi e non garantiamo alcun risultato. Il trading comporta rischio di perdita.",
+    "status": {
+      "pending": "In attesa",
+      "in_review": "In esame",
+      "info_requested": "Informazioni necessarie",
+      "approved": "Approvata",
+      "rejected": "Rifiutata"
+    },
+    "errors": {
+      "missingFields": "Compila firm, piano, ID account ed e-mail di acquisto.",
+      "receiptRequired": "Allega la prova di acquisto.",
+      "confirmationsRequired": "Conferma tutte le dichiarazioni prima di inviare.",
+      "badFileType": "Tipo di file non supportato. Usa un'immagine o un PDF.",
+      "fileTooLarge": "Il file è troppo grande. Il limite è 10 MB.",
+      "alreadyPending": "Hai già una richiesta in attesa di esame.",
+      "invalidReceipt": "Non abbiamo potuto accettare quel file. Prova un'altra immagine o un PDF.",
+      "disabled": "Il flusso di attivazione non è disponibile al momento.",
+      "submitFailed": "Non abbiamo potuto inviare la tua richiesta. Riprova.",
+      "unauthorized": "Accedi di nuovo per inviare la richiesta."
+    }
+  },
+  planActive: {
+    "badge": "PIANO ATTIVO",
+    "planFallback": "Piano di Segnali",
+    "summary": "Il tuo piano di segnali è attivo. Sei tu a eseguire i segnali, nel tuo account, con lo strumento che preferisci. Braxel non gestisce il tuo account.",
+    "checklistTitle": "Prossimi passi",
+    "step1Title": "Collega il tuo strumento di esecuzione",
+    "step1Body": "Collega uno strumento di esecuzione di terze parti all'account della tua firm. Segui le istruzioni del fornitore; i passaggi sotto sono un esempio.",
+    "tools": [
+      {
+        "name": "Strumento di esecuzione A (esempio)",
+        "steps": [
+          "Installa lo strumento e collegalo all'account della tua firm.",
+          "Segui la guida del fornitore per collegare segnali o webhook.",
+          "Imposta i tuoi limiti di rischio prima di attivare l'automazione."
+        ]
+      },
+      {
+        "name": "Strumento di esecuzione B (esempio)",
+        "steps": [
+          "Crea un account con il fornitore.",
+          "Collega l'account della tua firm seguendo le istruzioni del fornitore.",
+          "Conferma ogni segnale prima dell'esecuzione, se preferisci."
+        ]
+      }
+    ],
+    "step2Title": "Come arrivano i segnali",
+    "step2Body": "I segnali sono pubblicati nel pannello e consegnati allo strumento che scegli. Decidi se agire su ciascuno. Nulla viene eseguito senza la tua configurazione.",
+    "step3Title": "Avviso di rischio",
+    "step3Body": "I segnali sono informativi e non costituiscono consulenza di investimento. Sei responsabile di ogni operazione nel tuo account. Il trading comporta un rischio sostanziale di perdita.",
+    "buyAnother": "Acquista un altro account"
+  },
+  operatorActivations: {
+    "activationsTitle": "ATTIVAZIONI ACCOUNT",
+    "activationsSubtitle": "Esamina le richieste di attivazione account",
+    "refresh": "AGGIORNA",
+    "filterFirm": "Firm",
+    "allFirms": "Tutte le firm",
+    "filterStatus": "Stato",
+    "statusOpen": "Solo aperte",
+    "allStatuses": "Tutti gli stati",
+    "noActivations": "Nessuna richiesta di attivazione",
+    "review": "ESAMINA",
+    "detailTitle": "Dettagli dell'attivazione",
+    "close": "Chiudi",
+    "openReceipt": "Apri ricevuta (PDF)",
+    "receiptAlt": "Ricevuta di acquisto",
+    "receiptUnavailable": "Ricevuta non disponibile",
+    "notePlaceholder": "Nota mostrata al cliente (obbligatoria per rifiutare o chiedere info).",
+    "startReview": "AVVIA ESAME",
+    "approve": "APPROVA",
+    "requestInfo": "CHIEDI INFO",
+    "reject": "RIFIUTA",
+    "action_done": "Fatto.",
+    "errors": {
+      "note_required": "Serve una nota per rifiutare o chiedere informazioni.",
+      "invalid_transition": "Questa azione non è consentita per lo stato attuale.",
+      "forbidden": "Non sei autorizzato a esaminare le attivazioni.",
+      "action_failed": "L'azione non è riuscita. Riprova.",
+      "unauthorized": "Accedi di nuovo.",
+      "load_failed": "Non è stato possibile caricare le richieste di attivazione."
     }
   },
   errorBoundary: {
@@ -4326,6 +4767,7 @@ usernameLabel: "Usuario de Tradovate",
   },
 
   nav: {
+    buyAccount: "COMPRAR CUENTA",
     tradovate: "TRADOVATE",
     pricing: "PLANES DE INVERSIÓN",
     howItWorks: "INFRAESTRUCTURA",
@@ -5173,6 +5615,10 @@ usernameLabel: "Usuario de Tradovate",
     disclaimer: "* Aviso: El rendimiento pasado no garantiza resultados futuros. Las proyecciones son solo ilustrativas."
   },
   meta: {
+    accounts: {
+      title: "Comprar Cuenta de Prop Firm | Braxel Markets",
+      description: "Compra tu cuenta de evaluación o financiada directamente con la firm a través de nuestro enlace y activa tu plan de señales en el panel."
+    },
     home: {
       title: "Braxel Markets | Gestión algorítmica institucional de capital",
       description: "Infraestructura de negociación algorítmica de nivel institucional, acceso a capital de prop firm, autorización de CopyTrade y automatización completa de MetaTrader para XAU/USD y US500."
@@ -5365,6 +5811,148 @@ usernameLabel: "Usuario de Tradovate",
       residence: "Permiso de residencia",
       foreign_passport: "Pasaporte extranjero",
       national_id: "Documento nacional de identidad"
+    }
+  },
+  accounts: {
+    "badge": "CUENTAS DE PROP FIRM",
+    "title": "Compra tu cuenta de evaluación o financiada",
+    "subtitle": "Elige una prop firm, compra tu cuenta directamente con ellos a través de nuestro enlace y luego solicita la activación de tu plan de señales en el panel.",
+    "affiliateNotice": "Braxel Markets recibe una comisión de afiliado cuando compras una cuenta a través de los enlaces de esta página. Esto no cambia el precio que pagas a la firm.",
+    "firmsTitle": "Elige tu firm",
+    "firmBody": "Compras y posees la cuenta directamente con la firm. Braxel no opera tu cuenta y nunca tiene acceso a ella.",
+    "buyCta": "Comprar en {{firm}}",
+    "loading": "CARGANDO...",
+    "noFirms": "No hay firms disponibles ahora mismo",
+    "noFirmsHint": "Vuelve más tarde o contacta con soporte.",
+    "planEyebrow": "PLAN DE SEÑALES MENSUAL",
+    "perMonth": "/mes",
+    "planBody": "Una vez aprobada tu cuenta, el plan de señales te da nuestras señales de trading. Tú las ejecutas, en tu propia cuenta, con una herramienta de terceros.",
+    "stepsTitle": "Cómo funciona",
+    "step1Title": "Compra la cuenta",
+    "step1Body": "Compra tu cuenta de evaluación o financiada directamente con la firm a través de nuestro enlace de afiliado.",
+    "step2Title": "Solicita la activación",
+    "step2Body": "Vuelve al panel y solicita la activación, adjuntando tu comprobante de compra.",
+    "step3Title": "Conecta tu herramienta",
+    "step3Body": "Una vez aprobada, conecta tu herramienta de ejecución a la cuenta de la firm y sigue las señales.",
+    "ctaTitle": "¿Ya compraste tu cuenta?",
+    "ctaBody": "Inicia sesión en el panel y solicita la activación. Revisamos cada solicitud manualmente.",
+    "ctaButton": "IR AL PANEL",
+    "riskTitle": "Advertencia de riesgo",
+    "riskBody": "Operar en los mercados financieros implica un riesgo sustancial de pérdida y no es adecuado para todos los inversores. Las señales son informativas y no constituyen asesoramiento de inversión. Tú ejecutas cada operación, en tu cuenta y bajo tu propio riesgo. El rendimiento pasado no es indicativo de resultados futuros.",
+    "disabledTitle": "No disponible",
+    "disabledBody": "El flujo de activación de cuenta no está disponible en este momento. Contacta con soporte para más información.",
+    "disabledCta": "CONTACTAR SOPORTE"
+  },
+  activation: {
+    "navLabel": "ACTIVAR CUENTA",
+    "eyebrow": "PLAN DE SEÑALES",
+    "title": "Activa tu cuenta",
+    "intro": "Compraste tu cuenta directamente con la firm. Dinos qué cuenta es y adjunta tu comprobante de compra. Revisamos cada solicitud manualmente.",
+    "noPasswordNotice": "Nunca introduzcas aquí tu contraseña del bróker. Solo necesitamos el login/ID de la cuenta y un comprobante de compra. Braxel nunca pide tu contraseña, CID o secret.",
+    "formTitle": "Solicitud de activación",
+    "firmLabel": "Firm",
+    "planNameLabel": "Plan que compraste",
+    "planNamePlaceholder": "p. ej. Evaluación 50K",
+    "accountLoginLabel": "Login/ID de la cuenta en la firm",
+    "accountLoginPlaceholder": "El ID o login de tu cuenta",
+    "accountLoginHint": "Esto no es tu contraseña. Es solo el ID o login que ves en la firm.",
+    "purchaseEmailLabel": "Correo usado en la compra",
+    "purchaseEmailPlaceholder": "tu@ejemplo.com",
+    "receiptLabel": "Comprobante de compra",
+    "receiptPlaceholder": "Elige una imagen o un PDF",
+    "receiptHint": "Imagen o PDF, hasta 10 MB. Es tu comprobante de compra, no una credencial.",
+    "noteLabel": "Notas (opcional)",
+    "notePlaceholder": "Algo que debamos saber sobre tu solicitud.",
+    "confirmOwnership": "La cuenta es mía.",
+    "confirmResponsibility": "Mantengo el control y la total responsabilidad de cada operación en mi cuenta.",
+    "confirmFirmRules": "Confirmé que las reglas de mi firm permiten la automatización y la ejecución de señales.",
+    "confirmRisk": "Leí la advertencia de riesgo y los términos.",
+    "submit": "ENVIAR SOLICITUD",
+    "submitted": "Solicitud enviada. La revisaremos en breve.",
+    "pendingHint": "Tu solicitud está pendiente de revisión. Puedes enviar otra tras una decisión.",
+    "history": "Tus solicitudes",
+    "operatorNote": "Nota del operador",
+    "riskDraft": "Texto provisional — pendiente de revisión legal. Braxel Markets solo proporciona señales. No operamos tu cuenta, no custodiamos tus fondos y no garantizamos ningún resultado. Operar implica riesgo de pérdida.",
+    "status": {
+      "pending": "Pendiente",
+      "in_review": "En revisión",
+      "info_requested": "Falta información",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "errors": {
+      "missingFields": "Completa la firm, el plan, el ID de la cuenta y el correo de compra.",
+      "receiptRequired": "Adjunta tu comprobante de compra.",
+      "confirmationsRequired": "Confirma todas las declaraciones antes de enviar.",
+      "badFileType": "Tipo de archivo no admitido. Usa una imagen o un PDF.",
+      "fileTooLarge": "El archivo es demasiado grande. El límite es 10 MB.",
+      "alreadyPending": "Ya tienes una solicitud pendiente de revisión.",
+      "invalidReceipt": "No pudimos aceptar ese archivo. Prueba con otra imagen o PDF.",
+      "disabled": "El flujo de activación no está disponible ahora mismo.",
+      "submitFailed": "No pudimos enviar tu solicitud. Inténtalo de nuevo.",
+      "unauthorized": "Inicia sesión de nuevo para enviar tu solicitud."
+    }
+  },
+  planActive: {
+    "badge": "PLAN ACTIVO",
+    "planFallback": "Plan de Señales",
+    "summary": "Tu plan de señales está activo. Tú ejecutas las señales, en tu propia cuenta, con la herramienta que elijas. Braxel no opera tu cuenta.",
+    "checklistTitle": "Próximos pasos",
+    "step1Title": "Conecta tu herramienta de ejecución",
+    "step1Body": "Conecta una herramienta de ejecución de terceros a la cuenta de tu firm. Sigue las instrucciones del proveedor; los pasos de abajo son un ejemplo.",
+    "tools": [
+      {
+        "name": "Herramienta de ejecución A (ejemplo)",
+        "steps": [
+          "Instala la herramienta y conéctala a la cuenta de tu firm.",
+          "Sigue la guía del proveedor para enlazar señales o webhooks.",
+          "Define tus propios límites de riesgo antes de activar la automatización."
+        ]
+      },
+      {
+        "name": "Herramienta de ejecución B (ejemplo)",
+        "steps": [
+          "Crea una cuenta con el proveedor.",
+          "Enlaza la cuenta de tu firm siguiendo las instrucciones del proveedor.",
+          "Confirma cada señal antes de ejecutarla, si lo prefieres."
+        ]
+      }
+    ],
+    "step2Title": "Cómo llegan las señales",
+    "step2Body": "Las señales se publican en el panel y se entregan a la herramienta que elijas. Tú decides si actuar sobre cada una. Nada se ejecuta sin tu configuración.",
+    "step3Title": "Advertencia de riesgo",
+    "step3Body": "Las señales son informativas y no constituyen asesoramiento de inversión. Eres responsable de cada operación en tu cuenta. Operar implica un riesgo sustancial de pérdida.",
+    "buyAnother": "Comprar otra cuenta"
+  },
+  operatorActivations: {
+    "activationsTitle": "ACTIVACIONES DE CUENTA",
+    "activationsSubtitle": "Revisar solicitudes de activación de cuenta",
+    "refresh": "ACTUALIZAR",
+    "filterFirm": "Firm",
+    "allFirms": "Todas las firms",
+    "filterStatus": "Estado",
+    "statusOpen": "Solo abiertas",
+    "allStatuses": "Todos los estados",
+    "noActivations": "Sin solicitudes de activación",
+    "review": "REVISAR",
+    "detailTitle": "Detalles de la activación",
+    "close": "Cerrar",
+    "openReceipt": "Abrir comprobante (PDF)",
+    "receiptAlt": "Comprobante de compra",
+    "receiptUnavailable": "Comprobante no disponible",
+    "notePlaceholder": "Nota mostrada al cliente (obligatoria para rechazar o pedir info).",
+    "startReview": "INICIAR REVISIÓN",
+    "approve": "APROBAR",
+    "requestInfo": "PEDIR INFO",
+    "reject": "RECHAZAR",
+    "action_done": "Hecho.",
+    "errors": {
+      "note_required": "Se requiere una nota para rechazar o pedir información.",
+      "invalid_transition": "Esa acción no está permitida para el estado actual.",
+      "forbidden": "No tienes permiso para revisar activaciones.",
+      "action_failed": "La acción falló. Inténtalo de nuevo.",
+      "unauthorized": "Inicia sesión de nuevo.",
+      "load_failed": "No se pudieron cargar las solicitudes de activación."
     }
   },
   errorBoundary: {
@@ -5666,6 +6254,7 @@ usernameLabel: "Identifiant Tradovate",
   },
 
   nav: {
+    buyAccount: "ACHETER UN COMPTE",
     tradovate: "TRADOVATE",
     pricing: "PLANS D'INVESTISSEMENT",
     howItWorks: "INFRASTRUCTURE",
@@ -6513,6 +7102,10 @@ usernameLabel: "Identifiant Tradovate",
     disclaimer: "* Avertissement : Les performances passées ne garantissent pas les résultats futurs. Les projections sont fournies à titre indicatif uniquement."
   },
   meta: {
+    accounts: {
+      title: "Acheter un Compte de Prop Firm | Braxel Markets",
+      description: "Achetez votre compte d'évaluation ou financé directement auprès de la firm via notre lien, puis activez votre plan de signaux dans le panneau."
+    },
     home: {
       title: "Braxel Markets | Gestion algorithmique institutionnelle du capital",
       description: "Infrastructure de trading algorithmique de niveau institutionnel, accès au capital de prop firm, autorisation CopyTrade et automatisation complète de MetaTrader pour XAU/USD et US500."
@@ -6705,6 +7298,148 @@ usernameLabel: "Identifiant Tradovate",
       residence: "Titre de séjour",
       foreign_passport: "Passeport étranger",
       national_id: "Carte d’identité nationale"
+    }
+  },
+  accounts: {
+    "badge": "COMPTES DE PROP FIRM",
+    "title": "Achetez votre compte d'évaluation ou financé",
+    "subtitle": "Choisissez une prop firm, achetez votre compte directement auprès d'elle via notre lien, puis demandez l'activation de votre plan de signaux dans le panneau.",
+    "affiliateNotice": "Braxel Markets reçoit une commission d'affiliation lorsque vous achetez un compte via les liens de cette page. Cela ne change pas le prix que vous payez à la firm.",
+    "firmsTitle": "Choisissez votre firm",
+    "firmBody": "Vous achetez et possédez le compte directement auprès de la firm. Braxel n'exploite pas votre compte et n'y a jamais accès.",
+    "buyCta": "Acheter chez {{firm}}",
+    "loading": "CHARGEMENT...",
+    "noFirms": "Aucune firm disponible pour le moment",
+    "noFirmsHint": "Revenez plus tard ou contactez le support.",
+    "planEyebrow": "PLAN DE SIGNAUX MENSUEL",
+    "perMonth": "/mois",
+    "planBody": "Une fois votre compte approuvé, le plan de signaux vous fournit nos signaux de trading. Vous les exécutez vous-même, sur votre propre compte, avec un outil tiers.",
+    "stepsTitle": "Comment ça marche",
+    "step1Title": "Achetez le compte",
+    "step1Body": "Achetez votre compte d'évaluation ou financé directement auprès de la firm via notre lien d'affiliation.",
+    "step2Title": "Demandez l'activation",
+    "step2Body": "Revenez dans le panneau et demandez l'activation, en joignant votre justificatif d'achat.",
+    "step3Title": "Connectez votre outil",
+    "step3Body": "Une fois approuvé, connectez votre outil d'exécution au compte de la firm et suivez les signaux.",
+    "ctaTitle": "Vous avez déjà acheté votre compte ?",
+    "ctaBody": "Connectez-vous au panneau et demandez l'activation. Nous examinons chaque demande manuellement.",
+    "ctaButton": "ALLER AU PANNEAU",
+    "riskTitle": "Avertissement sur les risques",
+    "riskBody": "Le trading sur les marchés financiers comporte un risque de perte substantiel et ne convient pas à tous les investisseurs. Les signaux sont informatifs et ne constituent pas un conseil en investissement. Vous exécutez chaque opération vous-même, sur votre compte et à vos propres risques. Les performances passées ne préjugent pas des résultats futurs.",
+    "disabledTitle": "Indisponible",
+    "disabledBody": "Le flux d'activation de compte n'est pas disponible pour le moment. Contactez le support pour plus d'informations.",
+    "disabledCta": "CONTACTER LE SUPPORT"
+  },
+  activation: {
+    "navLabel": "ACTIVER LE COMPTE",
+    "eyebrow": "PLAN DE SIGNAUX",
+    "title": "Activez votre compte",
+    "intro": "Vous avez acheté votre compte directement auprès de la firm. Indiquez-nous de quel compte il s'agit et joignez votre justificatif d'achat. Nous examinons chaque demande manuellement.",
+    "noPasswordNotice": "N'entrez jamais ici le mot de passe de votre courtier. Nous avons seulement besoin du login/ID du compte et d'un justificatif d'achat. Braxel ne demande jamais votre mot de passe, CID ou secret.",
+    "formTitle": "Demande d'activation",
+    "firmLabel": "Firm",
+    "planNameLabel": "Plan acheté",
+    "planNamePlaceholder": "ex. Évaluation 50K",
+    "accountLoginLabel": "Login/ID du compte chez la firm",
+    "accountLoginPlaceholder": "L'ID ou le login de votre compte",
+    "accountLoginHint": "Ce n'est pas votre mot de passe. C'est seulement l'ID ou le login que vous voyez chez la firm.",
+    "purchaseEmailLabel": "E-mail utilisé pour l'achat",
+    "purchaseEmailPlaceholder": "vous@exemple.com",
+    "receiptLabel": "Justificatif d'achat",
+    "receiptPlaceholder": "Choisissez une image ou un PDF",
+    "receiptHint": "Image ou PDF, jusqu'à 10 Mo. C'est votre justificatif d'achat, pas un identifiant.",
+    "noteLabel": "Notes (facultatif)",
+    "notePlaceholder": "Tout ce que nous devrions savoir sur votre demande.",
+    "confirmOwnership": "Le compte est le mien.",
+    "confirmResponsibility": "Je garde le contrôle et l'entière responsabilité de chaque opération sur mon compte.",
+    "confirmFirmRules": "J'ai confirmé que les règles de ma firm autorisent l'automatisation et l'exécution des signaux.",
+    "confirmRisk": "J'ai lu l'avertissement sur les risques et les conditions.",
+    "submit": "ENVOYER LA DEMANDE",
+    "submitted": "Demande envoyée. Nous l'examinerons bientôt.",
+    "pendingHint": "Votre demande est en attente d'examen. Vous pouvez en envoyer une nouvelle après une décision.",
+    "history": "Vos demandes",
+    "operatorNote": "Note de l'opérateur",
+    "riskDraft": "Texte provisoire — en attente de validation juridique. Braxel Markets fournit uniquement des signaux. Nous n'exploitons pas votre compte, ne détenons pas vos fonds et ne garantissons aucun résultat. Le trading comporte un risque de perte.",
+    "status": {
+      "pending": "En attente",
+      "in_review": "En cours d'examen",
+      "info_requested": "Informations requises",
+      "approved": "Approuvée",
+      "rejected": "Refusée"
+    },
+    "errors": {
+      "missingFields": "Renseignez la firm, le plan, l'ID du compte et l'e-mail d'achat.",
+      "receiptRequired": "Joignez votre justificatif d'achat.",
+      "confirmationsRequired": "Confirmez toutes les déclarations avant d'envoyer.",
+      "badFileType": "Type de fichier non pris en charge. Utilisez une image ou un PDF.",
+      "fileTooLarge": "Le fichier est trop volumineux. La limite est de 10 Mo.",
+      "alreadyPending": "Vous avez déjà une demande en attente d'examen.",
+      "invalidReceipt": "Nous n'avons pas pu accepter ce fichier. Essayez une autre image ou un PDF.",
+      "disabled": "Le flux d'activation n'est pas disponible pour le moment.",
+      "submitFailed": "Nous n'avons pas pu envoyer votre demande. Réessayez.",
+      "unauthorized": "Reconnectez-vous pour envoyer votre demande."
+    }
+  },
+  planActive: {
+    "badge": "PLAN ACTIF",
+    "planFallback": "Plan de Signaux",
+    "summary": "Votre plan de signaux est actif. Vous exécutez les signaux vous-même, sur votre propre compte, avec l'outil de votre choix. Braxel n'exploite pas votre compte.",
+    "checklistTitle": "Prochaines étapes",
+    "step1Title": "Connectez votre outil d'exécution",
+    "step1Body": "Connectez un outil d'exécution tiers au compte de votre firm. Suivez les instructions du fournisseur ; les étapes ci-dessous sont un exemple.",
+    "tools": [
+      {
+        "name": "Outil d'exécution A (exemple)",
+        "steps": [
+          "Installez l'outil et connectez-le au compte de votre firm.",
+          "Suivez le guide du fournisseur pour relier des signaux ou des webhooks.",
+          "Fixez vos propres limites de risque avant d'activer l'automatisation."
+        ]
+      },
+      {
+        "name": "Outil d'exécution B (exemple)",
+        "steps": [
+          "Créez un compte chez le fournisseur.",
+          "Reliez le compte de votre firm en suivant les instructions du fournisseur.",
+          "Confirmez chaque signal avant son exécution, si vous préférez."
+        ]
+      }
+    ],
+    "step2Title": "Comment arrivent les signaux",
+    "step2Body": "Les signaux sont publiés dans le panneau et transmis à l'outil que vous choisissez. Vous décidez d'agir ou non sur chacun. Rien n'est exécuté sans votre configuration.",
+    "step3Title": "Avertissement sur les risques",
+    "step3Body": "Les signaux sont informatifs et ne constituent pas un conseil en investissement. Vous êtes responsable de chaque opération sur votre compte. Le trading comporte un risque de perte substantiel.",
+    "buyAnother": "Acheter un autre compte"
+  },
+  operatorActivations: {
+    "activationsTitle": "ACTIVATIONS DE COMPTE",
+    "activationsSubtitle": "Examiner les demandes d'activation de compte",
+    "refresh": "ACTUALISER",
+    "filterFirm": "Firm",
+    "allFirms": "Toutes les firms",
+    "filterStatus": "Statut",
+    "statusOpen": "Ouvertes uniquement",
+    "allStatuses": "Tous les statuts",
+    "noActivations": "Aucune demande d'activation",
+    "review": "EXAMINER",
+    "detailTitle": "Détails de l'activation",
+    "close": "Fermer",
+    "openReceipt": "Ouvrir le justificatif (PDF)",
+    "receiptAlt": "Justificatif d'achat",
+    "receiptUnavailable": "Justificatif indisponible",
+    "notePlaceholder": "Note affichée au client (obligatoire pour refuser ou demander des informations).",
+    "startReview": "DÉMARRER L'EXAMEN",
+    "approve": "APPROUVER",
+    "requestInfo": "DEMANDER DES INFOS",
+    "reject": "REFUSER",
+    "action_done": "Terminé.",
+    "errors": {
+      "note_required": "Une note est requise pour refuser ou demander des informations.",
+      "invalid_transition": "Cette action n'est pas autorisée pour le statut actuel.",
+      "forbidden": "Vous n'êtes pas autorisé à examiner les activations.",
+      "action_failed": "L'action a échoué. Réessayez.",
+      "unauthorized": "Reconnectez-vous.",
+      "load_failed": "Impossible de charger les demandes d'activation."
     }
   },
   errorBoundary: {
@@ -7005,6 +7740,7 @@ usernameLabel: "Tradovate-Benutzername",
   },
 
   nav: {
+    buyAccount: "KONTO KAUFEN",
     tradovate: "TRADOVATE",
     pricing: "INVESTMENTPLÄNE",
     howItWorks: "INFRASTRUKTUR",
@@ -7851,6 +8587,10 @@ usernameLabel: "Tradovate-Benutzername",
     disclaimer: "* Hinweis: Frühere Ergebnisse sind kein Garant für zukünftige Resultate. Projektionen dienen nur zur Veranschaulichung."
   },
   meta: {
+    accounts: {
+      title: "Prop-Firm-Konto kaufen | Braxel Markets",
+      description: "Kaufe dein Evaluierungs- oder Funded-Konto direkt bei der Prop-Firm über unseren Link und aktiviere deinen Signalplan im Panel."
+    },
     home: {
       title: "Braxel Markets | Institutionelle algorithmische Kapitalverwaltung",
       description: "Algorithmische Handelsinfrastruktur auf institutionellem Niveau, Zugang zu Prop-Firm-Kapital, CopyTrade-Autorisierung und vollständige MetaTrader-Automatisierung für XAU/USD und US500."
@@ -8043,6 +8783,148 @@ usernameLabel: "Tradovate-Benutzername",
       residence: "Aufenthaltstitel",
       foreign_passport: "Auslandspass",
       national_id: "Nationaler Personalausweis"
+    }
+  },
+  accounts: {
+    "badge": "PROP-FIRM-KONTEN",
+    "title": "Kaufe dein Evaluierungs- oder Funded-Konto",
+    "subtitle": "Wähle eine Prop-Firm, kaufe dein Konto direkt bei ihr über unseren Link und beantrage dann die Aktivierung deines Signalplans im Panel.",
+    "affiliateNotice": "Braxel Markets erhält eine Affiliate-Provision, wenn du über die Links auf dieser Seite ein Konto kaufst. Das ändert den Preis, den du bei der Firm zahlst, nicht.",
+    "firmsTitle": "Wähle deine Firm",
+    "firmBody": "Du kaufst und besitzt das Konto direkt bei der Firm. Braxel betreibt dein Konto nicht und hat niemals Zugriff darauf.",
+    "buyCta": "Bei {{firm}} kaufen",
+    "loading": "WIRD GELADEN...",
+    "noFirms": "Derzeit keine Firms verfügbar",
+    "noFirmsHint": "Bitte später erneut versuchen oder den Support kontaktieren.",
+    "planEyebrow": "MONATLICHER SIGNALPLAN",
+    "perMonth": "/Monat",
+    "planBody": "Nach der Freigabe deines Kontos liefert dir der Signalplan unsere Handelssignale. Du führst sie selbst in deinem eigenen Konto mit einem Drittanbieter-Tool aus.",
+    "stepsTitle": "So funktioniert es",
+    "step1Title": "Konto kaufen",
+    "step1Body": "Kaufe dein Evaluierungs- oder Funded-Konto direkt bei der Firm über unseren Affiliate-Link.",
+    "step2Title": "Aktivierung beantragen",
+    "step2Body": "Kehre ins Panel zurück und beantrage die Aktivierung mit deinem Kaufbeleg.",
+    "step3Title": "Tool verbinden",
+    "step3Body": "Nach der Freigabe verbindest du dein Ausführungstool mit dem Firm-Konto und folgst den Signalen.",
+    "ctaTitle": "Konto bereits gekauft?",
+    "ctaBody": "Melde dich im Panel an und beantrage die Aktivierung. Wir prüfen jede Anfrage manuell.",
+    "ctaButton": "ZUM PANEL",
+    "riskTitle": "Risikohinweis",
+    "riskBody": "Der Handel an Finanzmärkten birgt ein erhebliches Verlustrisiko und ist nicht für alle Anleger geeignet. Signale sind informativ und keine Anlageberatung. Du führst jede Transaktion selbst in deinem Konto und auf eigenes Risiko aus. Die frühere Wertentwicklung ist kein Hinweis auf künftige Ergebnisse.",
+    "disabledTitle": "Nicht verfügbar",
+    "disabledBody": "Der Kontoaktivierungs-Ablauf ist derzeit nicht verfügbar. Bitte kontaktiere den Support für weitere Informationen.",
+    "disabledCta": "SUPPORT KONTAKTIEREN"
+  },
+  activation: {
+    "navLabel": "KONTO AKTIVIEREN",
+    "eyebrow": "SIGNALPLAN",
+    "title": "Aktiviere dein Konto",
+    "intro": "Du hast dein Konto direkt bei der Firm gekauft. Sag uns, welches Konto es ist, und füge deinen Kaufbeleg bei. Wir prüfen jede Anfrage manuell.",
+    "noPasswordNotice": "Gib hier niemals dein Broker-Passwort ein. Wir benötigen nur den Login/die ID des Kontos und einen Kaufbeleg. Braxel fragt niemals nach Passwort, CID oder Secret.",
+    "formTitle": "Aktivierungsanfrage",
+    "firmLabel": "Firm",
+    "planNameLabel": "Gekaufter Plan",
+    "planNamePlaceholder": "z. B. 50K Evaluation",
+    "accountLoginLabel": "Login/ID des Kontos bei der Firm",
+    "accountLoginPlaceholder": "Deine Konto-ID oder dein Login",
+    "accountLoginHint": "Das ist nicht dein Passwort. Es ist nur die ID oder der Login, den du bei der Firm siehst.",
+    "purchaseEmailLabel": "Beim Kauf verwendete E-Mail",
+    "purchaseEmailPlaceholder": "du@beispiel.com",
+    "receiptLabel": "Kaufnachweis",
+    "receiptPlaceholder": "Bild oder PDF wählen",
+    "receiptHint": "Bild oder PDF, bis zu 10 MB. Das ist dein Kaufbeleg, keine Zugangsdaten.",
+    "noteLabel": "Hinweise (optional)",
+    "notePlaceholder": "Was wir zu deiner Anfrage wissen sollten.",
+    "confirmOwnership": "Das Konto gehört mir.",
+    "confirmResponsibility": "Ich behalte die Kontrolle und die volle Verantwortung für jede Transaktion in meinem Konto.",
+    "confirmFirmRules": "Ich habe bestätigt, dass die Regeln meiner Firm Automatisierung und Signalausführung erlauben.",
+    "confirmRisk": "Ich habe den Risikohinweis und die Bedingungen gelesen.",
+    "submit": "ANFRAGE SENDEN",
+    "submitted": "Anfrage gesendet. Wir prüfen sie in Kürze.",
+    "pendingHint": "Deine Anfrage wird geprüft. Nach einer Entscheidung kannst du eine neue senden.",
+    "history": "Deine Anfragen",
+    "operatorNote": "Hinweis des Operators",
+    "riskDraft": "Vorläufiger Text — juristische Prüfung ausstehend. Braxel Markets liefert nur Signale. Wir betreiben dein Konto nicht, halten deine Gelder nicht und garantieren kein Ergebnis. Der Handel birgt Verlustrisiko.",
+    "status": {
+      "pending": "Ausstehend",
+      "in_review": "In Prüfung",
+      "info_requested": "Informationen benötigt",
+      "approved": "Freigegeben",
+      "rejected": "Abgelehnt"
+    },
+    "errors": {
+      "missingFields": "Bitte Firm, Plan, Konto-ID und Kauf-E-Mail ausfüllen.",
+      "receiptRequired": "Bitte füge deinen Kaufbeleg bei.",
+      "confirmationsRequired": "Bitte bestätige vor dem Senden alle Erklärungen.",
+      "badFileType": "Nicht unterstützter Dateityp. Nutze ein Bild oder ein PDF.",
+      "fileTooLarge": "Die Datei ist zu groß. Das Limit liegt bei 10 MB.",
+      "alreadyPending": "Du hast bereits eine Anfrage in Prüfung.",
+      "invalidReceipt": "Diese Datei konnten wir nicht annehmen. Bitte ein anderes Bild oder PDF versuchen.",
+      "disabled": "Der Aktivierungs-Ablauf ist derzeit nicht verfügbar.",
+      "submitFailed": "Deine Anfrage konnte nicht gesendet werden. Bitte erneut versuchen.",
+      "unauthorized": "Bitte melde dich erneut an, um die Anfrage zu senden."
+    }
+  },
+  planActive: {
+    "badge": "PLAN AKTIV",
+    "planFallback": "Signalplan",
+    "summary": "Dein Signalplan ist aktiv. Du führst die Signale selbst in deinem eigenen Konto mit einem Tool deiner Wahl aus. Braxel betreibt dein Konto nicht.",
+    "checklistTitle": "Nächste Schritte",
+    "step1Title": "Ausführungstool verbinden",
+    "step1Body": "Verbinde ein Drittanbieter-Ausführungstool mit deinem Firm-Konto. Folge den Anweisungen des Anbieters; die Schritte unten sind ein Platzhalter.",
+    "tools": [
+      {
+        "name": "Ausführungstool A (Platzhalter)",
+        "steps": [
+          "Installiere das Tool und verbinde es mit deinem Firm-Konto.",
+          "Folge der Anleitung des Anbieters, um Signale oder Webhooks zu verknüpfen.",
+          "Setze eigene Risikolimits, bevor du die Automatisierung aktivierst."
+        ]
+      },
+      {
+        "name": "Ausführungstool B (Platzhalter)",
+        "steps": [
+          "Erstelle ein Konto beim Anbieter.",
+          "Verknüpfe dein Firm-Konto nach den Anweisungen des Anbieters.",
+          "Bestätige jedes Signal vor der Ausführung, wenn du möchtest."
+        ]
+      }
+    ],
+    "step2Title": "Wie die Signale eintreffen",
+    "step2Body": "Signale werden im Panel veröffentlicht und an dein gewähltes Tool geliefert. Du entscheidest, ob du darauf reagierst. Ohne deine Einrichtung wird nichts ausgeführt.",
+    "step3Title": "Risikohinweis",
+    "step3Body": "Signale sind informativ und keine Anlageberatung. Du bist für jede Transaktion in deinem Konto verantwortlich. Der Handel birgt ein erhebliches Verlustrisiko.",
+    "buyAnother": "Weiteres Konto kaufen"
+  },
+  operatorActivations: {
+    "activationsTitle": "KONTOAKTIVIERUNGEN",
+    "activationsSubtitle": "Kontoaktivierungsanfragen prüfen",
+    "refresh": "AKTUALISIEREN",
+    "filterFirm": "Firm",
+    "allFirms": "Alle Firms",
+    "filterStatus": "Status",
+    "statusOpen": "Nur offene",
+    "allStatuses": "Alle Status",
+    "noActivations": "Keine Aktivierungsanfragen",
+    "review": "PRÜFEN",
+    "detailTitle": "Aktivierungsdetails",
+    "close": "Schließen",
+    "openReceipt": "Beleg öffnen (PDF)",
+    "receiptAlt": "Kaufbeleg",
+    "receiptUnavailable": "Beleg nicht verfügbar",
+    "notePlaceholder": "Dem Kunden angezeigter Hinweis (erforderlich zum Ablehnen oder Nachfragen).",
+    "startReview": "PRÜFUNG STARTEN",
+    "approve": "FREIGEBEN",
+    "requestInfo": "INFO ANFORDERN",
+    "reject": "ABLEHNEN",
+    "action_done": "Erledigt.",
+    "errors": {
+      "note_required": "Zum Ablehnen oder Nachfragen ist ein Hinweis erforderlich.",
+      "invalid_transition": "Diese Aktion ist für den aktuellen Status nicht erlaubt.",
+      "forbidden": "Du darfst keine Aktivierungen prüfen.",
+      "action_failed": "Die Aktion ist fehlgeschlagen. Bitte erneut versuchen.",
+      "unauthorized": "Bitte erneut anmelden.",
+      "load_failed": "Aktivierungsanfragen konnten nicht geladen werden."
     }
   },
   errorBoundary: {
@@ -8345,6 +9227,7 @@ usernameLabel: "Имя пользователя Tradovate",
   },
 
   nav: {
+    buyAccount: "КУПИТЬ СЧЁТ",
     tradovate: "TRADOVATE",
     pricing: "ИНВЕСТИЦИОННЫЕ ПЛАНЫ",
     howItWorks: "ИНФРАСТРУКТУРА",
@@ -9193,6 +10076,10 @@ usernameLabel: "Имя пользователя Tradovate",
     disclaimer: "* Отказ от ответственности: прошлые результаты не гарантируют будущих. Прогнозы приведены исключительно в иллюстративных целях."
   },
   meta: {
+    accounts: {
+      title: "Купить счёт prop-фирмы | Braxel Markets",
+      description: "Купите оценочный или funded-счёт напрямую у фирмы по нашей ссылке и активируйте план сигналов в панели."
+    },
     home: {
       title: "Braxel Markets | Институциональное алгоритмическое управление капиталом",
       description: "Инфраструктура алгоритмической торговли институционального уровня, доступ к капиталу проп-фирм, авторизация CopyTrade и полная автоматизация MetaTrader для XAU/USD и US500."
@@ -9385,6 +10272,148 @@ usernameLabel: "Имя пользователя Tradovate",
       residence: "Разрешение на проживание",
       foreign_passport: "Заграничный паспорт",
       national_id: "Национальное удостоверение личности"
+    }
+  },
+  accounts: {
+    "badge": "СЧЕТА PROP-ФИРМ",
+    "title": "Купите оценочный или funded-счёт",
+    "subtitle": "Выберите prop-фирму, купите счёт напрямую у неё по нашей ссылке, затем запросите активацию плана сигналов в панели.",
+    "affiliateNotice": "Braxel Markets получает партнёрскую комиссию, когда вы покупаете счёт по ссылкам на этой странице. Это не меняет цену, которую вы платите фирме.",
+    "firmsTitle": "Выберите фирму",
+    "firmBody": "Вы покупаете и владеете счётом напрямую у фирмы. Braxel не управляет вашим счётом и никогда не имеет к нему доступа.",
+    "buyCta": "Купить у {{firm}}",
+    "loading": "ЗАГРУЗКА...",
+    "noFirms": "Сейчас нет доступных фирм",
+    "noFirmsHint": "Попробуйте позже или свяжитесь с поддержкой.",
+    "planEyebrow": "МЕСЯЧНЫЙ ПЛАН СИГНАЛОВ",
+    "perMonth": "/мес",
+    "planBody": "После одобрения счёта план сигналов даёт вам наши торговые сигналы. Вы исполняете их сами в своём счёте с помощью стороннего инструмента.",
+    "stepsTitle": "Как это работает",
+    "step1Title": "Купите счёт",
+    "step1Body": "Купите оценочный или funded-счёт напрямую у фирмы по нашей партнёрской ссылке.",
+    "step2Title": "Запросите активацию",
+    "step2Body": "Вернитесь в панель и запросите активацию, приложив подтверждение покупки.",
+    "step3Title": "Подключите инструмент",
+    "step3Body": "После одобрения подключите инструмент исполнения к счёту фирмы и следуйте сигналам.",
+    "ctaTitle": "Уже купили счёт?",
+    "ctaBody": "Войдите в панель и запросите активацию. Мы рассматриваем каждый запрос вручную.",
+    "ctaButton": "ПЕРЕЙТИ В ПАНЕЛЬ",
+    "riskTitle": "Предупреждение о рисках",
+    "riskBody": "Торговля на финансовых рынках связана с существенным риском потерь и подходит не всем инвесторам. Сигналы носят информационный характер и не являются инвестиционным советом. Вы исполняете каждую операцию сами, в своём счёте и на свой риск. Прошлые результаты не гарантируют будущих.",
+    "disabledTitle": "Недоступно",
+    "disabledBody": "Процесс активации счёта сейчас недоступен. Свяжитесь с поддержкой для получения информации.",
+    "disabledCta": "СВЯЗАТЬСЯ С ПОДДЕРЖКОЙ"
+  },
+  activation: {
+    "navLabel": "АКТИВИРОВАТЬ СЧЁТ",
+    "eyebrow": "ПЛАН СИГНАЛОВ",
+    "title": "Активируйте свой счёт",
+    "intro": "Вы купили счёт напрямую у фирмы. Укажите, какой это счёт, и приложите подтверждение покупки. Мы рассматриваем каждый запрос вручную.",
+    "noPasswordNotice": "Никогда не вводите здесь пароль брокера. Нам нужны только логин/ID счёта и подтверждение покупки. Braxel никогда не запрашивает пароль, CID или secret.",
+    "formTitle": "Запрос на активацию",
+    "firmLabel": "Фирма",
+    "planNameLabel": "Купленный план",
+    "planNamePlaceholder": "напр. Оценка 50K",
+    "accountLoginLabel": "Логин/ID счёта у фирмы",
+    "accountLoginPlaceholder": "ID или логин вашего счёта",
+    "accountLoginHint": "Это не ваш пароль. Это только ID или логин, который вы видите у фирмы.",
+    "purchaseEmailLabel": "E-mail, использованный при покупке",
+    "purchaseEmailPlaceholder": "vy@example.com",
+    "receiptLabel": "Подтверждение покупки",
+    "receiptPlaceholder": "Выберите изображение или PDF",
+    "receiptHint": "Изображение или PDF до 10 МБ. Это подтверждение покупки, а не учётные данные.",
+    "noteLabel": "Примечания (необязательно)",
+    "notePlaceholder": "Что нам стоит знать о вашем запросе.",
+    "confirmOwnership": "Счёт принадлежит мне.",
+    "confirmResponsibility": "Я сохраняю контроль и полную ответственность за каждую операцию в своём счёте.",
+    "confirmFirmRules": "Я подтвердил, что правила моей фирмы допускают автоматизацию и исполнение сигналов.",
+    "confirmRisk": "Я прочитал предупреждение о рисках и условия.",
+    "submit": "ОТПРАВИТЬ ЗАПРОС",
+    "submitted": "Запрос отправлен. Мы рассмотрим его в ближайшее время.",
+    "pendingHint": "Ваш запрос ожидает рассмотрения. Новый можно отправить после решения.",
+    "history": "Ваши запросы",
+    "operatorNote": "Примечание оператора",
+    "riskDraft": "Черновой текст — ожидает юридической проверки. Braxel Markets предоставляет только сигналы. Мы не управляем вашим счётом, не держим ваши средства и не гарантируем результат. Торговля связана с риском потерь.",
+    "status": {
+      "pending": "В ожидании",
+      "in_review": "На рассмотрении",
+      "info_requested": "Нужна информация",
+      "approved": "Одобрено",
+      "rejected": "Отклонено"
+    },
+    "errors": {
+      "missingFields": "Заполните фирму, план, ID счёта и e-mail покупки.",
+      "receiptRequired": "Приложите подтверждение покупки.",
+      "confirmationsRequired": "Подтвердите все заявления перед отправкой.",
+      "badFileType": "Неподдерживаемый тип файла. Используйте изображение или PDF.",
+      "fileTooLarge": "Файл слишком большой. Ограничение — 10 МБ.",
+      "alreadyPending": "У вас уже есть запрос на рассмотрении.",
+      "invalidReceipt": "Мы не смогли принять этот файл. Попробуйте другое изображение или PDF.",
+      "disabled": "Процесс активации сейчас недоступен.",
+      "submitFailed": "Не удалось отправить запрос. Попробуйте ещё раз.",
+      "unauthorized": "Войдите снова, чтобы отправить запрос."
+    }
+  },
+  planActive: {
+    "badge": "ПЛАН АКТИВЕН",
+    "planFallback": "План сигналов",
+    "summary": "Ваш план сигналов активен. Вы исполняете сигналы сами в своём счёте с выбранным инструментом. Braxel не управляет вашим счётом.",
+    "checklistTitle": "Следующие шаги",
+    "step1Title": "Подключите инструмент исполнения",
+    "step1Body": "Подключите сторонний инструмент исполнения к счёту вашей фирмы. Следуйте инструкциям провайдера; шаги ниже — пример.",
+    "tools": [
+      {
+        "name": "Инструмент исполнения A (пример)",
+        "steps": [
+          "Установите инструмент и подключите его к счёту фирмы.",
+          "Следуйте руководству провайдера, чтобы связать сигналы или вебхуки.",
+          "Задайте свои лимиты риска перед включением автоматизации."
+        ]
+      },
+      {
+        "name": "Инструмент исполнения B (пример)",
+        "steps": [
+          "Создайте аккаунт у провайдера.",
+          "Свяжите счёт фирмы по инструкции провайдера.",
+          "Подтверждайте каждый сигнал перед исполнением, если хотите."
+        ]
+      }
+    ],
+    "step2Title": "Как приходят сигналы",
+    "step2Body": "Сигналы публикуются в панели и доставляются в выбранный вами инструмент. Вы решаете, реагировать ли на каждый. Без вашей настройки ничего не исполняется.",
+    "step3Title": "Предупреждение о рисках",
+    "step3Body": "Сигналы носят информационный характер и не являются инвестиционным советом. Вы отвечаете за каждую операцию в своём счёте. Торговля связана с существенным риском потерь.",
+    "buyAnother": "Купить ещё счёт"
+  },
+  operatorActivations: {
+    "activationsTitle": "АКТИВАЦИИ СЧЕТОВ",
+    "activationsSubtitle": "Рассмотрение запросов на активацию счёта",
+    "refresh": "ОБНОВИТЬ",
+    "filterFirm": "Фирма",
+    "allFirms": "Все фирмы",
+    "filterStatus": "Статус",
+    "statusOpen": "Только открытые",
+    "allStatuses": "Все статусы",
+    "noActivations": "Нет запросов на активацию",
+    "review": "РАССМОТРЕТЬ",
+    "detailTitle": "Детали активации",
+    "close": "Закрыть",
+    "openReceipt": "Открыть подтверждение (PDF)",
+    "receiptAlt": "Подтверждение покупки",
+    "receiptUnavailable": "Подтверждение недоступно",
+    "notePlaceholder": "Примечание для клиента (обязательно при отклонении или запросе информации).",
+    "startReview": "НАЧАТЬ РАССМОТРЕНИЕ",
+    "approve": "ОДОБРИТЬ",
+    "requestInfo": "ЗАПРОСИТЬ ИНФО",
+    "reject": "ОТКЛОНИТЬ",
+    "action_done": "Готово.",
+    "errors": {
+      "note_required": "Для отклонения или запроса информации нужно примечание.",
+      "invalid_transition": "Это действие недопустимо для текущего статуса.",
+      "forbidden": "У вас нет прав на рассмотрение активаций.",
+      "action_failed": "Действие не удалось. Попробуйте ещё раз.",
+      "unauthorized": "Войдите снова.",
+      "load_failed": "Не удалось загрузить запросы на активацию."
     }
   },
   errorBoundary: {
@@ -9684,6 +10713,7 @@ usernameLabel: "Tradovate 用户名",
   },
 
   nav: {
+    buyAccount: "购买账户",
     tradovate: "TRADOVATE",
     pricing: "投资计划",
     howItWorks: "基础设施",
@@ -10529,6 +11559,10 @@ usernameLabel: "Tradovate 用户名",
     disclaimer: "* 免责声明：过往表现并不保证未来结果。预测仅供参考。"
   },
   meta: {
+    accounts: {
+      title: "购买自营交易公司账户 | Braxel Markets",
+      description: "通过我们的链接直接从该公司购买考核账户或资金账户，然后在面板中激活您的信号计划。"
+    },
     home: {
       title: "Braxel Markets | 机构级算法资本管理",
       description: "机构级算法交易基础设施、自营交易公司资金接入、CopyTrade 授权，以及针对 XAU/USD 和 US500 的完整 MetaTrader 自动化。"
@@ -10721,6 +11755,148 @@ usernameLabel: "Tradovate 用户名",
       residence: "居留许可",
       foreign_passport: "外国护照",
       national_id: "国民身份证"
+    }
+  },
+  accounts: {
+    "badge": "自营交易公司账户",
+    "title": "购买您的考核账户或资金账户",
+    "subtitle": "选择一家自营交易公司，通过我们的链接直接向其购买账户，然后在面板中申请激活您的信号计划。",
+    "affiliateNotice": "当您通过本页面的链接购买账户时，Braxel Markets 会获得联盟佣金。这不会改变您向该公司支付的价格。",
+    "firmsTitle": "选择您的公司",
+    "firmBody": "您直接从该公司购买并拥有账户。Braxel 不操作您的账户，也从不访问它。",
+    "buyCta": "在 {{firm}} 购买",
+    "loading": "加载中...",
+    "noFirms": "目前没有可用的公司",
+    "noFirmsHint": "请稍后再试或联系支持。",
+    "planEyebrow": "每月信号计划",
+    "perMonth": "/月",
+    "planBody": "账户获批后，信号计划会向您提供我们的交易信号。您使用第三方工具在自己的账户中自行执行。",
+    "stepsTitle": "运作方式",
+    "step1Title": "购买账户",
+    "step1Body": "通过我们的联盟链接直接从该公司购买您的考核账户或资金账户。",
+    "step2Title": "申请激活",
+    "step2Body": "返回面板并申请激活，附上您的购买凭证。",
+    "step3Title": "连接您的工具",
+    "step3Body": "获批后，将您的执行工具连接到该公司账户并跟随信号。",
+    "ctaTitle": "已经购买了账户？",
+    "ctaBody": "登录面板并申请激活。我们会人工审核每一份申请。",
+    "ctaButton": "前往面板",
+    "riskTitle": "风险提示",
+    "riskBody": "金融市场交易存在重大亏损风险，并非适合所有投资者。信号仅供参考，不构成投资建议。每一笔操作均由您在您自己的账户中自行执行并自行承担风险。过往表现并不代表未来结果。",
+    "disabledTitle": "暂不可用",
+    "disabledBody": "账户激活流程目前不可用。请联系支持获取更多信息。",
+    "disabledCta": "联系支持"
+  },
+  activation: {
+    "navLabel": "激活账户",
+    "eyebrow": "信号计划",
+    "title": "激活您的账户",
+    "intro": "您已直接从该公司购买了账户。请告诉我们具体是哪个账户并附上购买凭证。我们会人工审核每一份申请。",
+    "noPasswordNotice": "切勿在此输入您的经纪商密码。我们只需要账户登录名/ID 和购买凭证。Braxel 从不索要您的密码、CID 或 secret。",
+    "formTitle": "激活申请",
+    "firmLabel": "公司",
+    "planNameLabel": "您购买的计划",
+    "planNamePlaceholder": "例如 50K 考核",
+    "accountLoginLabel": "在该公司的账户登录名/ID",
+    "accountLoginPlaceholder": "您的账户 ID 或登录名",
+    "accountLoginHint": "这不是您的密码。这只是您在该公司看到的 ID 或登录名。",
+    "purchaseEmailLabel": "购买时使用的邮箱",
+    "purchaseEmailPlaceholder": "you@example.com",
+    "receiptLabel": "购买凭证",
+    "receiptPlaceholder": "选择图片或 PDF",
+    "receiptHint": "图片或 PDF，最大 10 MB。这是您的购买凭证，不是凭据。",
+    "noteLabel": "备注（可选）",
+    "notePlaceholder": "我们应了解的有关您申请的任何信息。",
+    "confirmOwnership": "该账户属于我。",
+    "confirmResponsibility": "我保留对我账户中每一笔操作的控制权和全部责任。",
+    "confirmFirmRules": "我确认我的公司规则允许自动化和信号执行。",
+    "confirmRisk": "我已阅读风险提示和条款。",
+    "submit": "提交申请",
+    "submitted": "申请已提交。我们会尽快审核。",
+    "pendingHint": "您的申请正在等待审核。作出决定后您可以提交新的申请。",
+    "history": "您的申请",
+    "operatorNote": "操作员备注",
+    "riskDraft": "草案文本 — 待法律审核。Braxel Markets 仅提供信号。我们不操作您的账户，不持有您的资金，也不保证任何结果。交易存在亏损风险。",
+    "status": {
+      "pending": "待处理",
+      "in_review": "审核中",
+      "info_requested": "需要补充信息",
+      "approved": "已批准",
+      "rejected": "已拒绝"
+    },
+    "errors": {
+      "missingFields": "请填写公司、计划、账户 ID 和购买邮箱。",
+      "receiptRequired": "请附上您的购买凭证。",
+      "confirmationsRequired": "提交前请确认所有声明。",
+      "badFileType": "不支持的文件类型。请使用图片或 PDF。",
+      "fileTooLarge": "文件太大。上限为 10 MB。",
+      "alreadyPending": "您已有一份申请正在等待审核。",
+      "invalidReceipt": "我们无法接受该文件。请尝试其他图片或 PDF。",
+      "disabled": "激活流程目前不可用。",
+      "submitFailed": "我们无法提交您的申请。请重试。",
+      "unauthorized": "请重新登录以提交申请。"
+    }
+  },
+  planActive: {
+    "badge": "计划已激活",
+    "planFallback": "信号计划",
+    "summary": "您的信号计划已激活。您使用自选工具在您自己的账户中自行执行信号。Braxel 不操作您的账户。",
+    "checklistTitle": "后续步骤",
+    "step1Title": "连接您的执行工具",
+    "step1Body": "将第三方执行工具连接到您的公司账户。请遵循提供商的说明；以下步骤仅为占位示例。",
+    "tools": [
+      {
+        "name": "执行工具 A（占位）",
+        "steps": [
+          "安装该工具并将其连接到您的公司账户。",
+          "按照提供商的指南关联信号或 webhook。",
+          "在启用自动化前设定您自己的风险限额。"
+        ]
+      },
+      {
+        "name": "执行工具 B（占位）",
+        "steps": [
+          "在提供商处创建账户。",
+          "按提供商的说明关联您的公司账户。",
+          "如您愿意，可在每次信号执行前进行确认。"
+        ]
+      }
+    ],
+    "step2Title": "信号如何送达",
+    "step2Body": "信号会在面板中发布并送达您选择的工具。是否对每一条采取行动由您决定。没有您的设置，任何操作都不会被执行。",
+    "step3Title": "风险提示",
+    "step3Body": "信号仅供参考，不构成投资建议。您对账户中的每一笔操作负责。交易存在重大亏损风险。",
+    "buyAnother": "购买另一个账户"
+  },
+  operatorActivations: {
+    "activationsTitle": "账户激活",
+    "activationsSubtitle": "审核账户激活申请",
+    "refresh": "刷新",
+    "filterFirm": "公司",
+    "allFirms": "所有公司",
+    "filterStatus": "状态",
+    "statusOpen": "仅未处理",
+    "allStatuses": "所有状态",
+    "noActivations": "没有激活申请",
+    "review": "审核",
+    "detailTitle": "激活详情",
+    "close": "关闭",
+    "openReceipt": "打开凭证（PDF）",
+    "receiptAlt": "购买凭证",
+    "receiptUnavailable": "凭证不可用",
+    "notePlaceholder": "向客户显示的备注（拒绝或请求信息时必填）。",
+    "startReview": "开始审核",
+    "approve": "批准",
+    "requestInfo": "请求信息",
+    "reject": "拒绝",
+    "action_done": "已完成。",
+    "errors": {
+      "note_required": "拒绝或请求信息时必须填写备注。",
+      "invalid_transition": "当前状态不允许该操作。",
+      "forbidden": "您无权审核激活申请。",
+      "action_failed": "操作失败。请重试。",
+      "unauthorized": "请重新登录。",
+      "load_failed": "无法加载激活申请。"
     }
   },
   errorBoundary: {
@@ -11020,6 +12196,7 @@ usernameLabel: "Tradovate ユーザー名",
   },
 
   nav: {
+    buyAccount: "口座を購入",
     tradovate: "TRADOVATE",
     pricing: "投資プラン",
     howItWorks: "インフラストラクチャ",
@@ -11865,6 +13042,10 @@ usernameLabel: "Tradovate ユーザー名",
     disclaimer: "* 免責事項：過去の実績は将来の結果を保証するものではありません。予測はあくまで例示目的です。"
   },
   meta: {
+    accounts: {
+      title: "プロップファーム口座を購入 | Braxel Markets",
+      description: "当社のリンクからファームの評価口座またはファンデッド口座を直接購入し、パネルでシグナルプランを有効化してください。"
+    },
     home: {
       title: "Braxel Markets | 機関投資家向けアルゴリズム資本運用",
       description: "機関投資家水準のアルゴリズム取引インフラ、プロップファーム資金へのアクセス、CopyTrade 認証、XAU/USD と US500 の完全な MetaTrader 自動化。"
@@ -12057,6 +13238,148 @@ usernameLabel: "Tradovate ユーザー名",
       residence: "在留許可",
       foreign_passport: "外国パスポート",
       national_id: "国民IDカード"
+    }
+  },
+  accounts: {
+    "badge": "プロップファーム口座",
+    "title": "評価口座またはファンデッド口座を購入",
+    "subtitle": "プロップファームを選び、当社のリンクから直接口座を購入し、パネルでシグナルプランの有効化を申請してください。",
+    "affiliateNotice": "このページのリンクから口座を購入すると、Braxel Markets はアフィリエイト報酬を受け取ります。ファームへ支払う価格は変わりません。",
+    "firmsTitle": "ファームを選択",
+    "firmBody": "口座はファームから直接購入し、あなたが所有します。Braxel はあなたの口座を運用せず、アクセスすることもありません。",
+    "buyCta": "{{firm}} で購入",
+    "loading": "読み込み中...",
+    "noFirms": "現在利用可能なファームはありません",
+    "noFirmsHint": "後でもう一度お試しいただくか、サポートにお問い合わせください。",
+    "planEyebrow": "月額シグナルプラン",
+    "perMonth": "/月",
+    "planBody": "口座が承認されると、シグナルプランで当社のトレードシグナルを受け取れます。実行はご自身の口座で、サードパーティ製ツールを使ってご自身で行います。",
+    "stepsTitle": "ご利用の流れ",
+    "step1Title": "口座を購入",
+    "step1Body": "当社のアフィリエイトリンクから、評価口座またはファンデッド口座をファームから直接購入します。",
+    "step2Title": "有効化を申請",
+    "step2Body": "パネルに戻り、購入証明を添えて有効化を申請します。",
+    "step3Title": "ツールを接続",
+    "step3Body": "承認後、実行ツールをファーム口座に接続し、シグナルに従います。",
+    "ctaTitle": "すでに口座を購入しましたか？",
+    "ctaBody": "パネルにログインして有効化を申請してください。すべての申請を手動で確認します。",
+    "ctaButton": "パネルへ",
+    "riskTitle": "リスク警告",
+    "riskBody": "金融市場での取引には大きな損失リスクがあり、すべての投資家に適しているわけではありません。シグナルは情報提供のみを目的とし、投資助言ではありません。すべての取引はご自身の口座で、自己責任で実行されます。過去の実績は将来の結果を示すものではありません。",
+    "disabledTitle": "ご利用いただけません",
+    "disabledBody": "口座有効化フローは現在ご利用いただけません。詳細はサポートにお問い合わせください。",
+    "disabledCta": "サポートに問い合わせる"
+  },
+  activation: {
+    "navLabel": "口座を有効化",
+    "eyebrow": "シグナルプラン",
+    "title": "口座を有効化",
+    "intro": "口座はファームから直接購入されました。どの口座かを教えていただき、購入証明を添付してください。すべての申請を手動で確認します。",
+    "noPasswordNotice": "ここにブローカーのパスワードを絶対に入力しないでください。必要なのは口座のログイン/IDと購入証明のみです。Braxel はパスワード、CID、secret を決して求めません。",
+    "formTitle": "有効化申請",
+    "firmLabel": "ファーム",
+    "planNameLabel": "購入したプラン",
+    "planNamePlaceholder": "例: 50K 評価",
+    "accountLoginLabel": "ファームでの口座ログイン/ID",
+    "accountLoginPlaceholder": "口座IDまたはログイン",
+    "accountLoginHint": "これはパスワードではありません。ファームで表示されるIDまたはログインのみです。",
+    "purchaseEmailLabel": "購入に使用したメール",
+    "purchaseEmailPlaceholder": "you@example.com",
+    "receiptLabel": "購入証明",
+    "receiptPlaceholder": "画像またはPDFを選択",
+    "receiptHint": "画像またはPDF、最大10 MB。購入証明であり、認証情報ではありません。",
+    "noteLabel": "備考（任意）",
+    "notePlaceholder": "申請について当社が知っておくべきこと。",
+    "confirmOwnership": "口座は私のものです。",
+    "confirmResponsibility": "自分の口座でのすべての取引について、管理と全責任を負います。",
+    "confirmFirmRules": "自分のファームの規則が自動化とシグナル実行を許可していることを確認しました。",
+    "confirmRisk": "リスク警告と規約を読みました。",
+    "submit": "申請を送信",
+    "submitted": "申請を送信しました。まもなく確認します。",
+    "pendingHint": "申請は確認待ちです。決定後に新しい申請を送信できます。",
+    "history": "あなたの申請",
+    "operatorNote": "オペレーターのメモ",
+    "riskDraft": "草案テキスト — 法務レビュー待ち。Braxel Markets はシグナルのみを提供します。あなたの口座を運用せず、資金を保持せず、いかなる結果も保証しません。取引には損失リスクがあります。",
+    "status": {
+      "pending": "保留中",
+      "in_review": "確認中",
+      "info_requested": "情報が必要",
+      "approved": "承認済み",
+      "rejected": "却下"
+    },
+    "errors": {
+      "missingFields": "ファーム、プラン、口座ID、購入メールを入力してください。",
+      "receiptRequired": "購入証明を添付してください。",
+      "confirmationsRequired": "送信前にすべての項目を確認してください。",
+      "badFileType": "サポートされていないファイル形式です。画像またはPDFを使用してください。",
+      "fileTooLarge": "ファイルが大きすぎます。上限は10 MBです。",
+      "alreadyPending": "すでに確認待ちの申請があります。",
+      "invalidReceipt": "そのファイルを受け付けられませんでした。別の画像またはPDFをお試しください。",
+      "disabled": "有効化フローは現在ご利用いただけません。",
+      "submitFailed": "申請を送信できませんでした。もう一度お試しください。",
+      "unauthorized": "申請を送信するには再度ログインしてください。"
+    }
+  },
+  planActive: {
+    "badge": "プラン有効",
+    "planFallback": "シグナルプラン",
+    "summary": "シグナルプランが有効です。シグナルの実行は、お好みのツールを使ってご自身の口座でご自身で行います。Braxel はあなたの口座を運用しません。",
+    "checklistTitle": "次のステップ",
+    "step1Title": "実行ツールを接続",
+    "step1Body": "サードパーティ製の実行ツールをファーム口座に接続します。提供元の指示に従ってください。以下の手順はプレースホルダーです。",
+    "tools": [
+      {
+        "name": "実行ツール A（プレースホルダー）",
+        "steps": [
+          "ツールをインストールし、ファーム口座に接続します。",
+          "提供元のガイドに従ってシグナルまたはwebhookを連携します。",
+          "自動化を有効にする前に、ご自身のリスク上限を設定します。"
+        ]
+      },
+      {
+        "name": "実行ツール B（プレースホルダー）",
+        "steps": [
+          "提供元でアカウントを作成します。",
+          "提供元の指示に従ってファーム口座を連携します。",
+          "必要に応じて、実行前に各シグナルを確認します。"
+        ]
+      }
+    ],
+    "step2Title": "シグナルの受け取り方",
+    "step2Body": "シグナルはパネルに公開され、選択したツールに配信されます。それぞれに従うかはご自身で判断します。あなたの設定なしに何も実行されません。",
+    "step3Title": "リスク警告",
+    "step3Body": "シグナルは情報提供のみを目的とし、投資助言ではありません。口座でのすべての取引はあなたの責任です。取引には大きな損失リスクがあります。",
+    "buyAnother": "別の口座を購入"
+  },
+  operatorActivations: {
+    "activationsTitle": "口座の有効化",
+    "activationsSubtitle": "口座有効化申請を確認",
+    "refresh": "更新",
+    "filterFirm": "ファーム",
+    "allFirms": "すべてのファーム",
+    "filterStatus": "ステータス",
+    "statusOpen": "未処理のみ",
+    "allStatuses": "すべてのステータス",
+    "noActivations": "有効化申請はありません",
+    "review": "確認",
+    "detailTitle": "有効化の詳細",
+    "close": "閉じる",
+    "openReceipt": "証明を開く（PDF）",
+    "receiptAlt": "購入証明",
+    "receiptUnavailable": "証明を利用できません",
+    "notePlaceholder": "顧客に表示されるメモ（却下または情報請求時に必須）。",
+    "startReview": "確認を開始",
+    "approve": "承認",
+    "requestInfo": "情報を請求",
+    "reject": "却下",
+    "action_done": "完了しました。",
+    "errors": {
+      "note_required": "却下または情報請求にはメモが必要です。",
+      "invalid_transition": "現在のステータスではこの操作は許可されていません。",
+      "forbidden": "有効化を確認する権限がありません。",
+      "action_failed": "操作に失敗しました。もう一度お試しください。",
+      "unauthorized": "再度ログインしてください。",
+      "load_failed": "有効化申請を読み込めませんでした。"
     }
   },
   errorBoundary: {
@@ -12361,6 +13684,7 @@ usernameLabel: "اسم مستخدم Tradovate",
   },
 
   nav: {
+    buyAccount: "شراء حساب",
     tradovate: "TRADOVATE",
     pricing: "خطط الاستثمار",
     howItWorks: "البنية التحتية",
@@ -13211,6 +14535,10 @@ usernameLabel: "اسم مستخدم Tradovate",
     disclaimer: "* إخلاء المسؤولية: الأداء السابق لا يضمن النتائج المستقبلية. التوقعات لأغراض توضيحية فقط."
   },
   meta: {
+    accounts: {
+      title: "شراء حساب شركة تمويل | Braxel Markets",
+      description: "اشترِ حساب التقييم أو الحساب المموّل مباشرة من الشركة عبر رابطنا، ثم فعّل خطة الإشارات في اللوحة."
+    },
     home: {
       title: "Braxel Markets | إدارة رأس المال الخوارزمية للمؤسسات",
       description: "بنية تحتية للتداول الخوارزمي بمستوى المؤسسات، والوصول إلى رأس مال شركات التداول، وتفويض CopyTrade، وأتمتة كاملة لـ MetaTrader على XAU/USD وUS500."
@@ -13403,6 +14731,148 @@ usernameLabel: "اسم مستخدم Tradovate",
       residence: "تصريح الإقامة",
       foreign_passport: "جواز سفر أجنبي",
       national_id: "بطاقة الهوية الوطنية"
+    }
+  },
+  accounts: {
+    "badge": "حسابات شركات التمويل",
+    "title": "اشترِ حساب التقييم أو الحساب المموّل",
+    "subtitle": "اختر شركة تمويل، واشترِ حسابك مباشرة منها عبر رابطنا، ثم اطلب تفعيل خطة الإشارات في اللوحة.",
+    "affiliateNotice": "تحصل Braxel Markets على عمولة تسويق بالعمولة عند شرائك حسابًا عبر روابط هذه الصفحة. هذا لا يغيّر السعر الذي تدفعه للشركة.",
+    "firmsTitle": "اختر شركتك",
+    "firmBody": "تشتري الحساب وتملكه مباشرة من الشركة. لا تدير Braxel حسابك ولا تصل إليه أبدًا.",
+    "buyCta": "اشترِ من {{firm}}",
+    "loading": "جارٍ التحميل...",
+    "noFirms": "لا توجد شركات متاحة الآن",
+    "noFirmsHint": "يرجى المحاولة لاحقًا أو التواصل مع الدعم.",
+    "planEyebrow": "خطة إشارات شهرية",
+    "perMonth": "/شهر",
+    "planBody": "بعد الموافقة على حسابك، تمنحك خطة الإشارات إشارات التداول الخاصة بنا. تنفّذها بنفسك في حسابك الخاص باستخدام أداة من طرف ثالث.",
+    "stepsTitle": "كيف تعمل",
+    "step1Title": "اشترِ الحساب",
+    "step1Body": "اشترِ حساب التقييم أو الحساب المموّل مباشرة من الشركة عبر رابط التسويق بالعمولة الخاص بنا.",
+    "step2Title": "اطلب التفعيل",
+    "step2Body": "عُد إلى اللوحة واطلب التفعيل مع إرفاق إثبات الشراء.",
+    "step3Title": "اربط أداتك",
+    "step3Body": "بعد الموافقة، اربط أداة التنفيذ بحساب الشركة واتبع الإشارات.",
+    "ctaTitle": "هل اشتريت حسابك بالفعل؟",
+    "ctaBody": "سجّل الدخول إلى اللوحة واطلب التفعيل. نراجع كل طلب يدويًا.",
+    "ctaButton": "الذهاب إلى اللوحة",
+    "riskTitle": "تحذير المخاطر",
+    "riskBody": "ينطوي التداول في الأسواق المالية على مخاطر خسارة كبيرة ولا يناسب جميع المستثمرين. الإشارات لأغراض معلوماتية وليست نصيحة استثمارية. أنت تنفّذ كل عملية بنفسك في حسابك وعلى مسؤوليتك. الأداء السابق ليس مؤشرًا على النتائج المستقبلية.",
+    "disabledTitle": "غير متاح",
+    "disabledBody": "مسار تفعيل الحساب غير متاح في الوقت الحالي. يرجى التواصل مع الدعم لمزيد من المعلومات.",
+    "disabledCta": "التواصل مع الدعم"
+  },
+  activation: {
+    "navLabel": "تفعيل الحساب",
+    "eyebrow": "خطة الإشارات",
+    "title": "فعّل حسابك",
+    "intro": "اشتريت حسابك مباشرة من الشركة. أخبرنا أي حساب هو وأرفق إثبات الشراء. نراجع كل طلب يدويًا.",
+    "noPasswordNotice": "لا تُدخل أبدًا كلمة مرور الوسيط هنا. نحتاج فقط إلى اسم الدخول/معرّف الحساب وإثبات الشراء. لا تطلب Braxel أبدًا كلمة المرور أو CID أو secret.",
+    "formTitle": "طلب التفعيل",
+    "firmLabel": "الشركة",
+    "planNameLabel": "الخطة التي اشتريتها",
+    "planNamePlaceholder": "مثال: تقييم 50K",
+    "accountLoginLabel": "اسم الدخول/معرّف الحساب لدى الشركة",
+    "accountLoginPlaceholder": "معرّف حسابك أو اسم الدخول",
+    "accountLoginHint": "هذه ليست كلمة المرور. إنها فقط المعرّف أو اسم الدخول الذي تراه لدى الشركة.",
+    "purchaseEmailLabel": "البريد المستخدم في الشراء",
+    "purchaseEmailPlaceholder": "you@example.com",
+    "receiptLabel": "إثبات الشراء",
+    "receiptPlaceholder": "اختر صورة أو ملف PDF",
+    "receiptHint": "صورة أو PDF بحجم أقصى 10 ميغابايت. هذا إثبات الشراء وليس بيانات اعتماد.",
+    "noteLabel": "ملاحظات (اختياري)",
+    "notePlaceholder": "أي شيء ينبغي أن نعرفه عن طلبك.",
+    "confirmOwnership": "الحساب ملكي.",
+    "confirmResponsibility": "أحتفظ بالسيطرة والمسؤولية الكاملة عن كل عملية في حسابي.",
+    "confirmFirmRules": "أكّدت أن قواعد شركتي تسمح بالأتمتة وتنفيذ الإشارات.",
+    "confirmRisk": "قرأت تحذير المخاطر والشروط.",
+    "submit": "إرسال الطلب",
+    "submitted": "تم إرسال الطلب. سنراجعه قريبًا.",
+    "pendingHint": "طلبك في انتظار المراجعة. يمكنك إرسال طلب جديد بعد صدور قرار.",
+    "history": "طلباتك",
+    "operatorNote": "ملاحظة المشغّل",
+    "riskDraft": "نص مسودة — في انتظار المراجعة القانونية. تقدّم Braxel Markets الإشارات فقط. نحن لا ندير حسابك ولا نحتفظ بأموالك ولا نضمن أي نتيجة. ينطوي التداول على مخاطر خسارة.",
+    "status": {
+      "pending": "قيد الانتظار",
+      "in_review": "قيد المراجعة",
+      "info_requested": "مطلوب معلومات",
+      "approved": "مقبول",
+      "rejected": "مرفوض"
+    },
+    "errors": {
+      "missingFields": "يرجى إدخال الشركة والخطة ومعرّف الحساب وبريد الشراء.",
+      "receiptRequired": "يرجى إرفاق إثبات الشراء.",
+      "confirmationsRequired": "يرجى تأكيد جميع الإقرارات قبل الإرسال.",
+      "badFileType": "نوع ملف غير مدعوم. استخدم صورة أو ملف PDF.",
+      "fileTooLarge": "الملف كبير جدًا. الحد الأقصى 10 ميغابايت.",
+      "alreadyPending": "لديك بالفعل طلب في انتظار المراجعة.",
+      "invalidReceipt": "تعذّر قبول هذا الملف. جرّب صورة أو ملف PDF آخر.",
+      "disabled": "مسار التفعيل غير متاح الآن.",
+      "submitFailed": "تعذّر إرسال طلبك. حاول مرة أخرى.",
+      "unauthorized": "يرجى تسجيل الدخول مجددًا لإرسال طلبك."
+    }
+  },
+  planActive: {
+    "badge": "الخطة نشطة",
+    "planFallback": "خطة الإشارات",
+    "summary": "خطة الإشارات الخاصة بك نشطة. تنفّذ الإشارات بنفسك في حسابك الخاص بأداة تختارها. لا تدير Braxel حسابك.",
+    "checklistTitle": "الخطوات التالية",
+    "step1Title": "اربط أداة التنفيذ",
+    "step1Body": "اربط أداة تنفيذ من طرف ثالث بحساب شركتك. اتبع تعليمات المزوّد؛ الخطوات أدناه مجرد مثال.",
+    "tools": [
+      {
+        "name": "أداة التنفيذ أ (مثال)",
+        "steps": [
+          "ثبّت الأداة واربطها بحساب شركتك.",
+          "اتبع دليل المزوّد لربط الإشارات أو webhooks.",
+          "حدّد حدود المخاطر الخاصة بك قبل تفعيل الأتمتة."
+        ]
+      },
+      {
+        "name": "أداة التنفيذ ب (مثال)",
+        "steps": [
+          "أنشئ حسابًا لدى المزوّد.",
+          "اربط حساب شركتك باتباع تعليمات المزوّد.",
+          "أكّد كل إشارة قبل تنفيذها إن أردت."
+        ]
+      }
+    ],
+    "step2Title": "كيف تصل الإشارات",
+    "step2Body": "تُنشر الإشارات في اللوحة وتُسلّم إلى الأداة التي تختارها. أنت تقرر التصرف تجاه كل منها. لا شيء يُنفّذ دون إعدادك.",
+    "step3Title": "تحذير المخاطر",
+    "step3Body": "الإشارات لأغراض معلوماتية وليست نصيحة استثمارية. أنت مسؤول عن كل عملية في حسابك. ينطوي التداول على مخاطر خسارة كبيرة.",
+    "buyAnother": "شراء حساب آخر"
+  },
+  operatorActivations: {
+    "activationsTitle": "تفعيلات الحسابات",
+    "activationsSubtitle": "مراجعة طلبات تفعيل الحسابات",
+    "refresh": "تحديث",
+    "filterFirm": "الشركة",
+    "allFirms": "كل الشركات",
+    "filterStatus": "الحالة",
+    "statusOpen": "المفتوحة فقط",
+    "allStatuses": "كل الحالات",
+    "noActivations": "لا توجد طلبات تفعيل",
+    "review": "مراجعة",
+    "detailTitle": "تفاصيل التفعيل",
+    "close": "إغلاق",
+    "openReceipt": "فتح الإثبات (PDF)",
+    "receiptAlt": "إثبات الشراء",
+    "receiptUnavailable": "الإثبات غير متاح",
+    "notePlaceholder": "ملاحظة تُعرض للعميل (مطلوبة للرفض أو طلب المعلومات).",
+    "startReview": "بدء المراجعة",
+    "approve": "قبول",
+    "requestInfo": "طلب معلومات",
+    "reject": "رفض",
+    "action_done": "تم.",
+    "errors": {
+      "note_required": "الملاحظة مطلوبة للرفض أو طلب المعلومات.",
+      "invalid_transition": "هذا الإجراء غير مسموح للحالة الحالية.",
+      "forbidden": "غير مسموح لك بمراجعة التفعيلات.",
+      "action_failed": "فشل الإجراء. حاول مرة أخرى.",
+      "unauthorized": "يرجى تسجيل الدخول مجددًا.",
+      "load_failed": "تعذّر تحميل طلبات التفعيل."
     }
   },
   errorBoundary: {
@@ -13704,6 +15174,7 @@ usernameLabel: "שם משתמש Tradovate",
   },
 
   nav: {
+    buyAccount: "רכישת חשבון",
     tradovate: "TRADOVATE",
     pricing: "תוכניות השקעה",
     howItWorks: "תשתית",
@@ -14551,6 +16022,10 @@ usernameLabel: "שם משתמש Tradovate",
     disclaimer: "* כתב ויתור: ביצועי עבר אינם מבטיחים תוצאות עתידיות. התחזיות להמחשה בלבד."
   },
   meta: {
+    accounts: {
+      title: "רכישת חשבון חברת מסחר | Braxel Markets",
+      description: "קנה חשבון הערכה או חשבון ממומן ישירות מהחברה דרך הקישור שלנו, ואז הפעל את תוכנית האיתותים בפאנל."
+    },
     home: {
       title: "Braxel Markets | ניהול הון אלגוריתמי ברמה מוסדית",
       description: "תשתית מסחר אלגוריתמית ברמה מוסדית, גישה להון של חברות פרופ, הרשאת CopyTrade ואוטומציה מלאה של MetaTrader עבור XAU/USD ו-US500."
@@ -14743,6 +16218,148 @@ usernameLabel: "שם משתמש Tradovate",
       residence: "היתר שהייה",
       foreign_passport: "דרכון חוץ",
       national_id: "תעודת זהות לאומית"
+    }
+  },
+  accounts: {
+    "badge": "חשבונות חברות מסחר",
+    "title": "קנה חשבון הערכה או חשבון ממומן",
+    "subtitle": "בחר חברת מסחר, קנה את החשבון ישירות ממנה דרך הקישור שלנו, ואז בקש להפעיל את תוכנית האיתותים בפאנל.",
+    "affiliateNotice": "Braxel Markets מקבלת עמלת שותפים כאשר אתה קונה חשבון דרך הקישורים בעמוד זה. הדבר אינו משנה את המחיר שאתה משלם לחברה.",
+    "firmsTitle": "בחר את החברה שלך",
+    "firmBody": "אתה קונה ומחזיק את החשבון ישירות מהחברה. Braxel אינה מנהלת את חשבונך ולעולם אינה ניגשת אליו.",
+    "buyCta": "קנה ב-{{firm}}",
+    "loading": "טוען...",
+    "noFirms": "אין חברות זמינות כרגע",
+    "noFirmsHint": "נסה שוב מאוחר יותר או צור קשר עם התמיכה.",
+    "planEyebrow": "תוכנית איתותים חודשית",
+    "perMonth": "/חודש",
+    "planBody": "לאחר אישור החשבון, תוכנית האיתותים מספקת לך את איתותי המסחר שלנו. אתה מבצע אותם בעצמך בחשבונך שלך בעזרת כלי של צד שלישי.",
+    "stepsTitle": "איך זה עובד",
+    "step1Title": "קנה את החשבון",
+    "step1Body": "קנה את חשבון ההערכה או החשבון הממומן ישירות מהחברה דרך קישור השותפים שלנו.",
+    "step2Title": "בקש הפעלה",
+    "step2Body": "חזור לפאנל ובקש הפעלה, בצירוף הוכחת הרכישה.",
+    "step3Title": "חבר את הכלי שלך",
+    "step3Body": "לאחר האישור, חבר את כלי הביצוע לחשבון החברה ועקוב אחר האיתותים.",
+    "ctaTitle": "כבר קנית את החשבון?",
+    "ctaBody": "התחבר לפאנל ובקש הפעלה. אנו בודקים כל בקשה באופן ידני.",
+    "ctaButton": "לך לפאנל",
+    "riskTitle": "אזהרת סיכון",
+    "riskBody": "מסחר בשווקים פיננסיים כרוך בסיכון משמעותי להפסד ואינו מתאים לכל המשקיעים. האיתותים הם למטרות מידע ואינם ייעוץ השקעות. אתה מבצע כל פעולה בעצמך, בחשבונך ועל אחריותך. ביצועי העבר אינם מעידים על תוצאות עתידיות.",
+    "disabledTitle": "לא זמין",
+    "disabledBody": "תהליך הפעלת החשבון אינו זמין כרגע. אנא צור קשר עם התמיכה למידע נוסף.",
+    "disabledCta": "צור קשר עם התמיכה"
+  },
+  activation: {
+    "navLabel": "הפעל חשבון",
+    "eyebrow": "תוכנית איתותים",
+    "title": "הפעל את חשבונך",
+    "intro": "קנית את חשבונך ישירות מהחברה. ספר לנו איזה חשבון זה וצרף את הוכחת הרכישה. אנו בודקים כל בקשה באופן ידני.",
+    "noPasswordNotice": "לעולם אל תזין כאן את סיסמת הברוקר שלך. אנו זקוקים רק לשם המשתמש/מזהה החשבון ולהוכחת רכישה. Braxel לעולם אינה מבקשת סיסמה, CID או secret.",
+    "formTitle": "בקשת הפעלה",
+    "firmLabel": "חברה",
+    "planNameLabel": "התוכנית שרכשת",
+    "planNamePlaceholder": "למשל הערכת 50K",
+    "accountLoginLabel": "שם משתמש/מזהה החשבון בחברה",
+    "accountLoginPlaceholder": "מזהה החשבון או שם המשתמש",
+    "accountLoginHint": "זו אינה הסיסמה שלך. זהו רק המזהה או שם המשתמש שאתה רואה בחברה.",
+    "purchaseEmailLabel": "האימייל ששימש לרכישה",
+    "purchaseEmailPlaceholder": "you@example.com",
+    "receiptLabel": "הוכחת רכישה",
+    "receiptPlaceholder": "בחר תמונה או PDF",
+    "receiptHint": "תמונה או PDF, עד 10 MB. זו הוכחת הרכישה שלך, לא פרטי התחברות.",
+    "noteLabel": "הערות (אופציונלי)",
+    "notePlaceholder": "כל דבר שעלינו לדעת על בקשתך.",
+    "confirmOwnership": "החשבון שלי.",
+    "confirmResponsibility": "אני שומר על השליטה ועל האחריות המלאה לכל פעולה בחשבוני.",
+    "confirmFirmRules": "אישרתי שכללי החברה שלי מתירים אוטומציה וביצוע איתותים.",
+    "confirmRisk": "קראתי את אזהרת הסיכון ואת התנאים.",
+    "submit": "שלח בקשה",
+    "submitted": "הבקשה נשלחה. נבדוק אותה בקרוב.",
+    "pendingHint": "בקשתך ממתינה לבדיקה. תוכל לשלוח בקשה חדשה לאחר החלטה.",
+    "history": "הבקשות שלך",
+    "operatorNote": "הערת המפעיל",
+    "riskDraft": "טקסט טיוטה — ממתין לבדיקה משפטית. Braxel Markets מספקת איתותים בלבד. אנו אינם מנהלים את חשבונך, אינם מחזיקים בכספיך ואינם מבטיחים תוצאה כלשהי. מסחר כרוך בסיכון להפסד.",
+    "status": {
+      "pending": "ממתין",
+      "in_review": "בבדיקה",
+      "info_requested": "נדרש מידע",
+      "approved": "מאושר",
+      "rejected": "נדחה"
+    },
+    "errors": {
+      "missingFields": "אנא מלא חברה, תוכנית, מזהה חשבון ואימייל רכישה.",
+      "receiptRequired": "אנא צרף את הוכחת הרכישה.",
+      "confirmationsRequired": "אנא אשר את כל ההצהרות לפני השליחה.",
+      "badFileType": "סוג קובץ לא נתמך. השתמש בתמונה או ב-PDF.",
+      "fileTooLarge": "הקובץ גדול מדי. המגבלה היא 10 MB.",
+      "alreadyPending": "כבר יש לך בקשה הממתינה לבדיקה.",
+      "invalidReceipt": "לא הצלחנו לקבל את הקובץ הזה. נסה תמונה או PDF אחר.",
+      "disabled": "תהליך ההפעלה אינו זמין כרגע.",
+      "submitFailed": "לא הצלחנו לשלוח את בקשתך. נסה שוב.",
+      "unauthorized": "אנא התחבר מחדש כדי לשלוח את בקשתך."
+    }
+  },
+  planActive: {
+    "badge": "התוכנית פעילה",
+    "planFallback": "תוכנית איתותים",
+    "summary": "תוכנית האיתותים שלך פעילה. אתה מבצע את האיתותים בעצמך בחשבונך שלך, בכלי שתבחר. Braxel אינה מנהלת את חשבונך.",
+    "checklistTitle": "השלבים הבאים",
+    "step1Title": "חבר את כלי הביצוע שלך",
+    "step1Body": "חבר כלי ביצוע של צד שלישי לחשבון החברה שלך. פעל לפי הוראות הספק; השלבים שלהלן הם דוגמה בלבד.",
+    "tools": [
+      {
+        "name": "כלי ביצוע א (דוגמה)",
+        "steps": [
+          "התקן את הכלי וחבר אותו לחשבון החברה שלך.",
+          "פעל לפי מדריך הספק לחיבור איתותים או webhooks.",
+          "קבע מגבלות סיכון משלך לפני הפעלת האוטומציה."
+        ]
+      },
+      {
+        "name": "כלי ביצוע ב (דוגמה)",
+        "steps": [
+          "צור חשבון אצל הספק.",
+          "חבר את חשבון החברה לפי הוראות הספק.",
+          "אשר כל איתות לפני ביצועו, אם תרצה."
+        ]
+      }
+    ],
+    "step2Title": "איך מגיעים האיתותים",
+    "step2Body": "האיתותים מפורסמים בפאנל ונשלחים לכלי שבחרת. אתה מחליט אם לפעול לפי כל אחד. שום דבר אינו מבוצע ללא ההגדרה שלך.",
+    "step3Title": "אזהרת סיכון",
+    "step3Body": "האיתותים הם למטרות מידע ואינם ייעוץ השקעות. אתה אחראי לכל פעולה בחשבונך. מסחר כרוך בסיכון משמעותי להפסד.",
+    "buyAnother": "קנה חשבון נוסף"
+  },
+  operatorActivations: {
+    "activationsTitle": "הפעלות חשבון",
+    "activationsSubtitle": "סקירת בקשות הפעלת חשבון",
+    "refresh": "רענן",
+    "filterFirm": "חברה",
+    "allFirms": "כל החברות",
+    "filterStatus": "סטטוס",
+    "statusOpen": "פתוחות בלבד",
+    "allStatuses": "כל הסטטוסים",
+    "noActivations": "אין בקשות הפעלה",
+    "review": "סקור",
+    "detailTitle": "פרטי ההפעלה",
+    "close": "סגור",
+    "openReceipt": "פתח הוכחה (PDF)",
+    "receiptAlt": "הוכחת רכישה",
+    "receiptUnavailable": "ההוכחה אינה זמינה",
+    "notePlaceholder": "הערה המוצגת ללקוח (נדרשת לדחייה או לבקשת מידע).",
+    "startReview": "התחל סקירה",
+    "approve": "אשר",
+    "requestInfo": "בקש מידע",
+    "reject": "דחה",
+    "action_done": "בוצע.",
+    "errors": {
+      "note_required": "נדרשת הערה כדי לדחות או לבקש מידע.",
+      "invalid_transition": "פעולה זו אינה מותרת עבור הסטטוס הנוכחי.",
+      "forbidden": "אינך מורשה לסקור הפעלות.",
+      "action_failed": "הפעולה נכשלה. נסה שוב.",
+      "unauthorized": "אנא התחבר מחדש.",
+      "load_failed": "לא ניתן היה לטעון בקשות הפעלה."
     }
   },
   errorBoundary: {

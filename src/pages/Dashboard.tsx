@@ -8,6 +8,7 @@ import TradingTerminal from '@/components/terminal/TradingTerminal';
 import PerformancePanel from '@/components/terminal/PerformancePanel';
 import TradovateConnectCard from '@/components/TradovateConnectCard';
 import TradovateWelcome from '@/components/TradovateWelcome';
+import ActivateAccountView from '@/components/ActivateAccountView';
 import KycReminderBanner from '@/components/KycReminderBanner';
 import WithdrawalKycGate, { type KycStatus as WithdrawalKycStatus } from '@/components/WithdrawalKycGate';
 import {
@@ -39,7 +40,8 @@ import {
   ChevronLeft,
   Globe,
   CreditCard,
-  Plug
+  Plug,
+  BadgeCheck
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -50,6 +52,7 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useTradovateConnection } from '@/hooks/useTradovateConnection';
+import { useActivationConfig } from '@/lib/activationConfig';
 import { useLanguageLocale } from '@/hooks/useLanguageLocale';
 import { computePerformance } from '@/lib/tradovate/performance';
 import {
@@ -83,6 +86,8 @@ const Dashboard = () => {
   const [activeView, setActiveView] = useState('services');
   // First-run soft gate: drives the welcome screen on the default view only.
   const tradovate = useTradovateConnection(true);
+  // Account-activation flow config (firms, plan, ACTIVATION_FLOW_ENABLED).
+  const activation = useActivationConfig();
   const [settingsTab, setSettingsTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   interface ServiceRecord {
@@ -426,7 +431,14 @@ const Dashboard = () => {
 
             {[
               { id: 'services', label: t('nav.dashboard'), icon: <LayoutDashboard size={18} /> },
-              { id: 'tradovate', label: t('nav.tradovate'), icon: <Plug size={18} /> },
+              // The Tradovate terminal view is hidden entirely when the feature
+              // is off at runtime, so the customer never sees a broken screen.
+              ...(tradovate.enabled
+                ? [{ id: 'tradovate', label: t('nav.tradovate'), icon: <Plug size={18} /> }]
+                : []),
+              ...(activation.config.enabled
+                ? [{ id: 'activate', label: t('activation.navLabel'), icon: <BadgeCheck size={18} /> }]
+                : []),
               { id: 'performance', label: t('dashboard.navPerformance'), icon: <BarChart3 size={18} /> },
               { id: 'withdraw', label: t('dashboard.withdraw'), icon: <Wallet size={18} /> },
               { id: 'auditlog', label: t('dashboard.navAuditLog'), icon: <Activity size={18} /> },
@@ -477,8 +489,9 @@ const Dashboard = () => {
                 </div>
 
                 {/* Prominent Tradovate connect entry point — the first thing
-                    on the terminal. Username + password, no gate. */}
-                <TradovateConnectCard />
+                    on the terminal. Username + password, no gate. Hidden when
+                    the feature is off so nothing looks broken. */}
+                {tradovate.enabled && <TradovateConnectCard />}
 
                 {/* Non-blocking KYC reminder. The terminal is fully usable
                     without it; only withdrawals require verification. */}
@@ -554,9 +567,16 @@ const Dashboard = () => {
             )}
 
             {/* Tradovate trading terminal — real data from the user's linked
-                account (balance, positions, orders, journal, performance). */}
-            {activeView === 'tradovate' && (
+                account (balance, positions, orders, journal, performance).
+                Hidden entirely when the feature is off at runtime. */}
+            {activeView === 'tradovate' && tradovate.enabled && (
               <TradingTerminal />
+            )}
+
+            {/* Activate account — request activation of the signals plan after
+                buying a prop-firm account, or the "Plan active" onboarding. */}
+            {activeView === 'activate' && activation.config.enabled && (
+              <ActivateAccountView />
             )}
 
             {/* Performance View — real stats computed from the user's trades */}

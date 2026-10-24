@@ -19,3 +19,11 @@ verify_jwt = false
 
 [functions.paypal-checkout]
 verify_jwt = false
+
+# activation-config serves public marketing configuration (which prop firms are
+# configured, their affiliate links, the signals plan name/price). The /accounts
+# page is public, so a visitor must be able to read it without a JWT. The
+# response contains nothing sensitive: no secret, no credential, no user data.
+# activation-submit / activation-review keep the default (JWT required).
+[functions.activation-config]
+verify_jwt = false

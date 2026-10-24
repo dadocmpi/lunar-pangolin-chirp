@@ -61,6 +61,7 @@ const Footer = () => {
             <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.3em] mb-8">{t('footer.platform')}</h4>
             <ul className="space-y-4 text-[10px] font-bold uppercase tracking-widest">
               <li><Link to="/pricing" className="hover:text-[#D4AF37] transition-colors">{t('nav.pricing')}</Link></li>
+              <li><Link to="/accounts" className="hover:text-[#D4AF37] transition-colors">{t('nav.buyAccount')}</Link></li>
               <li><Link to="/how-it-works" className="hover:text-[#D4AF37] transition-colors">{t('nav.howItWorks')}</Link></li>
             </ul>
           </div>
