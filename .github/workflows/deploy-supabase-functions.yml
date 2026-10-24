@@ -90,32 +90,42 @@ jobs:
           fi
 
           expected="$(ls -1 supabase/migrations/*.sql | xargs -n1 basename | sort | tail -1)"
-          echo "Commit migration head: $expected"
-          # `supabase migration list` prints only the 14-digit version of each
-          # applied migration (not the full filename), so match on the version
-          # prefix, which is guaranteed to appear in both columns.
           expected_version="${expected%%_*}"
+          echo "Commit migration head: $expected (version $expected_version)"
 
-          # Fetch applied migration versions from the linked project.
-          # `supabase migration list --linked` prints a table; the remote column
-          # holds applied versions. Fall back to skipping when unavailable.
+          # `supabase migration list --linked` prints a LOCAL | REMOTE table
+          # where each cell holds only the 14-digit version. The LOCAL column
+          # lists every migration file in the repo, applied or not, so matching
+          # against the raw output would always succeed. Read ONLY the REMOTE
+          # column (field 2) — that is the authoritative record of what the
+          # database has actually applied. The CLI renders the column separator
+          # as either a box-drawing bar or an ASCII pipe depending on locale, so
+          # normalise both before splitting.
           if [ -n "${SUPABASE_DB_PASSWORD:-}" ]; then
-            remote="$(supabase migration list --linked --password "$SUPABASE_DB_PASSWORD" 2>/dev/null || true)"
+            listing="$(supabase migration list --linked --password "$SUPABASE_DB_PASSWORD" 2>/dev/null || true)"
           else
-            remote="$(supabase migration list --linked 2>/dev/null || true)"
+            listing="$(supabase migration list --linked 2>/dev/null || true)"
           fi
 
-          if [ -z "$remote" ]; then
+          applied="$(printf '%s\n' "$listing" \
+            | sed 's/│/|/g' \
+            | awk -F'|' '{gsub(/[[:space:]]/,"",$2); print $2}' \
+            | grep -E '^[0-9]{14}$' || true)"
+
+          if [ -z "$applied" ]; then
             echo "::warning::Could not read applied migrations (needs SUPABASE_DB_PASSWORD secret and a linked project). Skipping deploy to be safe."
             echo "proceed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if echo "$remote" | grep -q "$expected_version"; then
+          echo "Applied migrations reported by the database:"
+          printf '%s\n' "$applied" | sed 's/^/  /'
+
+          if printf '%s\n' "$applied" | grep -qx "$expected_version"; then
             echo "Database is at the commit's migration head. Proceeding."
             echo "proceed=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::Migrations for this commit are NOT applied to the database yet. Skipping Edge Function deploy. Run migrations, then re-run this workflow."
+            echo "::warning::Migrations for this commit are NOT applied to the database yet (missing $expected_version). Skipping Edge Function deploy. Run migrations, then re-run this workflow."
             echo "proceed=false" >> "$GITHUB_OUTPUT"
           fi
 
