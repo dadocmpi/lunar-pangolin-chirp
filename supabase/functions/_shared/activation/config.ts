@@ -15,6 +15,11 @@
 //   SIGNALS_PLAN_NAME        display name of the monthly signals plan.
 //   SIGNALS_PLAN_PRICE_CENTS monthly fee in minor units (USD cents).
 //   SIGNALS_PLAN_CURRENCY    ISO currency, default USD.
+//   TRADERSPOST_STRATEGY_SHARE_URL  share link for OUR strategy on TradersPost.
+//                            Unset => the onboarding shows no subscribe link.
+//   ACTIVATION_MAX_ACTIVE    max number of approved activations in the pilot.
+//                            Unset/0 => unlimited. At the limit the activation
+//                            form is replaced by a waitlist notice.
 //
 // Pure and dependency-free so it can be unit-tested without Deno.env.
 // ============================================================================
@@ -41,6 +46,13 @@ export interface ActivationConfig {
   /** Only firms with a configured affiliate URL, in a stable order. */
   firms: ActivationFirm[];
   plan: ActivationPlanConfig;
+  /**
+   * TradersPost strategy share link. Null when unconfigured — the onboarding
+   * then shows the steps without a subscribe button.
+   */
+  tradersPostShareUrl: string | null;
+  /** Pilot capacity. 0 means unlimited (no waitlist). */
+  maxActive: number;
 }
 
 export interface ActivationEnv {
@@ -50,6 +62,8 @@ export interface ActivationEnv {
   SIGNALS_PLAN_NAME?: string;
   SIGNALS_PLAN_PRICE_CENTS?: string;
   SIGNALS_PLAN_CURRENCY?: string;
+  TRADERSPOST_STRATEGY_SHARE_URL?: string;
+  ACTIVATION_MAX_ACTIVE?: string;
 }
 
 /** Only an http(s) URL is accepted; anything else (or empty) drops the firm. */
@@ -72,6 +86,21 @@ export function parsePriceCents(raw: string | undefined | null): number {
   return Number.isFinite(value) && value > 0 ? value : 0;
 }
 
+/** Parse a non-negative capacity. 0 (or unusable) means unlimited. */
+export function parseMaxActive(raw: string | undefined | null): number {
+  const value = Number.parseInt((raw ?? "").trim(), 10);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+/**
+ * Whether the pilot is full: a positive capacity has been reached by the count
+ * of already-approved activations. 0 capacity is unlimited (never full).
+ */
+export function isAtCapacity(maxActive: number, activeCount: number): boolean {
+  if (!Number.isFinite(maxActive) || maxActive <= 0) return false;
+  return activeCount >= maxActive;
+}
+
 export function resolveActivationConfig(env: ActivationEnv): ActivationConfig {
   const firms: ActivationFirm[] = [];
   const tradeify = sanitizeAffiliateUrl(env.AFFILIATE_TRADEIFY_URL);
@@ -89,6 +118,8 @@ export function resolveActivationConfig(env: ActivationEnv): ActivationConfig {
       priceCents: parsePriceCents(env.SIGNALS_PLAN_PRICE_CENTS),
       currency,
     },
+    tradersPostShareUrl: sanitizeAffiliateUrl(env.TRADERSPOST_STRATEGY_SHARE_URL),
+    maxActive: parseMaxActive(env.ACTIVATION_MAX_ACTIVE),
   };
 }
 
@@ -110,5 +141,7 @@ export function activationConfigFromEnv(): ActivationConfig {
     SIGNALS_PLAN_NAME: Deno.env.get("SIGNALS_PLAN_NAME") ?? undefined,
     SIGNALS_PLAN_PRICE_CENTS: Deno.env.get("SIGNALS_PLAN_PRICE_CENTS") ?? undefined,
     SIGNALS_PLAN_CURRENCY: Deno.env.get("SIGNALS_PLAN_CURRENCY") ?? undefined,
+    TRADERSPOST_STRATEGY_SHARE_URL: Deno.env.get("TRADERSPOST_STRATEGY_SHARE_URL") ?? undefined,
+    ACTIVATION_MAX_ACTIVE: Deno.env.get("ACTIVATION_MAX_ACTIVE") ?? undefined,
   });
 }

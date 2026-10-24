@@ -8,13 +8,15 @@
 // the risk notice is draft text pending legal review.
 // ============================================================================
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Wrench, Radio, ShieldAlert, ExternalLink, Clock } from "lucide-react";
+import { CheckCircle2, Wrench, Radio, ShieldAlert, ExternalLink, Loader2, Clock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/plans";
 import { useActivationConfig } from "@/lib/activationConfig";
+import { confirmStrategySubscription } from "@/lib/strategyConfirm";
+import { showError, showSuccess } from "@/utils/toast";
 import type { ActivationRow } from "@/lib/activationStatus";
 import { isPlanActive, resolveSubscriptionStatus } from "@/lib/subscriptionStatus";
 import { cn } from "@/lib/utils";
@@ -28,6 +30,8 @@ interface Props {
 const PlanActiveChecklist = ({ activation, firmName }: Props) => {
   const { t } = useTranslation();
   const { config } = useActivationConfig();
+  const [confirming, setConfirming] = useState(false);
+  const [confirmedAt, setConfirmedAt] = useState<string | null>(activation?.strategy_confirmed_at ?? null);
 
   const tools = (t("planActive.tools", { returnObjects: true }) as unknown as Array<{ name: string; steps: string[] }>);
   const steps = Array.isArray(tools) ? tools : [];
@@ -36,6 +40,21 @@ const PlanActiveChecklist = ({ activation, firmName }: Props) => {
   // An approved activation with an unpaid subscription shows the checklist as a
   // preview plus the subscription notice, never a false "active" badge.
   const subscriptionActive = isPlanActive(resolveSubscriptionStatus(activation?.subscription_status));
+
+  const confirmStrategy = async () => {
+    setConfirming(true);
+    try {
+      const result = await confirmStrategySubscription();
+      if (!result.ok) {
+        showError(t("planActive.traderspostConfirmError"));
+        return;
+      }
+      setConfirmedAt(result.confirmedAt ?? new Date().toISOString());
+      showSuccess(t("planActive.traderspostConfirmed"));
+    } finally {
+      setConfirming(false);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -103,6 +122,38 @@ const PlanActiveChecklist = ({ activation, firmName }: Props) => {
               ))}
             </div>
           )}
+
+          {/* TradersPost: our strategy share link + the customer's confirmation.
+              The link comes from config; when it is unset, no button is shown. */}
+          <div className="mt-5 pt-5 border-t border-white/10 space-y-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] mb-2">{t("planActive.traderspostTitle")}</p>
+              <p className="text-[11px] text-slate-400 leading-relaxed">{t("planActive.traderspostBody")}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-4">
+              {config.tradersPostShareUrl && (
+                <a href={config.tradersPostShareUrl} target="_blank" rel="noopener noreferrer">
+                  <Button className="bg-[#D4AF37] hover:bg-[#C5A059] text-black rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest">
+                    <ExternalLink size={14} className="me-2" /> {t("planActive.traderspostSubscribe")}
+                  </Button>
+                </a>
+              )}
+              {confirmedAt ? (
+                <span className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-emerald-500">
+                  <CheckCircle2 size={14} /> {t("planActive.traderspostConfirmed")}
+                </span>
+              ) : (
+                <Button
+                  disabled={confirming}
+                  onClick={confirmStrategy}
+                  className="bg-white/10 hover:bg-white/20 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
+                >
+                  {confirming && <Loader2 size={14} className="me-2 animate-spin" />}
+                  {t("planActive.traderspostConfirm")}
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Step 2: how the signals arrive */}

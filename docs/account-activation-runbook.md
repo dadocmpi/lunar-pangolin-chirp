@@ -31,6 +31,8 @@ every invocation; no redeploy is needed to change them.
 | `SIGNALS_PLAN_NAME` | Display name of the monthly signals plan. | "Signals Plan" |
 | `SIGNALS_PLAN_PRICE_CENTS` | Monthly fee in USD cents (e.g. `9900` = $99.00). Presentation only. | 0 (no price shown) |
 | `SIGNALS_PLAN_CURRENCY` | ISO currency for display. | USD |
+| `TRADERSPOST_STRATEGY_SHARE_URL` | Share link for **our** strategy on TradersPost. The customer subscribes to it in **their own** TradersPost account; execution happens on the customer's account. Unset ⇒ the onboarding shows the steps with no subscribe button. | hidden |
+| `ACTIVATION_MAX_ACTIVE` | Pilot capacity: the maximum number of **approved** activations. When reached, `activation-submit` returns `409 waitlist` and the dashboard shows the waitlist instead of the form. Unset or `0` ⇒ unlimited (no waitlist). | unlimited |
 
 **Fail-closed rule:** a firm is offered **only** when its affiliate URL is set
 and is a valid `http(s)` URL. An unconfigured firm never appears on `/accounts`
@@ -64,12 +66,26 @@ It is **idempotent** and additive:
 3. Widens the `payment_audit_log.payment_table` CHECK (whichever variant exists)
    to allow `'account_activations'`.
 
+A second, **additive** migration ships with the TradersPost onboarding:
+
+```
+supabase/migrations/20261012000000_traderspost_onboarding.sql
+```
+
+It adds two nullable columns to `public.account_activations`
+(`strategy_confirmed_at`, `strategy_confirmed_by`) and widens the
+`payment_audit_log.source` CHECK (whichever variant exists) to allow the
+`'activation'` source used by the strategy-confirmation audit row. RLS is
+row-scoped, so the existing owner/operator/no-client-write policies already
+cover the new columns; no new policy is required. There is **no credential
+column** of any kind.
+
 Apply with `supabase db push` (or `supabase migration up --linked`). Verify
 locally first with `make test-migrations` (needs Docker).
 
 ## 3. Deploy the Edge Functions
 
-Three functions ship with this change:
+Four functions ship with this change:
 
 - `activation-config` — **public** (`verify_jwt = false`); returns the firms and
   plan. No secret, no credential, no user data.
@@ -80,6 +96,11 @@ Three functions ship with this change:
   requests information / starts review, writes the append-only audit log, emails
   the customer through `_shared/userEmail.ts`, and returns a short-lived signed
   receipt URL.
+- `activation-strategy-confirm` — **JWT required**. Records that the customer
+  subscribed to **our** TradersPost strategy in their own account (a
+  self-declaration, not a payment and not a credential). Only the customer's own
+  **approved** activation can be stamped; the write is idempotent (keeps the
+  first timestamp) and appends to the audit log with source `'activation'`.
 
 Deploy with `supabase functions deploy` (the GitHub workflow does this on push
 to `main` once the migration pre-flight passes). Confirm no function returns 404:
@@ -107,9 +128,11 @@ Operators open the panel at `/operator/activations`.
 - [ ] `make test-migrations` passes (needs Docker).
 - [ ] `deno run -A supabase/functions/_test/activation-submit-tests.ts` passes.
 - [ ] `deno run -A supabase/functions/_test/activation-review-tests.ts` passes.
+- [ ] `deno run -A supabase/functions/_test/traderspost-onboarding-tests.ts` passes.
 - [ ] `bash supabase/functions/_test/rls-activation/run.sh` passes (needs Docker).
 - [ ] Headless: `node scripts/screenshot-activation-flow.mjs` (visitor → customer
-      submit → operator approve → customer sees "Plan active").
+      submit → operator approve → customer sees "Plan active" → customer confirms
+      the TradersPost strategy → the waitlist shows when the pilot is full).
 
 ## 6. Rollback
 
@@ -131,5 +154,12 @@ Operators open the panel at `/operator/activations`.
    four confirmations are **drafts**, flagged in the UI with a "draft — pending
    legal review" banner. They need your lawyer's sign-off.
 3. **Execution-tool content.** The "connect your tool" steps are placeholders
-   (`planActive.tools.*` in `src/i18n.ts`). Replace them with the real per-tool
-   instructions once you choose the supported tools.
+   (`planActive.tools.*` in `src/i18n.ts`) alongside the real TradersPost block.
+   Replace them with the final per-tool instructions once you confirm the
+   supported tools.
+4. **TradersPost strategy subscription vs. monthly billing.** The onboarding
+   records a **self-declaration** that the customer subscribed to our TradersPost
+   strategy (`activation-strategy-confirm`); it does **not** verify the
+   subscription and is **not** a payment. How (and whether) to reconcile it with
+   the monthly charge is still open — see the PR description. Until you decide,
+   the confirmation is informational only.

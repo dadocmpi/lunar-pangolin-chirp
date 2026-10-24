@@ -28,6 +28,10 @@ export interface ActivationConfig {
   enabled: boolean;
   firms: ActivationFirm[];
   plan: ActivationPlanConfig;
+  /** Share link for OUR TradersPost strategy. Null when unconfigured. */
+  tradersPostShareUrl: string | null;
+  /** True when the pilot is full: show the waitlist instead of the form. */
+  waitlistEnabled: boolean;
 }
 
 /** Safe default: flow off, no firms. The UI shows nothing until confirmed. */
@@ -35,6 +39,8 @@ export const EMPTY_ACTIVATION_CONFIG: ActivationConfig = {
   enabled: false,
   firms: [],
   plan: { name: "", priceCents: 0, currency: "USD" },
+  tradersPostShareUrl: null,
+  waitlistEnabled: false,
 };
 
 /** Only an http(s) URL is trusted for a rendered affiliate link. */
@@ -75,6 +81,13 @@ export function resolveActivationConfig(data: unknown): ActivationConfig {
     ? Math.max(0, Math.trunc(Number(planRaw.priceCents)))
     : 0;
 
+  const tp = (d.tradersPost && typeof d.tradersPost === "object")
+    ? d.tradersPost as Record<string, unknown>
+    : {};
+  const waitlist = (d.waitlist && typeof d.waitlist === "object")
+    ? d.waitlist as Record<string, unknown>
+    : {};
+
   return {
     enabled: d.enabled === true && firms.length > 0,
     firms,
@@ -83,6 +96,10 @@ export function resolveActivationConfig(data: unknown): ActivationConfig {
       priceCents,
       currency: typeof planRaw.currency === "string" ? planRaw.currency : "USD",
     },
+    tradersPostShareUrl: safeUrl(tp.shareUrl),
+    // Fail-open on a malformed payload: an absent waitlist flag never blocks
+    // the form (the server re-checks capacity on submit anyway).
+    waitlistEnabled: waitlist.enabled === true,
   };
 }
 

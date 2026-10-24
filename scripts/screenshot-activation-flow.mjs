@@ -58,7 +58,7 @@ const jsonHeaders = {
   "Access-Control-Expose-Headers": "content-range",
 };
 
-// Public activation config: two firms, a plan, flow enabled.
+// Public activation config: two firms, a plan, flow enabled, onboarding data.
 const ACTIVATION_CONFIG = {
   enabled: true,
   firms: [
@@ -66,6 +66,14 @@ const ACTIVATION_CONFIG = {
     { id: "lucid", name: "Lucid", url: "https://lucid.example/ref?aff=braxel" },
   ],
   plan: { name: "Signals Plan", priceCents: 9900, currency: "USD" },
+  tradersPost: { shareUrl: "https://traderspost.example/strategy/braxel-signals" },
+  waitlist: { enabled: false, maxActive: 0, activeCount: 0 },
+};
+
+// The pilot is full: the form is replaced by the waitlist.
+const ACTIVATION_CONFIG_FULL = {
+  ...ACTIVATION_CONFIG,
+  waitlist: { enabled: true, maxActive: 25, activeCount: 25 },
 };
 
 let failures = 0;
@@ -411,6 +419,7 @@ console.log("\n[4] Customer sees the approved status");
           purchase_email: "buyer@example.com",
           receipt_path: "11111111-1111-1111-1111-111111111111/receipt.png",
           status: "approved",
+          subscription_status: "active",
           operator_note: "Welcome aboard.",
           submitted_at: "2026-10-24T12:00:00Z",
           reviewed_at: "2026-10-24T13:00:00Z",
@@ -435,7 +444,170 @@ console.log("\n[4] Customer sees the approved status");
   assert("the customer sees the 'Plan active' onboarding", /signals plan is active|plano de sinais est[áa] ativo/i.test(text));
   assert("the onboarding explains how to connect the execution tool", /tool|ferramenta/i.test(text));
   assert("the customer never sees the Tradovate connect card", !/log in on tradovate/i.test(text));
+
+  // TradersPost onboarding: our strategy share link + the confirm action.
+  const shareLink = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("a[target=_blank]")).map((a) => ({
+      href: a.href,
+      rel: a.getAttribute("rel") || "",
+    })).find((l) => l.href.includes("traderspost.example")),
+  );
+  assert("the TradersPost share link comes from config", Boolean(shareLink));
+  assert("the share link opens a new tab safely", Boolean(shareLink) &&
+    /noopener/.test(shareLink.rel) && /noreferrer/.test(shareLink.rel));
+  assert("the onboarding shows the strategy-confirm action", /subscribed to the strategy|subscrevi a estrategia/i.test(text));
   assert("no page errors on the approved view", consoleErrors.length === 0);
+  await page.close();
+}
+
+// ---------------------------------------------------------------------------
+// [5] Customer confirms the TradersPost strategy subscription.
+// ---------------------------------------------------------------------------
+console.log("\n[5] Customer confirms the strategy subscription");
+{
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1440, height: 1000, deviceScaleFactor: 2 });
+  const consoleErrors = [];
+  page.on("pageerror", (e) => consoleErrors.push(e.message));
+  await page.evaluateOnNewDocument((s) => {
+    try { localStorage.setItem("braxel-auth-session", JSON.stringify(s)); } catch {}
+    window.__strategyConfirms = [];
+    const realFetch = window.fetch.bind(window);
+    window.fetch = (input, init) => {
+      const url = typeof input === "string" ? input : (input && input.url) || "";
+      if (url.includes("/functions/v1/activation-strategy-confirm")) {
+        const body = init && typeof init.body === "string" ? init.body : "";
+        window.__strategyConfirms.push({ method: (init && init.method) || "GET", body });
+        return Promise.resolve(new Response(
+          JSON.stringify({ ok: true, alreadyConfirmed: false, confirmedAt: "2026-10-24T14:00:00Z" }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        ));
+      }
+      return realFetch(input, init);
+    };
+  }, SESSION);
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    const url = req.url();
+    if (!url.startsWith(SUPABASE)) return req.continue();
+    if (req.method() === "OPTIONS") return req.respond({ status: 204, headers: jsonHeaders, body: "" });
+    const u = url.replace(SUPABASE, "");
+    const body = (obj, status = 200) =>
+      req.respond({ status, headers: jsonHeaders, body: JSON.stringify(obj) });
+    if (u.startsWith("/auth/v1/user")) return body(USER);
+    if (u.startsWith("/auth/v1/token")) return body(SESSION);
+    if (u.startsWith("/auth/v1/logout")) return req.respond({ status: 204, body: "" });
+    if (u.startsWith("/functions/v1/activation-config")) return body(ACTIVATION_CONFIG);
+    if (u.startsWith("/functions/v1/activation-strategy-confirm")) {
+      return body({ ok: true, alreadyConfirmed: false, confirmedAt: "2026-10-24T14:00:00Z" });
+    }
+    if (u.startsWith("/functions/v1/tradovate-status")) return body({ enabled: false, integrations: [] });
+    if (u.startsWith("/rest/v1/services")) return body([]);
+    if (u.startsWith("/rest/v1/profiles")) return body([{ id: USER.id, kyc_status: null }]);
+    if (u.startsWith("/rest/v1/kyc_submissions")) return body([]);
+    if (u.startsWith("/rest/v1/withdrawal_requests")) return body([]);
+    if (u.startsWith("/rest/v1/trades")) return body([]);
+    if (u.startsWith("/rest/v1/account_activations")) {
+      return body([
+        {
+          id: "aaaaaaaa-0000-0000-0000-000000000001",
+          firm: "tradeify",
+          plan_name: "50K Evaluation",
+          account_login: "ABC-12345",
+          purchase_email: "buyer@example.com",
+          receipt_path: "11111111-1111-1111-1111-111111111111/receipt.png",
+          status: "approved",
+          subscription_status: "active",
+          operator_note: "Welcome aboard.",
+          submitted_at: "2026-10-24T12:00:00Z",
+          reviewed_at: "2026-10-24T13:00:00Z",
+          created_at: "2026-10-24T12:00:00Z",
+          strategy_confirmed_at: null,
+        },
+      ]);
+    }
+    return body({});
+  });
+  await page.goto(`${BASE}/dashboard`, { waitUntil: "networkidle2", timeout: 60000 });
+  await new Promise((r) => setTimeout(r, 2500));
+  await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll("button")).find((b) =>
+      /activate|ativar/i.test(b.textContent || ""),
+    );
+    btn?.click();
+  });
+  await new Promise((r) => setTimeout(r, 1500));
+
+  const clicked = await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll("button")).find((b) =>
+      /subscribed to the strategy|subscrevi a estrategia/i.test(b.textContent || ""),
+    );
+    if (!btn) return false;
+    btn.click();
+    return true;
+  });
+  assert("the confirm button is present and clickable", clicked);
+  await new Promise((r) => setTimeout(r, 2000));
+  await page.screenshot({ path: `${OUT_DIR}/traderspost-strategy-confirmed.png`, fullPage: true });
+
+  const confirms = await page.evaluate(() => window.__strategyConfirms || []);
+  assert("activation-strategy-confirm received a POST", confirms.length === 1 && confirms[0].method === "POST");
+  assert("the confirm payload carries no user id", !/"user/i.test(confirms[0]?.body || ""));
+  assert("the confirm payload carries no credential", !/password|cid|secret/i.test(confirms[0]?.body || ""));
+
+  const after = await page.evaluate(() => document.body.innerText);
+  assert("the confirmed state replaces the button", /strategy subscription confirmed|subscricao da estrategia confirmada/i.test(after));
+  assert("no page errors while confirming", consoleErrors.length === 0);
+  await page.close();
+}
+
+// ---------------------------------------------------------------------------
+// [6] Pilot full: the form is replaced by the waitlist.
+// ---------------------------------------------------------------------------
+console.log("\n[6] Pilot full shows the waitlist");
+{
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1440, height: 1000, deviceScaleFactor: 2 });
+  const consoleErrors = [];
+  page.on("pageerror", (e) => consoleErrors.push(e.message));
+  await page.evaluateOnNewDocument((s) => {
+    try { localStorage.setItem("braxel-auth-session", JSON.stringify(s)); } catch {}
+  }, SESSION);
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    const url = req.url();
+    if (!url.startsWith(SUPABASE)) return req.continue();
+    if (req.method() === "OPTIONS") return req.respond({ status: 204, headers: jsonHeaders, body: "" });
+    const u = url.replace(SUPABASE, "");
+    const body = (obj, status = 200) =>
+      req.respond({ status, headers: jsonHeaders, body: JSON.stringify(obj) });
+    if (u.startsWith("/auth/v1/user")) return body(USER);
+    if (u.startsWith("/auth/v1/token")) return body(SESSION);
+    if (u.startsWith("/auth/v1/logout")) return req.respond({ status: 204, body: "" });
+    if (u.startsWith("/functions/v1/activation-config")) return body(ACTIVATION_CONFIG_FULL);
+    if (u.startsWith("/functions/v1/tradovate-status")) return body({ enabled: false, integrations: [] });
+    if (u.startsWith("/rest/v1/services")) return body([]);
+    if (u.startsWith("/rest/v1/profiles")) return body([{ id: USER.id, kyc_status: null }]);
+    if (u.startsWith("/rest/v1/kyc_submissions")) return body([]);
+    if (u.startsWith("/rest/v1/withdrawal_requests")) return body([]);
+    if (u.startsWith("/rest/v1/trades")) return body([]);
+    if (u.startsWith("/rest/v1/account_activations")) return body([]);
+    return body({});
+  });
+  await page.goto(`${BASE}/dashboard`, { waitUntil: "networkidle2", timeout: 60000 });
+  await new Promise((r) => setTimeout(r, 2500));
+  await page.evaluate(() => {
+    const btn = Array.from(document.querySelectorAll("button")).find((b) =>
+      /activate|ativar/i.test(b.textContent || ""),
+    );
+    btn?.click();
+  });
+  await new Promise((r) => setTimeout(r, 1500));
+  const text = await page.evaluate(() => document.body.innerText);
+  await page.screenshot({ path: `${OUT_DIR}/activation-waitlist.png`, fullPage: true });
+  assert("the waitlist heading is shown", /full capacity|capacidade esgotada/i.test(text));
+  assert("the activation form is NOT shown when full", !/submit request|enviar pedido|solicitar ativa/i.test(text));
+  assert("no page errors on the waitlist", consoleErrors.length === 0);
   await page.close();
 }
 
