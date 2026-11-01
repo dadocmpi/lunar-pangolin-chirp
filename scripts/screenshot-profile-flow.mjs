@@ -122,7 +122,13 @@ function wireMock(page, opts = {}) {
     const wantsSingle = (req.headers().accept || "").includes("vnd.pgrst.object");
     const rows = (list) => body(wantsSingle ? list[0] ?? null : list);
 
-    if (u.startsWith("/auth/v1/signup")) return body({ user: USER, session: SESSION });
+    if (u.startsWith("/auth/v1/signup")) {
+      // Real GoTrue shapes: with "Confirm email" OFF the response body IS the
+      // session (access_token/refresh_token/expires_in at the top level, plus
+      // user); with it ON the body is the bare user and auth-js derives
+      // session=null. A `{user, session}` wrapper resolves to session=null.
+      return body(opts.confirmEmail ? { ...USER } : { ...SESSION });
+    }
     if (u.startsWith("/auth/v1/user")) return body(USER);
     if (u.startsWith("/auth/v1/token")) return body(SESSION);
     if (u.startsWith("/auth/v1/logout")) return req.respond({ status: 204, body: "" });
@@ -263,6 +269,36 @@ console.log("\n[1] Two-step signup");
   record("incomplete step 2 blocks with field errors", /required|obrigatório|requis|obligatoire/i.test(errorText));
   record("no profile submitted while invalid", submitBodies.length === 0);
 
+  await page.close();
+}
+
+// ---------------------------------------------------------------------------
+// [1b] Confirm-email ON: step 2 is not reachable without a session
+// ---------------------------------------------------------------------------
+console.log("\n[1b] Confirm-email signup shows the confirmation screen");
+{
+  submitBodies.length = 0;
+  const page = await newPage({ withSession: false, noProfile: true, confirmEmail: true });
+  await page.goto(`${BASE}/register`, { waitUntil: "networkidle2", timeout: 60000 });
+  await settle(600);
+
+  const inputs = await page.$$("input");
+  await inputs[0].type("Maria Silva");
+  await inputs[1].type("confirm.test@braxelmarkets.test");
+  await inputs[2].type("secret123");
+  await inputs[3].type("secret123");
+  await page.click("#terms");
+  await settle(150);
+  await clickSubmit(page);
+  await settle(1200);
+
+  const text = await page.evaluate(() => document.body.innerText);
+  record("shows the check-email screen", /check your email|verifique o seu e-mail|controlla la tua e-mail/i.test(text));
+  record("shows the confirmation address", /confirm\.test@braxelmarkets\.test/.test(text));
+  record("offers a link to sign in", /sign in|login|iniciar sess/i.test(text));
+  record("never reaches step 2 without a session", !/step 2 of 2|etapa 2 de 2/i.test(text));
+  record("does not attempt a profile write without a session", submitBodies.length === 0);
+  await page.screenshot({ path: `${OUT_DIR}/signup-check-email.png`, fullPage: true });
   await page.close();
 }
 
