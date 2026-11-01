@@ -26,6 +26,7 @@ const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
+const CompleteProfile = lazy(() => import("./pages/CompleteProfile"));
 const RegisterApplication = lazy(() => import("./pages/RegisterApplication"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const Accounts = lazy(() => import("./pages/Accounts"));
@@ -80,6 +81,7 @@ const App = () => (
             <Route path="/contact" element={<RouteView><Contact /></RouteView>} />
             <Route path="/login" element={<RouteView><Login /></RouteView>} />
             <Route path="/register" element={<RouteView><Register /></RouteView>} />
+            <Route path="/complete-profile" element={<RouteView><CompleteProfile /></RouteView>} />
             <Route path="/register-application" element={<RouteView><RegisterApplication /></RouteView>} />
             <Route path="/auth-callback" element={<RouteView><AuthCallback /></RouteView>} />
             <Route path="/accounts" element={<RouteView><Accounts /></RouteView>} />

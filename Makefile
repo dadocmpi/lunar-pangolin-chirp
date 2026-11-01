@@ -31,6 +31,12 @@ test-tradovate:
 	deno run -A supabase/functions/_test/feature-flag-tests.ts
 	deno run -A supabase/functions/_test/activation-submit-tests.ts
 	deno run -A supabase/functions/_test/activation-review-tests.ts
+	deno run -A supabase/functions/_test/profile-tests.ts
+
+# Client-profile unit tests (two-step signup validation, billing sanitization,
+# Stripe customer wiring, no password/card storage). No network, no DB.
+test-profile:
+	deno run -A supabase/functions/_test/profile-tests.ts
 
 # Account-activation unit tests (submit validation, operator predicate,
 # status state machine, migration/function wiring). No network, no DB.

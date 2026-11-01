@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Lock, Mail, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { notifyOwner } from '@/lib/notifyOwner';
 import { showSuccess, showError } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { fetchProfile } from '@/lib/profile';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -23,12 +24,31 @@ const Login = () => {
   const from = location.state?.from || '/dashboard';
   const plan = location.state?.plan;
 
+  // Where to send a signed-in user. If they closed the page before finishing
+  // step 2, send them back to complete their profile first (fail-open: a read
+  // error never blocks the dashboard).
+  const resolveDestination = useCallback(async (): Promise<{ path: string; state?: object }> => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const profile = await fetchProfile(user.id);
+        if (profile && profile.profileCompleted === false) {
+          return { path: '/complete-profile', state: { from, plan } };
+        }
+      }
+    } catch (err) {
+      console.error('Profile completion check failed:', err);
+    }
+    return { path: from, state: { plan } };
+  }, [from, plan]);
+
   useEffect(() => {
     const checkSession = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          navigate(from, { replace: true });
+          const dest = await resolveDestination();
+          navigate(dest.path, { state: dest.state, replace: true });
           return;
         }
         const savedEmail = localStorage.getItem('rememberedEmail');
@@ -43,7 +63,7 @@ const Login = () => {
       }
     };
     checkSession();
-  }, [navigate, from]);
+  }, [navigate, from, resolveDestination]);
 
   const handleForgotPassword = async () => {
     if (!email.trim()) {
@@ -108,7 +128,8 @@ const Login = () => {
         localStorage.removeItem('rememberedEmail');
       }
 
-      navigate(from, { state: { plan } });
+      const dest = await resolveDestination();
+      navigate(dest.path, { state: dest.state });
     } catch (error: unknown) {
       showError(error instanceof Error ? error.message : t('auth.loginErrorMessage'));
     } finally {

@@ -25,6 +25,29 @@ import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
 import { notifyOwner } from "@/lib/notifyOwner";
 import { formatUsd, PLAN_PRICING } from "@/lib/plans";
 import { isPaymentsEnabled, isTestPaymentMode } from "@/lib/paymentsFlag";
+import CheckoutBillingForm, { type BillingDetails } from "@/components/checkout/CheckoutBillingForm";
+import { fetchProfile, saveProfile } from "@/lib/profile";
+import {
+  hasProfileErrors,
+  normalizeProfile,
+  toProfileFields,
+  validateProfile,
+  type ProfileErrors,
+} from "@/lib/profileValidation";
+
+const EMPTY_BILLING: BillingDetails = {
+  email: "",
+  fullName: "",
+  phoneCountryCode: "",
+  phone: "",
+  country: "",
+  street: "",
+  number: "",
+  complement: "",
+  city: "",
+  state: "",
+  postalCode: "",
+};
 
 export type CheckoutPaymentStatus =
   | "created"
@@ -118,6 +141,11 @@ const Checkout = () => {
   const [paymentId, setPaymentId] = useState<string | null>(null);
   const [application, setApplication] = useState<ApplicationRecord | null>(null); // Application data
 
+  // Billing details, pre-filled from the profile and editable for this purchase.
+  const [billing, setBilling] = useState<BillingDetails>(EMPTY_BILLING);
+  const [billingErrors, setBillingErrors] = useState<ProfileErrors>({});
+  const [updateProfileWithBilling, setUpdateProfileWithBilling] = useState(false);
+
   const selectedCryptoIdRef = useRef<string>("BTC");
   const wiseKeyRef = useRef<string | null>(null);
   const cryptoKeyRef = useRef<string | null>(null);
@@ -175,10 +203,58 @@ const Checkout = () => {
       }
 
       setApplication(appData);
+
+      // Load the profile and pre-fill the billing details. If step 2 was never
+      // finished, send the customer to complete it before checkout.
+      try {
+        const profile = authUser ? await fetchProfile(authUser.id) : null;
+        if (profile && profile.profileCompleted === false) {
+          navigate("/complete-profile", { state: { from: "/checkout" } });
+          return;
+        }
+        const base = profile ? toProfileFields(profile.raw) : EMPTY_BILLING;
+        setBilling({
+          ...EMPTY_BILLING,
+          ...base,
+          fullName: base.fullName || (authUser?.user_metadata?.full_name as string) || "",
+          email: authUser?.email ?? "",
+        });
+      } catch (profileErr) {
+        // Fail open: a profile read error must not block a paying customer.
+        console.error("Checkout profile prefill failed:", profileErr);
+        setBilling((prev) => ({ ...prev, email: authUser?.email ?? "" }));
+      }
+
       setLoading(false);
     };
     checkUserAndApplication();
   }, [applicationId, navigate]);
+
+  const handleBillingChange = (field: keyof BillingDetails, value: string) => {
+    setBilling((prev) => ({ ...prev, [field]: value }));
+    setBillingErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
+  };
+
+  // Validate the billing details and, when requested, persist them to the
+  // profile. Returns the normalized values to send to the server, or null when
+  // something is invalid (the caller stops the payment).
+  const prepareBilling = async (): Promise<BillingDetails | null> => {
+    const validation = validateProfile(billing);
+    setBillingErrors(validation);
+    if (hasProfileErrors(validation)) {
+      setSubmitError(t("checkoutBilling.incomplete"));
+      return null;
+    }
+    const normalized = { ...normalizeProfile(billing), email: billing.email.trim() };
+    if (updateProfileWithBilling) {
+      try {
+        await saveProfile(normalized);
+      } catch (err) {
+        console.error("Profile update from checkout failed:", err);
+      }
+    }
+    return normalized;
+  };
 
   // Get the plan key from the application data. Only a key present in the
   // canonical table is accepted — this avoids silently showing the Starter
@@ -280,12 +356,15 @@ const Checkout = () => {
     setProcessing(true);
     setSubmitError(null);
     try {
+      const bill = await prepareBilling();
+      if (!bill) return;
       if (!wiseKeyRef.current) wiseKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("wise-checkout", {
         planId: application.plan_key, // Use the plan_key from the application
         currency: "USD", // server enforces USD; declared explicitly
         idempotencyKey: wiseKeyRef.current,
         isTest: testMode,
+        billing: bill,
       });
       setWiseResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
@@ -303,6 +382,8 @@ const Checkout = () => {
     setProcessing(true);
     setSubmitError(null);
     try {
+      const bill = await prepareBilling();
+      if (!bill) return;
       if (!cryptoKeyRef.current) cryptoKeyRef.current = newIdempotencyKey();
       const res = await callEdgeFunction("crypto-checkout", {
         planId: application.plan_key,
@@ -310,6 +391,7 @@ const Checkout = () => {
         network: selectedCryptoIdRef.current,
         idempotencyKey: cryptoKeyRef.current,
         isTest: testMode,
+        billing: bill,
       });
       setCryptoResponse(res);
       if (res.payment?.id) setPaymentId(res.payment.id);
@@ -327,6 +409,8 @@ const Checkout = () => {
     setProcessing(true);
     setSubmitError(null);
     try {
+      const bill = await prepareBilling();
+      if (!bill) return;
       if (!stripeKeyRef.current) stripeKeyRef.current = newIdempotencyKey();
       // The application id is required: the server re-derives the plan from
       // the stored application and verifies ownership. The browser never
@@ -337,6 +421,7 @@ const Checkout = () => {
         currency: "USD",
         idempotencyKey: stripeKeyRef.current,
         isTest: testMode,
+        billing: bill,
       });
       setStripeResponse(res);
       if (res.pending_payment_id) {
@@ -543,6 +628,17 @@ const Checkout = () => {
                   {submitError}
                 </div>
               )}
+
+              {/* Billing details, pre-filled from the profile. Passed to Stripe
+                  (customer + billing_details) and used on the receipt. */}
+              <CheckoutBillingForm
+                billing={billing}
+                errors={billingErrors}
+                updateProfile={updateProfileWithBilling}
+                onChange={handleBillingChange}
+                onCountryChange={(code) => handleBillingChange("country", code)}
+                onUpdateProfileChange={setUpdateProfileWithBilling}
+              />
 
               {!showWise && !showCrypto && !showStripe ? (
                 <div className="space-y-8 animate-fadeInUp">

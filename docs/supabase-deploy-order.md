@@ -12,7 +12,7 @@
 > ID-data-protection review are done. Leave `WITHDRAWAL_KYC_GATE_ENABLED`
 > **unset** (never `false` in normal operation).
 >
-> **Go-live order:** Supabase secrets → `supabase db push` (all 7 migrations,
+> **Go-live order:** Supabase secrets → `supabase db push` (all 9 migrations,
 > filename order) → `supabase functions deploy` → smoke test no function returns
 > 404 → merge **PR #47 only** (close #45/#46) → Vercel redeploy → final test in an
 > incognito window with a fresh account. See "Manual go-live order" below.
@@ -70,12 +70,14 @@ automatic deploys.
    | 5 | `20261007000000_withdrawal_manual_review.sql` | manual-review threshold |
    | 6 | `20261008000000_tradovate_welcome_skip.sql` | first-run welcome skip state |
    | 7 | `20261009000000_tradovate_dashboard_snapshot.sql` | live account snapshot cache |
+   | 8 | `20261010000000_account_activation.sql` | account activations + private receipts |
+   | 9 | `20261011000000_client_profiles.sql` | profile contact/billing columns, RLS, signup trigger |
 
    `make test-migrations` (`supabase/functions/_test/migrations/apply-order.sh`)
    applies exactly these, in this order, on a fresh production-baseline Postgres
    and then re-applies them to prove idempotency.
 3. Confirm the migration head matches: `supabase migration list --linked` (the
-   head must be `20261009000000`).
+   head must be `20261011000000`).
 4. **Deploy functions** — the one-click release does this for you: Actions ->
    **Supabase release (migrations + functions + smoke)** -> Run workflow. That
    single manual workflow runs `supabase db push` (step 1) then

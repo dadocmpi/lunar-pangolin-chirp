@@ -9,6 +9,7 @@ import PerformancePanel from '@/components/terminal/PerformancePanel';
 import TradovateConnectCard from '@/components/TradovateConnectCard';
 import TradovateWelcome from '@/components/TradovateWelcome';
 import ActivateAccountView from '@/components/ActivateAccountView';
+import ProfileEditor from '@/components/profile/ProfileEditor';
 import KycReminderBanner from '@/components/KycReminderBanner';
 import WithdrawalKycGate, { type KycStatus as WithdrawalKycStatus } from '@/components/WithdrawalKycGate';
 import {
@@ -439,6 +440,7 @@ const Dashboard = () => {
               ...(activation.config.enabled
                 ? [{ id: 'activate', label: t('activation.navLabel'), icon: <BadgeCheck size={18} /> }]
                 : []),
+              { id: 'myprofile', label: t('profile.navLabel'), icon: <User size={18} /> },
               { id: 'performance', label: t('dashboard.navPerformance'), icon: <BarChart3 size={18} /> },
               { id: 'withdraw', label: t('dashboard.withdraw'), icon: <Wallet size={18} /> },
               { id: 'auditlog', label: t('dashboard.navAuditLog'), icon: <Activity size={18} /> },
@@ -578,6 +580,9 @@ const Dashboard = () => {
             {activeView === 'activate' && activation.config.enabled && (
               <ActivateAccountView />
             )}
+
+            {/* My profile — view and edit the saved contact + billing data */}
+            {activeView === 'myprofile' && <ProfileEditor />}
 
             {/* Performance View — real stats computed from the user's trades */}
             {activeView === 'performance' && (

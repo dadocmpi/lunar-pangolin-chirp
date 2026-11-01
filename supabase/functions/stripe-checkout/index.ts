@@ -7,6 +7,11 @@ import {
   paymentsDisabledBody,
 } from "../_shared/payments-flag.ts";
 import { getPlan } from "../_shared/plans.ts";
+import {
+  sanitizeBilling,
+  type BillingInput,
+  type SanitizedBilling,
+} from "../_shared/profile/billing.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -46,6 +51,70 @@ function stripeRequest(
   }
 
   return fetch(url, { method, headers, body });
+}
+
+interface ResolveCustomerArgs {
+  supabase: ReturnType<typeof createClient>;
+  stripeSecretKey: string;
+  userId: string;
+  email: string;
+  billing: SanitizedBilling;
+}
+
+/**
+ * Reuse the profile's stored Stripe Customer, or create one and persist its id.
+ * The customer carries name/email/phone/address so Stripe shows them on the
+ * payment and the receipt. Returns null when Stripe is unreachable — the caller
+ * then falls back to customer_email so checkout still works.
+ */
+async function resolveStripeCustomer(args: ResolveCustomerArgs): Promise<string | null> {
+  const { supabase, stripeSecretKey, userId, email, billing } = args;
+
+  const form = new URLSearchParams();
+  if (email) form.append("email", email);
+  if (billing.name) form.append("name", billing.name);
+  if (billing.phone) form.append("phone", billing.phone);
+  if (billing.line1) form.append("address[line1]", billing.line1);
+  if (billing.line2) form.append("address[line2]", billing.line2);
+  if (billing.city) form.append("address[city]", billing.city);
+  if (billing.state) form.append("address[state]", billing.state);
+  if (billing.postalCode) form.append("address[postal_code]", billing.postalCode);
+  if (billing.country) form.append("address[country]", billing.country);
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("stripe_customer_id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  // Reuse the stored customer, refreshing its details so the receipt reflects
+  // whatever the customer edited at checkout.
+  const existing = profile?.stripe_customer_id as string | undefined;
+  if (existing) {
+    const update = await stripeRequest(
+      "POST",
+      `/customers/${existing}`,
+      form,
+      stripeSecretKey,
+    );
+    if (update.ok) return existing;
+    // A deleted/invalid customer id must not dead-end checkout: fall through
+    // and create a fresh one.
+  }
+
+  form.append("metadata[user_id]", userId);
+  const res = await stripeRequest("POST", "/customers", form, stripeSecretKey);
+  if (!res.ok) return null;
+  const customer = await res.json();
+  const customerId = customer?.id as string | undefined;
+  if (!customerId) return null;
+
+  await supabase
+    .from("profiles")
+    .update({ stripe_customer_id: customerId })
+    .eq("id", userId);
+
+  return customerId;
 }
 
 serve(async (req) => {
@@ -138,6 +207,7 @@ serve(async (req) => {
     idempotencyKey: string;
     isTest: boolean;
     applicationId: string;
+    billing?: BillingInput;
   };
   try {
     body = await req.json();
@@ -272,6 +342,24 @@ serve(async (req) => {
     idempotencyKey: `stripe-order:${pendingPayment.id}`,
   });
 
+  // Resolve (create or reuse) the Stripe Customer so the billing details show
+  // on the payment and the receipt, and the id is stored on the profile. A
+  // failure here is not fatal: checkout falls back to customer_email.
+  const billing = sanitizeBilling(body.billing);
+  const email = billing.email || user.email || "";
+  let customerId: string | null = null;
+  try {
+    customerId = await resolveStripeCustomer({
+      supabase,
+      stripeSecretKey,
+      userId: user.id,
+      email,
+      billing,
+    });
+  } catch (err) {
+    console.error("[stripe-checkout] customer resolution failed:", err);
+  }
+
   // Create Stripe Checkout Session
   const sessionData = new URLSearchParams();
   sessionData.append("mode", "subscription");
@@ -285,8 +373,17 @@ serve(async (req) => {
   sessionData.append("metadata[pending_payment_id]", pendingPayment.id);
   sessionData.append("metadata[idempotency_key]", idempotencyKey);
   sessionData.append("metadata[application_id]", applicationId);
-  // We can also pass customer email if we want, but we'll let Stripe collect it or use the user's email from Supabase
-  sessionData.append("customer_email", user.email ?? "");
+  if (customerId) {
+    // A resolved Customer already carries name/email/phone/address; Stripe
+    // reuses them on the session and the receipt. customer_update lets the
+    // customer correct the address on the hosted page and have it saved back.
+    sessionData.append("customer", customerId);
+    sessionData.append("customer_update[name]", "auto");
+    sessionData.append("customer_update[address]", "auto");
+    sessionData.append("billing_address_collection", "auto");
+  } else {
+    sessionData.append("customer_email", email);
+  }
 
   try {
     const stripeRes = await stripeRequest(
