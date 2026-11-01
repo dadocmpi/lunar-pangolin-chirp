@@ -99,6 +99,18 @@ $DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postg
   "SELECT 'account_activations RLS: ' || CASE WHEN EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname='account_activations' AND c.relrowsecurity) THEN 'enabled' ELSE 'MISSING' END;"
 $DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
   "SELECT 'activation-receipts bucket: ' || CASE WHEN EXISTS (SELECT 1 FROM storage.buckets WHERE id='activation-receipts' AND public=false) THEN 'private' ELSE 'MISSING/PUBLIC' END;"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'profiles.profile_completed: ' || CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='profile_completed') THEN 'present' ELSE 'MISSING' END;"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'profiles.updated_at: ' || CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='updated_at') THEN 'present' ELSE 'MISSING' END;"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'profiles.stripe_customer_id: ' || CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='stripe_customer_id') THEN 'present' ELSE 'MISSING' END;"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'profiles owner policies: ' || count(*) FROM pg_policies WHERE schemaname='public' AND tablename='profiles' AND policyname IN ('profiles_owner_select','profiles_owner_insert','profiles_owner_update');"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'profiles RLS: ' || CASE WHEN EXISTS (SELECT 1 FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname='profiles' AND c.relrowsecurity) THEN 'enabled' ELSE 'MISSING' END;"
+$DOCKER exec -e PGPASSWORD=postgres "$CONTAINER" psql -U supabase_admin -d postgres -Atc \
+  "SELECT 'profiles signup trigger: ' || CASE WHEN EXISTS (SELECT 1 FROM pg_trigger WHERE tgname='on_auth_user_created_profile') THEN 'present' ELSE 'MISSING' END;"
 
 echo; echo "MIGRATION APPLY TEST PASSED"
 $DOCKER rm -f "$CONTAINER" >/dev/null 2>&1

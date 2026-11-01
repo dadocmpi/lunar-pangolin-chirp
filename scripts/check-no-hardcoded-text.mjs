@@ -18,6 +18,11 @@ import path from 'path';
 
 const TARGETS = [
   'src/components/terminal',
+  'src/components/profile',
+  'src/components/checkout',
+  'src/pages/CompleteProfile.tsx',
+  'src/pages/Checkout.tsx',
+  'src/pages/Register.tsx',
   'src/components/TradovateConnectPanel.tsx',
   'src/components/TradovateWelcome.tsx',
   'src/components/TradovateConnectCard.tsx',
@@ -32,6 +37,10 @@ const TARGETS = [
 
 // Attributes that render user-visible text.
 const TEXT_ATTRS = ['title', 'placeholder', 'aria-label', 'alt'];
+
+// Proper nouns that are the same in every locale — never translated, so they
+// are not "hardcoded text" in the i18n sense.
+const BRAND_ALLOW = /^(Braxel Markets|BRAXEL|MARKETS)$/;
 
 function walk(target, files) {
   if (!fs.existsSync(target)) return;
@@ -56,13 +65,18 @@ for (const file of files) {
     // Attribute: title="Some words" (not a {...} expression, not empty).
     for (const attr of TEXT_ATTRS) {
       const m = new RegExp(`${attr}="([^"]*[A-Za-z][^"]*)"`).exec(line);
-      if (m && !/^\s*(\/\/|\*)/.test(line)) {
+      if (m && !/^\s*(\/\/|\*)/.test(line) && !BRAND_ALLOW.test(m[1].trim())) {
         problems.push(`${file}:${n}  ${attr}="${m[1]}"`);
       }
     }
     // JSX text node: >Some words< on a single line, excluding code.
     const text = />\s*([A-Z][A-Za-z][A-Za-z ,.'&%/()-]{2,})\s*</.exec(line);
-    if (text && !/^\s*(\/\/|\*)/.test(line) && !line.includes('t(')) {
+    if (
+      text &&
+      !/^\s*(\/\/|\*)/.test(line) &&
+      !line.includes('t(') &&
+      !BRAND_ALLOW.test(text[1].trim())
+    ) {
       problems.push(`${file}:${n}  text "${text[1].trim()}"`);
     }
   });

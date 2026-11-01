@@ -15,6 +15,7 @@
     "check:tradovate": "node scripts/check-tradovate-contract.mjs",
     "check:dashboard": "node scripts/check-dashboard-data.mjs",
     "check:activation": "node scripts/check-activation-contract.mjs",
+    "check:profile": "node scripts/check-profile-contract.mjs",
     "smoke:functions": "node scripts/smoke-edge-functions.mjs",
     "bundle:functions": "node scripts/bundle-edge-functions.mjs"
   },

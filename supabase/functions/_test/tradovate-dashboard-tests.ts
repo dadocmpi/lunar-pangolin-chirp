@@ -151,7 +151,10 @@ test("banner headline is not the gating phrase", !/VERIFICATION REQUIRED/i.test(
 console.log("\n[8] The CTA reads 'Log in on Tradovate' in every locale");
 for (const loc of LOCALES) {
   const start = i18n.indexOf(`const ${loc}Translation = `);
-  const block = i18n.slice(start, start + 4000);
+  // Slice to the next locale's declaration, not a fixed window: the block grows
+  // as keys are added and a fixed window would start missing present keys.
+  const next = i18n.indexOf("Translation = ", start + 10);
+  const block = i18n.slice(start, next > 0 ? next : i18n.length);
   const m = block.match(/connectCta: "([^"]*)"/);
   test(`${loc}: connectCta is a log-in label`, !!m && /log ?in|entrar|accedi|iniciar sesión|connecter|anmelden|войти|登录|ログイン|دخول|התחבר/i.test(m[1]));
 }

@@ -138,7 +138,10 @@ const LOCALES = ["en", "pt", "it", "es", "fr", "de", "ru", "zh", "ja", "ar", "he
 const WELCOME_KEYS = ["eyebrow", "title", "body", "point1", "point2", "point3", "skip"];
 for (const loc of LOCALES) {
   const start = i18n.indexOf(`const ${loc}Translation = `);
-  const block = i18n.slice(start, start + 6000);
+  // Slice to the next locale's declaration, not a fixed window: the block grows
+  // as keys are added and a fixed window would start missing present keys.
+  const next = i18n.indexOf("Translation = ", start + 10);
+  const block = i18n.slice(start, next > 0 ? next : i18n.length);
   test(`${loc}: has all welcome keys`, WELCOME_KEYS.every((k) => new RegExp(`\\b${k}:`).test(block)));
 }
 

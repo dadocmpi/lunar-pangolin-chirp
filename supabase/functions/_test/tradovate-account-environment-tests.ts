@@ -201,7 +201,11 @@ const i18n = read("src/i18n.ts");
 const LOCALES = ["en", "pt", "it", "es", "fr", "de", "ru", "zh", "ja", "ar", "he"];
 for (const loc of LOCALES) {
   const start = i18n.indexOf(`const ${loc}Translation = `);
-  const block = i18n.slice(start, start + 9000);
+  // Slice to the next locale's declaration rather than a fixed window: the
+  // block length changes as keys are added, and a fixed window would silently
+  // start missing keys that are still present.
+  const next = i18n.indexOf("Translation = ", start + 10);
+  const block = i18n.slice(start, next > 0 ? next : i18n.length);
   await test(`${loc}: has not_enabled + service_unavailable + account codes`, () => {
     for (const k of [
       "not_enabledTitle",
