@@ -168,7 +168,22 @@ const migration = read("supabase/migrations/20261011000000_client_profiles.sql")
 check("defines the new-user profile trigger", migration.includes("handle_new_user_profile"));
 check("the trigger reads the terms metadata", /raw_user_meta_data ->> 'terms_accepted'/.test(migration));
 check("the trigger stamps terms_accepted_at", /terms_accepted_at/.test(migration));
-check("creates the profile row on conflict do nothing", /ON CONFLICT \(id\) DO NOTHING/.test(migration));
+
+// The legacy `on_auth_user_created` trigger (handle_new_user) fires first and
+// creates the row, so our trigger MUST upsert — an insert-ignore no-ops and
+// leaves full_name / terms_accepted_at NULL. Regression pinned by the fix.
+const triggerFix = read("supabase/migrations/20261012000000_profile_signup_trigger_fix.sql");
+check("the fix redefines the profile trigger", triggerFix.includes("handle_new_user_profile"));
+check("the trigger upserts instead of ignoring conflicts", /ON CONFLICT \(id\) DO UPDATE/.test(triggerFix));
+check("the upsert only fills the empty name", /COALESCE\(NULLIF\(public\.profiles\.full_name, ''\), EXCLUDED\.full_name\)/.test(triggerFix));
+check("the upsert keeps the first acceptance", /terms_accepted_at = COALESCE\(public\.profiles\.terms_accepted_at, EXCLUDED\.terms_accepted_at\)/.test(triggerFix));
+check("the fix backfills consent for existing rows", /UPDATE public\.profiles/.test(triggerFix));
+
+// ---------------------------------------------------------------------------
+console.log("\n[9c] Wiring: registration handles the confirm-email flow");
+check("stops at a confirmation screen when signUp returns no session", /if \(!data\.session\)/.test(register) && /setStep\('confirm'\)/.test(register));
+check("renders the confirmation screen", register.includes("checkEmailTitle") || register.includes("checkEmailBody"));
+check("maps an expired session to a clear message", /signup\.sessionExpired/.test(register));
 
 // ---------------------------------------------------------------------------
 console.log("\n[10] Country set: every code the client can send is accepted server-side");
