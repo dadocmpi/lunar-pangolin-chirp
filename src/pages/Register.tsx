@@ -35,7 +35,9 @@ const EMPTY_DETAILS: ProfileFields = {
 
 const Register = () => {
   const { t } = useTranslation();
-  const [step, setStep] = useState<1 | 2>(1);
+  // 'confirm' = the account was created but the e-mail still needs confirming
+  // (Supabase "Confirm email" is ON), so there is no session to save step 2 yet.
+  const [step, setStep] = useState<1 | 2 | 'confirm'>(1);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -124,6 +126,15 @@ const Register = () => {
         console.error('Confirmation email error:', emailError);
       }
 
+      // When Supabase "Confirm email" is ON, signUp() returns a user but NO
+      // session. Step 2 needs a session to save the profile, so sending the
+      // customer there would only fail. Show the confirmation screen instead;
+      // the login redirect sends them back to step 2 after they confirm.
+      if (!data.session) {
+        setStep('confirm');
+        return;
+      }
+
       // Carry the name into step 2 so the customer does not retype it.
       setDetails((prev) => ({ ...prev, fullName: prev.fullName || fullName }));
       setStep(2);
@@ -154,7 +165,7 @@ const Register = () => {
       });
       if (!result.ok) {
         if (result.fields) setErrors(result.fields as ProfileErrors);
-        showError(t('signup.saveError'));
+        showError(result.error === 'unauthorized' ? t('signup.sessionExpired') : t('signup.saveError'));
         return;
       }
       showSuccess(t('signup.detailsSaved'));
@@ -166,6 +177,8 @@ const Register = () => {
     }
   };
 
+  // The indicator only renders for the numeric steps; the confirm screen hides it.
+  const stepNum: 1 | 2 = step === 'confirm' ? 2 : step;
   const stepIndicator = (
     <div className="flex items-center gap-3 mb-8">
       {[1, 2].map((n) => (
@@ -174,23 +187,23 @@ const Register = () => {
             <span
               className={cn(
                 'w-7 h-7 flex items-center justify-center text-[11px] font-black border',
-                step >= n
+                stepNum >= n
                   ? 'bg-[#C5A059] border-[#C5A059] text-black'
                   : 'border-white/20 text-slate-500',
               )}
             >
-              {step > n ? <Check size={14} /> : n}
+              {stepNum > n ? <Check size={14} /> : n}
             </span>
             <span
               className={cn(
                 'text-[9px] font-bold uppercase tracking-widest',
-                step >= n ? 'text-white' : 'text-slate-600',
+                stepNum >= n ? 'text-white' : 'text-slate-600',
               )}
             >
               {t('signup.stepLabel', { current: n, total: 2 })}
             </span>
           </div>
-          {n === 1 && <div className={cn('flex-1 h-px', step > 1 ? 'bg-[#C5A059]' : 'bg-white/10')} />}
+          {n === 1 && <div className={cn('flex-1 h-px', stepNum > 1 ? 'bg-[#C5A059]' : 'bg-white/10')} />}
         </React.Fragment>
       ))}
     </div>
@@ -239,19 +252,35 @@ const Register = () => {
 
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          {stepIndicator}
+          {step !== 'confirm' && stepIndicator}
 
           <div className="mb-10">
             <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('auth.accessBadge')}</span>
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter">
-              {step === 1 ? t('auth.registerTitle') : t('signup.step2Title')}
+              {step === 1 ? t('auth.registerTitle') : step === 2 ? t('signup.step2Title') : t('auth.checkEmailTitle')}
             </h1>
             <p className="text-slate-500 text-xs mt-2">
-              {step === 1 ? t('auth.registerSubtitle') : t('signup.step2Subtitle')}
+              {step === 1 ? t('auth.registerSubtitle') : step === 2 ? t('signup.step2Subtitle') : t('auth.checkEmailSubtitle', { email })}
             </p>
           </div>
 
-          {step === 1 ? (
+          {step === 'confirm' ? (
+            <div className="space-y-6">
+              <div className="flex items-center gap-4 border border-[#C5A059]/30 bg-[#C5A059]/5 p-5">
+                <Mail className="text-[#C5A059] shrink-0" size={24} />
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  {t('auth.checkEmailBody', { email })}
+                </p>
+              </div>
+              <Link
+                to="/login"
+                state={{ from, plan }}
+                className="w-full flex items-center justify-center bg-[#C5A059] hover:bg-[#B08D48] text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] transition-all"
+              >
+                {t('auth.checkEmailGoToLogin')}
+              </Link>
+            </div>
+          ) : step === 1 ? (
             <form className="space-y-5" onSubmit={handleRegister}>
               <div className="space-y-2">
                 <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('auth.fullName')}</label>

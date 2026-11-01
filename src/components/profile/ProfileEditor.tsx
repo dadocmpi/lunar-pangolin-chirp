@@ -82,7 +82,7 @@ export default function ProfileEditor() {
       const result = await saveProfile(details);
       if (!result.ok) {
         if (result.fields) setErrors(result.fields as ProfileErrors);
-        showError(t("signup.saveError"));
+        showError(result.error === "unauthorized" ? t("signup.sessionExpired") : t("signup.saveError"));
         return;
       }
       showSuccess(t("profile.saved"));
