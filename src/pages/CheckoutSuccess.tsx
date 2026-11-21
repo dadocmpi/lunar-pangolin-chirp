@@ -200,6 +200,10 @@ const CheckoutSuccess = () => {
             {t("checkoutSuccess.activationNotice")}
           </p>
 
+            <div className="p-4 bg-[#D4AF37]/5 border border-[#D4AF37]/30">
+              <p className="text-[11px] text-slate-300 leading-relaxed">{t("onboarding.afterCheckout")}</p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px] font-bold uppercase tracking-widest">
               <div className="p-4 bg-white/[0.02] border border-white/10">
                 <p className="text-slate-500">{t("checkoutSuccess.paymentId")}</p>

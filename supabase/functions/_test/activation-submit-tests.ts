@@ -217,7 +217,9 @@ check("stores only the object path, never a public URL", !submit.includes("getPu
 check("no broker password/cid/secret field is read", !/password|cid|secret/i.test(submit.replace(/\/\/[^\n]*/g, "")));
 check("honours the runtime kill switch (503)", /!config\.enabled[\s\S]{0,120}503/.test(submit));
 check("rate-limits per ip and per user", submit.includes("`ip:${ip}`") && submit.includes("`user:${ctx.user.id}`"));
-check("refuses a duplicate while a decision is pending", submit.includes("isOpenStatus(") && submit.includes("already_pending"));
+check("refuses a duplicate while a decision is pending or active", submit.includes("blocksNewSubmission(") && submit.includes("already_pending") && submit.includes("already_active"));
+check("resolves payment entitlement server-side", submit.includes("resolveEntitlement(") && submit.includes('from("pending_payments")'));
+check("refuses an unentitled user (402)", submit.includes("PAYMENT_NOT_CONFIRMED") && /402/.test(submit));
 check("notifies the owner through the shared module", submit.includes("notifyOwnerInBackground("));
 check(
   "makes no Tradovate API call (only the shared JWT helper is reused)",

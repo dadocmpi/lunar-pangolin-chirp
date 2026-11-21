@@ -23,11 +23,21 @@ import {
 } from "../_shared/activation/config.ts";
 import {
   buildReceiptPath,
+  cleanText,
   validateActivationPayload,
   validateReceiptFile,
 } from "../_shared/activation/limits.ts";
+import {
+  PAYMENT_NOT_CONFIRMED,
+  resolveEntitlement,
+} from "../_shared/activation/entitlement.ts";
+import {
+  auditSourceForMethod,
+  logAccountLinkEvent,
+} from "../_shared/activation/audit.ts";
 import { createRateLimiter } from "../_shared/activation/rateLimit.ts";
-import { isOpenStatus } from "../_shared/activation/status.ts";
+import { blocksNewSubmission } from "../_shared/activation/status.ts";
+import { isTestPaymentMode } from "../_shared/payments-flag.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { requireUser, UnauthorizedError } from "../_shared/tradovate/auth.ts";
 import { corsHeadersFor } from "../_shared/cors.ts";
@@ -101,8 +111,45 @@ serve(async (req) => {
 
   const admin = ctx.admin;
 
-  // One open request at a time: a duplicate submit while a decision is pending
-  // is refused (the customer sees their existing status instead).
+  // -------------------------------------------------------------------------
+  // Payment entitlement — SERVER-SIDE ONLY.
+  //
+  // The browser may name a payment id to disambiguate a customer with several
+  // checkouts, but the row is always read with the service role scoped to the
+  // verified JWT user. The plan key, plan name and payment status come from
+  // that row, never from the request.
+  // -------------------------------------------------------------------------
+  const requestedPaymentId = cleanText(form.get("paymentId"), 60);
+  let paymentQuery = admin
+    .from("pending_payments")
+    .select("id, plan_id, plan_name, status, status_enum, method, created_at, metadata")
+    .eq("user_id", ctx.user.id)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  if (requestedPaymentId) paymentQuery = paymentQuery.eq("id", requestedPaymentId);
+  const { data: paymentRow, error: paymentError } = await paymentQuery.maybeSingle();
+  if (paymentError) return json({ error: "payment_lookup_failed" }, 500);
+
+  const entitlement = resolveEntitlement(paymentRow, {
+    testMode: isTestPaymentMode(),
+  });
+  if (!entitlement.entitled || !entitlement.planKey) {
+    // Never reveal whether the id belongs to another user: the query above is
+    // already scoped to the caller, so a foreign id simply yields no row.
+    return json(
+      {
+        ok: false,
+        error: PAYMENT_NOT_CONFIRMED,
+        reason: entitlement.reason,
+        paymentStatus: entitlement.status,
+      },
+      402,
+    );
+  }
+
+  // One active request at a time: pending, in review, approved or suspended
+  // links block a duplicate submit. A rejected or disconnected link can be
+  // replaced.
   const { data: existing, error: existingError } = await admin
     .from("account_activations")
     .select("id, status")
@@ -111,8 +158,11 @@ serve(async (req) => {
     .limit(1)
     .maybeSingle();
   if (existingError) return json({ error: "lookup_failed" }, 500);
-  if (existing && isOpenStatus(existing.status)) {
-    return json({ error: "already_pending", status: existing.status }, 409);
+  if (existing && blocksNewSubmission(existing.status)) {
+    const error = existing.status === "approved" || existing.status === "suspended"
+      ? "already_active"
+      : "already_pending";
+    return json({ error, status: existing.status }, 409);
   }
 
   // Upload the receipt (non-guessable uuid path, never the original name).
@@ -132,11 +182,18 @@ serve(async (req) => {
     .insert({
       user_id: ctx.user.id,
       firm: payload.value.firmId,
+      // `plan_name` remains the prop-firm plan the customer bought there.
       plan_name: payload.value.planName,
       account_login: payload.value.accountLogin,
       purchase_email: payload.value.purchaseEmail,
       receipt_path: objectPath,
       status: "pending",
+      // Server-derived Braxel package + payment snapshot.
+      braxel_plan_key: entitlement.planKey,
+      braxel_plan_name: entitlement.planName,
+      payment_id: entitlement.paymentId,
+      payment_status: entitlement.status,
+      payment_verified_at: now,
       confirmed_ownership: payload.value.confirmedOwnership,
       confirmed_responsibility: payload.value.confirmedResponsibility,
       confirmed_firm_rules: payload.value.confirmedFirmRules,
@@ -147,6 +204,28 @@ serve(async (req) => {
     .select("id, status")
     .single();
   if (insertError || !inserted) return json({ error: "insert_failed" }, 500);
+
+  // Append-only lifecycle audit. Two events are recorded so the trail shows
+  // both the verified checkout and the onboarding submission.
+  const auditBase = {
+    accountLinkId: inserted.id,
+    userId: ctx.user.id,
+    from: null,
+    to: inserted.status,
+    actor: "user" as const,
+    source: auditSourceForMethod(entitlement.method),
+    at: now,
+  };
+  await logAccountLinkEvent(admin, {
+    ...auditBase,
+    event: "checkout_completed",
+    reason: `Payment ${entitlement.paymentId ?? "unknown"} confirmed for plan ${entitlement.planKey}`,
+  });
+  await logAccountLinkEvent(admin, {
+    ...auditBase,
+    event: "onboarding_submitted",
+    reason: `Account link submitted for firm ${payload.value.firmId}`,
+  });
 
   // Operator notification. The account login and purchase email are not
   // sensitive; no receipt bytes, no credential, is ever put in the email.
@@ -168,5 +247,14 @@ serve(async (req) => {
     idempotencyKey: `activation-submit:${inserted.id}`,
   });
 
-  return json({ ok: true, activationId: inserted.id, status: inserted.status }, 201);
+  return json(
+    {
+      ok: true,
+      activationId: inserted.id,
+      status: inserted.status,
+      braxelPlanKey: entitlement.planKey,
+      paymentStatus: entitlement.status,
+    },
+    201,
+  );
 });

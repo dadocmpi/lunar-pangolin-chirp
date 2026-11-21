@@ -97,7 +97,9 @@ check('review requires an operator', review.includes('requireOperator(req)'));
 check('review returns 403 for a non-operator', /ForbiddenError[\s\S]{0,80}403/.test(review));
 check('review uses the shared state machine', review.includes('canReview(') && review.includes('ACTION_RESULT'));
 check('review rejects an illegal transition (409)', review.includes('invalid_transition'));
-check('review writes the append-only audit log', review.includes('payment_audit_log'));
+check('review writes the append-only audit log', review.includes('logAccountLinkEvent('));
+check('review supports suspend/disconnect/reinstate',
+  review.includes('"suspend"') && review.includes('"disconnect"') && review.includes('"reinstate"'));
 
 console.log('\n[7] Receipts are private, read via a short-lived signed URL');
 const migration = read('supabase/migrations/20261010000000_account_activation.sql');
@@ -126,6 +128,57 @@ check('the connect card is behind tradovate.enabled',
   /tradovate\.enabled && <TradovateConnectCard \/>/.test(dashboard));
 check('the terminal view is behind tradovate.enabled',
   /activeView === 'tradovate' && tradovate\.enabled/.test(dashboard));
+
+console.log('\n[10] Onboarding + managed-account lifecycle');
+check('payment entitlement module exists', has('supabase/functions/_shared/activation/entitlement.ts'));
+check('account-link audit module exists', has('supabase/functions/_shared/activation/audit.ts'));
+check('account-link function exists', has('supabase/functions/account-link/index.ts'));
+check('lifecycle migration exists', has('supabase/migrations/20261122000000_account_link_lifecycle.sql'));
+check('client onboarding resolver exists', has('src/lib/onboarding.ts'));
+
+const entitlement = read('supabase/functions/_shared/activation/entitlement.ts');
+check('entitlement is a pure resolver', entitlement.includes('resolveEntitlement('));
+check('only a confirmed payment is entitled', entitlement.includes('"confirmed"') && entitlement.includes('entitled: true'));
+check('refund and cancellation are not entitled',
+  entitlement.includes('payment_refunded') && entitlement.includes('payment_canceled'));
+
+check('submit reads the payment server-side', submit.includes('from("pending_payments")'));
+check('submit scopes the payment to the JWT user', /\.eq\(\s*["']user_id["'],\s*ctx\.user\.id\s*\)/.test(submit));
+check('submit refuses an unpaid user (402 payment_not_confirmed)',
+  submit.includes('PAYMENT_NOT_CONFIRMED') && /402/.test(submit));
+check('submit never trusts a browser plan or payment status',
+  !/form\.get\(\s*["'](plan_?key|plan_?id|payment_?status|status)["']/.test(submit));
+check('submit blocks a duplicate active link',
+  submit.includes('blocksNewSubmission(') && /409/.test(submit));
+
+const accountLink = code('supabase/functions/account-link/index.ts');
+check('account-link derives the user from the JWT', accountLink.includes('requireUser(req)'));
+check('account-link scopes reads and writes to the JWT user',
+  /\.eq\(\s*["']user_id["'],\s*ctx\.user\.id\s*\)/.test(accountLink));
+check('account-link never reads a body/query user id',
+  !/parsed\.value\.user_?id|searchParams\.get\(\s*["']user_?id["']/.test(accountLink));
+check('account-link is rate limited', accountLink.includes('createRateLimiter('));
+check('account-link resolves CORS per request', accountLink.includes('corsHeadersFor(req)'));
+check('account-link reports execution as unimplemented',
+  accountLink.includes('EXECUTION_CAPABILITY_IMPLEMENTED'));
+
+const featureFlags = read('supabase/functions/_shared/features.ts');
+check('execution kill switch is registered', featureFlags.includes('EXECUTION_CAPABILITY_ENABLED'));
+check('execution is opt-in (only exact "true")',
+  /isExecutionCapabilityEnabled[\s\S]{0,160}=== "true"/.test(featureFlags));
+check('execution implementation flag is false',
+  /EXECUTION_CAPABILITY_IMPLEMENTED\s*=\s*false/.test(featureFlags));
+check('no order/liquidation/copy-trade function was added',
+  !['place-order', 'orders', 'liquidate', 'copy-trade', 'payout', 'ach', 'wire']
+    .some((name) => has(`supabase/functions/${name}/index.ts`)));
+
+const lifecycle = read('supabase/migrations/20261122000000_account_link_lifecycle.sql');
+check('suspended and disconnected statuses are allowed',
+  /'suspended','disconnected'/.test(lifecycle));
+check('server-derived package/payment columns exist',
+  lifecycle.includes('braxel_plan_key') && lifecycle.includes('payment_id') && lifecycle.includes('payment_status'));
+check('no broker credential column is added',
+  !/password|cid|secret/i.test(sqlCode('supabase/migrations/20261122000000_account_link_lifecycle.sql')));
 
 console.log(
   failures === 0

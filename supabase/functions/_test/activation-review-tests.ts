@@ -12,6 +12,7 @@
 import {
   ACTION_RESULT,
   ACTIVATION_STATUSES,
+  blocksNewSubmission,
   canReview,
   isActivationStatus,
   isOpenStatus,
@@ -49,13 +50,15 @@ check("string meta is not", isOperatorMeta("operator") === false);
 
 // ---------------------------------------------------------------------------
 console.log("\n[2] Status vocabulary is exactly the client-visible set");
-check("five statuses", ACTIVATION_STATUSES.length === 5);
+check("seven statuses", ACTIVATION_STATUSES.length === 7);
 check(
   "isActivationStatus accepts a real status",
   isActivationStatus("approved"),
 );
 check("isActivationStatus rejects a bogus status", isActivationStatus("cancelled") === false);
 check("isActivationStatus rejects a non-string", isActivationStatus(7) === false);
+check("suspended is a status", isActivationStatus("suspended"));
+check("disconnected is a status", isActivationStatus("disconnected"));
 
 // ---------------------------------------------------------------------------
 console.log("\n[3] Every action maps to exactly one status");
@@ -63,18 +66,32 @@ check("start_review -> in_review", ACTION_RESULT.start_review === "in_review");
 check("approve -> approved", ACTION_RESULT.approve === "approved");
 check("reject -> rejected", ACTION_RESULT.reject === "rejected");
 check("request_info -> info_requested", ACTION_RESULT.request_info === "info_requested");
+check("suspend -> suspended", ACTION_RESULT.suspend === "suspended");
+check("disconnect -> disconnected", ACTION_RESULT.disconnect === "disconnected");
+check("reinstate -> approved", ACTION_RESULT.reinstate === "approved");
 
 // ---------------------------------------------------------------------------
 console.log("\n[4] Legal transitions only");
-const actions: ReviewAction[] = ["start_review", "approve", "reject", "request_info"];
-// Exhaustive truth table: pending/in_review/info_requested can move; terminal
-// states are frozen.
+const actions: ReviewAction[] = [
+  "start_review",
+  "approve",
+  "reject",
+  "request_info",
+  "suspend",
+  "disconnect",
+  "reinstate",
+];
+// Exhaustive truth table: pending/in_review/info_requested can move; an
+// approved link can be suspended/disconnected; a suspended link can be
+// reinstated or disconnected; rejected/disconnected are terminal.
 const allowed: Record<ActivationStatus, ActivationStatus[]> = {
   pending: ["in_review", "approved", "rejected", "info_requested"],
   in_review: ["approved", "rejected", "info_requested"],
   info_requested: ["in_review", "approved", "rejected"],
-  approved: [],
+  approved: ["suspended", "disconnected"],
+  suspended: ["approved", "disconnected"],
   rejected: [],
+  disconnected: [],
 };
 for (const from of ACTIVATION_STATUSES) {
   for (const to of ACTIVATION_STATUSES) {
@@ -84,8 +101,8 @@ for (const from of ACTIVATION_STATUSES) {
 }
 // A terminal state can never be re-opened by any action.
 for (const a of actions) {
-  check(`approved cannot be re-opened by ${a}`, canReview("approved", ACTION_RESULT[a]) === false);
   check(`rejected cannot be re-opened by ${a}`, canReview("rejected", ACTION_RESULT[a]) === false);
+  check(`disconnected cannot be re-opened by ${a}`, canReview("disconnected", ACTION_RESULT[a]) === false);
 }
 
 // ---------------------------------------------------------------------------
@@ -95,6 +112,14 @@ check("in_review is open", isOpenStatus("in_review"));
 check("info_requested is not open", isOpenStatus("info_requested") === false);
 check("approved is not open", isOpenStatus("approved") === false);
 check("rejected is not open", isOpenStatus("rejected") === false);
+check("suspended is not open", isOpenStatus("suspended") === false);
+check("disconnected is not open", isOpenStatus("disconnected") === false);
+check("pending blocks a new submission", blocksNewSubmission("pending"));
+check("in_review blocks a new submission", blocksNewSubmission("in_review"));
+check("approved blocks a new submission", blocksNewSubmission("approved"));
+check("suspended blocks a new submission", blocksNewSubmission("suspended"));
+check("rejected allows a new submission", blocksNewSubmission("rejected") === false);
+check("disconnected allows a new submission", blocksNewSubmission("disconnected") === false);
 
 // ---------------------------------------------------------------------------
 console.log("\n[6] Operator note limits");
@@ -115,8 +140,9 @@ check("401 without a JWT", review.includes("UnauthorizedError") && /401/.test(re
 check("reads app_metadata from the admin API, not the token", review.includes("auth.admin") && review.includes("getUserById"));
 check("uses the shared state machine", review.includes("canReview(") && review.includes("ACTION_RESULT"));
 check("illegal transition -> 409", review.includes("invalid_transition") && /409/.test(review));
-check("reject/request_info require a note", review.includes("note_required"));
-check("writes the append-only audit log", review.includes("payment_audit_log") && review.includes('payment_table: "account_activations"'));
+check("reject/request_info/suspend/disconnect require a note", review.includes("note_required") && review.includes('action === "suspend"') && review.includes('action === "disconnect"'));
+check("writes the append-only audit log", review.includes("logAccountLinkEvent("));
+check("records approval, rejection, suspension and disconnection events", review.includes('"approved", "connected"') && review.includes('"rejected"') && review.includes('"suspended"') && review.includes('"disconnected"'));
 check("receipt via a SHORT-LIVED signed URL", review.includes("createSignedUrl(") && review.includes("SIGNED_URL_TTL_SECONDS"));
 check("signed URL TTL is short (<= 600s)", /SIGNED_URL_TTL_SECONDS\s*=\s*(\d+)/.test(review) && Number(/SIGNED_URL_TTL_SECONDS\s*=\s*(\d+)/.exec(review)![1]) <= 600);
 check("emails the customer through the shared userEmail module", review.includes("sendUserEmailInBackground("));
