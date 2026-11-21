@@ -10,7 +10,7 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Wrench, Radio, ShieldAlert, ExternalLink } from "lucide-react";
+import { CheckCircle2, Wrench, Radio, ShieldAlert, ExternalLink, Loader2, Unplug } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { formatUsd } from "@/lib/plans";
@@ -20,9 +20,11 @@ import type { ActivationRow } from "@/lib/activationStatus";
 interface Props {
   activation: ActivationRow | null;
   firmName: string;
+  onDisconnect?: () => void;
+  disconnecting?: boolean;
 }
 
-const PlanActiveChecklist = ({ activation, firmName }: Props) => {
+const PlanActiveChecklist = ({ activation, firmName, onDisconnect, disconnecting }: Props) => {
   const { t } = useTranslation();
   const { config } = useActivationConfig();
 
@@ -46,6 +48,14 @@ const PlanActiveChecklist = ({ activation, firmName }: Props) => {
             {firmName} · {activation.plan_name} · {activation.account_login}
           </p>
         )}
+        {activation?.braxel_plan_name && (
+          <p className="text-[10px] text-slate-500 mt-2 uppercase tracking-widest">
+            {t("onboarding.planLabel")}: {activation.braxel_plan_name}
+          </p>
+        )}
+        <p className="inline-block mt-4 px-3 py-1 text-[9px] font-bold uppercase tracking-widest border border-emerald-500/30 text-emerald-400">
+          {t("onboarding.connectedBadge")}
+        </p>
         {config.plan.priceCents > 0 && (
           <p className="text-[11px] text-slate-400 mt-3">
             {formatUsd(config.plan.priceCents / 100)}<span className="text-slate-500">{t("accounts.perMonth")}</span>
@@ -110,6 +120,17 @@ const PlanActiveChecklist = ({ activation, firmName }: Props) => {
             <ExternalLink size={14} className="me-2" /> {t("planActive.buyAnother")}
           </Button>
         </Link>
+        {onDisconnect && (
+          <Button
+            onClick={onDisconnect}
+            disabled={disconnecting}
+            variant="outline"
+            className="border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-none h-12 px-6 text-[10px] font-black uppercase tracking-widest"
+          >
+            {disconnecting ? <Loader2 size={14} className="me-2 animate-spin" /> : <Unplug size={14} className="me-2" />}
+            {t("onboarding.disconnectCta")}
+          </Button>
+        )}
       </div>
     </div>
   );

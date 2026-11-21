@@ -188,6 +188,25 @@ console.log("\n[2] Customer submits an activation");
     if (u.startsWith("/auth/v1/token")) return body(SESSION);
     if (u.startsWith("/auth/v1/logout")) return req.respond({ status: 204, body: "" });
     if (u.startsWith("/functions/v1/activation-config")) return body(ACTIVATION_CONFIG);
+    // Onboarding status: paid, no account link yet.
+    if (u.startsWith("/functions/v1/account-link")) {
+      return body({
+        ok: true,
+        enabled: true,
+        execution: { enabled: false, implemented: false },
+        latest: null,
+        history: [],
+        entitlement: {
+          entitled: true,
+          reason: "confirmed",
+          paymentId: "pay_mock_1",
+          planKey: "professional",
+          planName: "Professional",
+          status: "confirmed",
+        },
+        paymentRequired: false,
+      });
+    }
     // Tradovate is OFF: the status call reports enabled:false and the card must hide.
     if (u.startsWith("/functions/v1/tradovate-status")) return body({ enabled: false, integrations: [] });
     if (u.startsWith("/functions/v1/activation-submit")) {
@@ -396,6 +415,42 @@ console.log("\n[4] Customer sees the approved status");
     if (u.startsWith("/auth/v1/logout")) return req.respond({ status: 204, body: "" });
     if (u.startsWith("/functions/v1/activation-config")) return body(ACTIVATION_CONFIG);
     if (u.startsWith("/functions/v1/tradovate-status")) return body({ enabled: false, integrations: [] });
+    // Onboarding status: paid + approved account link.
+    if (u.startsWith("/functions/v1/account-link")) {
+      return body({
+        ok: true,
+        enabled: true,
+        execution: { enabled: false, implemented: false },
+        latest: {
+          id: "aaaaaaaa-0000-0000-0000-000000000001",
+          firm: "tradeify",
+          plan_name: "50K Evaluation",
+          braxel_plan_key: "professional",
+          braxel_plan_name: "Professional",
+          payment_id: "pay_mock_1",
+          payment_status: "confirmed",
+          account_login: "ABC-12345",
+          purchase_email: "buyer@example.com",
+          receipt_path: "11111111-1111-1111-1111-111111111111/receipt.png",
+          status: "approved",
+          operator_note: "Welcome aboard.",
+          submitted_at: "2026-10-24T12:00:00Z",
+          reviewed_at: "2026-10-24T13:00:00Z",
+          connected_at: "2026-10-24T13:00:00Z",
+          created_at: "2026-10-24T12:00:00Z",
+        },
+        history: [],
+        entitlement: {
+          entitled: true,
+          reason: "confirmed",
+          paymentId: "pay_mock_1",
+          planKey: "professional",
+          planName: "Professional",
+          status: "confirmed",
+        },
+        paymentRequired: false,
+      });
+    }
     if (u.startsWith("/rest/v1/services")) return body([]);
     if (u.startsWith("/rest/v1/profiles")) return body([{ id: USER.id, kyc_status: null }]);
     if (u.startsWith("/rest/v1/kyc_submissions")) return body([]);

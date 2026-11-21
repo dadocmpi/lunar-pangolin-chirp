@@ -107,7 +107,8 @@ function defaultEnv() {
     TRADOVATE_ENABLED: Deno.env.get("TRADOVATE_ENABLED") ?? void 0,
     AI_KYC_ENABLED: Deno.env.get("AI_KYC_ENABLED") ?? void 0,
     WITHDRAWAL_KYC_GATE_ENABLED: Deno.env.get("WITHDRAWAL_KYC_GATE_ENABLED") ?? void 0,
-    ACTIVATION_FLOW_ENABLED: Deno.env.get("ACTIVATION_FLOW_ENABLED") ?? void 0
+    ACTIVATION_FLOW_ENABLED: Deno.env.get("ACTIVATION_FLOW_ENABLED") ?? void 0,
+    EXECUTION_CAPABILITY_ENABLED: Deno.env.get("EXECUTION_CAPABILITY_ENABLED") ?? void 0
   };
 }
 

@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-activation-rls test-migrations test-security typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -48,6 +48,12 @@ test-profile:
 test-activation:
 	deno run -A supabase/functions/_test/activation-submit-tests.ts
 	deno run -A supabase/functions/_test/activation-review-tests.ts
+	deno run -A supabase/functions/_test/onboarding-tests.ts
+
+# Customer onboarding + managed-account lifecycle (entitlement, duplicate,
+# suspended/disconnected, execution kill switch, refund/cancel).
+test-onboarding:
+	deno run -A supabase/functions/_test/onboarding-tests.ts
 
 # Account-activation RLS + private receipt bucket test. Needs Docker.
 test-activation-rls:

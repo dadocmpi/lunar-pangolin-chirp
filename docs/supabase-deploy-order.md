@@ -74,12 +74,13 @@ automatic deploys.
    | 9 | `20261011000000_client_profiles.sql` | profile contact/billing columns, RLS, signup trigger |
    | 10 | `20261012000000_secure_profile_and_services_rls.sql` | profiles/services RLS hardening |
    | 11 | `20261121000000_profile_consent_versions.sql` | consent version evidence + `legal_policy_versions` |
+   | 12 | `20261122000000_account_link_lifecycle.sql` | account-link states + server payment linkage (additive) |
 
    `make test-migrations` (`supabase/functions/_test/migrations/apply-order.sh`)
    applies exactly these, in this order, on a fresh production-baseline Postgres
    and then re-applies them to prove idempotency.
 3. Confirm the migration head matches: `supabase migration list --linked` (the
-   head must be `20261121000000`).
+   head must be `20261122000000`).
 4. **Deploy functions** — the one-click release does this for you: Actions ->
    **Supabase release (migrations + functions + smoke)** -> Run workflow. That
    single manual workflow runs `supabase db push` (step 1) then

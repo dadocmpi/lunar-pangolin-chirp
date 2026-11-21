@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, RefreshCw, FileText, X } from "lucide-react";
 import { showError, showSuccess } from "@/utils/toast";
 import { cn } from "@/lib/utils";
-import { ACTIVATION_STATUSES, type ActivationStatus } from "@/lib/activationStatus";
+import { ACTIVATION_STATUSES, canReview, statusLabelKey, type ActivationStatus } from "@/lib/activationStatus";
 import { useActivationConfig } from "@/lib/activationConfig";
 
 interface Row {
@@ -30,6 +30,10 @@ interface Row {
   user_id: string;
   firm: string;
   plan_name: string;
+  braxel_plan_key: string | null;
+  braxel_plan_name: string | null;
+  payment_id: string | null;
+  payment_status: string | null;
   account_login: string;
   purchase_email: string;
   receipt_path: string | null;
@@ -37,8 +41,22 @@ interface Row {
   operator_note: string | null;
   submitted_at: string | null;
   reviewed_at: string | null;
+  connected_at: string | null;
+  suspended_at: string | null;
+  suspended_reason: string | null;
+  disconnected_at: string | null;
+  disconnected_reason: string | null;
   created_at: string;
 }
+
+type ReviewAction =
+  | "start_review"
+  | "approve"
+  | "reject"
+  | "request_info"
+  | "suspend"
+  | "disconnect"
+  | "reinstate";
 
 const OperatorActivations = () => {
   const { t } = useTranslation();
@@ -59,7 +77,7 @@ const OperatorActivations = () => {
     setLoading(true);
     let query = supabase
       .from("account_activations")
-      .select("id, user_id, firm, plan_name, account_login, purchase_email, receipt_path, status, operator_note, submitted_at, reviewed_at, created_at")
+      .select("id, user_id, firm, plan_name, braxel_plan_key, braxel_plan_name, payment_id, payment_status, account_login, purchase_email, receipt_path, status, operator_note, submitted_at, reviewed_at, connected_at, suspended_at, suspended_reason, disconnected_at, disconnected_reason, created_at")
       .order("created_at", { ascending: false });
     if (firmFilter !== "all") query = query.eq("firm", firmFilter);
     if (statusFilter === "open") query = query.in("status", ["pending", "in_review", "info_requested"]);
@@ -100,8 +118,11 @@ const OperatorActivations = () => {
     }
   };
 
-  const review = async (row: Row, action: "start_review" | "approve" | "reject" | "request_info") => {
-    if ((action === "reject" || action === "request_info") && !noteDraft.trim()) {
+  const review = async (row: Row, action: ReviewAction) => {
+    if (
+      (action === "reject" || action === "request_info" ||
+        action === "suspend" || action === "disconnect") && !noteDraft.trim()
+    ) {
       showError(t("operatorActivations.errors.note_required"));
       return;
     }
@@ -180,7 +201,7 @@ const OperatorActivations = () => {
               <option value="open" className="bg-[#080B12]">{t("operatorActivations.statusOpen")}</option>
               <option value="all" className="bg-[#080B12]">{t("operatorActivations.allStatuses")}</option>
               {ACTIVATION_STATUSES.map((s) => (
-                <option key={s} value={s} className="bg-[#080B12]">{t(`activation.status.${s}`)}</option>
+                <option key={s} value={s} className="bg-[#080B12]">{t(statusLabelKey(s))}</option>
               ))}
             </select>
           </div>
@@ -200,6 +221,9 @@ const OperatorActivations = () => {
               <div key={row.id} className="p-6 bg-[#080B12] border border-white/10 flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-widest">{row.firm} · {row.plan_name}</p>
+                  {row.braxel_plan_name && (
+                    <p className="text-[9px] text-[#D4AF37] mt-1 uppercase tracking-widest">{row.braxel_plan_name}</p>
+                  )}
                   <p className="text-[10px] text-slate-500 mt-1">{row.account_login} · {row.purchase_email}</p>
                   <p className="text-[9px] text-slate-600 mt-1">{row.submitted_at ?? row.created_at}</p>
                 </div>
@@ -209,9 +233,11 @@ const OperatorActivations = () => {
                     row.status === "approved" ? "border-emerald-500/30 text-emerald-500"
                       : row.status === "rejected" ? "border-red-500/30 text-red-500"
                       : row.status === "info_requested" ? "border-orange-500/30 text-orange-400"
+                      : row.status === "suspended" ? "border-orange-500/30 text-orange-400"
+                      : row.status === "disconnected" ? "border-slate-500/30 text-slate-400"
                       : "border-yellow-500/30 text-yellow-500",
                   )}>
-                    {t(`activation.status.${row.status}`)}
+                    {t(statusLabelKey(row.status))}
                   </span>
                   <Button onClick={() => openDetail(row)} className="bg-white/10 hover:bg-white/20 text-white rounded-none h-10 px-4 text-[10px] font-black uppercase tracking-widest">
                     {t("operatorActivations.review")}
@@ -234,6 +260,15 @@ const OperatorActivations = () => {
             <div className="p-6 space-y-4">
               <Detail label={t("activation.firmLabel")} value={detail.row.firm} />
               <Detail label={t("activation.planNameLabel")} value={detail.row.plan_name} />
+              {detail.row.braxel_plan_name && (
+                <Detail label={t("onboarding.planLabel")} value={detail.row.braxel_plan_name} />
+              )}
+              {detail.row.payment_status && (
+                <Detail label={t("onboarding.paymentTitle")} value={detail.row.payment_status} />
+              )}
+              {detail.row.payment_id && (
+                <Detail label={t("onboarding.paymentIdLabel")} value={detail.row.payment_id} />
+              )}
               <Detail label={t("activation.accountLoginLabel")} value={detail.row.account_login} />
               <Detail label={t("activation.purchaseEmailLabel")} value={detail.row.purchase_email} />
 
@@ -264,7 +299,7 @@ const OperatorActivations = () => {
               </div>
 
               <div className="flex flex-wrap gap-3 pt-2">
-                {detail.row.status === "pending" && (
+                {canReview(detail.row.status, "in_review") && (
                   <Button
                     disabled={busy === detail.row.id}
                     onClick={() => review(detail.row, "start_review")}
@@ -273,27 +308,60 @@ const OperatorActivations = () => {
                     {t("operatorActivations.startReview")}
                   </Button>
                 )}
-                <Button
-                  disabled={busy === detail.row.id}
-                  onClick={() => review(detail.row, "approve")}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
-                >
-                  {t("operatorActivations.approve")}
-                </Button>
-                <Button
-                  disabled={busy === detail.row.id}
-                  onClick={() => review(detail.row, "request_info")}
-                  className="bg-orange-600 hover:bg-orange-500 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
-                >
-                  {t("operatorActivations.requestInfo")}
-                </Button>
-                <Button
-                  disabled={busy === detail.row.id}
-                  onClick={() => review(detail.row, "reject")}
-                  className="bg-red-600 hover:bg-red-500 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
-                >
-                  {t("operatorActivations.reject")}
-                </Button>
+                {detail.row.status !== "suspended" && canReview(detail.row.status, "approved") && (
+                  <Button
+                    disabled={busy === detail.row.id}
+                    onClick={() => review(detail.row, "approve")}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
+                  >
+                    {t("operatorActivations.approve")}
+                  </Button>
+                )}
+                {detail.row.status === "suspended" && (
+                  <Button
+                    disabled={busy === detail.row.id}
+                    onClick={() => review(detail.row, "reinstate")}
+                    className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
+                  >
+                    {t("onboarding.operator.reinstate")}
+                  </Button>
+                )}
+                {canReview(detail.row.status, "info_requested") && (
+                  <Button
+                    disabled={busy === detail.row.id}
+                    onClick={() => review(detail.row, "request_info")}
+                    className="bg-orange-600 hover:bg-orange-500 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
+                  >
+                    {t("operatorActivations.requestInfo")}
+                  </Button>
+                )}
+                {canReview(detail.row.status, "suspended") && (
+                  <Button
+                    disabled={busy === detail.row.id}
+                    onClick={() => review(detail.row, "suspend")}
+                    className="bg-orange-500/20 hover:bg-orange-500/30 text-orange-300 rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
+                  >
+                    {t("onboarding.operator.suspend")}
+                  </Button>
+                )}
+                {canReview(detail.row.status, "disconnected") && (
+                  <Button
+                    disabled={busy === detail.row.id}
+                    onClick={() => review(detail.row, "disconnect")}
+                    className="bg-slate-600 hover:bg-slate-500 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
+                  >
+                    {t("onboarding.operator.disconnect")}
+                  </Button>
+                )}
+                {canReview(detail.row.status, "rejected") && (
+                  <Button
+                    disabled={busy === detail.row.id}
+                    onClick={() => review(detail.row, "reject")}
+                    className="bg-red-600 hover:bg-red-500 text-white rounded-none h-11 px-5 text-[10px] font-black uppercase tracking-widest"
+                  >
+                    {t("operatorActivations.reject")}
+                  </Button>
+                )}
               </div>
             </div>
           </div>

@@ -8,9 +8,12 @@
 // ============================================================================
 
 import {
+  EXECUTION_CAPABILITY_IMPLEMENTED,
+  executionDisabledBody,
   featureDisabledBody,
   flagEnabled,
   isAiKycEnabled,
+  isExecutionCapabilityEnabled,
   isTradovateEnabled,
   isWithdrawalKycGateEnabled,
 } from "../_shared/features.ts";
@@ -59,6 +62,17 @@ const body = featureDisabledBody("tradovate");
 check("has error=feature_disabled", body.error === "feature_disabled");
 check("names the feature", body.feature === "tradovate");
 check("no secret-ish keys", !/key|token|password|secret/i.test(JSON.stringify(body)));
+
+console.log("\n[3b] Execution capability is opt-in and unimplemented");
+check("unset -> disabled", isExecutionCapabilityEnabled({}) === false);
+check("empty -> disabled", isExecutionCapabilityEnabled({ EXECUTION_CAPABILITY_ENABLED: "" }) === false);
+check("\"false\" -> disabled", isExecutionCapabilityEnabled({ EXECUTION_CAPABILITY_ENABLED: "false" }) === false);
+check("\"TRUE\" -> disabled (case-sensitive)", isExecutionCapabilityEnabled({ EXECUTION_CAPABILITY_ENABLED: "TRUE" }) === false);
+check("\"true\" -> enabled", isExecutionCapabilityEnabled({ EXECUTION_CAPABILITY_ENABLED: "true" }) === true);
+check("no implementation ships", EXECUTION_CAPABILITY_IMPLEMENTED === false);
+const execBody = executionDisabledBody();
+check("execution body is fail-closed", execBody.error === "execution_disabled" && execBody.ok === false);
+check("execution body reports unimplemented", execBody.implemented === false);
 
 console.log("\n[4] Wiring: every Tradovate endpoint honours TRADOVATE_ENABLED");
 const connect = read("supabase/functions/tradovate-connect/index.ts");

@@ -220,9 +220,12 @@ check('payment: canceled is terminal', plans.canTransition('canceled', 'confirme
 const activationView = stripComments(read('src/components/ActivateAccountView.tsx'));
 check('activation UI keeps no client-side state',
   !/localStorage|sessionStorage|location\.search|useSearchParams/.test(activationView));
-check('activation UI reads the row from the database', activationView.includes('.from("account_activations")'));
+check('activation UI reads the row from the server endpoint',
+  activationView.includes('functionsUrl("account-link")'));
+check('activation UI never reads activation rows directly',
+  !/\.from\(\s*["']account_activations["']\s*\)/.test(activationView));
 check('activation UI gates the active plan on the server status',
-  /isApproved\(latest\?\.status\)/.test(activationView));
+  activationView.includes('resolveOnboardingStep(') && /step === ["']active["']/.test(activationView));
 
 const activationMigration = read('supabase/migrations/20261010000000_account_activation.sql');
 check('account_activations: owner-only read',

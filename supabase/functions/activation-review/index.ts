@@ -29,6 +29,7 @@ import {
 } from "../_shared/activation/status.ts";
 import { ACTIVATION_FIELD_LIMITS, cleanText } from "../_shared/activation/limits.ts";
 import { activationConfigFromEnv } from "../_shared/activation/config.ts";
+import { logAccountLinkEvent } from "../_shared/activation/audit.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { sendUserEmailInBackground } from "../_shared/userEmail.ts";
 import { readJsonBody } from "../_shared/http.ts";
@@ -45,6 +46,9 @@ const REVIEW_ACTIONS: readonly ReviewAction[] = [
   "approve",
   "reject",
   "request_info",
+  "suspend",
+  "disconnect",
+  "reinstate",
 ];
 
 function isReviewAction(value: unknown): value is ReviewAction {
@@ -119,13 +123,16 @@ serve(async (req) => {
   if (!isReviewAction(action)) return json({ error: "invalid_action" }, 400);
 
   const note = cleanText(body.note, ACTIVATION_FIELD_LIMITS.operatorNote);
-  if ((action === "reject" || action === "request_info") && !note) {
+  if (
+    (action === "reject" || action === "request_info" ||
+      action === "suspend" || action === "disconnect") && !note
+  ) {
     return json({ error: "note_required" }, 400);
   }
 
   const { data: row, error: rowError } = await ctx.admin
     .from("account_activations")
-    .select("id, user_id, status, firm, plan_name, account_login")
+    .select("id, user_id, status, firm, plan_name, account_login, braxel_plan_name")
     .eq("id", id)
     .maybeSingle();
   if (rowError) return json({ error: "lookup_failed" }, 500);
@@ -138,32 +145,68 @@ serve(async (req) => {
   }
 
   const now = new Date().toISOString();
+  const patch: Record<string, unknown> = {
+    status: to,
+    operator_note: note || null,
+    reviewed_at: now,
+    reviewed_by: ctx.user.id,
+    updated_at: now,
+  };
+  if (to === "approved") patch.connected_at = now;
+  if (to === "suspended") {
+    patch.suspended_at = now;
+    patch.suspended_reason = note || null;
+  }
+  if (to === "disconnected") {
+    patch.disconnected_at = now;
+    patch.disconnected_reason = note || null;
+  }
+
   const { error: updateError } = await ctx.admin
     .from("account_activations")
-    .update({
-      status: to,
-      operator_note: note || null,
-      reviewed_at: now,
-      reviewed_by: ctx.user.id,
-      updated_at: now,
-    })
+    .update(patch)
     .eq("id", id);
   if (updateError) return json({ error: "update_failed" }, 500);
 
-  // Append-only audit trail. A failure here never rolls back the decision.
-  const { error: auditError } = await ctx.admin.from("payment_audit_log").insert({
-    payment_table: "account_activations",
-    payment_id: id,
-    user_id: row.user_id,
-    actor: "operator",
-    source: "admin",
-    event_id: `activation-review:${id}:${action}:${now}`,
-    previous_status: from,
-    new_status: to,
-    reason: `Activation ${action} by operator ${ctx.user.id}`.slice(0, 200),
-    created_at: now,
-  });
-  if (auditError) console.error("activation audit log failed", { id, action });
+  // Append-only lifecycle audit. Approving connects the link; reinstating a
+  // suspended link reconnects it. A failure never rolls back the decision.
+  const events: Array<"in_review" | "info_requested" | "approved" | "rejected" | "connected" | "suspended" | "disconnected" | "reinstated"> = [];
+  switch (action) {
+    case "approve":
+      events.push("approved", "connected");
+      break;
+    case "reinstate":
+      events.push("reinstated", "connected");
+      break;
+    case "reject":
+      events.push("rejected");
+      break;
+    case "suspend":
+      events.push("suspended");
+      break;
+    case "disconnect":
+      events.push("disconnected");
+      break;
+    case "start_review":
+      events.push("in_review");
+      break;
+    case "request_info":
+      events.push("info_requested");
+      break;
+  }
+  for (const event of events) {
+    await logAccountLinkEvent(ctx.admin, {
+      accountLinkId: id,
+      userId: row.user_id,
+      event,
+      from,
+      to,
+      actor: "operator",
+      source: "admin",
+      reason: `Account link ${action} by operator ${ctx.user.id}`,
+      at: now,
+    });
+  }
 
   // Notify the owner and the customer. Both are fire-and-forget.
   notifyOwnerInBackground({
@@ -191,7 +234,7 @@ serve(async (req) => {
 
 function customerEmail(
   to: ActivationStatus,
-  row: { firm: string; plan_name: string },
+  row: { firm: string; plan_name: string; braxel_plan_name?: string | null },
   note: string,
   email: string | null,
 ) {
@@ -199,6 +242,7 @@ function customerEmail(
     ["Mesa", row.firm],
     ["Plano", row.plan_name],
   ];
+  if (row.braxel_plan_name) details.push(["Pacote Braxel", row.braxel_plan_name]);
   if (note) details.push(["Observação", note]);
 
   const copy: Record<ActivationStatus, { subject: string; heading: string; body: string }> = {
@@ -226,6 +270,16 @@ function customerEmail(
       subject: "Ativação recusada — Braxel Markets",
       heading: "Ativação recusada",
       body: "A sua solicitação de ativação foi recusada. Veja a observação abaixo e, se aplicável, envie uma nova solicitação.",
+    },
+    suspended: {
+      subject: "Vínculo de conta suspenso — Braxel Markets",
+      heading: "Vínculo de conta suspenso",
+      body: "O vínculo da sua conta foi suspenso. Veja a observação abaixo e contacte o suporte para mais detalhes.",
+    },
+    disconnected: {
+      subject: "Vínculo de conta desligado — Braxel Markets",
+      heading: "Vínculo de conta desligado",
+      body: "O vínculo da sua conta foi desligado. Se ainda tiver um pagamento confirmado, pode enviar um novo pedido no painel.",
     },
   };
 
