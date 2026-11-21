@@ -32,12 +32,8 @@ import {
   isPaymentsEnabled,
   paymentsDisabledBody,
 } from "../_shared/payments-flag.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { readJsonBody, safeEqual } from "../_shared/http.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 // ---------------------------------------------------------------------------
 // Gate helpers — fail-closed
@@ -56,6 +52,7 @@ function getAdminSecret(): string {
 // ---------------------------------------------------------------------------
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -79,21 +76,20 @@ serve(async (req) => {
   // -------------------------------------------------------------------------
   // Parse body
   // -------------------------------------------------------------------------
-  let body: {
+  const parsed = await readJsonBody<{
     paymentId?: string;
     txHash?: string;
     adminSecret?: string;
     network?: string;
     amountCents?: number;
-  };
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "invalid_json" }), {
-      status: 400,
+  }>(req);
+  if (!parsed.ok) {
+    return new Response(JSON.stringify({ error: parsed.error }), {
+      status: parsed.error === "payload_too_large" ? 413 : 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+  const body = parsed.value;
 
   const { paymentId, txHash, adminSecret, network, amountCents } = body;
 
@@ -124,7 +120,8 @@ serve(async (req) => {
     );
   }
 
-  if (adminSecret !== adminSecretValue) {
+  // Constant-time compare: the secret is a shared credential.
+  if (!safeEqual(adminSecret, adminSecretValue)) {
     return new Response(JSON.stringify({ error: "unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },

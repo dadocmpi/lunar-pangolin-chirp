@@ -2,15 +2,11 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { getPlan } from "../_shared/plans.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { corsHeadersFor } from "../_shared/cors.ts";
+import { readJsonBody } from "../_shared/http.ts";
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -60,19 +56,15 @@ serve(async (req) => {
     });
   }
 
-  // Parse request body
-  let body: Record<string, unknown>;
-  try {
-    const parsed = await req.json();
-    body = typeof parsed === "object" && parsed !== null
-      ? parsed as Record<string, unknown>
-      : {};
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400,
+  // Parse request body (bounded: public form, generous for the address fields)
+  const parsedBody = await readJsonBody<Record<string, unknown>>(req, 32 * 1024);
+  if (!parsedBody.ok) {
+    return new Response(JSON.stringify({ error: parsedBody.error }), {
+      status: parsedBody.error === "payload_too_large" ? 413 : 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+  const body = parsedBody.value;
 
   // Extract and validate required fields
   const {

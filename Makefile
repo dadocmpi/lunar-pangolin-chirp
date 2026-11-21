@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-activation-rls test-migrations typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-activation-rls test-migrations test-security typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -32,6 +32,11 @@ test-tradovate:
 	deno run -A supabase/functions/_test/activation-submit-tests.ts
 	deno run -A supabase/functions/_test/activation-review-tests.ts
 	deno run -A supabase/functions/_test/profile-tests.ts
+
+# Security contract tests (signed KYC tokens, bounded bodies, CORS allowlist,
+# rate limiter, operator-only endpoints). No network, no DB, no secrets.
+test-security:
+	node scripts/check-security-contract.mjs
 
 # Client-profile unit tests (two-step signup validation, billing sanitization,
 # Stripe customer wiring, no password/card storage). No network, no DB.

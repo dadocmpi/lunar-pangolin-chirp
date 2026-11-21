@@ -7,12 +7,8 @@ import {
 import { getPlan, type PaymentStatus } from "../_shared/option_a/plans.ts";
 import { logPaymentEvent } from "../_shared/option_a/audit.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { readJsonBody, safeEqual } from "../_shared/http.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 /**
  * Test-Only Admin Confirmation.
@@ -35,6 +31,7 @@ const corsHeaders = {
  *  8. Every status transition writes a row to the audit log.
  */
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -82,15 +79,18 @@ serve(async (req) => {
   // ---------------------------------------------------------------------
   // Parse body
   // ---------------------------------------------------------------------
-  let body: { paymentId?: string; testSecret?: string; action?: string };
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "invalid_json" }), {
-      status: 400,
+  const parsed = await readJsonBody<{
+    paymentId?: string;
+    testSecret?: string;
+    action?: string;
+  }>(req);
+  if (!parsed.ok) {
+    return new Response(JSON.stringify({ error: parsed.error }), {
+      status: parsed.error === "payload_too_large" ? 413 : 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+  const body = parsed.value;
   const { paymentId, testSecret, action } = body;
   if (!paymentId || !testSecret || !action) {
     return new Response(
@@ -113,7 +113,8 @@ serve(async (req) => {
       },
     );
   }
-  if (testSecret !== testSecretValue) {
+  // Constant-time compare: the secret is a shared credential.
+  if (!safeEqual(testSecret, testSecretValue)) {
     return new Response(
       JSON.stringify({ error: "unauthorized" }),
       {

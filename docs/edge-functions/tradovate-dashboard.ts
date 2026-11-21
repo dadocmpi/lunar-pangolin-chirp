@@ -33,16 +33,33 @@ async function requireUser(req) {
   );
   return { user: { id: data.user.id, email: data.user.email }, admin };
 }
-var corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-};
-function json(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
+
+// supabase/functions/_shared/cors.ts
+var ALLOW_HEADERS = "authorization, x-client-info, apikey, content-type";
+function parseAllowedOrigins(raw) {
+  return (raw ?? "").split(",").map((origin) => origin.trim()).filter(Boolean);
+}
+function resolveCorsOrigin(requestOrigin, allowed) {
+  if (allowed.length === 0) return "*";
+  if (!requestOrigin) return null;
+  return allowed.includes(requestOrigin) ? requestOrigin : null;
+}
+function envAllowedOrigins() {
+  const env = typeof Deno !== "undefined" ? Deno.env.get("ALLOWED_ORIGINS") : void 0;
+  return parseAllowedOrigins(env);
+}
+function corsHeadersFor(req, methods = "GET, POST, OPTIONS") {
+  const origin = resolveCorsOrigin(
+    req.headers.get("origin"),
+    envAllowedOrigins()
+  );
+  const headers = {
+    "Access-Control-Allow-Headers": ALLOW_HEADERS,
+    "Access-Control-Allow-Methods": methods,
+    Vary: "Origin"
+  };
+  if (origin) headers["Access-Control-Allow-Origin"] = origin;
+  return headers;
 }
 
 // supabase/functions/_shared/tradovate/crypto.ts
@@ -923,7 +940,8 @@ function defaultEnv() {
   return {
     TRADOVATE_ENABLED: Deno.env.get("TRADOVATE_ENABLED") ?? void 0,
     AI_KYC_ENABLED: Deno.env.get("AI_KYC_ENABLED") ?? void 0,
-    WITHDRAWAL_KYC_GATE_ENABLED: Deno.env.get("WITHDRAWAL_KYC_GATE_ENABLED") ?? void 0
+    WITHDRAWAL_KYC_GATE_ENABLED: Deno.env.get("WITHDRAWAL_KYC_GATE_ENABLED") ?? void 0,
+    ACTIVATION_FLOW_ENABLED: Deno.env.get("ACTIVATION_FLOW_ENABLED") ?? void 0
   };
 }
 
@@ -935,6 +953,11 @@ function ttlMs() {
   return seconds * 1e3;
 }
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body, status = 200) => new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "GET") return json({ error: "method_not_allowed" }, 405);
   if (!isTradovateEnabled()) {

@@ -33,16 +33,33 @@ async function requireUser(req) {
   );
   return { user: { id: data.user.id, email: data.user.email }, admin };
 }
-var corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-};
-function json(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
+
+// supabase/functions/_shared/cors.ts
+var ALLOW_HEADERS = "authorization, x-client-info, apikey, content-type";
+function parseAllowedOrigins(raw) {
+  return (raw ?? "").split(",").map((origin) => origin.trim()).filter(Boolean);
+}
+function resolveCorsOrigin(requestOrigin, allowed) {
+  if (allowed.length === 0) return "*";
+  if (!requestOrigin) return null;
+  return allowed.includes(requestOrigin) ? requestOrigin : null;
+}
+function envAllowedOrigins() {
+  const env = typeof Deno !== "undefined" ? Deno.env.get("ALLOWED_ORIGINS") : void 0;
+  return parseAllowedOrigins(env);
+}
+function corsHeadersFor(req, methods = "GET, POST, OPTIONS") {
+  const origin = resolveCorsOrigin(
+    req.headers.get("origin"),
+    envAllowedOrigins()
+  );
+  const headers = {
+    "Access-Control-Allow-Headers": ALLOW_HEADERS,
+    "Access-Control-Allow-Methods": methods,
+    Vary: "Origin"
+  };
+  if (origin) headers["Access-Control-Allow-Origin"] = origin;
+  return headers;
 }
 
 // supabase/functions/_shared/tradovate/credentialStore.ts
@@ -69,6 +86,11 @@ async function disconnectIntegration(admin, userId, integrationId) {
 
 // supabase/functions/tradovate-disconnect/index.ts
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body2, status = 200) => new Response(JSON.stringify(body2), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
   let ctx;

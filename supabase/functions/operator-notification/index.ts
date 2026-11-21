@@ -8,14 +8,14 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { notifyOwner } from "../_shared/email.ts";
+import { readJsonBody, safeEqual } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const limiter = createRateLimiter({ windowMs: 60_000, max: 20 });
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -26,7 +26,30 @@ serve(async (req) => {
     });
   }
 
-  let body: {
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`)) {
+    return new Response(JSON.stringify({ error: "rate_limited" }), {
+      status: 429,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // SERVER-TO-SERVER ONLY. This endpoint is called by stripe-webhook with the
+  // service-role bearer token. Without this gate any caller could email the
+  // owner an arbitrary "payment confirmed" message and phish the operator.
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+  const provided = (req.headers.get("Authorization") ?? "").replace(
+    /^Bearer\s+/i,
+    "",
+  );
+  if (!serviceKey || !safeEqual(provided, serviceKey)) {
+    return new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const parsed = await readJsonBody<{
     paymentId?: string;
     applicationId?: string | null;
     userId?: string;
@@ -38,15 +61,14 @@ serve(async (req) => {
     customerName?: string | null;
     customerEmail?: string | null;
     customerCountry?: string | null;
-  };
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400,
+  }>(req);
+  if (!parsed.ok) {
+    return new Response(JSON.stringify({ error: parsed.error }), {
+      status: parsed.error === "payload_too_large" ? 413 : 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+  const body = parsed.value;
 
   // The operator dashboard is a route on the public site, not on the Supabase
   // host. Build an absolute link from SITE_URL (the canonical public origin)

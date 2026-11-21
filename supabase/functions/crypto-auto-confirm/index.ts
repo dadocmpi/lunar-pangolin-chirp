@@ -8,6 +8,8 @@ import {
 import { PaymentRow } from "../_shared/payments.ts";
 import { getCryptoNetwork } from "../_shared/plans.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import { safeEqual } from "../_shared/http.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 /**
  * Crypto auto-confirm — NOT SCHEDULED.
@@ -34,6 +36,7 @@ import { notifyOwnerInBackground } from "../_shared/email.ts";
  *  - this function never trusts a value sent by an unauthenticated caller
  */
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -46,9 +49,11 @@ serve(async (req) => {
 
   // Hard guard: this endpoint must be called with the service role key.
   // We do not accept a user JWT.
-  const auth = req.headers.get("Authorization");
+  const auth = req.headers.get("Authorization") ?? "";
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-  if (!auth || auth !== `Bearer ${serviceKey}`) {
+  const provided = auth.replace(/^Bearer\s+/i, "");
+  // Fail closed when the key is unset, and compare without a timing leak.
+  if (!serviceKey || !safeEqual(provided, serviceKey)) {
     return new Response(JSON.stringify({ error: "service_role_required" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -277,8 +282,3 @@ serve(async (req) => {
   }
 });
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};

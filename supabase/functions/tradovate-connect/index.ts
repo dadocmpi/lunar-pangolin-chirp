@@ -26,11 +26,11 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import {
-  corsHeaders,
-  json,
   requireUser,
   UnauthorizedError,
 } from "../_shared/tradovate/auth.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
+import { readJsonBody } from "../_shared/http.ts";
 import { authenticate } from "../_shared/tradovate/authService.ts";
 import { accountList } from "../_shared/tradovate/restService.ts";
 import { createDefaultLimiter } from "../_shared/tradovate/rateLimiter.ts";
@@ -49,6 +49,12 @@ function accountPayload(a: TradovateAccount) {
 }
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body: unknown, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 
@@ -66,12 +72,15 @@ serve(async (req) => {
     return json({ error: "unauthorized" }, 401);
   }
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return json({ error: "invalid_json" }, 400);
+  // Bounded: the body carries a broker password and app credentials.
+  const parsedBody = await readJsonBody<Record<string, unknown>>(req, 8 * 1024);
+  if (!parsedBody.ok) {
+    return json(
+      { error: parsedBody.error },
+      parsedBody.error === "payload_too_large" ? 413 : 400,
+    );
   }
+  const body = parsedBody.value;
 
   const requestedEnvironment = body.environment;
   const name = typeof body.name === "string" ? body.name.trim() : "";

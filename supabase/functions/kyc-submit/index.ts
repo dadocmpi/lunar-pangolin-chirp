@@ -21,27 +21,29 @@ import {
 } from "../_shared/kyc/aiProvider.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { isAiKycEnabled } from "../_shared/features.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 const BUCKET = "kyc-documents";
 /** Largest document we will send to the vision model (base64 inflates ~33%). */
 const AI_MAX_BYTES = 6 * 1024 * 1024;
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-function json(body: Record<string, unknown>, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+// Document uploads are expensive (storage + vision model). Keep the soft cap
+// tight per address and per user.
+const limiter = createRateLimiter({ windowMs: 60_000, max: 6 });
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body: Record<string, unknown>, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`)) return json({ error: "rate_limited" }, 429);
 
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) return json({ error: "unauthorized" }, 401);
@@ -58,6 +60,7 @@ serve(async (req) => {
   });
   const { data: { user }, error: authError } = await userClient.auth.getUser();
   if (authError || !user) return json({ error: "unauthorized" }, 401);
+  if (limiter.hit(`user:${user.id}`)) return json({ error: "rate_limited" }, 429);
 
   // 2. Parse the multipart form.
   let form: FormData;
