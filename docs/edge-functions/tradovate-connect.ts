@@ -33,16 +33,49 @@ async function requireUser(req) {
   );
   return { user: { id: data.user.id, email: data.user.email }, admin };
 }
-var corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS"
-};
-function json(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" }
-  });
+
+// supabase/functions/_shared/cors.ts
+var ALLOW_HEADERS = "authorization, x-client-info, apikey, content-type";
+function parseAllowedOrigins(raw) {
+  return (raw ?? "").split(",").map((origin) => origin.trim()).filter(Boolean);
+}
+function resolveCorsOrigin(requestOrigin, allowed) {
+  if (allowed.length === 0) return "*";
+  if (!requestOrigin) return null;
+  return allowed.includes(requestOrigin) ? requestOrigin : null;
+}
+function envAllowedOrigins() {
+  const env = typeof Deno !== "undefined" ? Deno.env.get("ALLOWED_ORIGINS") : void 0;
+  return parseAllowedOrigins(env);
+}
+function corsHeadersFor(req, methods = "GET, POST, OPTIONS") {
+  const origin = resolveCorsOrigin(
+    req.headers.get("origin"),
+    envAllowedOrigins()
+  );
+  const headers = {
+    "Access-Control-Allow-Headers": ALLOW_HEADERS,
+    "Access-Control-Allow-Methods": methods,
+    Vary: "Origin"
+  };
+  if (origin) headers["Access-Control-Allow-Origin"] = origin;
+  return headers;
+}
+
+// supabase/functions/_shared/http.ts
+var MAX_JSON_BODY_BYTES = 16 * 1024;
+async function readJsonBody(req, maxBytes = MAX_JSON_BODY_BYTES) {
+  const raw = await req.text();
+  if (raw.length > maxBytes) return { ok: false, error: "payload_too_large" };
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return { ok: false, error: "invalid_json" };
+    }
+    return { ok: true, value: parsed };
+  } catch {
+    return { ok: false, error: "invalid_json" };
+  }
 }
 
 // supabase/functions/_shared/tradovate/rateLimiter.ts
@@ -613,7 +646,8 @@ function defaultEnv() {
   return {
     TRADOVATE_ENABLED: Deno.env.get("TRADOVATE_ENABLED") ?? void 0,
     AI_KYC_ENABLED: Deno.env.get("AI_KYC_ENABLED") ?? void 0,
-    WITHDRAWAL_KYC_GATE_ENABLED: Deno.env.get("WITHDRAWAL_KYC_GATE_ENABLED") ?? void 0
+    WITHDRAWAL_KYC_GATE_ENABLED: Deno.env.get("WITHDRAWAL_KYC_GATE_ENABLED") ?? void 0,
+    ACTIVATION_FLOW_ENABLED: Deno.env.get("ACTIVATION_FLOW_ENABLED") ?? void 0
   };
 }
 
@@ -622,6 +656,11 @@ function accountPayload(a) {
   return { id: a.id, name: a.name, simulation: a.simulation, active: a.active };
 }
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body2, status = 200) => new Response(JSON.stringify(body2), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" }
+  });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
   if (!isTradovateEnabled()) {
@@ -634,12 +673,14 @@ serve(async (req) => {
     if (e instanceof UnauthorizedError) return json({ error: "unauthorized" }, 401);
     return json({ error: "unauthorized" }, 401);
   }
-  let body;
-  try {
-    body = await req.json();
-  } catch {
-    return json({ error: "invalid_json" }, 400);
+  const parsedBody = await readJsonBody(req, 8 * 1024);
+  if (!parsedBody.ok) {
+    return json(
+      { error: parsedBody.error },
+      parsedBody.error === "payload_too_large" ? 413 : 400
+    );
   }
+  const body = parsedBody.value;
   const requestedEnvironment = body.environment;
   const name = typeof body.name === "string" ? body.name.trim() : "";
   const password = typeof body.password === "string" ? body.password : "";

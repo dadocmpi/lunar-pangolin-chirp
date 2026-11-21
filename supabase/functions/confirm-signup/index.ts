@@ -1,4 +1,5 @@
 // ============================================================================
+import { corsHeadersFor } from "../_shared/cors.ts";
 // confirm-signup — RETIRED (HTTP 410).
 //
 // Supabase Auth already sends the signup confirmation email when signUp() is
@@ -17,13 +18,8 @@
 // recipient from a verified identity and routing through _shared/userEmail.ts.
 // ============================================================================
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
 Deno.serve((req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

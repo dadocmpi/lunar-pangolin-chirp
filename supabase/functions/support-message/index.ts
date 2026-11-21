@@ -16,13 +16,7 @@ import {
   sendSupportMessage,
   SUPPORT_LIMITS,
 } from "../_shared/email.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 const MAX_BODY_BYTES = 32 * 1024;
 const RATE_WINDOW_MS = 60 * 1000;
@@ -49,14 +43,13 @@ function isRateLimited(ip: string): boolean {
   return false;
 }
 
-function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
-
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body: Record<string, unknown>, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }

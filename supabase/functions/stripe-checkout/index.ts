@@ -12,12 +12,11 @@ import {
   type BillingInput,
   type SanitizedBilling,
 } from "../_shared/profile/billing.ts";
+import { readJsonBody } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const limiter = createRateLimiter({ windowMs: 60_000, max: 15 });
 
 const STRIPE_API_VERSION = "2020-08-27";
 const STRIPE_API_BASE = "https://api.stripe.com/v1";
@@ -118,6 +117,7 @@ async function resolveStripeCustomer(args: ResolveCustomerArgs): Promise<string 
 }
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -201,22 +201,29 @@ serve(async (req) => {
     });
   }
 
-  // Parse request body
-  let body: {
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`) || limiter.hit(`user:${user.id}`)) {
+    return new Response(JSON.stringify({ error: "rate_limited" }), {
+      status: 429,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  // Parse request body (bounded)
+  const parsedBody = await readJsonBody<{
     planId: string;
     idempotencyKey: string;
     isTest: boolean;
     applicationId: string;
     billing?: BillingInput;
-  };
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400,
+  }>(req);
+  if (!parsedBody.ok) {
+    return new Response(JSON.stringify({ error: parsedBody.error }), {
+      status: parsedBody.error === "payload_too_large" ? 413 : 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
+  const body = parsedBody.value;
 
   const { planId, idempotencyKey, applicationId } = body;
   // Server-side test flag. Never derive test/production from the client body.

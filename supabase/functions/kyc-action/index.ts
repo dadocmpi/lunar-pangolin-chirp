@@ -2,15 +2,16 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { sendUserEmailInBackground } from "../_shared/userEmail.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { verifyActionToken } from "../_shared/kyc/actionToken.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 const APPROVE_STATUS = "approved";
 const DENY_STATUS = "rejected";
+
+// Owner action links are hit by a human in a browser. A soft per-IP limit
+// stops a leaked/guessed link from being hammered.
+const limiter = createRateLimiter({ windowMs: 60_000, max: 20 });
 
 /**
  * Read KYC_ACTION_SECRET from the Edge Function env.
@@ -26,37 +27,17 @@ function getKycActionSecret(): string {
   return val;
 }
 
-function makeToken(userId: string, action: string, secret: string): string {
-  return btoa(`${userId}:${action}:${secret}`);
-}
+const HTML_ENTITIES: Record<string, string> = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;",
+};
 
-/** Constant-time string compare to prevent token timing attacks. */
-function timingSafeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let mismatch = 0;
-  for (let i = 0; i < a.length; i++) {
-    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return mismatch === 0;
-}
-
+/** Escape every HTML metacharacter before interpolating into a response. */
 function escapeHtml(s: string): string {
-  return s.replace(/[&<>"']/g, (c) => {
-    switch (c) {
-      case "&":
-        return "&";
-      case "<":
-        return "<";
-      case ">":
-        return ">";
-      case '"':
-        return "&quot;";
-      case "'":
-        return "&#39;";
-      default:
-        return c;
-    }
-  });
+  return String(s).replace(/[&<>"']/g, (c) => HTML_ENTITIES[c]);
 }
 
 function htmlResponse(title: string, body: string, status = 200): Response {
@@ -100,6 +81,7 @@ function htmlResponse(title: string, body: string, status = 200): Response {
 }
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -123,6 +105,15 @@ serve(async (req) => {
     );
   }
 
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`)) {
+    return htmlResponse(
+      "Too many requests",
+      "Please wait a moment and try again.",
+      429,
+    );
+  }
+
   const url = new URL(req.url);
   const userId = url.searchParams.get("userId");
   const action = url.searchParams.get("action");
@@ -143,11 +134,14 @@ serve(async (req) => {
     );
   }
 
-  const expected = makeToken(userId, action, secret);
-  if (!timingSafeEqual(token, expected)) {
+  // HMAC-signed token (see _shared/kyc/actionToken.ts). The secret is never
+  // part of the link, the signature covers the user + action, and the token
+  // expires. A legacy base64 token is rejected by design.
+  const tokenCheck = await verifyActionToken(token, userId, action, secret);
+  if (!tokenCheck.ok) {
     return htmlResponse(
       "Unauthorized",
-      `The token does not match. No row was modified.`,
+      `The link is invalid or has expired. No row was modified.`,
       401,
     );
   }
@@ -177,11 +171,16 @@ serve(async (req) => {
     .maybeSingle();
 
   if (error) {
+    // Never echo the database error to the browser: it can contain schema and
+    // row details. The operator sees a generic failure and the audit trail
+    // lives server-side.
+    console.error("[kyc-action] profile update failed", {
+      userId,
+      code: error.code,
+    });
     return htmlResponse(
       "Update failed",
-      `The database rejected the update: <code>${
-        escapeHtml(error.message)
-      }</code>`,
+      "The database rejected the update. No row was modified.",
       500,
     );
   }

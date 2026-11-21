@@ -16,21 +16,19 @@ import {
 import { createGateDb } from "../_shared/kyc/supabaseGateDb.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { featureDisabledBody, isWithdrawalKycGateEnabled } from "../_shared/features.ts";
+import { readJsonBody } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-function json(body: Record<string, unknown>, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+const limiter = createRateLimiter({ windowMs: 60_000, max: 10 });
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body: Record<string, unknown>, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 
@@ -39,6 +37,9 @@ serve(async (req) => {
   if (!isWithdrawalKycGateEnabled()) {
     return json(featureDisabledBody("withdrawal_kyc_gate"), 503);
   }
+
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`)) return json({ error: "rate_limited" }, 429);
 
   const authHeader = req.headers.get("Authorization");
   if (!authHeader) return json({ error: "unauthorized" }, 401);
@@ -54,13 +55,16 @@ serve(async (req) => {
   });
   const { data: { user }, error: authError } = await userClient.auth.getUser();
   if (authError || !user) return json({ error: "unauthorized" }, 401);
+  if (limiter.hit(`user:${user.id}`)) return json({ error: "rate_limited" }, 429);
 
-  let payload: Record<string, unknown>;
-  try {
-    payload = await req.json();
-  } catch {
-    return json({ error: "invalid_json" }, 400);
+  const parsedBody = await readJsonBody<Record<string, unknown>>(req);
+  if (!parsedBody.ok) {
+    return json(
+      { error: parsedBody.error },
+      parsedBody.error === "payload_too_large" ? 413 : 400,
+    );
   }
+  const payload = parsedBody.value;
 
   // Body carries only the request details. Any userId/kycStatus is ignored.
   const amountCents = Number(payload.amountCents ?? 0);

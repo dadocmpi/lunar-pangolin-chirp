@@ -4,12 +4,9 @@ import {
   isPaymentsEnabled,
   isTestPaymentMode,
 } from "../_shared/payments-flag.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+import { readJsonBody } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 /**
  * Payment Status — READ-ONLY endpoint.
@@ -26,10 +23,20 @@ const corsHeaders = {
  *  - The browser never decides confirmation; this handler only reports
  *    the server-side canonical value.
  */
+const limiter = createRateLimiter({ windowMs: 60_000, max: 120 });
+
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+  if (limiter.hit(`ip:${clientIp(req)}`)) {
+    return new Response(JSON.stringify({ error: "rate_limited" }), {
+      status: 429,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   if (req.method !== "GET" && req.method !== "POST") {
     return new Response(JSON.stringify({ error: "method_not_allowed" }), {
       status: 405,
@@ -102,12 +109,8 @@ serve(async (req) => {
   const url = new URL(req.url);
   let paymentId = url.searchParams.get("paymentId");
   if (!paymentId && req.method === "POST") {
-    try {
-      const body = await req.json();
-      paymentId = body?.paymentId ?? null;
-    } catch {
-      // ignore — handled below
-    }
+    const body = await readJsonBody<{ paymentId?: string }>(req);
+    if (body.ok) paymentId = body.value.paymentId ?? null;
   }
   if (!paymentId) {
     return new Response(JSON.stringify({ error: "payment_id_required" }), {
@@ -136,13 +139,12 @@ serve(async (req) => {
     .maybeSingle();
 
   if (error) {
-    return new Response(
-      JSON.stringify({ error: "db_error", message: error.message }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+    // Generic message: a database error can name tables and columns.
+    console.error("[payment-status] read failed", { code: error.code });
+    return new Response(JSON.stringify({ error: "db_error" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
   if (!data) {
     return new Response(JSON.stringify({ error: "payment_not_found" }), {

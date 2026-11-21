@@ -1,78 +1,30 @@
 // ============================================================================
-// send-email — legacy generic sender, now a thin adapter over the single
-// central module (../_shared/email.ts).
+import { corsHeadersFor } from "../_shared/cors.ts";
+// send-email — RETIRED (HTTP 410).
 //
-// Kept for backward compatibility: the contact form posts here. The `to`
-// field is intentionally ignored — every owner notification goes to EMAIL_TO.
-// The caller's `html` is not used; the central module renders a consistent,
-// sanitized template so no unescaped HTML from a caller can be injected.
+// This was an unauthenticated, generic owner-email relay: any caller could
+// send an arbitrary subject/body to the owner's inbox from our verified
+// sending domain. Nothing in the SPA or in another Edge Function calls it —
+// the contact form uses `support-message`, and every other notification goes
+// through `_shared/email.ts` / `_shared/userEmail.ts`.
+//
+// Retired the same way as confirm-signup. Do not re-enable without a verified
+// caller identity, a fixed template and server-side validation.
 // ============================================================================
 
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { notifyOwner } from "../_shared/email.ts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
-
-/** Map a legacy subject line onto one of the canonical event types. */
-function inferType(subject: string): string {
-  const s = subject.toLowerCase();
-  if (s.includes("contact") || s.includes("lead")) return "novo_lead";
-  if (s.includes("payment") || s.includes("refund")) return "pagamento";
-  if (s.includes("registration") || s.includes("signup")) return "novo_cliente";
-  if (s.includes("error") || s.includes("failed")) return "erro";
-  return "webhook";
-}
-
-serve(async (req) => {
+Deno.serve((req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
-  if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "Method not allowed" }), {
-      status: 405,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  let body: {
-    subject?: string;
-    text?: string;
-    replyTo?: string;
-    data?: Record<string, unknown>;
-  };
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  const subject = typeof body.subject === "string" && body.subject.trim()
-    ? body.subject.trim()
-    : "Notificação";
-
-  const result = await notifyOwner({
-    type: inferType(subject),
-    subject,
-    replyTo: typeof body.replyTo === "string" ? body.replyTo : null,
-    data: body.data ?? (body.text ? { mensagem: body.text } : {}),
-  });
-
-  // Always answer 200 so a caller's user action never fails because email did.
   return new Response(
     JSON.stringify({
-      success: true,
-      delivered: result.ok,
-      reason: result.skipped,
+      error: "endpoint_retired",
+      message:
+        "Use support-message for the contact form or notify-owner for owner notifications. This endpoint is retired.",
     }),
     {
-      status: 200,
+      status: 410,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     },
   );

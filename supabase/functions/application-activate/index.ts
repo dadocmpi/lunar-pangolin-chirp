@@ -1,14 +1,14 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import { boundedString, readJsonBody } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const limiter = createRateLimiter({ windowMs: 60_000, max: 30 });
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -16,6 +16,14 @@ serve(async (req) => {
   if (req.method !== "POST") {
     return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`)) {
+    return new Response(JSON.stringify({ error: "rate_limited" }), {
+      status: 429,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
@@ -83,18 +91,15 @@ serve(async (req) => {
     );
   }
 
-  // Parse request body
-  let body: { applicationId: string };
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
-      status: 400,
+  // Parse request body (bounded)
+  const parsed = await readJsonBody<{ applicationId?: string }>(req);
+  if (!parsed.ok) {
+    return new Response(JSON.stringify({ error: parsed.error }), {
+      status: parsed.error === "payload_too_large" ? 413 : 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-
-  const { applicationId } = body;
+  const applicationId = boundedString(parsed.value.applicationId, 64) ?? "";
   if (!applicationId) {
     return new Response(
       JSON.stringify({ error: "Missing applicationId" }),

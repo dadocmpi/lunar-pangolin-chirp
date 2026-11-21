@@ -25,11 +25,10 @@
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import {
-  corsHeaders,
-  json,
   requireUser,
   UnauthorizedError,
 } from "../_shared/tradovate/auth.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 import {
   listIntegrations,
   readSnapshot,
@@ -48,6 +47,12 @@ function ttlMs(): number {
 }
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body: unknown, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "GET") return json({ error: "method_not_allowed" }, 405);
 

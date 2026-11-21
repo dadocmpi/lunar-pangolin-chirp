@@ -30,26 +30,19 @@ import { createRateLimiter } from "../_shared/activation/rateLimit.ts";
 import { isOpenStatus } from "../_shared/activation/status.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { requireUser, UnauthorizedError } from "../_shared/tradovate/auth.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 const BUCKET = "activation-receipts";
-
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-function json(body: Record<string, unknown>, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
 
 const limiter = createRateLimiter({ windowMs: 60_000, max: 5 });
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body: Record<string, unknown>, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
 

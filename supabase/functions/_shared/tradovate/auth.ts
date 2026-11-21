@@ -49,16 +49,6 @@ export async function requireUser(req: Request): Promise<AuthedContext> {
   return { user: { id: data.user.id, email: data.user.email }, admin };
 }
 
-export const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-};
-
-export function json(body: unknown, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+// CORS/response helpers were removed from this module: each function now
+// resolves its own headers with `corsHeadersFor(req)` from `_shared/cors.ts`
+// so the wildcard ACAO cannot be reintroduced by importing a shared constant.

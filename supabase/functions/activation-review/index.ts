@@ -31,23 +31,14 @@ import { ACTIVATION_FIELD_LIMITS, cleanText } from "../_shared/activation/limits
 import { activationConfigFromEnv } from "../_shared/activation/config.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { sendUserEmailInBackground } from "../_shared/userEmail.ts";
+import { readJsonBody } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
 const BUCKET = "activation-receipts";
 const SIGNED_URL_TTL_SECONDS = 300;
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-};
-
-function json(body: Record<string, unknown>, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+const limiter = createRateLimiter({ windowMs: 60_000, max: 60 });
 
 const REVIEW_ACTIONS: readonly ReviewAction[] = [
   "start_review",
@@ -61,6 +52,12 @@ function isReviewAction(value: unknown): value is ReviewAction {
 }
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body: Record<string, unknown>, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "GET" && req.method !== "POST") {
     return json({ error: "method_not_allowed" }, 405);
@@ -71,6 +68,9 @@ serve(async (req) => {
     return json({ ok: false, error: "feature_disabled", feature: "activation_flow" }, 503);
   }
 
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`)) return json({ error: "rate_limited" }, 429);
+
   let ctx;
   try {
     ctx = await requireOperator(req);
@@ -79,6 +79,7 @@ serve(async (req) => {
     if (e instanceof UnauthorizedError) return json({ error: "unauthorized" }, 401);
     return json({ error: "unauthorized" }, 401);
   }
+  if (limiter.hit(`user:${ctx.user.id}`)) return json({ error: "rate_limited" }, 429);
 
   // GET ?id=... -> details + a short-lived signed receipt URL for the panel.
   if (req.method === "GET") {
@@ -103,12 +104,14 @@ serve(async (req) => {
   }
 
   // POST -> perform a review action.
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return json({ error: "invalid_json" }, 400);
+  const parsedBody = await readJsonBody<Record<string, unknown>>(req);
+  if (!parsedBody.ok) {
+    return json(
+      { error: parsedBody.error },
+      parsedBody.error === "payload_too_large" ? 413 : 400,
+    );
   }
+  const body = parsedBody.value;
 
   const id = cleanText(body.id, 60);
   const action = body.action;

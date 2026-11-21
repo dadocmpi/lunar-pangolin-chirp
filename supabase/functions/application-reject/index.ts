@@ -1,14 +1,18 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
+import {
+  ForbiddenError,
+  requireOperator,
+  UnauthorizedError,
+} from "../_shared/activation/operator.ts";
+import { boundedString, readJsonBody } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const limiter = createRateLimiter({ windowMs: 60_000, max: 30 });
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -20,78 +24,79 @@ serve(async (req) => {
     });
   }
 
-  // Get environment variables
-  const supabaseUrl = Deno.env.get("SUPABASE_URL");
-  const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!supabaseUrl || !supabaseServiceKey) {
-    return new Response(
-      JSON.stringify({ error: "Server misconfigured" }),
-      {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
-  }
-
-  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
-    auth: { persistSession: false },
-  });
-
-  // Authenticate user (operator)
-  const authHeader = req.headers.get("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-  const token = authHeader.substring(7);
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser(token);
-  if (userError || !user) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
-      status: 401,
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`)) {
+    return new Response(JSON.stringify({ error: "rate_limited" }), {
+      status: 429,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
-  // In a real app, we would check if the user is an operator (e.g., via a role or metadata)
-  // For now, we'll allow any authenticated user to reject for simplicity
-  // but in production, you should restrict this to operators only.
-
-  // Parse request body
-  let body: { applicationId: string; reason: string };
+  // OPERATOR ONLY. Rejecting an application is a privileged state change; a
+  // plain authenticated user must not be able to reject anyone's application.
+  // requireOperator reads app_metadata.operator from the admin API (not the
+  // token body) and requires it to be exactly `true`.
+  let ctx;
   try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+    ctx = await requireOperator(req);
+  } catch (err) {
+    const status = err instanceof ForbiddenError ? 403 : 401;
+    if (!(err instanceof ForbiddenError) && !(err instanceof UnauthorizedError)) {
+      console.error("[application-reject] auth error", { name: (err as Error)?.name });
+    }
+    return new Response(JSON.stringify({ error: "forbidden" }), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const supabase = ctx.admin;
+  const user = ctx.user;
+
+  const parsed = await readJsonBody<{ applicationId?: string; reason?: string }>(req);
+  if (!parsed.ok) {
+    return new Response(JSON.stringify({ error: parsed.error }), {
+      status: parsed.error === "payload_too_large" ? 413 : 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  const applicationId = boundedString(parsed.value.applicationId, 64);
+  const reason = boundedString(parsed.value.reason, 500);
+  if (!applicationId) {
+    return new Response(JSON.stringify({ error: "Missing applicationId" }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  if (!reason) {
+    return new Response(JSON.stringify({ error: "Missing rejection reason" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 
-  const { applicationId, reason } = body;
-  if (!applicationId) {
-    return new Response(
-      JSON.stringify({ error: "Missing applicationId" }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+  // Read the current row first so the audit log records the real previous
+  // status (reading it after the UPDATE always returned "rejected").
+  const { data: existing, error: readError } = await supabase
+    .from("applications")
+    .select("id, activation_status")
+    .eq("id", applicationId)
+    .maybeSingle();
+
+  if (readError) {
+    console.error("[application-reject] read failed", { code: readError.code });
+    return new Response(JSON.stringify({ error: "lookup_failed" }), {
+      status: 500,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
-  if (!reason || !reason.trim()) {
-    return new Response(
-      JSON.stringify({ error: "Missing rejection reason" }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
+  if (!existing) {
+    return new Response(JSON.stringify({ error: "not_found" }), {
+      status: 404,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
+  const previousStatus = existing.activation_status;
 
   // Update the application record
   const { data: application, error: updateError } = await supabase
@@ -125,7 +130,7 @@ serve(async (req) => {
       actor: "operator",
       source: "admin",
       event_id: crypto.randomUUID(),
-      previous_status: application.activation_status, // Status before update
+      previous_status: previousStatus,
       new_status: "rejected",
       reason: reason,
       created_at: new Date().toISOString(),

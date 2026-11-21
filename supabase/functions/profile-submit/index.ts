@@ -15,24 +15,24 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { requireUser, UnauthorizedError } from "../_shared/tradovate/auth.ts";
 import { toProfileRow, validateProfile } from "../_shared/profile/validation.ts";
+import { readJsonBody } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
-
-function json(body: Record<string, unknown>, status = 200): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
-}
+const limiter = createRateLimiter({ windowMs: 60_000, max: 20 });
 
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
+  const json = (body: Record<string, unknown>, status = 200): Response =>
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`)) return json({ error: "rate_limited" }, 429);
 
   let ctx;
   try {
@@ -42,15 +42,16 @@ serve(async (req) => {
     return json({ error: "unauthorized" }, 401);
   }
 
-  let body: Record<string, unknown>;
-  try {
-    const parsed = await req.json();
-    body = typeof parsed === "object" && parsed !== null
-      ? parsed as Record<string, unknown>
-      : {};
-  } catch {
-    return json({ error: "invalid_json" }, 400);
+  if (limiter.hit(`user:${ctx.user.id}`)) return json({ error: "rate_limited" }, 429);
+
+  const parsedBody = await readJsonBody<Record<string, unknown>>(req);
+  if (!parsedBody.ok) {
+    return json(
+      { error: parsedBody.error },
+      parsedBody.error === "payload_too_large" ? 413 : 400,
+    );
   }
+  const body = parsedBody.value;
 
   const result = validateProfile(body);
   if (!result.ok) {

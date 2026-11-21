@@ -16,12 +16,11 @@ import {
   resolveCryptoAddress,
   testCryptoAddress,
 } from "../_shared/payment-destinations.ts";
+import { readJsonBody } from "../_shared/http.ts";
+import { clientIp, createRateLimiter } from "../_shared/rateLimit.ts";
+import { corsHeadersFor } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
-};
+const limiter = createRateLimiter({ windowMs: 60_000, max: 15 });
 
 /**
  * Crypto Checkout.
@@ -45,6 +44,7 @@ const corsHeaders = {
  *  6. Idempotent on (user_id, idempotency_key).
  */
 serve(async (req) => {
+  const corsHeaders = corsHeadersFor(req);
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -88,19 +88,25 @@ serve(async (req) => {
   }
   const user = userData.user;
 
-  // -------------------------------------------------------------------------
-  // Parse body
-  // -------------------------------------------------------------------------
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return new Response(JSON.stringify({ error: "invalid_json" }), {
-      status: 400,
+  const ip = clientIp(req);
+  if (limiter.hit(`ip:${ip}`) || limiter.hit(`user:${user.id}`)) {
+    return new Response(JSON.stringify({ error: "rate_limited" }), {
+      status: 429,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
-  const b = (body ?? {}) as Record<string, unknown>;
+
+  // -------------------------------------------------------------------------
+  // Parse body (bounded)
+  // -------------------------------------------------------------------------
+  const parsedBody = await readJsonBody<Record<string, unknown>>(req);
+  if (!parsedBody.ok) {
+    return new Response(JSON.stringify({ error: parsedBody.error }), {
+      status: parsedBody.error === "payload_too_large" ? 413 : 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+  const b = parsedBody.value;
 
   // -------------------------------------------------------------------------
   // Validate (server-only — browser values are never trusted)
