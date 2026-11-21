@@ -6,8 +6,9 @@ import { User, Mail, Lock, ShieldCheck, Loader2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { functionsUrl, supabase } from '@/integrations/supabase/client';
+import { supabase } from '@/integrations/supabase/client';
 import { notifyOwner } from '@/lib/notifyOwner';
+import { isDuplicateSignup, isExistingAccountError } from '@/lib/authFlow';
 import { showSuccess, showError } from '@/utils/toast';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
@@ -45,6 +46,8 @@ const Register = () => {
   const [details, setDetails] = useState<ProfileFields>(EMPTY_DETAILS);
   const [errors, setErrors] = useState<ProfileErrors>({});
   const [stepOneError, setStepOneError] = useState<string | null>(null);
+  const [confirmationPending, setConfirmationPending] = useState(false);
+  const [resending, setResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -97,6 +100,14 @@ const Register = () => {
       if (error) throw error;
       if (!data.session && !data.user) throw new Error('signup_failed');
 
+      if (isDuplicateSignup(data.user)) {
+        // Supabase answers an existing address with an obfuscated user (empty
+        // identities, no session). Show the same neutral screen as a new
+        // signup so the response cannot enumerate registered emails.
+        setConfirmationPending(true);
+        return;
+      }
+
       await notifyOwner({
         type: 'novo_cliente',
         subject: `Novo cadastro de cliente — ${fullName || email}`,
@@ -109,28 +120,50 @@ const Register = () => {
         },
       });
 
-      try {
-        await fetch(functionsUrl('confirm-signup'), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: data.user?.id,
-            email,
-            name: fullName,
-            confirmationUrl: `${siteUrl}/auth-callback`,
-          }),
-        });
-      } catch (emailError) {
-        console.error('Confirmation email error:', emailError);
+      // The confirmation email is sent by Supabase Auth itself (signUp with
+      // emailRedirectTo). The old confirm-signup relay was retired because it
+      // could not authenticate the caller and duplicated that email.
+
+      if (!data.session) {
+        // Email confirmation is on: no session yet, so step 2 cannot write.
+        // After confirming, the login redirect sends the customer back to
+        // /complete-profile.
+        setConfirmationPending(true);
+        return;
       }
 
       // Carry the name into step 2 so the customer does not retype it.
       setDetails((prev) => ({ ...prev, fullName: prev.fullName || fullName }));
       setStep(2);
     } catch (error: unknown) {
-      setStepOneError(error instanceof Error ? error.message : t('auth.registerErrorMessage'));
+      const message = error instanceof Error ? error.message : '';
+      // With email confirmation off Supabase reports an existing address as an
+      // error. Never echo it: it would confirm that the email is registered.
+      setStepOneError(
+        isExistingAccountError(message)
+          ? t('auth.registerErrorMessage')
+          : message || t('auth.registerErrorMessage'),
+      );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendConfirmation = async () => {
+    setResending(true);
+    try {
+      // The response is intentionally ignored: an "unknown email" error would
+      // reveal whether the address is registered. The copy stays neutral.
+      await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: { emailRedirectTo: `${window.location.origin}/auth-callback` },
+      });
+    } catch {
+      // Same neutral outcome for every failure.
+    } finally {
+      setResending(false);
+      showSuccess(t('auth.resendSent'));
     }
   };
 
@@ -239,8 +272,36 @@ const Register = () => {
 
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          {stepIndicator}
+          {!confirmationPending && stepIndicator}
 
+          {confirmationPending ? (
+            <div className="space-y-6 text-center py-6">
+              <Mail className="mx-auto text-[#C5A059]" size={44} />
+              <h1 className="text-3xl font-black text-white uppercase tracking-tighter">
+                {t('auth.confirmEmailTitle')}
+              </h1>
+              <p className="text-slate-400 text-xs leading-relaxed">
+                {t('auth.confirmEmailSent', { email })}
+              </p>
+              <Link
+                to="/login"
+                state={{ from, plan }}
+                className="inline-block w-full bg-[#C5A059] hover:bg-[#B08D48] text-white h-14 leading-[3.5rem] font-black text-[11px] uppercase tracking-[0.2em] transition-all"
+              >
+                {t('auth.loginLink')}
+              </Link>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={resending}
+                onClick={handleResendConfirmation}
+                className="w-full rounded-none h-12 border-white/15 bg-transparent text-slate-300 hover:bg-white/5 hover:text-white font-bold text-[10px] uppercase tracking-[0.2em]"
+              >
+                {resending ? <Loader2 className="animate-spin" size={16} /> : t('auth.resendConfirmation')}
+              </Button>
+            </div>
+          ) : (
+          <>
           <div className="mb-10">
             <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">{t('auth.accessBadge')}</span>
             <h1 className="text-3xl font-black text-white uppercase tracking-tighter">
@@ -360,6 +421,8 @@ const Register = () => {
                 {t('signup.requiredHint')}
               </p>
             </form>
+          )}
+          </>
           )}
 
           <div className="mt-8 text-center">

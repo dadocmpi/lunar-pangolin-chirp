@@ -11,6 +11,7 @@ import { showSuccess, showError } from '@/utils/toast';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { fetchProfile } from '@/lib/profile';
+import { classifyAuthError, isRecoveryRedirect } from '@/lib/authFlow';
 
 const Login = () => {
   const { t } = useTranslation();
@@ -45,6 +46,12 @@ const Login = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
+        // A recovery link must never land the customer in the terminal with a
+        // half-finished reset: send it to the page that sets the new password.
+        if (isRecoveryRedirect(window.location.hash, window.location.search)) {
+          navigate('/reset-password', { state: { from, plan }, replace: true });
+          return;
+        }
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           const dest = await resolveDestination();
@@ -63,7 +70,7 @@ const Login = () => {
       }
     };
     checkSession();
-  }, [navigate, from, resolveDestination]);
+  }, [navigate, from, plan, resolveDestination]);
 
   const handleForgotPassword = async () => {
     if (!email.trim()) {
@@ -72,7 +79,7 @@ const Login = () => {
     }
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/login`,
+        redirectTo: `${window.location.origin}/reset-password`,
       });
       if (error) throw error;
       showSuccess(t('auth.resetPasswordSent'));
@@ -93,9 +100,10 @@ const Login = () => {
       });
 
       if (error) {
+        const kind = classifyAuthError(error.message);
         // Track consecutive failures to flag a suspicious login. We only
         // notify the owner once per burst threshold — not on every typo.
-        if (error.message.includes('Invalid login credentials') || error.message.includes('Email not confirmed')) {
+        if (kind !== 'other') {
           const key = `loginFailures:${email.toLowerCase()}`;
           const previous = parseInt(localStorage.getItem(key) || '0', 10) || 0;
           const failures = previous + 1;
@@ -113,8 +121,14 @@ const Login = () => {
               },
             });
           }
-          showError(t('auth.accountNotFound'));
-          navigate('/register', { state: { from, plan } });
+          // An unconfirmed email is a registered account: never tell the
+          // customer the account is missing or push them into a duplicate
+          // registration.
+          showError(
+            kind === 'email_not_confirmed'
+              ? t('auth.emailNotConfirmed')
+              : t('auth.loginErrorMessage'),
+          );
           return;
         }
         throw error;
