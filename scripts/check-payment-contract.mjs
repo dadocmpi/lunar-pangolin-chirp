@@ -91,7 +91,6 @@ const USER_EMAIL_ALLOWLIST = new Set([
   'card-checkout/index.ts',        // disabled legacy endpoint
   'paypal-checkout/index.ts',      // disabled legacy endpoint
   'crypto-confirmation/index.ts',
-  'confirm-signup/index.ts',
   'withdrawal-notification/index.ts',
 ]);
 const directResend = walk(fnRoot)

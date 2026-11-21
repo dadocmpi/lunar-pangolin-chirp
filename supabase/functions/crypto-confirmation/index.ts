@@ -242,14 +242,14 @@ serve(async (req) => {
   // -------------------------------------------------------------------------
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
   if (resendApiKey && payment.user_id) {
-    // Fetch user email
-    const { data: profile } = await admin
-      .from("profiles")
-      .select("email, full_name")
-      .eq("id", payment.user_id)
-      .single();
+    // public.profiles has no email column (its live shape is
+    // id/created_at plus the profile columns). The address lives on the auth
+    // user, so read it from the admin API.
+    const { data: userData } = await admin.auth.admin.getUserById(
+      payment.user_id,
+    );
 
-    const userEmail = profile?.email;
+    const userEmail = userData?.user?.email ?? null;
     if (userEmail) {
       await fetch("https://api.resend.com/emails", {
         method: "POST",

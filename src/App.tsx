@@ -29,6 +29,7 @@ const Register = lazy(() => import("./pages/Register"));
 const CompleteProfile = lazy(() => import("./pages/CompleteProfile"));
 const RegisterApplication = lazy(() => import("./pages/RegisterApplication"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Accounts = lazy(() => import("./pages/Accounts"));
 const OperatorActivations = lazy(() => import("./pages/OperatorActivations"));
 const Terms = lazy(() => import("./pages/Terms"));
@@ -84,6 +85,7 @@ const App = () => (
             <Route path="/complete-profile" element={<RouteView><CompleteProfile /></RouteView>} />
             <Route path="/register-application" element={<RouteView><RegisterApplication /></RouteView>} />
             <Route path="/auth-callback" element={<RouteView><AuthCallback /></RouteView>} />
+            <Route path="/reset-password" element={<RouteView><ResetPassword /></RouteView>} />
             <Route path="/accounts" element={<RouteView><Accounts /></RouteView>} />
             <Route path="/terms" element={<RouteView><Terms /></RouteView>} />
             <Route path="/privacy" element={<RouteView><Privacy /></RouteView>} />
