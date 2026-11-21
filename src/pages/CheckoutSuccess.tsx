@@ -34,9 +34,30 @@ const CheckoutSuccess = () => {
   const [pendingPaymentId, setPendingPaymentId] = useState<string | null>(null);
   const [applicationId, setApplicationId] = useState<string | null>(null);
   const [lookupError, setLookupError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [checkingAgain, setCheckingAgain] = useState(false);
+  const [checkAgainError, setCheckAgainError] = useState(false);
 
   // The page polls the server-side payment status. We never trust the URL alone.
-  const { view: serverStatus } = usePaymentStatus(pendingPaymentId, 3000);
+  const { view: serverStatus } = usePaymentStatus(pendingPaymentId, 3000, refreshKey);
+
+  const checkAgain = async () => {
+    if (!pendingPaymentId || checkingAgain) return;
+    setCheckingAgain(true);
+    setCheckAgainError(false);
+    try {
+      // The endpoint only retries the caller's own pending payment and
+      // re-verifies the Stripe object server-side. It never trusts the browser.
+      await supabase.functions.invoke("stripe-reconcile", {
+        body: { paymentId: pendingPaymentId },
+      });
+      setRefreshKey((n) => n + 1);
+    } catch {
+      setCheckAgainError(true);
+    } finally {
+      setCheckingAgain(false);
+    }
+  };
 
   // Track if we already redirected to login so we don't loop.
   const redirectedRef = useRef(false);
@@ -273,6 +294,23 @@ const CheckoutSuccess = () => {
             <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">
               {t("checkoutSuccess.urlSecurityNotice")}
             </p>
+          </div>
+
+          <div className="space-y-3">
+            <Button
+              onClick={checkAgain}
+              disabled={checkingAgain}
+              className="w-full bg-[#C5A059] hover:bg-[#C5A059]/80 text-white rounded-none h-12 px-6 text-[11px] font-black uppercase tracking-[0.2em]"
+            >
+              {checkingAgain
+                ? t("checkoutSuccess.checkingAgain")
+                : t("checkoutSuccess.checkAgain")}
+            </Button>
+            {checkAgainError && (
+              <p className="text-[10px] text-yellow-300/80 leading-relaxed">
+                {t("checkoutSuccess.checkAgainFailed")}
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -33,3 +33,9 @@ verify_jwt = false
 # request body. Kept explicit so a future config edit cannot make it public.
 [functions.account-link]
 verify_jwt = true
+
+# stripe-reconcile retries a missing Stripe webhook for the caller's own
+# pending payment. It must always require a JWT; the user is derived from the
+# token and the Stripe object is verified server-side.
+[functions.stripe-reconcile]
+verify_jwt = true

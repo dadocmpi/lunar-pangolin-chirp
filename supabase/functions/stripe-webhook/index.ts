@@ -2,6 +2,19 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { corsHeadersFor } from "../_shared/cors.ts";
+import { verifyStripeSignature } from "../_shared/stripe/signature.ts";
+import {
+  applySubscriptionStatus,
+  confirmFromCheckoutSession,
+  confirmFromInvoicePaid,
+  markInvoicePaymentFailed,
+  type ConfirmationResult,
+} from "../_shared/stripe/confirmation.ts";
+import type {
+  StripeCheckoutSessionLike,
+  StripeInvoiceLike,
+  StripeSubscriptionLike,
+} from "../_shared/stripe/verification.ts";
 
 serve(async (req) => {
   const corsHeaders = corsHeadersFor(req);
@@ -39,6 +52,33 @@ serve(async (req) => {
     );
   }
 
+  // Required for the server-side evidence lookups (Checkout Session line
+  // items, Subscription items, Customer identity). Without it no event can be
+  // verified, so fail closed with a retryable status.
+  const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
+  if (!stripeSecretKey) {
+    notifyOwnerInBackground({
+      type: "erro",
+      subject: "Webhook Stripe rejeitado — chave secreta não configurada",
+      data: {
+        servico: "stripe-webhook",
+        mensagem: "STRIPE_SECRET_KEY ausente",
+        status_http: 503,
+        origem: "stripe-webhook",
+      },
+      idempotencyKey: `stripe-webhook:no-key:${
+        new Date().toISOString().slice(0, 13)
+      }`,
+    });
+    return new Response(
+      JSON.stringify({ error: "Stripe secret key not configured" }),
+      {
+        status: 503,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
+    );
+  }
+
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
   if (!supabaseUrl || !supabaseServiceKey) {
@@ -55,7 +95,8 @@ serve(async (req) => {
     auth: { persistSession: false },
   });
 
-  // Get the request body and signature
+  // Get the request body and signature. The raw body must be preserved for
+  // HMAC verification; parsing it first would change the signed bytes.
   const signature = req.headers.get("stripe-signature");
   if (!signature) {
     return new Response(
@@ -68,126 +109,41 @@ serve(async (req) => {
   }
 
   const rawBody = await req.text();
-
-  // Verify the signature (we'll do a basic verification; in production, use the stripe library)
-  // We'll implement a basic verification using the secret as the key for HMAC SHA256.
-  // We'll use the crypto.subtle API.
-
-  // We'll verify the signature by reconstructing the signed payload.
-  // The signature header looks like: t=1678964545,v1=abcdef123456,v0=abcdef123456
-  // We'll extract the timestamp and the v1 signature.
-  const parts = signature.split(",").reduce(
-    (acc: Record<string, string>, part) => {
-      const [key, value] = part.split("=");
-      if (key && value) acc[key] = value;
-      return acc;
-    },
-    {},
+  const signatureResult = await verifyStripeSignature(
+    rawBody,
+    signature,
+    stripeWebhookSecret,
   );
-  const t = parts.t;
-  const v1 = parts.v1;
 
-  if (!t || !v1) {
-    return new Response(JSON.stringify({ error: "Invalid signature format" }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  }
-
-  // Check timestamp tolerance (5 minutes)
-  const timestamp = parseInt(t, 10);
-  const now = Math.floor(Date.now() / 1000);
-  if (Math.abs(timestamp - now) > 60 * 5) {
-    return new Response(
-      JSON.stringify({ error: "Timestamp outside tolerance" }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      },
-    );
-  }
-
-  // The signed payload is `${timestamp}.${rawBody}`
-  const signedPayload = `${t}.${rawBody}`;
-
-  // We'll use the webhook secret as the key for HMAC SHA256
-  const keyBuffer = new TextEncoder().encode(stripeWebhookSecret);
-  const dataBuffer = new TextEncoder().encode(signedPayload);
-
-  // Import the key and verify
-  try {
-    const key = await crypto.subtle.importKey(
-      "raw",
-      keyBuffer,
-      { name: "HMAC", hash: "SHA-256" },
-      false,
-      ["verify"],
-    );
-
-    const signatureBuffer = hexToUint8Array(v1);
-    const isValid = await crypto.subtle.verify(
-      "HMAC",
-      key,
-      signatureBuffer,
-      dataBuffer,
-    );
-
-    if (!isValid) {
-      notifyOwnerInBackground({
-        type: "erro",
-        subject: "Assinatura de webhook Stripe inválida",
-        data: {
-          servico: "stripe-webhook",
-          mensagem: "Assinatura HMAC inválida",
-          status_http: 400,
-          origem: "stripe-webhook",
-        },
-        idempotencyKey: `stripe-webhook:bad-signature:${t}`,
-      });
-      return new Response(JSON.stringify({ error: "Invalid signature" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-  } catch (err) {
-    console.error("Signature verification failed:", err);
+  if (!signatureResult.ok) {
+    const reason = signatureResult.reason ?? "invalid_signature";
     notifyOwnerInBackground({
       type: "erro",
-      subject: "Falha ao verificar assinatura do webhook Stripe",
+      subject: "Assinatura de webhook Stripe inválida",
       data: {
         servico: "stripe-webhook",
-        mensagem: err instanceof Error ? err.message : String(err),
-        status_http: 500,
+        mensagem: reason,
+        status_http: 400,
         origem: "stripe-webhook",
       },
+      idempotencyKey: `stripe-webhook:bad-signature:${reason}:${
+        Math.floor(Date.now() / 60000)
+      }`,
     });
     return new Response(
-      JSON.stringify({ error: "Signature verification error" }),
+      JSON.stringify({
+        error: reason === "timestamp_outside_tolerance"
+          ? "Timestamp outside tolerance"
+          : "Invalid signature",
+      }),
       {
-        status: 500,
+        status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       },
     );
   }
 
   // Parse the event
-  interface StripeSession {
-    metadata?: Record<string, unknown> | null;
-    customer?: unknown;
-    subscription?: unknown;
-    amount_total?: unknown;
-    currency?: unknown;
-  }
-  interface StripeInvoice {
-    subscription?: unknown;
-    period_end?: unknown;
-    id?: unknown;
-    payment_intent?: unknown;
-  }
-  interface StripeSubscription {
-    id?: unknown;
-    status?: unknown;
-  }
   interface StripeCharge {
     id?: unknown;
     payment_intent?: unknown;
@@ -203,7 +159,7 @@ serve(async (req) => {
   interface StripeEvent {
     id: string;
     type: string;
-    data: { object: StripeSession | StripeInvoice };
+    data: { object: unknown };
   }
   interface PendingPaymentRow {
     id: string;
@@ -237,618 +193,157 @@ serve(async (req) => {
     });
   }
 
-  // Idempotency: we'll check if we've already processed this event by looking at the metadata of the pending payment
-  // We'll store processed event IDs in the metadata of the pending payment record.
-  // We'll do this for events that are related to a pending payment (via metadata).
+  const notifyOperatorOfConfirmedPayment = async (args: {
+    paymentId: string;
+    applicationId: string | null;
+    amount: number | null;
+    currency: string | null;
+  }): Promise<void> => {
+    if (!args.applicationId) return;
+    const { data: application } = await supabase
+      .from("applications")
+      .select("id, user_id, plan_key, full_name, email, country")
+      .eq("id", args.applicationId)
+      .maybeSingle();
+    if (!application) return;
+
+    try {
+      await fetch(`${supabaseUrl}/functions/v1/operator-notification`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${supabaseServiceKey}`,
+        },
+        body: JSON.stringify({
+          paymentId: args.paymentId,
+          applicationId: args.applicationId,
+          userId: application.user_id,
+          customerName: application.full_name ?? null,
+          customerEmail: application.email ?? null,
+          customerCountry: application.country ?? null,
+          plan: application.plan_key ?? null,
+          amount: args.amount,
+          currency: args.currency ?? "usd",
+          method: "stripe",
+          confirmationTimestamp: new Date().toISOString(),
+        }),
+      });
+    } catch (notifyErr) {
+      console.error("Operator notification dispatch failed:", notifyErr);
+    }
+  };
+
+  const handleConfirmationResult = (
+    result: ConfirmationResult,
+    label: string,
+  ): void => {
+    if (result.status === "retryable_error") {
+      throw new Error(`${label}_retryable:${result.reason ?? "unknown"}`);
+    }
+    if (result.status === "not_verified") {
+      console.error(`${label}: verification failed`, {
+        payment_id: result.paymentId,
+        reason: result.reason,
+      });
+      notifyOwnerInBackground({
+        type: "erro",
+        subject: `Verificação de pagamento Stripe falhou (${label})`,
+        data: {
+          servico: "stripe-webhook",
+          evento: label,
+          payment_id: result.paymentId ?? null,
+          motivo: result.reason ?? "unknown",
+          origem: "stripe-webhook",
+        },
+        idempotencyKey: `stripe-verify-failed:${
+          result.paymentId ?? "unknown"
+        }:${result.reason ?? "unknown"}`,
+      });
+      return;
+    }
+    if (result.status === "not_found") {
+      console.warn(`${label}: payment not found`, { reason: result.reason });
+    }
+  };
 
   // Handle the event
   try {
     switch (event.type) {
       case "checkout.session.completed": {
-        const session = event.data.object as StripeSession;
-        const meta = session.metadata ?? {};
-        const pendingPaymentId = typeof meta.pending_payment_id === "string"
-          ? meta.pending_payment_id
-          : null;
-        const applicationId = typeof meta.application_id === "string"
-          ? meta.application_id
-          : null;
-        if (!pendingPaymentId || !applicationId) {
-          console.warn(
-            "No pending_payment_id or application_id in session metadata",
-          );
-          break;
-        }
-
-        // Get the pending payment record
-        const { data: pendingPaymentRaw, error: pendingError } = await supabase
-          .from("pending_payments")
-          .select("id, user_id, metadata, status_enum")
-          .eq("id", pendingPaymentId)
-          .single();
-
-        if (pendingError || !pendingPaymentRaw) {
-          console.error("Failed to fetch pending payment:", pendingError);
-          break;
-        }
-        const pendingPayment = pendingPaymentRaw as PendingPaymentRow;
-
-        // Check idempotency: see if we've already processed this event for this pending payment
-        const metadata =
-          (pendingPayment.metadata as Record<string, unknown> | null) ?? {};
-        const processedEventIds: string[] =
-          (metadata.processed_event_ids as string[]) || [];
-        if (processedEventIds.includes(event.id)) {
-          console.log(
-            `Already processed event ${event.id} for pending payment ${pendingPaymentId}`,
-          );
-          break;
-        }
-
-        // Update the pending payment with stripe customer and subscription ids
-        const updateData: Record<string, unknown> = {
-          status_enum: "confirmed", // canonical
-          metadata: {
-            ...metadata,
-            stripe_customer_id: session.customer,
-            stripe_subscription_id: session.subscription,
-            last_applied_status: "confirmed",
-            // Add the event id to processed list
-            processed_event_ids: [...processedEventIds, event.id],
-          },
-        };
-
-        const { error: updateError } = await supabase
-          .from("pending_payments")
-          .update(updateData)
-          .eq("id", pendingPaymentId);
-
-        if (updateError) {
-          console.error("Failed to update pending payment:", updateError);
-          break;
-        }
-
-        // Update the application record
-        // payment_status uses "payment_confirmed" per spec; activation is NEVER automatic.
-        const { data: application, error: appError } = await supabase
-          .from("applications")
-          .update({
-            payment_status: "payment_confirmed",
-            activation_status: "activation_pending",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", applicationId)
-          .select("id, user_id, plan_key, full_name, email, country")
-          .single();
-
-        if (appError || !application) {
-          console.error("Failed to update application:", appError);
-          // We don't break here because the pending payment update succeeded, but we should log the error
-          console.error(
-            "Application update failed, but pending payment was updated.",
-          );
-        }
-
-        // Create an audit log entry for the payment confirmation
-        const { error: auditError } = await supabase
-          .from("payment_audit_log")
-          .insert({
-            payment_table: "pending_payments",
-            payment_id: pendingPaymentId,
-            user_id: pendingPayment.user_id,
-            actor: "system",
-            source: "stripe",
-            event_id: event.id,
-            previous_status: null, // We don't have the previous status easily; we'll set to null
-            new_status: "payment_confirmed",
-            reason: "Payment confirmed via Stripe checkout.session.completed",
-            created_at: new Date().toISOString(),
+        const session = event.data.object as StripeCheckoutSessionLike;
+        const result = await confirmFromCheckoutSession(
+          supabase,
+          stripeSecretKey,
+          session,
+          event.id,
+        );
+        handleConfirmationResult(result, "checkout.session.completed");
+        if (result.status === "confirmed" && result.paymentId) {
+          await notifyOperatorOfConfirmedPayment({
+            paymentId: result.paymentId,
+            applicationId: result.applicationId ?? null,
+            amount: typeof session.amount_total === "number"
+              ? session.amount_total
+              : null,
+            currency: typeof session.currency === "string"
+              ? session.currency
+              : null,
           });
-
-        if (auditError) {
-          console.error("Audit log error:", auditError);
         }
-
-        // Notify the operator with a secure dashboard link. Fire-and-forget; never blocks the webhook.
-        // We pass the canonical USD amount and only the minimum PII required for operator action.
-        try {
-          await fetch(`${supabaseUrl}/functions/v1/operator-notification`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${supabaseServiceKey}`,
-            },
-            body: JSON.stringify({
-              paymentId: pendingPaymentId,
-              applicationId,
-              userId: pendingPayment.user_id,
-              customerName: application?.full_name ?? null,
-              customerEmail: application?.email ?? null,
-              customerCountry: application?.country ?? null,
-              plan: application?.plan_key ?? null,
-              amount: typeof session.amount_total === "number"
-                ? session.amount_total
-                : null,
-              currency: session.currency ?? "usd",
-              method: "stripe",
-              confirmationTimestamp: new Date().toISOString(),
-            }),
-          });
-        } catch (notifyErr) {
-          console.error("Operator notification dispatch failed:", notifyErr);
-        }
-
         break;
       }
       case "invoice.paid": {
-        const invoice = event.data.object as StripeInvoice;
-        const subscriptionId = invoice.subscription;
-        if (!subscriptionId) {
-          console.warn("No subscription in invoice");
-          break;
-        }
-
-        // Find the pending payment by stripe_subscription_id in metadata
-        const { data: pendingPayments, error: listError } = await supabase
-          .from("pending_payments")
-          .select("id, metadata")
-          .eq("method", "stripe");
-
-        if (listError || !pendingPayments) {
-          console.error("Failed to list pending payments:", listError);
-          break;
-        }
-
-        const pendingPayment = (pendingPayments as PendingPaymentRow[]).find(
-          (pp) => {
-            const meta = pp.metadata ?? {};
-            return meta.stripe_subscription_id === subscriptionId;
-          },
+        const invoice = event.data.object as StripeInvoiceLike;
+        const result = await confirmFromInvoicePaid(
+          supabase,
+          stripeSecretKey,
+          invoice,
+          event.id,
         );
-
-        if (!pendingPayment) {
-          console.warn(
-            `No pending payment found for subscription ${subscriptionId}`,
-          );
-          break;
-        }
-
-        // Check idempotency
-        const metadata =
-          (pendingPayment.metadata as Record<string, unknown> | null) ?? {};
-        const processedEventIds: string[] =
-          (metadata.processed_event_ids as string[]) || [];
-        if (processedEventIds.includes(event.id)) {
-          console.log(
-            `Already processed event ${event.id} for pending payment ${pendingPayment.id}`,
-          );
-          break;
-        }
-
-        // Update the pending payment to active and update period end
-        const periodEnd = new Date(
-          (typeof invoice.period_end === "number" ? invoice.period_end : 0) *
-            1000,
-        ).toISOString();
-        // Extract charge_id from the payment_intent to support charge.refunded / charge.dispute lookups.
-        const paymentIntentId = typeof invoice.payment_intent === "string"
-          ? invoice.payment_intent
-          : (invoice.payment_intent as { id?: unknown } | null)?.id ?? null;
-        const updateData: Record<string, unknown> = {
-          metadata: {
-            ...metadata,
-            stripe_latest_invoice_id: invoice.id,
-            stripe_latest_payment_intent: paymentIntentId,
-            current_period_end: periodEnd,
-            processed_event_ids: [...processedEventIds, event.id],
-          },
-          // We don't change the status_enum here; it remains "payment_confirmed" from checkout.session.completed
-        };
-
-        const { error: updateError } = await supabase
-          .from("pending_payments")
-          .update(updateData)
-          .eq("id", pendingPayment.id);
-
-        if (updateError) {
-          console.error("Failed to update pending payment:", updateError);
-          break;
-        }
-
-        // Update the application record's payment_status to payment_confirmed (idempotent)
-        const applicationId = getApplicationId(pendingPayment.metadata);
-        if (!applicationId) {
-          console.error(
-            "invoice.paid: pending payment has no application_id; skipping application update",
-          );
-        } else {
-          const { data: application, error: appError } = await supabase
-            .from("applications")
-            .update({
-              payment_status: "payment_confirmed",
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", applicationId)
-            .select()
-            .single();
-
-          if (appError || !application) {
-            console.error(
-              "Failed to update application payment status:",
-              appError,
-            );
-          }
-        }
-
-        // Create an audit log entry for the invoice paid
-        const { error: auditError } = await supabase
-          .from("payment_audit_log")
-          .insert({
-            payment_table: "pending_payments",
-            payment_id: pendingPayment.id,
-            user_id: typeof pendingPayment.user_id === "string"
-              ? pendingPayment.user_id
+        handleConfirmationResult(result, "invoice.paid");
+        if (result.status === "confirmed" && result.paymentId) {
+          await notifyOperatorOfConfirmedPayment({
+            paymentId: result.paymentId,
+            applicationId: result.applicationId ?? null,
+            amount: typeof invoice.amount_paid === "number"
+              ? invoice.amount_paid
               : null,
-            actor: "system",
-            source: "stripe",
-            event_id: event.id,
-            previous_status: "payment_confirmed",
-            new_status: "payment_confirmed",
-            reason: "Invoice paid via Stripe (recurring)",
-            created_at: new Date().toISOString(),
+            currency: typeof invoice.currency === "string"
+              ? invoice.currency
+              : null,
           });
-
-        if (auditError) {
-          console.error("Audit log error:", auditError);
         }
-
-        notifyOwnerInBackground({
-          type: "pagamento",
-          subject: "Renovação paga (Stripe)",
-          data: {
-            payment_id: pendingPayment.id,
-            application_id: getApplicationId(pendingPayment.metadata),
-            stripe_subscription_id: invoice.subscription,
-            metodo: "stripe",
-            status: "renewed",
-            stripe_event_id: event.id,
-            origem: "stripe-webhook",
-          },
-          idempotencyKey: `stripe:${event.id}:invoice.paid`,
-        });
-
         break;
       }
       case "invoice.payment_failed": {
-        const invoice = event.data.object as StripeInvoice;
-        const subscriptionId = invoice.subscription;
-        if (!subscriptionId) {
-          break;
-        }
-
-        const { data: pendingPayments, error: listError } = await supabase
-          .from("pending_payments")
-          .select("id, metadata")
-          .eq("method", "stripe");
-
-        if (listError || !pendingPayments) {
-          break;
-        }
-
-        const pendingPayment = (pendingPayments as PendingPaymentRow[]).find(
-          (pp) => {
-            const meta = pp.metadata ?? {};
-            return meta.stripe_subscription_id === subscriptionId;
-          },
+        const invoice = event.data.object as StripeInvoiceLike;
+        const result = await markInvoicePaymentFailed(
+          supabase,
+          stripeSecretKey,
+          invoice,
+          event.id,
         );
-
-        if (!pendingPayment) {
-          break;
-        }
-
-        // Check idempotency
-        const metadata =
-          (pendingPayment.metadata as Record<string, unknown> | null) ?? {};
-        const processedEventIds: string[] =
-          (metadata.processed_event_ids as string[]) || [];
-        if (processedEventIds.includes(event.id)) {
-          break;
-        }
-
-        const updateData: Record<string, unknown> = {
-          metadata: {
-            ...metadata,
-            processed_event_ids: [...processedEventIds, event.id],
-          },
-          status_enum: "past_due", // Update payment status to past_due
-        };
-
-        const { error: updateError } = await supabase
-          .from("pending_payments")
-          .update(updateData)
-          .eq("id", pendingPayment.id);
-
-        if (updateError) {
-          console.error("Failed to update pending payment:", updateError);
-        }
-
-        // Update the application record's payment_status to past_due
-        const applicationId = getApplicationId(pendingPayment.metadata);
-        if (!applicationId) {
-          console.error(
-            "invoice.payment_failed: pending payment has no application_id; skipping application update",
-          );
-        } else {
-          const { data: application, error: appError } = await supabase
-            .from("applications")
-            .update({
-              payment_status: "past_due",
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", applicationId)
-            .select()
-            .single();
-
-          if (appError || !application) {
-            console.error(
-              "Failed to update application payment status:",
-              appError,
-            );
-          }
-        }
-
-        notifyOwnerInBackground({
-          type: "pagamento",
-          subject: "Pagamento falhou (Stripe)",
-          data: {
-            payment_id: pendingPayment.id,
-            application_id: getApplicationId(pendingPayment.metadata),
-            metodo: "stripe",
-            status: "failed",
-            stripe_event_id: event.id,
-            origem: "stripe-webhook",
-          },
-          idempotencyKey: `stripe:${event.id}:invoice.payment_failed`,
-        });
-
+        handleConfirmationResult(result, "invoice.payment_failed");
         break;
       }
       case "customer.subscription.updated": {
-        const subscription = event.data.object as StripeSubscription;
-        const subscriptionId = subscription.id;
-        if (!subscriptionId) {
-          break;
-        }
-
-        const { data: pendingPayments, error: listError } = await supabase
-          .from("pending_payments")
-          .select("id, metadata")
-          .eq("method", "stripe");
-
-        if (listError || !pendingPayments) {
-          break;
-        }
-
-        const pendingPayment = (pendingPayments as PendingPaymentRow[]).find(
-          (pp) => {
-            const meta = pp.metadata ?? {};
-            return meta.stripe_subscription_id === subscriptionId;
-          },
+        const subscription = event.data.object as StripeSubscriptionLike;
+        const result = await applySubscriptionStatus(
+          supabase,
+          subscription,
+          event.id,
         );
-
-        if (!pendingPayment) {
-          break;
-        }
-
-        // Check idempotency
-        const metadata =
-          (pendingPayment.metadata as Record<string, unknown> | null) ?? {};
-        const processedEventIds: string[] =
-          (metadata.processed_event_ids as string[]) || [];
-        if (processedEventIds.includes(event.id)) {
-          break;
-        }
-
-        // Determine the new status based on subscription status.
-        // pending_payments.status_enum uses canonical values only.
-        // applications.payment_status uses "payment_confirmed" per spec when active.
-        let canonicalStatus: string = "confirmed";
-        let appStatus: string = "payment_confirmed";
-        switch (subscription.status) {
-          case "active":
-            canonicalStatus = "confirmed";
-            appStatus = "payment_confirmed";
-            break;
-          case "past_due":
-            canonicalStatus = "past_due";
-            appStatus = "past_due";
-            break;
-          case "canceled":
-            canonicalStatus = "canceled";
-            appStatus = "canceled";
-            break;
-          case "incomplete":
-            canonicalStatus = "incomplete";
-            appStatus = "incomplete";
-            break;
-          case "incomplete_expired":
-            canonicalStatus = "incomplete_expired";
-            appStatus = "incomplete_expired";
-            break;
-          case "trialing":
-            canonicalStatus = "trialing";
-            appStatus = "trialing";
-            break;
-          case "paused":
-            canonicalStatus = "paused";
-            appStatus = "paused";
-            break;
-          default:
-            canonicalStatus = "confirmed";
-            appStatus = "payment_confirmed";
-        }
-
-        const updateData: Record<string, unknown> = {
-          status_enum: canonicalStatus,
-          metadata: {
-            ...((pendingPayment.metadata as Record<string, unknown> | null) ??
-              {}),
-            last_applied_status: canonicalStatus,
-            processed_event_ids: [
-              ...((pendingPayment.metadata?.processed_event_ids as string[]) ??
-                []),
-              event.id,
-            ],
-          },
-        };
-
-        const { error: updateError } = await supabase
-          .from("pending_payments")
-          .update(updateData)
-          .eq("id", pendingPayment.id);
-
-        if (updateError) {
-          console.error("Failed to update pending payment:", updateError);
-        }
-
-        // Update the application record's payment_status
-        const applicationId = getApplicationId(pendingPayment.metadata);
-        if (!applicationId) {
-          console.error(
-            "customer.subscription.updated: pending payment has no application_id; skipping application update",
-          );
-        } else {
-          const { data: application, error: appError } = await supabase
-            .from("applications")
-            .update({
-              payment_status: appStatus,
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", applicationId)
-            .select()
-            .single();
-
-          if (appError || !application) {
-            console.error(
-              "Failed to update application payment status:",
-              appError,
-            );
-          }
-        }
-
-        notifyOwnerInBackground({
-          type: "pagamento",
-          subject: `Assinatura atualizada (${canonicalStatus}) — Stripe`,
-          data: {
-            payment_id: pendingPayment.id,
-            application_id: getApplicationId(pendingPayment.metadata),
-            status: canonicalStatus,
-            metodo: "stripe",
-            stripe_event_id: event.id,
-            origem: "stripe-webhook",
-          },
-          idempotencyKey: `stripe:${event.id}:customer.subscription.updated`,
-        });
-
+        handleConfirmationResult(result, "customer.subscription.updated");
         break;
       }
       case "customer.subscription.deleted": {
-        const subscription = event.data.object as StripeSubscription;
-        const subscriptionId = subscription.id;
-        if (!subscriptionId) {
-          break;
-        }
-
-        const { data: pendingPayments, error: listError } = await supabase
-          .from("pending_payments")
-          .select("id, metadata")
-          .eq("method", "stripe");
-
-        if (listError || !pendingPayments) {
-          break;
-        }
-
-        const pendingPayment = (pendingPayments as PendingPaymentRow[]).find(
-          (pp) => {
-            const meta = pp.metadata ?? {};
-            return meta.stripe_subscription_id === subscriptionId;
-          },
+        const subscription = event.data.object as StripeSubscriptionLike;
+        const result = await applySubscriptionStatus(
+          supabase,
+          { ...subscription, status: subscription.status ?? "canceled" },
+          event.id,
         );
-
-        if (!pendingPayment) {
-          break;
-        }
-
-        // Check idempotency
-        const metadata =
-          (pendingPayment.metadata as Record<string, unknown> | null) ?? {};
-        const processedEventIds: string[] =
-          (metadata.processed_event_ids as string[]) || [];
-        if (processedEventIds.includes(event.id)) {
-          break;
-        }
-
-        const updateData: Record<string, unknown> = {
-          status_enum: "canceled",
-          metadata: {
-            ...((pendingPayment.metadata as Record<string, unknown> | null) ??
-              {}),
-            processed_event_ids: [
-              ...((pendingPayment.metadata?.processed_event_ids as string[]) ??
-                []),
-              event.id,
-            ],
-          },
-        };
-
-        const { error: updateError } = await supabase
-          .from("pending_payments")
-          .update(updateData)
-          .eq("id", pendingPayment.id);
-
-        if (updateError) {
-          console.error("Failed to update pending payment:", updateError);
-        }
-
-        // Update the application record's payment_status to canceled
-        const applicationId = getApplicationId(pendingPayment.metadata);
-        if (!applicationId) {
-          console.error(
-            "customer.subscription.deleted: pending payment has no application_id; skipping application update",
-          );
-        } else {
-          const { data: application, error: appError } = await supabase
-            .from("applications")
-            .update({
-              payment_status: "canceled",
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", applicationId)
-            .select()
-            .single();
-
-          if (appError || !application) {
-            console.error(
-              "Failed to update application payment status:",
-              appError,
-            );
-          }
-        }
-
-        notifyOwnerInBackground({
-          type: "pagamento",
-          subject: "Assinatura cancelada (Stripe)",
-          data: {
-            payment_id: pendingPayment.id,
-            application_id: getApplicationId(pendingPayment.metadata),
-            status: "canceled",
-            metodo: "stripe",
-            stripe_event_id: event.id,
-            origem: "stripe-webhook",
-          },
-          idempotencyKey: `stripe:${event.id}:customer.subscription.deleted`,
-        });
-
+        handleConfirmationResult(result, "customer.subscription.deleted");
         break;
       }
       case "charge.refunded": {
@@ -902,6 +397,7 @@ serve(async (req) => {
         const { error: updateError } = await supabase
           .from("pending_payments")
           .update({
+            status: "refunded",
             status_enum: "refunded",
             metadata: {
               ...metadata,
@@ -954,7 +450,7 @@ serve(async (req) => {
           actor: "system",
           source: "stripe",
           event_id: event.id,
-          previous_status: metadata.last_applied_status ?? "payment_confirmed",
+          previous_status: pendingPayment.status_enum ?? null,
           new_status: "refunded",
           reason: "Charge refunded via Stripe charge.refunded",
           created_at: new Date().toISOString(),
@@ -1024,6 +520,7 @@ serve(async (req) => {
         const { error: updateError } = await supabase
           .from("pending_payments")
           .update({
+            status: "disputed",
             status_enum: "disputed",
             metadata: {
               ...metadata,
@@ -1076,7 +573,7 @@ serve(async (req) => {
           actor: "system",
           source: "stripe",
           event_id: event.id,
-          previous_status: metadata.last_applied_status ?? "payment_confirmed",
+          previous_status: pendingPayment.status_enum ?? null,
           new_status: "disputed",
           reason: `Dispute created via Stripe charge.dispute.created (${
             dispute.reason ?? "unknown"
@@ -1142,15 +639,3 @@ serve(async (req) => {
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
 });
-
-// Helper function to convert hex string to Uint8Array
-function hexToUint8Array(hex: string): Uint8Array<ArrayBuffer> {
-  if (hex.length % 2 !== 0) {
-    throw new Error("Invalid hex string");
-  }
-  const bytes = new Uint8Array(new ArrayBuffer(hex.length / 2));
-  for (let i = 0; i < hex.length; i += 2) {
-    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
-  }
-  return bytes;
-}

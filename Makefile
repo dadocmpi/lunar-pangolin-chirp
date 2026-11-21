@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security typecheck build
+.PHONY: test test-payment test-payment-option-a test-stripe test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -12,6 +12,10 @@ test:
 # Alternative test harness (Option A explicitly named).
 test-payment-option-a:
 	deno run -A supabase/functions/_test/run-tests-option-a.ts
+
+# Stripe checkout verification, status mapping and idempotency.
+test-stripe:
+	deno run -A supabase/functions/_test/stripe-payment-tests.ts
 
 # Tradovate integration unit tests (PnL engine, rate limiting, auth/REST/crypto).
 # No network, no DB, no secrets required.
