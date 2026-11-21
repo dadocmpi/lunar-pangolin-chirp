@@ -7,7 +7,7 @@ name: Supabase release (migrations + functions + smoke)
 #
 # It runs three steps in this exact order and STOPS at the first failure:
 #   1. supabase db push          -> apply every pending migration (schema first)
-#   2. supabase functions deploy -> deploy every Edge Function (code second)
+#   2. supabase functions deploy -> deploy confirm-signup + crypto-confirmation (code second)
 #   3. smoke test                -> fail if any function answers 404 / NOT_FOUND
 #
 # Schema before code is the whole point: Edge Functions call tables and RPCs
@@ -83,11 +83,12 @@ jobs:
           echo "Applied migration head:"
           supabase migration list --linked --password "$SUPABASE_DB_PASSWORD"
 
-      - name: "Step 2/3 - deploy all Edge Functions"
+      - name: "Step 2/3 - deploy the Feature 1 Edge Functions"
         id: functions
         run: |
           set -euo pipefail
-          supabase functions deploy --project-ref "$SUPABASE_PROJECT_ID" --use-api
+          supabase functions deploy confirm-signup --project-ref "$SUPABASE_PROJECT_ID" --use-api --yes
+          supabase functions deploy crypto-confirmation --project-ref "$SUPABASE_PROJECT_ID" --use-api --yes
 
       - name: "Step 3/3 - smoke test every function (fail on any 404)"
         id: smoke
