@@ -1,5 +1,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
+import {
+  createClient,
+  type SupabaseClient,
+} from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import {
   isPaymentsEnabled,
@@ -53,7 +56,7 @@ function stripeRequest(
 }
 
 interface ResolveCustomerArgs {
-  supabase: ReturnType<typeof createClient>;
+  supabase: SupabaseClient;
   stripeSecretKey: string;
   userId: string;
   email: string;
@@ -79,6 +82,9 @@ async function resolveStripeCustomer(args: ResolveCustomerArgs): Promise<string 
   if (billing.state) form.append("address[state]", billing.state);
   if (billing.postalCode) form.append("address[postal_code]", billing.postalCode);
   if (billing.country) form.append("address[country]", billing.country);
+  // Stamped on every create/update so the webhook can prove the Customer
+  // belongs to this user even when it was created on an earlier checkout.
+  form.append("metadata[user_id]", userId);
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -101,7 +107,6 @@ async function resolveStripeCustomer(args: ResolveCustomerArgs): Promise<string 
     // and create a fresh one.
   }
 
-  form.append("metadata[user_id]", userId);
   const res = await stripeRequest("POST", "/customers", form, stripeSecretKey);
   if (!res.ok) return null;
   const customer = await res.json();
@@ -370,6 +375,7 @@ serve(async (req) => {
   // Create Stripe Checkout Session
   const sessionData = new URLSearchParams();
   sessionData.append("mode", "subscription");
+  sessionData.append("payment_method_types[0]", "card");
   sessionData.append("line_items[0][price]", priceId);
   sessionData.append("line_items[0][quantity]", "1");
   sessionData.append(
@@ -380,6 +386,23 @@ serve(async (req) => {
   sessionData.append("metadata[pending_payment_id]", pendingPayment.id);
   sessionData.append("metadata[idempotency_key]", idempotencyKey);
   sessionData.append("metadata[application_id]", applicationId);
+  sessionData.append("metadata[user_id]", user.id);
+  sessionData.append("metadata[plan_id]", canonicalPlan.id);
+  // The subscription carries the same identity so invoice.paid can recover a
+  // lost checkout.session.completed event without trusting the browser.
+  sessionData.append(
+    "subscription_data[metadata][pending_payment_id]",
+    pendingPayment.id,
+  );
+  sessionData.append("subscription_data[metadata][user_id]", user.id);
+  sessionData.append(
+    "subscription_data[metadata][application_id]",
+    applicationId,
+  );
+  sessionData.append(
+    "subscription_data[metadata][plan_id]",
+    canonicalPlan.id,
+  );
   if (customerId) {
     // A resolved Customer already carries name/email/phone/address; Stripe
     // reuses them on the session and the receipt. customer_update lets the
@@ -411,9 +434,15 @@ serve(async (req) => {
 
     const session = await stripeRes.json();
     const sessionId = session.id;
+    const sessionCustomerId = typeof session.customer === "string"
+      ? session.customer
+      : customerId;
+    const sessionSubscriptionId = typeof session.subscription === "string"
+      ? session.subscription
+      : null;
 
-    // Store stripe_session_id on the pending_payment so the success page can
-    // look up the correct row when Stripe redirects back with ?session_id={CHECKOUT_SESSION_ID}.
+    // Store the Stripe identity on the pending_payment so the success page can
+    // find the row and invoice.paid can recover a lost checkout event.
     if (sessionId) {
       await supabase
         .from("pending_payments")
@@ -422,9 +451,16 @@ serve(async (req) => {
             ...((pendingPayment.metadata as Record<string, unknown> | null) ??
               {}),
             stripe_session_id: sessionId,
+            ...(sessionCustomerId
+              ? { stripe_customer_id: sessionCustomerId }
+              : {}),
+            ...(sessionSubscriptionId
+              ? { stripe_subscription_id: sessionSubscriptionId }
+              : {}),
           },
         })
-        .eq("id", pendingPayment.id);
+        .eq("id", pendingPayment.id)
+        .eq("user_id", user.id);
     }
 
     return new Response(JSON.stringify({ url: session.url }), {

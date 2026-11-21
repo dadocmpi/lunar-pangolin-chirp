@@ -64,6 +64,70 @@ check(
   /amount_cents:\s*canonicalPlan\.priceCents/.test(stripeCheckout),
 );
 
+console.log('\n[2b] Stripe confirmation is server-verified');
+const stripeWebhook = read('supabase/functions/stripe-webhook/index.ts');
+const stripeConfirmation = read('supabase/functions/_shared/stripe/confirmation.ts');
+check(
+  'webhook verifies the signature before parsing the body',
+  stripeWebhook.includes('verifyStripeSignature(') &&
+    stripeWebhook.indexOf('verifyStripeSignature(') <
+      stripeWebhook.indexOf('JSON.parse(rawBody)'),
+);
+check(
+  'webhook confirms through the shared verified helper',
+  /confirmFromCheckoutSession\(/.test(stripeWebhook) &&
+    /confirmFromInvoicePaid\(/.test(stripeWebhook),
+);
+check(
+  'webhook never writes raw Stripe lifecycle strings',
+  !/status_enum:\s*"(past_due|incomplete|incomplete_expired|trialing|paused)"/.test(
+    stripeWebhook,
+  ) &&
+    !/status_enum:\s*"(past_due|incomplete|incomplete_expired|trialing|paused)"/.test(
+      stripeConfirmation,
+    ),
+);
+check(
+  'stripe-checkout pins the card payment method',
+  /payment_method_types\[0\]",\s*"card"/.test(stripeCheckout),
+);
+check(
+  'stripe-checkout stamps user_id on the Stripe Customer',
+  /metadata\[user_id\]/.test(stripeCheckout),
+);
+check(
+  'stripe-checkout stores the subscription id for invoice recovery',
+  /stripe_subscription_id/.test(stripeCheckout),
+);
+check(
+  'webhook fails closed when STRIPE_SECRET_KEY is missing',
+  /if \(!stripeSecretKey\)/.test(stripeWebhook),
+);
+check(
+  'webhook returns a retryable failure for a Stripe API error',
+  /retryable_error[\s\S]*?throw new Error/.test(stripeWebhook),
+);
+const stripeReconcile = read('supabase/functions/stripe-reconcile/index.ts');
+check(
+  'stripe-reconcile derives the user from the JWT',
+  /requireUser\(req\)/.test(stripeReconcile),
+);
+check(
+  'stripe-reconcile scopes the pending payment to the user',
+  /\.eq\("user_id", ctx\.user\.id\)/.test(stripeReconcile),
+);
+check(
+  'stripe-reconcile uses the shared verification helper',
+  /confirmFromCheckoutSession\(/.test(stripeReconcile) &&
+    /confirmFromInvoicePaid\(/.test(stripeReconcile),
+);
+check(
+  'stripe-reconcile requires a JWT in config.toml',
+  /\[functions\.stripe-reconcile\][\s\S]*?verify_jwt\s*=\s*true/.test(
+    read('supabase/config.toml'),
+  ),
+);
+
 console.log('\n[3] Legacy free-service endpoints stay disabled');
 for (const fn of ['card-checkout', 'paypal-checkout']) {
   const src = read(`supabase/functions/${fn}/index.ts`);

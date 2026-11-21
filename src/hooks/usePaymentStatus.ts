@@ -51,6 +51,7 @@ export interface PaymentStatusView {
 export function usePaymentStatus(
   paymentId: string | null,
   intervalMs: number = 5000,
+  refreshKey: number = 0,
 ): { view: PaymentStatusView | null; error: string | null } {
   const [view, setView] = useState<PaymentStatusView | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +116,7 @@ export function usePaymentStatus(
         clearInterval(intervalId);
       }
     };
-  }, [paymentId, intervalMs]);
+  }, [paymentId, intervalMs, refreshKey]);
 
   return { view, error };
 }

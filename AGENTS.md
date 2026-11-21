@@ -71,6 +71,18 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `card-checkout` and `paypal-checkout` are **hard-disabled** (HTTP 410): they used to activate a paid service from client-supplied values with no payment verification. Do not re-enable them; card payments go through `stripe-checkout`.
 - Test mode is server-side only (`TEST_PAYMENT_MODE` env). Never trust an `isTest` flag from the request body.
 
+## Stripe checkout verification (2026-11-21, `fix/stripe-checkout-verification`)
+- **The browser never confirms a payment.** `CheckoutSuccess` reads `payment-status`; it shows "Payment completed" only for the server-derived `confirmed` status. The Stripe success URL is not proof of payment.
+- **One verification path.** `supabase/functions/_shared/stripe/` holds the status model (`status.ts`), signature verifier (`signature.ts`), Stripe API fetchers (`api.ts`) and the evidence checks (`verification.ts`). `confirmation.ts` is the only module that writes a confirmed/failed/refunded/disputed status.
+- **Webhook order:** verify `Stripe-Signature` on the raw body → fetch the pending row → fetch the Stripe object with `STRIPE_SECRET_KEY` → check plan, USD amount, Price ID, Customer and Subscription identity → write both `status` and `status_enum`. Never trust metadata alone.
+- **Canonical statuses only.** `past_due`, `unpaid`, `incomplete` and `incomplete_expired` map to `failed`; `trialing` and `paused` map to `pending`; unknown values map to `failed`. `canceled` maps to `canceled`; `active` maps to `confirmed`, but a `customer.subscription.updated` with `active` alone stays `pending` until `invoice.paid` verifies the charge. A failed renewal must never leave the customer confirmed.
+- **Price IDs are server env.** `STRIPE_PRICE_<PLAN>_USD`; the expected Price ID comes from the canonical server plan. A missing Price ID fails closed (`price_not_configured`); never add a client Price ID or a hard-coded one.
+- **`stripe-checkout` stamps identity:** `metadata[user_id]` on the Stripe Customer, `metadata[pending_payment_id]`/`user_id`/`application_id`/`plan_id` on the Session and Subscription, and `stripe_session_id`/`stripe_subscription_id` on the pending row. `invoice.paid` can recover a lost checkout event from those ids.
+- **`stripe-reconcile`** (`verify_jwt=true`) is the customer retry path. It derives the user from the JWT, scopes the pending row to that user, fetches Stripe server-side and runs the same verification helper. It never activates an account.
+- **Idempotency:** `metadata.processed_event_ids` plus the unique `payment_audit_log(payment_table,payment_id,event_id)` index. Duplicate events are no-ops.
+- **Tests:** `make test-stripe` (56 checks), `npm run check:payments` (server-verification contract), and `deno check` on `stripe-webhook`, `stripe-reconcile` and `stripe-checkout`. Runbook: `docs/stripe-checkout-runbook.md`.
+- **Unresolved:** no canonical `signals` Stripe plan/Price ID; the Stripe webhook endpoint must be configured in the dashboard; refund/cancellation does not auto-deactivate a service; legal review and customer dunning emails remain open.
+
 ## Owner notifications (Resend)
 - ONE module sends every owner email: `supabase/functions/_shared/email.ts` → `notifyOwner({ type, subject, data, replyTo, idempotencyKey })`. Never call `api.resend.com` directly from new code; route through `notifyOwner` / `notifyOwnerInBackground`.
 - `src/lib/notifyOwner.ts` is the browser-side helper. It forwards to the `notify-owner` Edge Function (which owns the Resend key) — the key must never reach the client bundle.
