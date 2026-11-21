@@ -8,8 +8,44 @@ import { Input } from '@/components/ui/input';
 import { isSupabaseConfigured, supabase } from '@/integrations/supabase/client';
 import { showSuccess, showError } from '@/utils/toast';
 import { useTranslation } from 'react-i18next';
+import { classifyLinkError, isRecoveryRedirect, readLinkError } from '@/lib/authFlow';
 
 type Phase = 'loading' | 'ready' | 'invalid';
+
+// A recovery session survives a page refresh, but a normal signed-in session
+// must never be treated as one: only a session established from a recovery
+// link (or a refresh of it) may set a new password.
+const RECOVERY_FLAG = 'braxel-recovery-session';
+
+const hasRecoveryFlag = () => {
+  try {
+    return sessionStorage.getItem(RECOVERY_FLAG) === '1';
+  } catch {
+    return false;
+  }
+};
+
+const setRecoveryFlag = () => {
+  try {
+    sessionStorage.setItem(RECOVERY_FLAG, '1');
+  } catch {
+    // Storage can be unavailable in private mode; the URL still proves it.
+  }
+};
+
+const clearRecoveryFlag = () => {
+  try {
+    sessionStorage.removeItem(RECOVERY_FLAG);
+  } catch {
+    // Nothing to clear.
+  }
+};
+
+const RESET_ERROR_KEY = {
+  expired: 'auth.resetLinkExpired',
+  used: 'auth.resetLinkUsed',
+  invalid: 'auth.resetInvalidLink',
+} as const;
 
 /**
  * Completes the password-reset flow.
@@ -24,6 +60,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [phase, setPhase] = useState<Phase>('loading');
+  const [invalidKey, setInvalidKey] = useState('auth.resetInvalidLink');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [saving, setSaving] = useState(false);
@@ -36,6 +73,17 @@ const ResetPassword = () => {
 
     let cancelled = false;
     let unsubscribe: (() => void) | null = null;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const fail = (key: string) => {
+      if (cancelled) return;
+      setInvalidKey(key);
+      setPhase('invalid');
+    };
+
+    const failFromError = (error: { code?: string; message?: string } | null) => {
+      fail(RESET_ERROR_KEY[classifyLinkError(error ?? {})]);
+    };
 
     const establish = async (): Promise<boolean> => {
       const { data } = await supabase.auth.getSession();
@@ -43,19 +91,38 @@ const ResetPassword = () => {
     };
 
     const init = async () => {
-      const code = searchParams.get('code');
-      if (code) {
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-        // A refresh re-sends the same (already consumed) code; the persisted
-        // session is the real signal, so only fail when neither exists.
-        if (error && !(await establish())) {
-          if (!cancelled) setPhase('invalid');
-          return;
-        }
+      // An expired or already-used link carries the failure in the URL.
+      const linkError = readLinkError(window.location.hash, window.location.search);
+      if (linkError) {
+        failFromError({ code: linkError.code, message: linkError.description });
+        return;
       }
 
-      if (await establish()) {
-        if (!cancelled) setPhase('ready');
+      const recoveryUrl = isRecoveryRedirect(window.location.hash, window.location.search);
+      const code = searchParams.get('code');
+
+      if (code) {
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
+        if (error) {
+          // A refresh re-sends the same (already consumed) code; the recovery
+          // session persisted from the first visit is the real signal.
+          if (!(await establish()) || !(recoveryUrl || hasRecoveryFlag())) {
+            failFromError(error);
+            return;
+          }
+        }
+        if (await establish()) {
+          setRecoveryFlag();
+          setPhase('ready');
+          return;
+        }
+        failFromError(error);
+        return;
+      }
+
+      if ((await establish()) && (recoveryUrl || hasRecoveryFlag())) {
+        setRecoveryFlag();
+        setPhase('ready');
         return;
       }
 
@@ -63,15 +130,20 @@ const ResetPassword = () => {
       // recovery event instead of racing it.
       const { data } = supabase.auth.onAuthStateChange((event, session) => {
         if (session && (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN')) {
+          setRecoveryFlag();
           setPhase('ready');
         }
       });
       unsubscribe = () => data.subscription.unsubscribe();
 
-      setTimeout(async () => {
+      timer = setTimeout(async () => {
         if (cancelled) return;
-        if (await establish()) setPhase('ready');
-        else setPhase('invalid');
+        if ((await establish()) && (recoveryUrl || hasRecoveryFlag())) {
+          setRecoveryFlag();
+          setPhase('ready');
+        } else {
+          fail('auth.resetInvalidLink');
+        }
       }, 3000);
     };
 
@@ -79,6 +151,7 @@ const ResetPassword = () => {
 
     return () => {
       cancelled = true;
+      if (timer) clearTimeout(timer);
       unsubscribe?.();
     };
   }, [searchParams]);
@@ -100,6 +173,7 @@ const ResetPassword = () => {
       if (error) throw error;
       // A recovery session must not keep terminal access; the customer signs in
       // again with the new password.
+      clearRecoveryFlag();
       await supabase.auth.signOut();
       showSuccess(t('auth.resetSuccess'));
       navigate('/login', { replace: true });
@@ -137,7 +211,7 @@ const ResetPassword = () => {
           <div className="space-y-6 text-center">
             <AlertCircle className="mx-auto text-red-400" size={40} />
             <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
-              {t('auth.resetInvalidLink')}
+              {t(invalidKey)}
             </p>
             <Button
               onClick={() => navigate('/login', { replace: true })}
