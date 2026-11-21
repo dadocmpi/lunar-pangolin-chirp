@@ -27,3 +27,11 @@ verify_jwt = false
 # activation-submit / activation-review keep the default (JWT required).
 [functions.activation-config]
 verify_jwt = false
+
+# onboarding-config serves public onboarding configuration: whether the flow is
+# enabled, whether the future execution capability is enabled (false by
+# default), the configured prop firms, the canonical Braxel plan prices and the
+# disclosure version. Nothing sensitive: no secret, no credential, no user data.
+# onboarding-status / account-link-* keep the default (JWT required).
+[functions.onboarding-config]
+verify_jwt = false
