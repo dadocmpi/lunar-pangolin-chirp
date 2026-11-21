@@ -19,6 +19,8 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [confirmationRequired, setConfirmationRequired] = useState(false);
+  const [resending, setResending] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -89,9 +91,32 @@ const Login = () => {
     }
   };
 
+  const handleResendConfirmation = async () => {
+    if (!email.trim()) {
+      showError(t('auth.enterEmailFirst'));
+      return;
+    }
+    setResending(true);
+    try {
+      // Neutral outcome: the resend endpoint never confirms whether the
+      // address is registered.
+      await supabase.auth.resend({
+        type: 'signup',
+        email,
+        options: { emailRedirectTo: `${window.location.origin}/auth-callback` },
+      });
+    } catch {
+      // Same neutral copy for every failure.
+    } finally {
+      setResending(false);
+      showSuccess(t('auth.resendSent'));
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setConfirmationRequired(false);
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -124,11 +149,12 @@ const Login = () => {
           // An unconfirmed email is a registered account: never tell the
           // customer the account is missing or push them into a duplicate
           // registration.
-          showError(
-            kind === 'email_not_confirmed'
-              ? t('auth.emailNotConfirmed')
-              : t('auth.loginErrorMessage'),
-          );
+          if (kind === 'email_not_confirmed') {
+            setConfirmationRequired(true);
+            showError(t('auth.emailNotConfirmed'));
+          } else {
+            showError(t('auth.loginErrorMessage'));
+          }
           return;
         }
         throw error;
@@ -254,6 +280,23 @@ const Login = () => {
               {loading ? <Loader2 className="animate-spin" /> : t('auth.btnAccess')}
             </Button>
           </form>
+
+          {confirmationRequired && (
+            <div className="mt-6 border border-white/10 bg-white/[0.02] p-4 space-y-3 text-center">
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
+                {t('auth.emailNotConfirmedHint')}
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={resending}
+                onClick={handleResendConfirmation}
+                className="w-full rounded-none h-12 border-white/15 bg-transparent text-slate-300 hover:bg-white/5 hover:text-white font-bold text-[10px] uppercase tracking-[0.2em]"
+              >
+                {resending ? <Loader2 className="animate-spin" size={16} /> : t('auth.resendConfirmation')}
+              </Button>
+            </div>
+          )}
 
           <div className="mt-8 text-center">
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-widest">

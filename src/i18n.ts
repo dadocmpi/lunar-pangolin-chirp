@@ -420,7 +420,10 @@ usernameLabel: "Tradovate username",
     confirmEmailSent: "If this address needs confirmation, we've sent a link to {{email}}. If you already have an account, sign in or reset your password.",
     resendConfirmation: "Resend confirmation email",
     resendSent: "If the address needs confirmation, a new link is on its way.",
-    enterEmailFirst: "Enter your email address first."
+    enterEmailFirst: "Enter your email address first.",
+    emailNotConfirmedHint: "Didn't receive the email? Check your spam folder or resend the confirmation.",
+    resetLinkExpired: "This password reset link is invalid, has expired, or has already been used. Request a new link from the sign-in page.",
+    resetLinkUsed: "This password reset link has already been used. Sign in with your new password, or request a new link."
   },
   hero: {
     title1: "ELITE ALGORITHMIC",
@@ -1170,7 +1173,9 @@ usernameLabel: "Tradovate username",
     failedTitle: "Confirmation Failed",
     goToLogin: "Go to Login",
     invalidLink: "Invalid or expired confirmation link",
-    failedConfirm: "Failed to confirm email"
+    failedConfirm: "Failed to confirm email",
+    expiredLink: "This confirmation link has expired. Request a new one from the sign-in page.",
+    usedLink: "This confirmation link has already been used. Sign in to your account."
   },
   paymentsDisabled: {
     title: "Payments are currently disabled.",
@@ -2042,7 +2047,10 @@ usernameLabel: "Utilizador Tradovate",
     confirmEmailSent: "Se este endereço precisar de confirmação, enviámos um link para {{email}}. Se já tem uma conta, inicie sessão ou redefina a palavra-passe.",
     resendConfirmation: "Reenviar e-mail de confirmação",
     resendSent: "Se o endereço precisar de confirmação, um novo link está a caminho.",
-    enterEmailFirst: "Digite seu endereço de e-mail primeiro."
+    enterEmailFirst: "Digite seu endereço de e-mail primeiro.",
+    emailNotConfirmedHint: "Não recebeu o e-mail? Verifique a pasta de spam ou reenvie a confirmação.",
+    resetLinkExpired: "Este link de redefinição de palavra-passe é inválido, expirou ou já foi utilizado. Peça um novo link na página de início de sessão.",
+    resetLinkUsed: "Este link de redefinição de palavra-passe já foi utilizado. Inicie sessão com a nova palavra-passe ou peça um novo link."
   },
   hero: {
     title1: "GESTÃO ALGORÍTMICA",
@@ -2739,7 +2747,9 @@ usernameLabel: "Utilizador Tradovate",
     failedTitle: "Falha na Confirmação",
     goToLogin: "Ir para o Login",
     invalidLink: "Link de confirmação inválido ou expirado",
-    failedConfirm: "Falha ao confirmar o e-mail"
+    failedConfirm: "Falha ao confirmar o e-mail",
+    expiredLink: "Este link de confirmação expirou. Peça um novo na página de início de sessão.",
+    usedLink: "Este link de confirmação já foi utilizado. Inicie sessão na sua conta."
   },
   paymentsDisabled: {
     title: "Os pagamentos estão atualmente desativados.",
@@ -3611,7 +3621,10 @@ usernameLabel: "Nome utente Tradovate",
     confirmEmailSent: "Se questo indirizzo richiede una conferma, abbiamo inviato un link a {{email}}. Se hai già un account, accedi o reimposta la password.",
     resendConfirmation: "Invia di nuovo l'email di conferma",
     resendSent: "Se l'indirizzo richiede una conferma, un nuovo link è in arrivo.",
-    enterEmailFirst: "Inserisci prima il tuo indirizzo email."
+    enterEmailFirst: "Inserisci prima il tuo indirizzo email.",
+    emailNotConfirmedHint: "Non hai ricevuto l'e-mail? Controlla la cartella spam o invia di nuovo la conferma.",
+    resetLinkExpired: "Questo link di reimpostazione della password non è valido, è scaduto o è già stato utilizzato. Richiedi un nuovo link dalla pagina di accesso.",
+    resetLinkUsed: "Questo link di reimpostazione della password è già stato utilizzato. Accedi con la nuova password o richiedi un nuovo link."
   },
   hero: {
     title1: "GESTIONE ALGORITMICA",
@@ -4308,7 +4321,9 @@ usernameLabel: "Nome utente Tradovate",
     failedTitle: "Conferma non riuscita",
     goToLogin: "Vai al login",
     invalidLink: "Link di conferma non valido o scaduto",
-    failedConfirm: "Conferma email non riuscita"
+    failedConfirm: "Conferma email non riuscita",
+    expiredLink: "Questo link di conferma è scaduto. Richiedine uno nuovo dalla pagina di accesso.",
+    usedLink: "Questo link di conferma è già stato utilizzato. Accedi al tuo account."
   },
   paymentsDisabled: {
     title: "I pagamenti sono attualmente disabilitati.",
@@ -5180,7 +5195,10 @@ usernameLabel: "Usuario de Tradovate",
     confirmEmailSent: "Si esta dirección necesita confirmación, enviamos un enlace a {{email}}. Si ya tienes una cuenta, inicia sesión o restablece tu contraseña.",
     resendConfirmation: "Reenviar correo de confirmación",
     resendSent: "Si la dirección necesita confirmación, un nuevo enlace está en camino.",
-    enterEmailFirst: "Introduce primero tu dirección de correo."
+    enterEmailFirst: "Introduce primero tu dirección de correo.",
+    emailNotConfirmedHint: "¿No recibiste el correo? Revisa la carpeta de spam o reenvía la confirmación.",
+    resetLinkExpired: "Este enlace de restablecimiento de contraseña no es válido, ha caducado o ya se ha utilizado. Solicita un nuevo enlace desde la página de inicio de sesión.",
+    resetLinkUsed: "Este enlace de restablecimiento de contraseña ya se ha utilizado. Inicia sesión con tu nueva contraseña o solicita un nuevo enlace."
   },
   hero: {
     title1: "GESTIÓN ALGORÍTMICA",
@@ -5877,7 +5895,9 @@ usernameLabel: "Usuario de Tradovate",
     failedTitle: "Confirmación fallida",
     goToLogin: "Ir al inicio de sesión",
     invalidLink: "Enlace de confirmación no válido o caducado",
-    failedConfirm: "No se pudo confirmar el correo"
+    failedConfirm: "No se pudo confirmar el correo",
+    expiredLink: "Este enlace de confirmación ha caducado. Solicita uno nuevo desde la página de inicio de sesión.",
+    usedLink: "Este enlace de confirmación ya se ha utilizado. Inicia sesión en tu cuenta."
   },
   paymentsDisabled: {
     title: "Los pagos están actualmente deshabilitados.",
@@ -6749,7 +6769,10 @@ usernameLabel: "Identifiant Tradovate",
     confirmEmailSent: "Si cette adresse doit être confirmée, nous avons envoyé un lien à {{email}}. Si vous avez déjà un compte, connectez-vous ou réinitialisez votre mot de passe.",
     resendConfirmation: "Renvoyer l'e-mail de confirmation",
     resendSent: "Si l'adresse doit être confirmée, un nouveau lien est en route.",
-    enterEmailFirst: "Saisissez d’abord votre adresse e-mail."
+    enterEmailFirst: "Saisissez d’abord votre adresse e-mail.",
+    emailNotConfirmedHint: "Vous n’avez pas reçu l’e-mail ? Vérifiez le dossier spam ou renvoyez la confirmation.",
+    resetLinkExpired: "Ce lien de réinitialisation du mot de passe est invalide, a expiré ou a déjà été utilisé. Demandez un nouveau lien depuis la page de connexion.",
+    resetLinkUsed: "Ce lien de réinitialisation du mot de passe a déjà été utilisé. Connectez-vous avec votre nouveau mot de passe ou demandez un nouveau lien."
   },
   hero: {
     title1: "GESTION ALGORITHMIQUE",
@@ -7446,7 +7469,9 @@ usernameLabel: "Identifiant Tradovate",
     failedTitle: "Échec de la confirmation",
     goToLogin: "Aller à la connexion",
     invalidLink: "Lien de confirmation invalide ou expiré",
-    failedConfirm: "Échec de la confirmation de l’e-mail"
+    failedConfirm: "Échec de la confirmation de l’e-mail",
+    expiredLink: "Ce lien de confirmation a expiré. Demandez-en un nouveau depuis la page de connexion.",
+    usedLink: "Ce lien de confirmation a déjà été utilisé. Connectez-vous à votre compte."
   },
   paymentsDisabled: {
     title: "Les paiements sont actuellement désactivés.",
@@ -8317,7 +8342,10 @@ usernameLabel: "Tradovate-Benutzername",
     confirmEmailSent: "Falls diese Adresse bestätigt werden muss, haben wir einen Link an {{email}} gesendet. Wenn Sie bereits ein Konto haben, melden Sie sich an oder setzen Sie Ihr Passwort zurück.",
     resendConfirmation: "Bestätigungs-E-Mail erneut senden",
     resendSent: "Falls die Adresse bestätigt werden muss, ist ein neuer Link unterwegs.",
-    enterEmailFirst: "Geben Sie zuerst Ihre E-Mail-Adresse ein."
+    enterEmailFirst: "Geben Sie zuerst Ihre E-Mail-Adresse ein.",
+    emailNotConfirmedHint: "Keine E-Mail erhalten? Prüfen Sie den Spam-Ordner oder senden Sie die Bestätigung erneut.",
+    resetLinkExpired: "Dieser Link zum Zurücksetzen des Passworts ist ungültig, abgelaufen oder wurde bereits verwendet. Fordern Sie auf der Anmeldeseite einen neuen Link an.",
+    resetLinkUsed: "Dieser Link zum Zurücksetzen des Passworts wurde bereits verwendet. Melden Sie sich mit Ihrem neuen Passwort an oder fordern Sie einen neuen Link an."
   },
   hero: {
     title1: "ALGORITHMISCHES",
@@ -9013,7 +9041,9 @@ usernameLabel: "Tradovate-Benutzername",
     failedTitle: "Bestätigung fehlgeschlagen",
     goToLogin: "Zur Anmeldung",
     invalidLink: "Ungültiger oder abgelaufener Bestätigungslink",
-    failedConfirm: "E-Mail konnte nicht bestätigt werden"
+    failedConfirm: "E-Mail konnte nicht bestätigt werden",
+    expiredLink: "Dieser Bestätigungslink ist abgelaufen. Fordern Sie auf der Anmeldeseite einen neuen an.",
+    usedLink: "Dieser Bestätigungslink wurde bereits verwendet. Melden Sie sich bei Ihrem Konto an."
   },
   paymentsDisabled: {
     title: "Zahlungen sind derzeit deaktiviert.",
@@ -9886,7 +9916,10 @@ usernameLabel: "Имя пользователя Tradovate",
     confirmEmailSent: "Если этот адрес нужно подтвердить, мы отправили ссылку на {{email}}. Если у вас уже есть аккаунт, войдите или сбросьте пароль.",
     resendConfirmation: "Отправить письмо подтверждения повторно",
     resendSent: "Если адрес нужно подтвердить, новая ссылка уже в пути.",
-    enterEmailFirst: "Сначала введите адрес электронной почты."
+    enterEmailFirst: "Сначала введите адрес электронной почты.",
+    emailNotConfirmedHint: "Не получили письмо? Проверьте папку «Спам» или отправьте подтверждение повторно.",
+    resetLinkExpired: "Ссылка для сброса пароля недействительна, истекла или уже была использована. Запросите новую ссылку на странице входа.",
+    resetLinkUsed: "Эта ссылка для сброса пароля уже была использована. Войдите с новым паролем или запросите новую ссылку."
   },
   hero: {
     title1: "ЭЛИТНОЕ АЛГОРИТМИЧЕСКОЕ",
@@ -10584,7 +10617,9 @@ usernameLabel: "Имя пользователя Tradovate",
     failedTitle: "Ошибка подтверждения",
     goToLogin: "Перейти к входу",
     invalidLink: "Недействительная или истёкшая ссылка подтверждения",
-    failedConfirm: "Не удалось подтвердить почту"
+    failedConfirm: "Не удалось подтвердить почту",
+    expiredLink: "Срок действия этой ссылки подтверждения истёк. Запросите новую на странице входа.",
+    usedLink: "Эта ссылка подтверждения уже была использована. Войдите в свою учётную запись."
   },
   paymentsDisabled: {
     title: "Платежи в настоящее время отключены.",
@@ -11441,7 +11476,10 @@ usernameLabel: "Tradovate 用户名",
     confirmEmailSent: "如果该地址需要验证，我们已向 {{email}} 发送链接。如果您已有账户，请登录或重置密码。",
     resendConfirmation: "重新发送确认邮件",
     resendSent: "如果该地址需要验证，新的链接正在发送中。",
-    enterEmailFirst: "请先输入您的电子邮件地址。"
+    enterEmailFirst: "请先输入您的电子邮件地址。",
+    emailNotConfirmedHint: "没有收到邮件？请检查垃圾邮件文件夹或重新发送确认邮件。",
+    resetLinkExpired: "此密码重置链接无效、已过期或已被使用。请在登录页面申请新的链接。",
+    resetLinkUsed: "此密码重置链接已被使用。请使用新密码登录，或申请新的链接。"
   },
   hero: {
     title1: "精英算法",
@@ -12149,7 +12187,9 @@ usernameLabel: "Tradovate 用户名",
     failedTitle: "确认失败",
     goToLogin: "前往登录",
     invalidLink: "确认链接无效或已过期",
-    failedConfirm: "确认电子邮件失败"
+    failedConfirm: "确认电子邮件失败",
+    expiredLink: "此确认链接已过期。请在登录页面申请新的链接。",
+    usedLink: "此确认链接已被使用。请登录您的账户。"
   },
   paymentsDisabled: {
     title: "支付功能目前已禁用。",
@@ -13006,7 +13046,10 @@ usernameLabel: "Tradovate ユーザー名",
     confirmEmailSent: "このアドレスの確認が必要な場合、{{email}} にリンクを送信しました。すでにアカウントをお持ちの場合は、ログインするかパスワードを再設定してください。",
     resendConfirmation: "確認メールを再送する",
     resendSent: "確認が必要な場合、新しいリンクを送信しています。",
-    enterEmailFirst: "先にメールアドレスを入力してください。"
+    enterEmailFirst: "先にメールアドレスを入力してください。",
+    emailNotConfirmedHint: "メールが届きませんか？迷惑メールフォルダを確認するか、確認メールを再送してください。",
+    resetLinkExpired: "このパスワード再設定リンクは無効か、期限切れか、すでに使用されています。ログインページから新しいリンクを申請してください。",
+    resetLinkUsed: "このパスワード再設定リンクはすでに使用されています。新しいパスワードでログインするか、新しいリンクを申請してください。"
   },
   hero: {
     title1: "エリートアルゴリズム",
@@ -13714,7 +13757,9 @@ usernameLabel: "Tradovate ユーザー名",
     failedTitle: "確認に失敗しました",
     goToLogin: "ログインへ",
     invalidLink: "確認リンクが無効または期限切れです",
-    failedConfirm: "メールの確認に失敗しました"
+    failedConfirm: "メールの確認に失敗しました",
+    expiredLink: "この確認リンクは期限切れです。ログインページから新しいリンクを申請してください。",
+    usedLink: "この確認リンクはすでに使用されています。アカウントにログインしてください。"
   },
   paymentsDisabled: {
     title: "現在、支払い機能は無効になっています。",
@@ -14589,7 +14634,10 @@ usernameLabel: "اسم مستخدم Tradovate",
     confirmEmailSent: "إذا كان هذا العنوان يحتاج إلى تأكيد، فقد أرسلنا رابطًا إلى {{email}}. إذا كان لديك حساب بالفعل، سجّل الدخول أو أعد تعيين كلمة المرور.",
     resendConfirmation: "إعادة إرسال رسالة التأكيد",
     resendSent: "إذا كان العنوان يحتاج إلى تأكيد، فسيصلك رابط جديد.",
-    enterEmailFirst: "أدخل عنوان بريدك الإلكتروني أولاً."
+    enterEmailFirst: "أدخل عنوان بريدك الإلكتروني أولاً.",
+    emailNotConfirmedHint: "لم تتلقَّ البريد؟ تحقق من مجلد البريد العشوائي أو أعد إرسال التأكيد.",
+    resetLinkExpired: "رابط إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية أو تم استخدامه بالفعل. اطلب رابطًا جديدًا من صفحة تسجيل الدخول.",
+    resetLinkUsed: "تم استخدام رابط إعادة تعيين كلمة المرور بالفعل. سجّل الدخول بكلمة المرور الجديدة أو اطلب رابطًا جديدًا."
   },
   hero: {
     title1: "إدارة رأس المال",
@@ -15289,7 +15337,9 @@ usernameLabel: "اسم مستخدم Tradovate",
     failedTitle: "فشل التأكيد",
     goToLogin: "الانتقال إلى تسجيل الدخول",
     invalidLink: "رابط التأكيد غير صالح أو منتهي الصلاحية",
-    failedConfirm: "فشل تأكيد البريد الإلكتروني"
+    failedConfirm: "فشل تأكيد البريد الإلكتروني",
+    expiredLink: "انتهت صلاحية رابط التأكيد هذا. اطلب رابطًا جديدًا من صفحة تسجيل الدخول.",
+    usedLink: "تم استخدام رابط التأكيد هذا بالفعل. سجّل الدخول إلى حسابك."
   },
   paymentsDisabled: {
     title: "المدفوعات معطّلة حاليًا.",
@@ -16161,7 +16211,10 @@ usernameLabel: "שם משתמש Tradovate",
     confirmEmailSent: "אם יש לאמת את הכתובת הזו, שלחנו קישור לכתובת {{email}}. אם כבר יש לכם חשבון, התחברו או אפסו את הסיסמה.",
     resendConfirmation: "שליחת הודעת האימות שוב",
     resendSent: "אם הכתובת צריכה אימות, קישור חדש בדרך.",
-    enterEmailFirst: "הזן תחילה את כתובת האימייל שלך."
+    enterEmailFirst: "הזן תחילה את כתובת האימייל שלך.",
+    emailNotConfirmedHint: "לא קיבלת את המייל? בדוק את תיקיית הספאם או שלח שוב את האימות.",
+    resetLinkExpired: "קישור לאיפוס הסיסמה אינו תקין, פג תוקפו או שכבר נעשה בו שימוש. בקש קישור חדש מדף הכניסה.",
+    resetLinkUsed: "כבר נעשה שימוש בקישור לאיפוס הסיסמה. היכנס עם הסיסמה החדשה או בקש קישור חדש."
   },
   hero: {
     title1: "ניהול הון",
@@ -16858,7 +16911,9 @@ usernameLabel: "שם משתמש Tradovate",
     failedTitle: "האימות נכשל",
     goToLogin: "עבור להתחברות",
     invalidLink: "קישור אימות שגוי או שפג תוקפו",
-    failedConfirm: "אימות האימייל נכשל"
+    failedConfirm: "אימות האימייל נכשל",
+    expiredLink: "תוקפו של קישור האימות פג. בקש קישור חדש מדף הכניסה.",
+    usedLink: "כבר נעשה שימוש בקישור האימות. היכנס לחשבונך."
   },
   paymentsDisabled: {
     title: "התשלומים מושבתים כעת.",

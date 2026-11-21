@@ -5,6 +5,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { notifyOwnerInBackground } from '@/lib/notifyOwner';
+import { classifyLinkError, readLinkError } from '@/lib/authFlow';
+
+const LINK_ERROR_KEY = {
+  expired: 'authCallback.expiredLink',
+  used: 'authCallback.usedLink',
+  invalid: 'authCallback.invalidLink',
+} as const;
 
 const AuthCallback = () => {
   const { t } = useTranslation();
@@ -14,17 +21,24 @@ const AuthCallback = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
+    const showLinkError = (code?: string | null, message?: string | null) => {
+      setStatus('error');
+      setErrorMessage(t(LINK_ERROR_KEY[classifyLinkError({ code, message })]));
+    };
+
     const handleCallback = async () => {
       try {
-        // Get the code from URL params (OAuth flow)
-        const code = searchParams.get('code');
-        const error = searchParams.get('error');
-
-        if (error) {
-          setStatus('error');
-          setErrorMessage(decodeURIComponent(error));
+        // A confirmation link that expired or was already used arrives with an
+        // error in the query string or the implicit fragment. Never echo the
+        // provider's raw English text.
+        const linkError = readLinkError(window.location.hash, window.location.search);
+        if (linkError) {
+          showLinkError(linkError.code, linkError.description);
           return;
         }
+
+        // Get the code from URL params (OAuth flow)
+        const code = searchParams.get('code');
 
         if (code) {
           // Exchange the code for a session
@@ -94,8 +108,10 @@ const AuthCallback = () => {
         setErrorMessage(t('authCallback.invalidLink'));
       } catch (error: unknown) {
         console.error('Auth callback error:', error);
-        setStatus('error');
-        setErrorMessage(error instanceof Error ? error.message : t('authCallback.failedConfirm'));
+        showLinkError(
+          (error as { code?: string } | null)?.code,
+          error instanceof Error ? error.message : null,
+        );
       }
     };
 

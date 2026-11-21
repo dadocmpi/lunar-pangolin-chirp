@@ -48,3 +48,43 @@ export function isRecoveryRedirect(hash: string, search: string): boolean {
   if (new URLSearchParams(strip(hash, "#")).get("type") === "recovery") return true;
   return new URLSearchParams(strip(search, "?")).get("type") === "recovery";
 }
+
+export interface LinkError {
+  code: string;
+  description: string;
+}
+
+/**
+ * Read the error Supabase puts in a redirect URL. Confirmation and recovery
+ * links fail with either a query string (`?error=access_denied&error_code=...`)
+ * or an implicit fragment (`#error=...`). Returns null for a normal link.
+ */
+export function readLinkError(hash: string, search: string): LinkError | null {
+  const strip = (s: string, prefix: string) => (s.startsWith(prefix) ? s.slice(1) : s);
+  for (const params of [new URLSearchParams(strip(hash, "#")), new URLSearchParams(strip(search, "?"))]) {
+    const code = params.get("error_code") ?? "";
+    const description = params.get("error_description") ?? "";
+    const error = params.get("error") ?? "";
+    if (code || description || error) {
+      return { code: code || error, description: description || error };
+    }
+  }
+  return null;
+}
+
+export type LinkErrorKind = "expired" | "used" | "invalid";
+
+/**
+ * Classify a link failure without guessing beyond what Supabase reports.
+ * `otp_expired` (or an "expired" description) is an expired link; an explicit
+ * "already been used" description is a consumed link; everything else is
+ * generic. Used links are often reported as "invalid or has expired", so the
+ * expired copy also tells the customer to request a new link.
+ */
+export function classifyLinkError(error: { code?: string | null; message?: string | null }): LinkErrorKind {
+  const code = (error.code ?? "").toLowerCase();
+  const message = (error.message ?? "").toLowerCase();
+  if (code === "otp_expired" || message.includes("expired")) return "expired";
+  if (message.includes("already been used") || message.includes("already used")) return "used";
+  return "invalid";
+}

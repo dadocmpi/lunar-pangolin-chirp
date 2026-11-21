@@ -59,7 +59,7 @@ async function bundle(entry) {
 // ---------------------------------------------------------------------------
 // 1. Pure helpers behave as the pages assume
 // ---------------------------------------------------------------------------
-const { isDuplicateSignup, classifyAuthError, isRecoveryRedirect, isExistingAccountError } =
+const { isDuplicateSignup, classifyAuthError, isRecoveryRedirect, isExistingAccountError, readLinkError, classifyLinkError } =
   await bundle('src/lib/authFlow.ts');
 
 check('duplicate signup: empty identities -> true', isDuplicateSignup({ identities: [] }) === true);
@@ -79,6 +79,21 @@ check('recovery redirect: implicit hash', isRecoveryRedirect('#access_token=a&ty
 check('recovery redirect: PKCE query', isRecoveryRedirect('', '?code=a&type=recovery') === true);
 check('recovery redirect: normal signup hash', isRecoveryRedirect('#access_token=a&type=signup', '?lng=pt') === false);
 check('recovery redirect: empty URL', isRecoveryRedirect('', '') === false);
+
+check('link error: reads an implicit fragment error',
+  readLinkError('#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired', '')?.code === 'otp_expired');
+check('link error: reads a query error',
+  readLinkError('', '?error=access_denied&error_code=otp_expired')?.code === 'otp_expired');
+check('link error: normal link is not an error', readLinkError('#access_token=a&type=recovery', '') === null);
+check('link error: empty URL is not an error', readLinkError('', '') === null);
+
+check('link kind: otp_expired -> expired', classifyLinkError({ code: 'otp_expired' }) === 'expired');
+check('link kind: expired description -> expired',
+  classifyLinkError({ message: 'Email link is invalid or has expired' }) === 'expired');
+check('link kind: already used -> used',
+  classifyLinkError({ message: 'This link has already been used' }) === 'used');
+check('link kind: anything else -> invalid', classifyLinkError({ message: 'boom' }) === 'invalid');
+check('link kind: empty input -> invalid', classifyLinkError({}) === 'invalid');
 
 // ---------------------------------------------------------------------------
 // 2. Registration / login wiring
@@ -107,6 +122,15 @@ check('login distinguishes an unconfirmed email', login.includes("t('auth.emailN
 check('login never routes a failed sign-in to /register', !login.includes("navigate('/register'"));
 check('login redirects recovery links to /reset-password', login.includes("navigate('/reset-password'"));
 check('login sends the reset email to /reset-password', /resetPasswordForEmail[\s\S]{0,200}\/reset-password/.test(login));
+check('login can resend the confirmation email', /supabase\.auth\.resend\(/.test(login));
+check('login shows the resend hint for an unconfirmed email',
+  login.includes("t('auth.emailNotConfirmedHint')") && login.includes("t('auth.resendConfirmation')"));
+check('login resend targets /auth-callback', /auth\.resend\([\s\S]{0,240}\/auth-callback/.test(login));
+
+const registerCode = register;
+check('register requires the consent checkbox', /if \(!acceptedTerms\)/.test(registerCode));
+check('register sends the consent to the server-side trigger',
+  /signUp\(\{[\s\S]{0,400}terms_accepted:\s*true/.test(registerCode));
 
 // ---------------------------------------------------------------------------
 // 3. Password reset page
@@ -119,6 +143,23 @@ check('reset page updates the password', /updateUser\(\{\s*password\s*\}\)/.test
 check('reset page signs the recovery session out', reset.includes('signOut()'));
 check('reset page never logs the password value', !/console\.[a-z]+\([^)]*\b(password|confirmPassword)\b\s*[,)]/.test(reset));
 check('reset route is registered', read('src/App.tsx').includes('path="/reset-password"'));
+check('reset page reads link errors from the URL', reset.includes('readLinkError('));
+check('reset page classifies expired/used links', reset.includes('classifyLinkError('));
+check('reset page distinguishes the localized messages',
+  reset.includes("'auth.resetLinkExpired'") && reset.includes("'auth.resetLinkUsed'"));
+check('reset page only accepts a recovery session',
+  reset.includes('RECOVERY_FLAG') && /isRecoveryRedirect\(/.test(reset) && reset.includes('hasRecoveryFlag()'));
+check('reset page clears the recovery marker after the update', /clearRecoveryFlag\(\)[\s\S]{0,120}signOut\(\)/.test(reset));
+
+const callback = stripComments(read('src/pages/AuthCallback.tsx'));
+check('auth callback reads link errors from the URL', callback.includes('readLinkError('));
+check('auth callback classifies expired/used links', callback.includes('classifyLinkError('));
+check('auth callback localizes the expired confirmation message',
+  callback.includes("expired: 'authCallback.expiredLink'") &&
+  callback.includes("used: 'authCallback.usedLink'"));
+check('auth callback never echoes the provider error text',
+  !/setErrorMessage\(\s*decodeURIComponent\(/.test(callback) &&
+  !/setErrorMessage\(\s*error instanceof Error \? error\.message/.test(callback));
 
 // ---------------------------------------------------------------------------
 // 4. confirm-signup is retired, not an open relay
@@ -199,6 +240,22 @@ const gate = stripComments(read('supabase/functions/_shared/kyc/gate.ts'));
 check('withdrawal gate reads the DB status, not the body', gate.includes('db.readKycStatus(authenticatedUserId)'));
 const withdrawal = stripComments(read('supabase/functions/withdrawal-request/index.ts'));
 check('withdrawal-request derives the user from the JWT', withdrawal.includes('auth.getUser()'));
+
+// ---------------------------------------------------------------------------
+// 8. Localization coverage and documented redirect URLs
+// ---------------------------------------------------------------------------
+const i18n = read('src/i18n.ts');
+for (const key of ['emailNotConfirmedHint', 'resetLinkExpired', 'resetLinkUsed', 'expiredLink', 'usedLink']) {
+  const count = (i18n.match(new RegExp(`\\b${key}:`, 'g')) || []).length;
+  check(`i18n: ${key} exists in all 11 locales`, count === 11, `found ${count}`);
+}
+
+const runbook = read('docs/account-lifecycle-runbook.md');
+check('runbook documents the production reset URL',
+  runbook.includes('https://braxelmarkets.vercel.app/reset-password'));
+check('runbook preserves the auth-callback URL',
+  runbook.includes('https://braxelmarkets.vercel.app/auth-callback'));
+check('runbook records the suspension gap', /Account suspension — not implemented/.test(runbook));
 
 if (failures > 0) {
   console.error(`\naccount lifecycle contract check FAILED (${failures} violation(s))`);

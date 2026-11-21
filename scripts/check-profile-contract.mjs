@@ -13,7 +13,7 @@
  *
  * Usage: node scripts/check-profile-contract.mjs
  */
-import { readFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { readFileSync, existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
@@ -144,6 +144,48 @@ pass('migration adds every profile column idempotently');
 if (!migration.includes('ENABLE ROW LEVEL SECURITY')) fail('profiles RLS not enabled');
 if (!migration.includes('id = auth.uid()')) fail('profiles RLS does not key on auth.uid()');
 pass('profiles RLS keys on auth.uid()');
+
+// Consent evidence: timestamp + policy/version reference, written by the DB.
+const consentMigrationPath = 'supabase/migrations/20261121000000_profile_consent_versions.sql';
+if (!existsSync(resolve(root, consentMigrationPath))) {
+  fail('consent-version migration is missing');
+} else {
+  const consent = read(consentMigrationPath);
+  if (!/ADD COLUMN IF NOT EXISTS terms_version\s+text/.test(consent)) {
+    fail('consent migration does not add profiles.terms_version');
+  }
+  if (!/ADD COLUMN IF NOT EXISTS privacy_version\s+text/.test(consent)) {
+    fail('consent migration does not add profiles.privacy_version');
+  }
+  if (!/CREATE TABLE IF NOT EXISTS public\.legal_policy_versions/.test(consent)) {
+    fail('consent migration does not create legal_policy_versions');
+  }
+  if (!/ON CONFLICT \(document\) DO NOTHING/.test(consent)) {
+    fail('consent migration does not seed versions idempotently');
+  }
+  if (!/ENABLE ROW LEVEL SECURITY/.test(consent) || !/REVOKE ALL ON TABLE public\.legal_policy_versions FROM anon, authenticated/.test(consent)) {
+    fail('legal_policy_versions is not service-role only');
+  }
+  if (!/CREATE TRIGGER profiles_stamp_consent_versions[\s\S]{0,160}BEFORE INSERT OR UPDATE ON public\.profiles/.test(consent)) {
+    fail('consent migration does not stamp versions on profiles');
+  }
+  if (!/NEW\.terms_version IS NULL/.test(consent) || !/NEW\.privacy_version IS NULL/.test(consent)) {
+    fail('consent trigger could overwrite the first recorded version');
+  }
+  pass('consent migration adds timestamp + version evidence, stamped by the DB');
+}
+
+// The browser must never supply a consent version.
+if (/terms_version|privacy_version/.test(read('src/lib/profile.ts'))) {
+  fail('the browser profile module references a consent version');
+}
+pass('consent versions are never sent by the browser');
+
+const submitForVersions = read('supabase/functions/profile-submit/index.ts');
+if (/terms_version|privacy_version/.test(submitForVersions)) {
+  fail('profile-submit writes a consent version instead of letting the DB stamp it');
+}
+pass('profile-submit leaves consent versioning to the database trigger');
 
 const submit = read('supabase/functions/profile-submit/index.ts');
 if (!/requireUser\(req\)/.test(submit)) fail('profile-submit does not derive the user from the JWT');
