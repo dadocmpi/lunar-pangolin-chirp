@@ -7,8 +7,16 @@ name: Supabase release (migrations + functions + smoke)
 #
 # It runs three steps in this exact order and STOPS at the first failure:
 #   1. supabase db push          -> apply every pending migration (schema first)
-#   2. supabase functions deploy -> deploy confirm-signup + crypto-confirmation (code second)
+#   2. supabase functions deploy -> deploy EVERY Edge Function (code second)
 #   3. smoke test                -> fail if any function answers 404 / NOT_FOUND
+#
+# Step 2 deploys all functions, with no name argument. That is the same
+# strategy deploy-supabase-functions.yml already uses, and it is the only safe
+# one: PR #58 (security hardening) changed all 38 functions plus the shared
+# modules they import, so a hard-coded name list silently leaves hardened code
+# undeployed. `--yes` keeps GitHub Actions non-interactive; `--use-api` bundles
+# server-side without Docker. `--prune` is deliberately NOT used: it would
+# delete functions that exist in the project but not in this commit.
 #
 # Schema before code is the whole point: Edge Functions call tables and RPCs
 # introduced by the migrations, so deploying them first would break every call
@@ -83,12 +91,27 @@ jobs:
           echo "Applied migration head:"
           supabase migration list --linked --password "$SUPABASE_DB_PASSWORD"
 
-      - name: "Step 2/3 - deploy the Feature 1 Edge Functions"
+      - name: List the Edge Functions this run will deploy
+        run: |
+          set -euo pipefail
+          echo "Functions under supabase/functions/ (every one is deployed in step 2):"
+          ls -d supabase/functions/*/index.ts \
+            | sed -E 's#supabase/functions/([^/]+)/index.ts#  \1#' \
+            | sort
+          echo "Total: $(ls -d supabase/functions/*/index.ts | wc -l) functions"
+
+      - name: "Step 2/3 - deploy every Edge Function"
         id: functions
         run: |
           set -euo pipefail
-          supabase functions deploy confirm-signup --project-ref "$SUPABASE_PROJECT_ID" --use-api --yes
-          supabase functions deploy crypto-confirmation --project-ref "$SUPABASE_PROJECT_ID" --use-api --yes
+          # No function name argument -> the CLI deploys all of them (including
+          # the security-hardening changes from PR #58 and the shared modules
+          # they import). `--yes` answers the hosted-change prompt so the job
+          # never blocks waiting for input on GitHub Actions.
+          supabase functions deploy \
+            --project-ref "$SUPABASE_PROJECT_ID" \
+            --use-api \
+            --yes
 
       - name: "Step 3/3 - smoke test every function (fail on any 404)"
         id: smoke
@@ -105,8 +128,10 @@ jobs:
             echo "| Step | Result |"
             echo "|---|---|"
             echo "| 1. Migrations applied | ${{ steps.migrations.outcome }} |"
-            echo "| 2. Edge Functions deployed | ${{ steps.functions.outcome }} |"
+            echo "| 2. Edge Functions deployed (all) | ${{ steps.functions.outcome }} |"
             echo "| 3. Smoke test (no function returned 404) | ${{ steps.smoke.outcome }} |"
+            echo ""
+            echo "Functions in this commit: \`$(ls -d supabase/functions/*/index.ts | wc -l)\`"
             echo ""
             echo "Migration head in this commit: \`$(ls -1 supabase/migrations/*.sql | xargs -n1 basename | sort | tail -1)\`"
             echo ""
