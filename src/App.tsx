@@ -31,7 +31,9 @@ const RegisterApplication = lazy(() => import("./pages/RegisterApplication"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Accounts = lazy(() => import("./pages/Accounts"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
 const OperatorActivations = lazy(() => import("./pages/OperatorActivations"));
+const OperatorAccountLinks = lazy(() => import("./pages/OperatorAccountLinks"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
@@ -87,11 +89,13 @@ const App = () => (
             <Route path="/auth-callback" element={<RouteView><AuthCallback /></RouteView>} />
             <Route path="/reset-password" element={<RouteView><ResetPassword /></RouteView>} />
             <Route path="/accounts" element={<RouteView><Accounts /></RouteView>} />
+            <Route path="/onboarding" element={<RouteView><Onboarding /></RouteView>} />
             <Route path="/terms" element={<RouteView><Terms /></RouteView>} />
             <Route path="/privacy" element={<RouteView><Privacy /></RouteView>} />
             <Route path="/disclaimer" element={<RouteView><Disclaimer /></RouteView>} />
             <Route path="/dashboard" element={<RouteView><Dashboard /></RouteView>} />
             <Route path="/operator/activations" element={<RouteView><OperatorActivations /></RouteView>} />
+            <Route path="/operator/account-links" element={<RouteView><OperatorAccountLinks /></RouteView>} />
             <Route path="/checkout" element={<RouteView><Checkout /></RouteView>} />
             <Route path="/checkout/success" element={<RouteView><CheckoutSuccess /></RouteView>} />
             <Route path="*" element={<RouteView><NotFound /></RouteView>} />

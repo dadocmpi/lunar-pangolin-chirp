@@ -30,9 +30,12 @@ const TARGETS = [
   'src/components/WithdrawalKycGate.tsx',
   'src/components/ActivateAccountView.tsx',
   'src/components/PlanActiveChecklist.tsx',
+  'src/components/OnboardingView.tsx',
   'src/pages/Dashboard.tsx',
   'src/pages/Accounts.tsx',
+  'src/pages/Onboarding.tsx',
   'src/pages/OperatorActivations.tsx',
+  'src/pages/OperatorAccountLinks.tsx',
 ];
 
 // Attributes that render user-visible text.

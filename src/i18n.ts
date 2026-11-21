@@ -18,6 +18,114 @@ export const supportedLanguages = [
 
 // Base translations (English)
 const enTranslation = {
+  onboarding: {
+    "navLabel": "ACCOUNT ONBOARDING",
+    "eyebrow": "MANAGED ACCOUNT",
+    "title": "Link your prop-firm account",
+    "intro": "Your package is active. Tell us which external prop-firm account you intend to use and we will review the link manually. Braxel provides operational management and monitoring only where the provider's rules and your authorization allow it.",
+    "disabledTitle": "Onboarding is not available",
+    "disabledBody": "The managed-account onboarding flow is currently disabled. Please contact support if you need help with your account.",
+    "retry": "TRY AGAIN",
+    "payment": {
+      "active": "Payment confirmed",
+      "pending": "Payment pending",
+      "inactive": "Payment not active",
+      "none": "No payment found",
+      "refunded": "Payment refunded",
+      "canceled": "Payment canceled",
+      "failed": "Payment failed",
+      "rejected": "Payment rejected",
+      "disputed": "Payment disputed"
+    },
+    "goToPricing": "VIEW PLANS",
+    "step1Title": "Keep your account with the firm",
+    "step1Body": "You buy and own the account directly at the prop firm. Braxel does not open accounts and does not hold your funds.",
+    "step2Title": "Tell us the account",
+    "step2Body": "Enter only the account login/ID you see at the firm. Never enter a password, token or secret.",
+    "step3Title": "Manual review",
+    "step3Body": "An operator reviews every request. Connectivity depends on the provider's eligibility and authorization rules.",
+    "noPasswordNotice": "Never enter your broker password, provider token, CID or secret here. We only need the account login/ID. Braxel never asks for a credential in this flow.",
+    "status": {
+      "pending": "Pending review",
+      "in_review": "In review",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "suspended": "Suspended",
+      "disconnected": "Disconnected"
+    },
+    "statusDesc": {
+      "pending": "Your request is waiting for an operator.",
+      "in_review": "An operator is reviewing your request.",
+      "approved": "The link is approved. Operational monitoring is active while your payment stays active and the provider's rules allow it.",
+      "rejected": "The request was rejected. Read the operator note and submit a new request if it applies.",
+      "suspended": "The link is paused. Operational monitoring is stopped until the suspension is resolved.",
+      "disconnected": "The link is closed. You can submit a new request whenever you want.",
+      "suspendedByPayment": "The payment behind this link is no longer active, so the link is suspended."
+    },
+    "operatorNote": "Operator note",
+    "disconnectCta": "DISCONNECT",
+    "disconnectDone": "Account disconnected.",
+    "formTitle": "Account link request",
+    "firmLabel": "Prop firm",
+    "accountLoginLabel": "Account login/ID at the firm",
+    "accountLoginPlaceholder": "Your account ID or login",
+    "accountLoginHint": "This is an identifier, not a password.",
+    "noteLabel": "Notes (optional)",
+    "notePlaceholder": "Anything we should know about this account.",
+    "disclosuresTitle": "Disclosures and acknowledgements",
+    "disclosuresIntro": "Read each statement and confirm it before submitting.",
+    "confirm": {
+      "ownership": "The external account is mine and I am authorized to use it.",
+      "externalRules": "The external prop firm's rules apply to this account and to any tool I use.",
+      "noProfitGuarantee": "Braxel does not guarantee profits, returns or any specific result.",
+      "eligibility": "Account connectivity depends on the provider's eligibility and authorization.",
+      "dataDelayed": "Account data may be delayed or incomplete.",
+      "payoutsProvider": "Payouts remain subject to the external provider's rules. Braxel does not process prop-firm payouts.",
+      "noFundsHeld": "Braxel does not hold customer funds and is not the prop firm."
+    },
+    "submit": "SUBMIT FOR REVIEW",
+    "submitted": "Request submitted. We will review it shortly.",
+    "pendingHint": "Your request is awaiting review. You can submit a new one after a decision.",
+    "draftNotice": "Draft wording — pending legal review. Braxel Markets provides operational management and software services only. It is not the prop firm, does not custody funds and does not process prop-firm payouts.",
+    "executionDisabledNote": "Execution features are disabled. Nothing in this flow places, modifies or liquidates orders.",
+    "providerNotice": "Trading involves a substantial risk of loss. Read the risk notice.",
+    "riskLink": "Risk notice",
+    "errors": {
+      "loadFailed": "We could not load your onboarding status. Please try again.",
+      "missingFields": "Please fill in the firm and the account login/ID.",
+      "confirmationsRequired": "Please confirm every statement before submitting.",
+      "paymentRequired": "An active payment is required before you can link an account.",
+      "paymentNotActive": "The payment behind your account is not active. Please contact support.",
+      "alreadyOpen": "You already have an open account-link request.",
+      "invalidFirm": "That prop firm is not available.",
+      "disabled": "The onboarding flow is not available right now.",
+      "submitFailed": "We could not submit your request. Please try again.",
+      "unauthorized": "Please log in again.",
+      "disconnectFailed": "We could not disconnect the account. Please try again."
+    }
+  },
+  operatorLinks: {
+    "title": "ACCOUNT LINKS",
+    "subtitle": "Review managed-account link requests",
+    "noLinks": "No account-link requests",
+    "open": "OPEN",
+    "detailTitle": "Account link request",
+    "close": "Close",
+    "firmLabel": "Firm",
+    "planLabel": "Plan",
+    "accountLabel": "Account login/ID",
+    "submittedLabel": "Submitted",
+    "noteLabel": "Operator note",
+    "paymentNotActive": "The customer's payment is not active, so the link cannot be approved.",
+    "actions": {
+      "start_review": "START REVIEW",
+      "approve": "APPROVE",
+      "reject": "REJECT",
+      "suspend": "SUSPEND",
+      "disconnect": "DISCONNECT"
+    }
+  },
+
     profileFields: {
       phone: "Phone",
       country: "Country",
@@ -1071,6 +1179,7 @@ usernameLabel: "Tradovate username",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "Continue to onboarding",
     verifying: "Verifying payment…",
     backToPricing: "Back to pricing",
     couldNotVerify: "We could not verify your payment yet",
@@ -1241,6 +1350,10 @@ usernameLabel: "Tradovate username",
     disclaimer: "* Disclaimer: Past performance does not guarantee future results. Projections are for illustrative purposes only."
   },
   meta: {
+    onboarding: {
+      title: "Account onboarding | Braxel Markets",
+      description: "Link the external prop-firm account you intend to use and follow the manual review status."
+    },
     accounts: {
       title: "Buy a Prop Firm Account | Braxel Markets",
       description: "Buy your evaluation or funded account directly from the prop firm through our link, then activate your signals plan in the panel."
@@ -1590,6 +1703,114 @@ usernameLabel: "Tradovate username",
 };
 
 const ptTranslation = {
+  onboarding: {
+    "navLabel": "INTEGRAÇÃO DE CONTA",
+    "eyebrow": "CONTA GERENCIADA",
+    "title": "Vincule a sua conta da mesa",
+    "intro": "O seu pacote está ativo. Diga-nos qual conta externa da mesa pretende usar e analisaremos o vínculo manualmente. A Braxel presta gestão operacional e monitorização apenas quando as regras do fornecedor e a sua autorização o permitem.",
+    "disabledTitle": "Integração indisponível",
+    "disabledBody": "O fluxo de integração de conta gerenciada está desativado neste momento. Contacte o suporte se precisar de ajuda com a sua conta.",
+    "retry": "TENTAR NOVAMENTE",
+    "payment": {
+      "active": "Pagamento confirmado",
+      "pending": "Pagamento pendente",
+      "inactive": "Pagamento não ativo",
+      "none": "Nenhum pagamento encontrado",
+      "refunded": "Pagamento reembolsado",
+      "canceled": "Pagamento cancelado",
+      "failed": "Pagamento falhado",
+      "rejected": "Pagamento recusado",
+      "disputed": "Pagamento contestado"
+    },
+    "goToPricing": "VER PLANOS",
+    "step1Title": "Mantenha a conta na mesa",
+    "step1Body": "Compra e é proprietário da conta diretamente na mesa. A Braxel não abre contas e não detém os seus fundos.",
+    "step2Title": "Indique-nos a conta",
+    "step2Body": "Introduza apenas o login/ID da conta que vê na mesa. Nunca introduza uma senha, token ou segredo.",
+    "step3Title": "Análise manual",
+    "step3Body": "Um operador analisa cada pedido. A conectividade depende das regras de elegibilidade e autorização do fornecedor.",
+    "noPasswordNotice": "Nunca introduza aqui a senha da corretora, token do fornecedor, CID ou segredo. Precisamos apenas do login/ID da conta. A Braxel nunca pede credenciais neste fluxo.",
+    "status": {
+      "pending": "Pendente",
+      "in_review": "Em análise",
+      "approved": "Aprovado",
+      "rejected": "Recusado",
+      "suspended": "Suspenso",
+      "disconnected": "Desvinculado"
+    },
+    "statusDesc": {
+      "pending": "O seu pedido aguarda um operador.",
+      "in_review": "Um operador está a analisar o seu pedido.",
+      "approved": "O vínculo está aprovado. A monitorização operacional está ativa enquanto o pagamento se mantiver ativo e as regras do fornecedor o permitirem.",
+      "rejected": "O pedido foi recusado. Leia a observação do operador e envie um novo pedido se aplicável.",
+      "suspended": "O vínculo está suspenso. A monitorização operacional está parada até a suspensão ser resolvida.",
+      "disconnected": "O vínculo está encerrado. Pode enviar um novo pedido quando quiser.",
+      "suspendedByPayment": "O pagamento por trás deste vínculo já não está ativo, pelo que o vínculo está suspenso."
+    },
+    "operatorNote": "Observação do operador",
+    "disconnectCta": "DESVINCULAR",
+    "disconnectDone": "Conta desvinculada.",
+    "formTitle": "Pedido de vínculo de conta",
+    "firmLabel": "Mesa",
+    "accountLoginLabel": "Login/ID da conta na mesa",
+    "accountLoginPlaceholder": "O ID ou login da sua conta",
+    "accountLoginHint": "É um identificador, não uma senha.",
+    "noteLabel": "Observações (opcional)",
+    "notePlaceholder": "Algo que devamos saber sobre esta conta.",
+    "disclosuresTitle": "Divulgações e confirmações",
+    "disclosuresIntro": "Leia cada declaração e confirme-a antes de enviar.",
+    "confirm": {
+      "ownership": "A conta externa é minha e estou autorizado a usá-la.",
+      "externalRules": "As regras da mesa externa aplicam-se a esta conta e a qualquer ferramenta que eu use.",
+      "noProfitGuarantee": "A Braxel não garante lucros, retornos ou qualquer resultado específico.",
+      "eligibility": "A conectividade da conta depende da elegibilidade e autorização do fornecedor.",
+      "dataDelayed": "Os dados da conta podem estar atrasados ou incompletos.",
+      "payoutsProvider": "Os pagamentos continuam sujeitos às regras do fornecedor externo. A Braxel não processa pagamentos da mesa.",
+      "noFundsHeld": "A Braxel não detém fundos de clientes e não é a mesa."
+    },
+    "submit": "ENVIAR PARA ANÁLISE",
+    "submitted": "Pedido enviado. Vamos analisá-lo em breve.",
+    "pendingHint": "O seu pedido aguarda análise. Pode enviar um novo após uma decisão.",
+    "draftNotice": "Texto provisório — pendente de revisão jurídica. A Braxel Markets presta apenas serviços de gestão operacional e software. Não é a mesa, não custodia fundos e não processa pagamentos da mesa.",
+    "executionDisabledNote": "As funcionalidades de execução estão desativadas. Nada neste fluxo coloca, modifica ou liquida ordens.",
+    "providerNotice": "Negociar envolve um risco substancial de perda. Leia o aviso de risco.",
+    "riskLink": "Aviso de risco",
+    "errors": {
+      "loadFailed": "Não foi possível carregar o estado da integração. Tente novamente.",
+      "missingFields": "Preencha a mesa e o login/ID da conta.",
+      "confirmationsRequired": "Confirme cada declaração antes de enviar.",
+      "paymentRequired": "É necessário um pagamento ativo antes de vincular uma conta.",
+      "paymentNotActive": "O pagamento por trás da sua conta não está ativo. Contacte o suporte.",
+      "alreadyOpen": "Já tem um pedido de vínculo aberto.",
+      "invalidFirm": "Essa mesa não está disponível.",
+      "disabled": "O fluxo de integração não está disponível neste momento.",
+      "submitFailed": "Não foi possível enviar o seu pedido. Tente novamente.",
+      "unauthorized": "Inicie sessão novamente.",
+      "disconnectFailed": "Não foi possível desvincular a conta. Tente novamente."
+    }
+  },
+  operatorLinks: {
+    "title": "VÍNCULOS DE CONTA",
+    "subtitle": "Analisar pedidos de vínculo de conta",
+    "noLinks": "Sem pedidos de vínculo de conta",
+    "open": "ABRIR",
+    "detailTitle": "Pedido de vínculo de conta",
+    "close": "Fechar",
+    "firmLabel": "Mesa",
+    "planLabel": "Plano",
+    "accountLabel": "Login/ID da conta",
+    "submittedLabel": "Enviado",
+    "noteLabel": "Observação do operador",
+    "paymentNotActive": "O pagamento do cliente não está ativo, pelo que o vínculo não pode ser aprovado.",
+    "actions": {
+      "start_review": "INICIAR ANÁLISE",
+      "approve": "APROVAR",
+      "reject": "RECUSAR",
+      "suspend": "SUSPENDER",
+      "disconnect": "DESVINCULAR"
+    }
+  },
+
     profileFields: {
       phone: "Telefone",
       country: "País",
@@ -2691,6 +2912,7 @@ usernameLabel: "Utilizador Tradovate",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "Continuar para a integração",
     verifying: "Verificando pagamento…",
     backToPricing: "Voltar para os planos",
     couldNotVerify: "Ainda não foi possível verificar o seu pagamento",
@@ -2815,6 +3037,10 @@ usernameLabel: "Utilizador Tradovate",
     disclaimer: "* Aviso: O desempenho passado não garante resultados futuros. As projeções são apenas ilustrativas."
   },
   meta: {
+    onboarding: {
+      title: "Integração de conta | Braxel Markets",
+      description: "Vincule a conta externa da mesa que pretende usar e acompanhe o estado da análise manual."
+    },
     accounts: {
       title: "Comprar Conta de Mesa | Braxel Markets",
       description: "Compre a sua conta de avaliação ou fundeada diretamente com a mesa pelo nosso link e ative o plano de sinais no painel."
@@ -3164,6 +3390,114 @@ usernameLabel: "Utilizador Tradovate",
 };
 
 const itTranslation = {
+  onboarding: {
+    "navLabel": "ONBOARDING ACCOUNT",
+    "eyebrow": "ACCOUNT GESTITO",
+    "title": "Collega il tuo account della prop firm",
+    "intro": "Il tuo pacchetto è attivo. Indicaci quale account esterno della prop firm intendi usare e verificheremo il collegamento manualmente. Braxel fornisce gestione operativa e monitoraggio solo dove le regole del fornitore e la tua autorizzazione lo consentono.",
+    "disabledTitle": "Onboarding non disponibile",
+    "disabledBody": "Il flusso di onboarding dell'account gestito è attualmente disattivato. Contatta l'assistenza se hai bisogno di aiuto con il tuo account.",
+    "retry": "RIPROVA",
+    "payment": {
+      "active": "Pagamento confermato",
+      "pending": "Pagamento in attesa",
+      "inactive": "Pagamento non attivo",
+      "none": "Nessun pagamento trovato",
+      "refunded": "Pagamento rimborsato",
+      "canceled": "Pagamento annullato",
+      "failed": "Pagamento non riuscito",
+      "rejected": "Pagamento rifiutato",
+      "disputed": "Pagamento contestato"
+    },
+    "goToPricing": "VEDI I PIANI",
+    "step1Title": "Mantieni l'account presso la firm",
+    "step1Body": "Acquisti e possiedi l'account direttamente presso la prop firm. Braxel non apre account e non detiene i tuoi fondi.",
+    "step2Title": "Indicaci l'account",
+    "step2Body": "Inserisci solo il login/ID dell'account che vedi presso la firm. Non inserire mai password, token o segreti.",
+    "step3Title": "Revisione manuale",
+    "step3Body": "Un operatore esamina ogni richiesta. La connettività dipende dalle regole di idoneità e autorizzazione del fornitore.",
+    "noPasswordNotice": "Non inserire mai qui la password del broker, il token del fornitore, il CID o il segreto. Ci serve solo il login/ID dell'account. Braxel non chiede mai credenziali in questo flusso.",
+    "status": {
+      "pending": "In attesa",
+      "in_review": "In revisione",
+      "approved": "Approvato",
+      "rejected": "Rifiutato",
+      "suspended": "Sospeso",
+      "disconnected": "Scollegato"
+    },
+    "statusDesc": {
+      "pending": "La tua richiesta attende un operatore.",
+      "in_review": "Un operatore sta esaminando la tua richiesta.",
+      "approved": "Il collegamento è approvato. Il monitoraggio operativo è attivo finché il pagamento resta attivo e le regole del fornitore lo consentono.",
+      "rejected": "La richiesta è stata rifiutata. Leggi la nota dell'operatore e invia una nuova richiesta se applicabile.",
+      "suspended": "Il collegamento è sospeso. Il monitoraggio operativo è fermo finché la sospensione non è risolta.",
+      "disconnected": "Il collegamento è chiuso. Puoi inviare una nuova richiesta quando vuoi.",
+      "suspendedByPayment": "Il pagamento alla base di questo collegamento non è più attivo, quindi il collegamento è sospeso."
+    },
+    "operatorNote": "Nota dell'operatore",
+    "disconnectCta": "SCOLLEGA",
+    "disconnectDone": "Account scollegato.",
+    "formTitle": "Richiesta di collegamento account",
+    "firmLabel": "Prop firm",
+    "accountLoginLabel": "Login/ID dell'account presso la firm",
+    "accountLoginPlaceholder": "L'ID o il login del tuo account",
+    "accountLoginHint": "È un identificativo, non una password.",
+    "noteLabel": "Note (facoltative)",
+    "notePlaceholder": "Qualcosa che dovremmo sapere su questo account.",
+    "disclosuresTitle": "Informativa e conferme",
+    "disclosuresIntro": "Leggi ogni dichiarazione e confermala prima di inviare.",
+    "confirm": {
+      "ownership": "L'account esterno è mio e sono autorizzato a usarlo.",
+      "externalRules": "Le regole della prop firm esterna si applicano a questo account e a qualsiasi strumento che uso.",
+      "noProfitGuarantee": "Braxel non garantisce profitti, rendimenti o alcun risultato specifico.",
+      "eligibility": "La connettività dell'account dipende dall'idoneità e dall'autorizzazione del fornitore.",
+      "dataDelayed": "I dati dell'account possono essere ritardati o incompleti.",
+      "payoutsProvider": "I pagamenti restano soggetti alle regole del fornitore esterno. Braxel non elabora pagamenti della prop firm.",
+      "noFundsHeld": "Braxel non detiene fondi dei clienti e non è la prop firm."
+    },
+    "submit": "INVIA PER REVISIONE",
+    "submitted": "Richiesta inviata. La esamineremo a breve.",
+    "pendingHint": "La tua richiesta è in attesa di revisione. Puoi inviarne una nuova dopo una decisione.",
+    "draftNotice": "Testo provvisorio — in attesa di revisione legale. Braxel Markets fornisce solo servizi di gestione operativa e software. Non è la prop firm, non custodisce fondi e non elabora pagamenti della prop firm.",
+    "executionDisabledNote": "Le funzioni di esecuzione sono disattivate. Nulla in questo flusso inserisce, modifica o liquida ordini.",
+    "providerNotice": "Il trading comporta un rischio sostanziale di perdita. Leggi l'avviso di rischio.",
+    "riskLink": "Avviso di rischio",
+    "errors": {
+      "loadFailed": "Non è stato possibile caricare lo stato di onboarding. Riprova.",
+      "missingFields": "Compila la firm e il login/ID dell'account.",
+      "confirmationsRequired": "Conferma ogni dichiarazione prima di inviare.",
+      "paymentRequired": "È necessario un pagamento attivo prima di collegare un account.",
+      "paymentNotActive": "Il pagamento alla base del tuo account non è attivo. Contatta l'assistenza.",
+      "alreadyOpen": "Hai già una richiesta di collegamento aperta.",
+      "invalidFirm": "Questa prop firm non è disponibile.",
+      "disabled": "Il flusso di onboarding non è disponibile in questo momento.",
+      "submitFailed": "Non è stato possibile inviare la richiesta. Riprova.",
+      "unauthorized": "Accedi di nuovo.",
+      "disconnectFailed": "Non è stato possibile scollegare l'account. Riprova."
+    }
+  },
+  operatorLinks: {
+    "title": "COLLEGAMENTI ACCOUNT",
+    "subtitle": "Esamina le richieste di collegamento",
+    "noLinks": "Nessuna richiesta di collegamento",
+    "open": "APRI",
+    "detailTitle": "Richiesta di collegamento account",
+    "close": "Chiudi",
+    "firmLabel": "Firm",
+    "planLabel": "Piano",
+    "accountLabel": "Login/ID account",
+    "submittedLabel": "Inviato",
+    "noteLabel": "Nota dell'operatore",
+    "paymentNotActive": "Il pagamento del cliente non è attivo, quindi il collegamento non può essere approvato.",
+    "actions": {
+      "start_review": "AVVIA REVISIONE",
+      "approve": "APPROVA",
+      "reject": "RIFIUTA",
+      "suspend": "SOSPENDI",
+      "disconnect": "SCOLLEGA"
+    }
+  },
+
     profileFields: {
       phone: "Telefono",
       country: "Paese",
@@ -4265,6 +4599,7 @@ usernameLabel: "Nome utente Tradovate",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "Continua all'onboarding",
     verifying: "Verifica del pagamento…",
     backToPricing: "Torna ai piani",
     couldNotVerify: "Non è ancora stato possibile verificare il tuo pagamento",
@@ -4389,6 +4724,10 @@ usernameLabel: "Nome utente Tradovate",
     disclaimer: "* Avvertenza: I risultati passati non garantiscono quelli futuri. Le proiezioni sono solo a scopo illustrativo."
   },
   meta: {
+    onboarding: {
+      title: "Onboarding account | Braxel Markets",
+      description: "Collega l'account esterno della prop firm che intendi usare e segui lo stato della revisione manuale."
+    },
     accounts: {
       title: "Acquista un Account Prop Firm | Braxel Markets",
       description: "Acquista il tuo account di valutazione o funded direttamente dalla firm tramite il nostro link, poi attiva il piano di segnali nel pannello."
@@ -4738,6 +5077,114 @@ usernameLabel: "Nome utente Tradovate",
 };
 
 const esTranslation = {
+  onboarding: {
+    "navLabel": "ONBOARDING DE CUENTA",
+    "eyebrow": "CUENTA GESTIONADA",
+    "title": "Vincula tu cuenta de la prop firm",
+    "intro": "Tu paquete está activo. Indícanos qué cuenta externa de la prop firm pretendes usar y revisaremos el vínculo manualmente. Braxel presta gestión operativa y monitorización solo cuando las reglas del proveedor y tu autorización lo permiten.",
+    "disabledTitle": "Onboarding no disponible",
+    "disabledBody": "El flujo de onboarding de cuenta gestionada está desactivado en este momento. Contacta con soporte si necesitas ayuda con tu cuenta.",
+    "retry": "REINTENTAR",
+    "payment": {
+      "active": "Pago confirmado",
+      "pending": "Pago pendiente",
+      "inactive": "Pago no activo",
+      "none": "No se encontró ningún pago",
+      "refunded": "Pago reembolsado",
+      "canceled": "Pago cancelado",
+      "failed": "Pago fallido",
+      "rejected": "Pago rechazado",
+      "disputed": "Pago en disputa"
+    },
+    "goToPricing": "VER PLANES",
+    "step1Title": "Mantén la cuenta en la firma",
+    "step1Body": "Compras y posees la cuenta directamente en la prop firm. Braxel no abre cuentas ni custodia tus fondos.",
+    "step2Title": "Indícanos la cuenta",
+    "step2Body": "Introduce solo el login/ID de la cuenta que ves en la firma. Nunca introduzcas una contraseña, token o secreto.",
+    "step3Title": "Revisión manual",
+    "step3Body": "Un operador revisa cada solicitud. La conectividad depende de las reglas de elegibilidad y autorización del proveedor.",
+    "noPasswordNotice": "Nunca introduzcas aquí la contraseña de tu bróker, el token del proveedor, el CID o el secreto. Solo necesitamos el login/ID de la cuenta. Braxel nunca pide credenciales en este flujo.",
+    "status": {
+      "pending": "Pendiente",
+      "in_review": "En revisión",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "suspended": "Suspendido",
+      "disconnected": "Desconectado"
+    },
+    "statusDesc": {
+      "pending": "Tu solicitud espera a un operador.",
+      "in_review": "Un operador está revisando tu solicitud.",
+      "approved": "El vínculo está aprobado. La monitorización operativa está activa mientras el pago siga activo y las reglas del proveedor lo permitan.",
+      "rejected": "La solicitud fue rechazada. Lee la nota del operador y envía una nueva si corresponde.",
+      "suspended": "El vínculo está suspendido. La monitorización operativa está detenida hasta que se resuelva la suspensión.",
+      "disconnected": "El vínculo está cerrado. Puedes enviar una nueva solicitud cuando quieras.",
+      "suspendedByPayment": "El pago detrás de este vínculo ya no está activo, por lo que el vínculo está suspendido."
+    },
+    "operatorNote": "Nota del operador",
+    "disconnectCta": "DESCONECTAR",
+    "disconnectDone": "Cuenta desconectada.",
+    "formTitle": "Solicitud de vínculo de cuenta",
+    "firmLabel": "Prop firm",
+    "accountLoginLabel": "Login/ID de la cuenta en la firma",
+    "accountLoginPlaceholder": "El ID o login de tu cuenta",
+    "accountLoginHint": "Es un identificador, no una contraseña.",
+    "noteLabel": "Notas (opcional)",
+    "notePlaceholder": "Algo que debamos saber sobre esta cuenta.",
+    "disclosuresTitle": "Divulgaciones y confirmaciones",
+    "disclosuresIntro": "Lee cada declaración y confírmala antes de enviar.",
+    "confirm": {
+      "ownership": "La cuenta externa es mía y estoy autorizado a usarla.",
+      "externalRules": "Las reglas de la prop firm externa se aplican a esta cuenta y a cualquier herramienta que use.",
+      "noProfitGuarantee": "Braxel no garantiza beneficios, rendimientos ni ningún resultado específico.",
+      "eligibility": "La conectividad de la cuenta depende de la elegibilidad y autorización del proveedor.",
+      "dataDelayed": "Los datos de la cuenta pueden estar retrasados o incompletos.",
+      "payoutsProvider": "Los pagos siguen sujetos a las reglas del proveedor externo. Braxel no procesa pagos de la prop firm.",
+      "noFundsHeld": "Braxel no custodia fondos de clientes y no es la prop firm."
+    },
+    "submit": "ENVIAR A REVISIÓN",
+    "submitted": "Solicitud enviada. La revisaremos en breve.",
+    "pendingHint": "Tu solicitud está pendiente de revisión. Puedes enviar otra tras una decisión.",
+    "draftNotice": "Texto provisional — pendiente de revisión legal. Braxel Markets solo presta servicios de gestión operativa y software. No es la prop firm, no custodia fondos ni procesa pagos de la prop firm.",
+    "executionDisabledNote": "Las funciones de ejecución están desactivadas. Nada en este flujo coloca, modifica o liquida órdenes.",
+    "providerNotice": "Operar conlleva un riesgo sustancial de pérdida. Lee el aviso de riesgo.",
+    "riskLink": "Aviso de riesgo",
+    "errors": {
+      "loadFailed": "No pudimos cargar tu estado de onboarding. Inténtalo de nuevo.",
+      "missingFields": "Completa la firma y el login/ID de la cuenta.",
+      "confirmationsRequired": "Confirma cada declaración antes de enviar.",
+      "paymentRequired": "Se requiere un pago activo antes de vincular una cuenta.",
+      "paymentNotActive": "El pago detrás de tu cuenta no está activo. Contacta con soporte.",
+      "alreadyOpen": "Ya tienes una solicitud de vínculo abierta.",
+      "invalidFirm": "Esa prop firm no está disponible.",
+      "disabled": "El flujo de onboarding no está disponible ahora.",
+      "submitFailed": "No pudimos enviar tu solicitud. Inténtalo de nuevo.",
+      "unauthorized": "Inicia sesión de nuevo.",
+      "disconnectFailed": "No pudimos desconectar la cuenta. Inténtalo de nuevo."
+    }
+  },
+  operatorLinks: {
+    "title": "VÍNCULOS DE CUENTA",
+    "subtitle": "Revisar solicitudes de vínculo de cuenta",
+    "noLinks": "No hay solicitudes de vínculo",
+    "open": "ABRIR",
+    "detailTitle": "Solicitud de vínculo de cuenta",
+    "close": "Cerrar",
+    "firmLabel": "Firma",
+    "planLabel": "Plan",
+    "accountLabel": "Login/ID de la cuenta",
+    "submittedLabel": "Enviado",
+    "noteLabel": "Nota del operador",
+    "paymentNotActive": "El pago del cliente no está activo, por lo que el vínculo no puede aprobarse.",
+    "actions": {
+      "start_review": "INICIAR REVISIÓN",
+      "approve": "APROBAR",
+      "reject": "RECHAZAR",
+      "suspend": "SUSPENDER",
+      "disconnect": "DESCONECTAR"
+    }
+  },
+
     profileFields: {
       phone: "Teléfono",
       country: "País",
@@ -5839,6 +6286,7 @@ usernameLabel: "Usuario de Tradovate",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "Continuar al onboarding",
     verifying: "Verificando el pago…",
     backToPricing: "Volver a los planes",
     couldNotVerify: "Aún no hemos podido verificar su pago",
@@ -5963,6 +6411,10 @@ usernameLabel: "Usuario de Tradovate",
     disclaimer: "* Aviso: El rendimiento pasado no garantiza resultados futuros. Las proyecciones son solo ilustrativas."
   },
   meta: {
+    onboarding: {
+      title: "Onboarding de cuenta | Braxel Markets",
+      description: "Vincula la cuenta externa de la prop firm que pretendes usar y sigue el estado de la revisión manual."
+    },
     accounts: {
       title: "Comprar Cuenta de Prop Firm | Braxel Markets",
       description: "Compra tu cuenta de evaluación o financiada directamente con la firm a través de nuestro enlace y activa tu plan de señales en el panel."
@@ -6312,6 +6764,114 @@ usernameLabel: "Usuario de Tradovate",
 };
 
 const frTranslation = {
+  onboarding: {
+    "navLabel": "ONBOARDING DU COMPTE",
+    "eyebrow": "COMPTE GÉRÉ",
+    "title": "Liez votre compte de prop firm",
+    "intro": "Votre forfait est actif. Indiquez-nous quel compte externe de prop firm vous souhaitez utiliser et nous examinerons le lien manuellement. Braxel fournit une gestion opérationnelle et une surveillance uniquement lorsque les règles du fournisseur et votre autorisation le permettent.",
+    "disabledTitle": "Onboarding indisponible",
+    "disabledBody": "Le parcours d'onboarding du compte géré est actuellement désactivé. Contactez le support si vous avez besoin d'aide avec votre compte.",
+    "retry": "RÉESSAYER",
+    "payment": {
+      "active": "Paiement confirmé",
+      "pending": "Paiement en attente",
+      "inactive": "Paiement inactif",
+      "none": "Aucun paiement trouvé",
+      "refunded": "Paiement remboursé",
+      "canceled": "Paiement annulé",
+      "failed": "Paiement échoué",
+      "rejected": "Paiement rejeté",
+      "disputed": "Paiement contesté"
+    },
+    "goToPricing": "VOIR LES FORFAITS",
+    "step1Title": "Gardez le compte chez la firme",
+    "step1Body": "Vous achetez et possédez le compte directement auprès de la prop firm. Braxel n'ouvre pas de comptes et ne détient pas vos fonds.",
+    "step2Title": "Indiquez-nous le compte",
+    "step2Body": "Saisissez uniquement l'identifiant de connexion/ID que vous voyez chez la firme. Ne saisissez jamais de mot de passe, jeton ou secret.",
+    "step3Title": "Examen manuel",
+    "step3Body": "Un opérateur examine chaque demande. La connectivité dépend des règles d'éligibilité et d'autorisation du fournisseur.",
+    "noPasswordNotice": "Ne saisissez jamais ici le mot de passe de votre courtier, le jeton du fournisseur, le CID ou le secret. Nous avons seulement besoin de l'identifiant de connexion/ID du compte. Braxel ne demande jamais d'identifiants dans ce parcours.",
+    "status": {
+      "pending": "En attente",
+      "in_review": "En cours d'examen",
+      "approved": "Approuvé",
+      "rejected": "Rejeté",
+      "suspended": "Suspendu",
+      "disconnected": "Déconnecté"
+    },
+    "statusDesc": {
+      "pending": "Votre demande attend un opérateur.",
+      "in_review": "Un opérateur examine votre demande.",
+      "approved": "Le lien est approuvé. La surveillance opérationnelle est active tant que le paiement reste actif et que les règles du fournisseur le permettent.",
+      "rejected": "La demande a été rejetée. Lisez la note de l'opérateur et envoyez une nouvelle demande si applicable.",
+      "suspended": "Le lien est suspendu. La surveillance opérationnelle est arrêtée jusqu'à la résolution de la suspension.",
+      "disconnected": "Le lien est fermé. Vous pouvez envoyer une nouvelle demande quand vous le souhaitez.",
+      "suspendedByPayment": "Le paiement derrière ce lien n'est plus actif, le lien est donc suspendu."
+    },
+    "operatorNote": "Note de l'opérateur",
+    "disconnectCta": "DÉCONNECTER",
+    "disconnectDone": "Compte déconnecté.",
+    "formTitle": "Demande de liaison de compte",
+    "firmLabel": "Prop firm",
+    "accountLoginLabel": "Identifiant/ID du compte chez la firme",
+    "accountLoginPlaceholder": "L'ID ou l'identifiant de votre compte",
+    "accountLoginHint": "C'est un identifiant, pas un mot de passe.",
+    "noteLabel": "Notes (facultatif)",
+    "notePlaceholder": "Tout ce que nous devrions savoir sur ce compte.",
+    "disclosuresTitle": "Informations et confirmations",
+    "disclosuresIntro": "Lisez chaque déclaration et confirmez-la avant d'envoyer.",
+    "confirm": {
+      "ownership": "Le compte externe m'appartient et je suis autorisé à l'utiliser.",
+      "externalRules": "Les règles de la prop firm externe s'appliquent à ce compte et à tout outil que j'utilise.",
+      "noProfitGuarantee": "Braxel ne garantit ni profits, ni rendements, ni résultat spécifique.",
+      "eligibility": "La connectivité du compte dépend de l'éligibilité et de l'autorisation du fournisseur.",
+      "dataDelayed": "Les données du compte peuvent être retardées ou incomplètes.",
+      "payoutsProvider": "Les paiements restent soumis aux règles du fournisseur externe. Braxel ne traite pas les paiements de la prop firm.",
+      "noFundsHeld": "Braxel ne détient pas les fonds des clients et n'est pas la prop firm."
+    },
+    "submit": "ENVOYER POUR EXAMEN",
+    "submitted": "Demande envoyée. Nous l'examinerons bientôt.",
+    "pendingHint": "Votre demande est en attente d'examen. Vous pouvez en envoyer une nouvelle après une décision.",
+    "draftNotice": "Texte provisoire — en attente de révision juridique. Braxel Markets fournit uniquement des services de gestion opérationnelle et de logiciel. Elle n'est pas la prop firm, ne conserve pas les fonds et ne traite pas les paiements de la prop firm.",
+    "executionDisabledNote": "Les fonctions d'exécution sont désactivées. Rien dans ce parcours ne place, ne modifie ou ne liquide d'ordres.",
+    "providerNotice": "Le trading comporte un risque substantiel de perte. Lisez l'avis de risque.",
+    "riskLink": "Avis de risque",
+    "errors": {
+      "loadFailed": "Impossible de charger votre état d'onboarding. Veuillez réessayer.",
+      "missingFields": "Renseignez la firme et l'identifiant/ID du compte.",
+      "confirmationsRequired": "Confirmez chaque déclaration avant d'envoyer.",
+      "paymentRequired": "Un paiement actif est requis avant de lier un compte.",
+      "paymentNotActive": "Le paiement derrière votre compte n'est pas actif. Contactez le support.",
+      "alreadyOpen": "Vous avez déjà une demande de liaison ouverte.",
+      "invalidFirm": "Cette prop firm n'est pas disponible.",
+      "disabled": "Le parcours d'onboarding n'est pas disponible pour le moment.",
+      "submitFailed": "Impossible d'envoyer votre demande. Veuillez réessayer.",
+      "unauthorized": "Veuillez vous reconnecter.",
+      "disconnectFailed": "Impossible de déconnecter le compte. Veuillez réessayer."
+    }
+  },
+  operatorLinks: {
+    "title": "LIAISONS DE COMPTE",
+    "subtitle": "Examiner les demandes de liaison",
+    "noLinks": "Aucune demande de liaison",
+    "open": "OUVRIR",
+    "detailTitle": "Demande de liaison de compte",
+    "close": "Fermer",
+    "firmLabel": "Firme",
+    "planLabel": "Forfait",
+    "accountLabel": "Identifiant/ID du compte",
+    "submittedLabel": "Envoyé",
+    "noteLabel": "Note de l'opérateur",
+    "paymentNotActive": "Le paiement du client n'est pas actif, la liaison ne peut donc pas être approuvée.",
+    "actions": {
+      "start_review": "DÉMARRER L'EXAMEN",
+      "approve": "APPROUVER",
+      "reject": "REJETER",
+      "suspend": "SUSPENDRE",
+      "disconnect": "DÉCONNECTER"
+    }
+  },
+
     profileFields: {
       phone: "Téléphone",
       country: "Pays",
@@ -7413,6 +7973,7 @@ usernameLabel: "Identifiant Tradovate",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "Continuer vers l'onboarding",
     verifying: "Vérification du paiement…",
     backToPricing: "Retour aux formules",
     couldNotVerify: "Nous n'avons pas encore pu vérifier votre paiement",
@@ -7537,6 +8098,10 @@ usernameLabel: "Identifiant Tradovate",
     disclaimer: "* Avertissement : Les performances passées ne garantissent pas les résultats futurs. Les projections sont fournies à titre indicatif uniquement."
   },
   meta: {
+    onboarding: {
+      title: "Onboarding du compte | Braxel Markets",
+      description: "Liez le compte externe de prop firm que vous souhaitez utiliser et suivez l'état de l'examen manuel."
+    },
     accounts: {
       title: "Acheter un Compte de Prop Firm | Braxel Markets",
       description: "Achetez votre compte d'évaluation ou financé directement auprès de la firm via notre lien, puis activez votre plan de signaux dans le panneau."
@@ -7886,6 +8451,114 @@ usernameLabel: "Identifiant Tradovate",
 };
 
 const deTranslation = {
+  onboarding: {
+    "navLabel": "KONTO-ONBOARDING",
+    "eyebrow": "VERWALTETES KONTO",
+    "title": "Prop-Firm-Konto verknüpfen",
+    "intro": "Ihr Paket ist aktiv. Teilen Sie uns mit, welches externe Prop-Firm-Konto Sie nutzen möchten; wir prüfen die Verknüpfung manuell. Braxel erbringt operative Verwaltung und Überwachung nur, soweit die Regeln des Anbieters und Ihre Autorisierung es zulassen.",
+    "disabledTitle": "Onboarding nicht verfügbar",
+    "disabledBody": "Der Onboarding-Ablauf für verwaltete Konten ist derzeit deaktiviert. Kontaktieren Sie den Support, wenn Sie Hilfe benötigen.",
+    "retry": "ERNEUT VERSUCHEN",
+    "payment": {
+      "active": "Zahlung bestätigt",
+      "pending": "Zahlung ausstehend",
+      "inactive": "Zahlung nicht aktiv",
+      "none": "Keine Zahlung gefunden",
+      "refunded": "Zahlung erstattet",
+      "canceled": "Zahlung storniert",
+      "failed": "Zahlung fehlgeschlagen",
+      "rejected": "Zahlung abgelehnt",
+      "disputed": "Zahlung strittig"
+    },
+    "goToPricing": "PLÄNE ANSEHEN",
+    "step1Title": "Konto bei der Firma behalten",
+    "step1Body": "Sie kaufen und besitzen das Konto direkt bei der Prop Firm. Braxel eröffnet keine Konten und verwahrt Ihre Gelder nicht.",
+    "step2Title": "Konto angeben",
+    "step2Body": "Geben Sie nur den Login/ID ein, den Sie bei der Firma sehen. Geben Sie niemals Passwort, Token oder Secret ein.",
+    "step3Title": "Manuelle Prüfung",
+    "step3Body": "Ein Operator prüft jede Anfrage. Die Konnektivität hängt von den Berechtigungs- und Autorisierungsregeln des Anbieters ab.",
+    "noPasswordNotice": "Geben Sie hier niemals Ihr Broker-Passwort, Anbieter-Token, CID oder Secret ein. Wir benötigen nur den Login/ID des Kontos. Braxel fragt in diesem Ablauf nie nach Zugangsdaten.",
+    "status": {
+      "pending": "Ausstehend",
+      "in_review": "In Prüfung",
+      "approved": "Genehmigt",
+      "rejected": "Abgelehnt",
+      "suspended": "Ausgesetzt",
+      "disconnected": "Getrennt"
+    },
+    "statusDesc": {
+      "pending": "Ihre Anfrage wartet auf einen Operator.",
+      "in_review": "Ein Operator prüft Ihre Anfrage.",
+      "approved": "Die Verknüpfung ist genehmigt. Die operative Überwachung ist aktiv, solange die Zahlung aktiv bleibt und die Regeln des Anbieters es zulassen.",
+      "rejected": "Die Anfrage wurde abgelehnt. Lesen Sie die Notiz und reichen Sie ggf. eine neue Anfrage ein.",
+      "suspended": "Die Verknüpfung ist ausgesetzt. Die operative Überwachung ist bis zur Klärung gestoppt.",
+      "disconnected": "Die Verknüpfung ist geschlossen. Sie können jederzeit eine neue Anfrage einreichen.",
+      "suspendedByPayment": "Die Zahlung hinter dieser Verknüpfung ist nicht mehr aktiv, daher ist die Verknüpfung ausgesetzt."
+    },
+    "operatorNote": "Operator-Notiz",
+    "disconnectCta": "TRENNEN",
+    "disconnectDone": "Konto getrennt.",
+    "formTitle": "Antrag auf Kontoverknüpfung",
+    "firmLabel": "Prop Firm",
+    "accountLoginLabel": "Login/ID des Kontos bei der Firma",
+    "accountLoginPlaceholder": "Ihre Konto-ID oder Ihr Login",
+    "accountLoginHint": "Dies ist eine Kennung, kein Passwort.",
+    "noteLabel": "Notizen (optional)",
+    "notePlaceholder": "Was wir über dieses Konto wissen sollten.",
+    "disclosuresTitle": "Offenlegungen und Bestätigungen",
+    "disclosuresIntro": "Lesen und bestätigen Sie jede Erklärung vor dem Absenden.",
+    "confirm": {
+      "ownership": "Das externe Konto gehört mir und ich bin zur Nutzung berechtigt.",
+      "externalRules": "Die Regeln der externen Prop Firm gelten für dieses Konto und jedes von mir genutzte Tool.",
+      "noProfitGuarantee": "Braxel garantiert keine Gewinne, Renditen oder ein bestimmtes Ergebnis.",
+      "eligibility": "Die Konnektivität des Kontos hängt von Berechtigung und Autorisierung des Anbieters ab.",
+      "dataDelayed": "Kontodaten können verzögert oder unvollständig sein.",
+      "payoutsProvider": "Auszahlungen unterliegen weiterhin den Regeln des externen Anbieters. Braxel verarbeitet keine Prop-Firm-Auszahlungen.",
+      "noFundsHeld": "Braxel verwahrt keine Kundengelder und ist nicht die Prop Firm."
+    },
+    "submit": "ZUR PRÜFUNG SENDEN",
+    "submitted": "Anfrage gesendet. Wir prüfen sie in Kürze.",
+    "pendingHint": "Ihre Anfrage wartet auf Prüfung. Nach einer Entscheidung können Sie eine neue senden.",
+    "draftNotice": "Vorläufiger Text — rechtliche Prüfung ausstehend. Braxel Markets erbringt nur operative Verwaltungs- und Softwaredienstleistungen. Sie ist nicht die Prop Firm, verwahrt keine Gelder und verarbeitet keine Prop-Firm-Auszahlungen.",
+    "executionDisabledNote": "Ausführungsfunktionen sind deaktiviert. Nichts in diesem Ablauf platziert, ändert oder liquidiert Orders.",
+    "providerNotice": "Der Handel birgt ein erhebliches Verlustrisiko. Lesen Sie den Risikohinweis.",
+    "riskLink": "Risikohinweis",
+    "errors": {
+      "loadFailed": "Ihr Onboarding-Status konnte nicht geladen werden. Bitte erneut versuchen.",
+      "missingFields": "Bitte Firma und Login/ID des Kontos ausfüllen.",
+      "confirmationsRequired": "Bitte jede Erklärung vor dem Absenden bestätigen.",
+      "paymentRequired": "Vor der Kontoverknüpfung ist eine aktive Zahlung erforderlich.",
+      "paymentNotActive": "Die Zahlung hinter Ihrem Konto ist nicht aktiv. Kontaktieren Sie den Support.",
+      "alreadyOpen": "Sie haben bereits eine offene Kontoverknüpfungsanfrage.",
+      "invalidFirm": "Diese Prop Firm ist nicht verfügbar.",
+      "disabled": "Der Onboarding-Ablauf ist derzeit nicht verfügbar.",
+      "submitFailed": "Ihre Anfrage konnte nicht gesendet werden. Bitte erneut versuchen.",
+      "unauthorized": "Bitte erneut anmelden.",
+      "disconnectFailed": "Das Konto konnte nicht getrennt werden. Bitte erneut versuchen."
+    }
+  },
+  operatorLinks: {
+    "title": "KONTOVERKNÜPFUNGEN",
+    "subtitle": "Anträge auf Kontoverknüpfung prüfen",
+    "noLinks": "Keine Kontoverknüpfungsanträge",
+    "open": "ÖFFNEN",
+    "detailTitle": "Antrag auf Kontoverknüpfung",
+    "close": "Schließen",
+    "firmLabel": "Firma",
+    "planLabel": "Plan",
+    "accountLabel": "Login/ID des Kontos",
+    "submittedLabel": "Gesendet",
+    "noteLabel": "Operator-Notiz",
+    "paymentNotActive": "Die Zahlung des Kunden ist nicht aktiv, daher kann die Verknüpfung nicht genehmigt werden.",
+    "actions": {
+      "start_review": "PRÜFUNG STARTEN",
+      "approve": "GENEHMIGEN",
+      "reject": "ABLEHNEN",
+      "suspend": "AUSSETZEN",
+      "disconnect": "TRENNEN"
+    }
+  },
+
     profileFields: {
       phone: "Telefon",
       country: "Land",
@@ -8985,6 +9658,7 @@ usernameLabel: "Tradovate-Benutzername",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "Weiter zum Onboarding",
     verifying: "Zahlung wird geprüft…",
     backToPricing: "Zurück zu den Plänen",
     couldNotVerify: "Ihre Zahlung konnte noch nicht verifiziert werden",
@@ -9109,6 +9783,10 @@ usernameLabel: "Tradovate-Benutzername",
     disclaimer: "* Hinweis: Frühere Ergebnisse sind kein Garant für zukünftige Resultate. Projektionen dienen nur zur Veranschaulichung."
   },
   meta: {
+    onboarding: {
+      title: "Konto-Onboarding | Braxel Markets",
+      description: "Verknüpfen Sie das externe Prop-Firm-Konto, das Sie nutzen möchten, und verfolgen Sie den manuellen Prüfstatus."
+    },
     accounts: {
       title: "Prop-Firm-Konto kaufen | Braxel Markets",
       description: "Kaufe dein Evaluierungs- oder Funded-Konto direkt bei der Prop-Firm über unseren Link und aktiviere deinen Signalplan im Panel."
@@ -9458,6 +10136,114 @@ usernameLabel: "Tradovate-Benutzername",
 };
 
 const ruTranslation = {
+  onboarding: {
+    "navLabel": "ОНБОРДИНГ СЧЁТА",
+    "eyebrow": "УПРАВЛЯЕМЫЙ СЧЁТ",
+    "title": "Привяжите счёт проп-фирмы",
+    "intro": "Ваш пакет активен. Укажите, какой внешний счёт проп-фирмы вы собираетесь использовать, и мы вручную проверим привязку. Braxel предоставляет операционное управление и мониторинг только там, где это разрешено правилами провайдера и вашей авторизацией.",
+    "disabledTitle": "Онбординг недоступен",
+    "disabledBody": "Процесс онбординга управляемого счёта сейчас отключён. Обратитесь в поддержку, если нужна помощь.",
+    "retry": "ПОВТОРИТЬ",
+    "payment": {
+      "active": "Платёж подтверждён",
+      "pending": "Платёж ожидает",
+      "inactive": "Платёж не активен",
+      "none": "Платёж не найден",
+      "refunded": "Платёж возвращён",
+      "canceled": "Платёж отменён",
+      "failed": "Платёж не прошёл",
+      "rejected": "Платёж отклонён",
+      "disputed": "Платёж оспаривается"
+    },
+    "goToPricing": "СМОТРЕТЬ ПЛАНЫ",
+    "step1Title": "Оставьте счёт у фирмы",
+    "step1Body": "Вы покупаете и владеете счётом напрямую в проп-фирме. Braxel не открывает счета и не хранит ваши средства.",
+    "step2Title": "Укажите счёт",
+    "step2Body": "Введите только логин/ID, который видите у фирмы. Никогда не вводите пароль, токен или секрет.",
+    "step3Title": "Ручная проверка",
+    "step3Body": "Оператор проверяет каждую заявку. Подключение зависит от правил допуска и авторизации провайдера.",
+    "noPasswordNotice": "Никогда не вводите здесь пароль брокера, токен провайдера, CID или секрет. Нам нужен только логин/ID счёта. Braxel никогда не запрашивает учётные данные в этом процессе.",
+    "status": {
+      "pending": "Ожидает",
+      "in_review": "На проверке",
+      "approved": "Одобрено",
+      "rejected": "Отклонено",
+      "suspended": "Приостановлено",
+      "disconnected": "Отключено"
+    },
+    "statusDesc": {
+      "pending": "Ваша заявка ожидает оператора.",
+      "in_review": "Оператор проверяет вашу заявку.",
+      "approved": "Привязка одобрена. Операционный мониторинг активен, пока платёж активен и правила провайдера это позволяют.",
+      "rejected": "Заявка отклонена. Прочитайте заметку оператора и при необходимости отправьте новую.",
+      "suspended": "Привязка приостановлена. Операционный мониторинг остановлен до устранения приостановки.",
+      "disconnected": "Привязка закрыта. Вы можете отправить новую заявку в любое время.",
+      "suspendedByPayment": "Платёж по этой привязке больше не активен, поэтому привязка приостановлена."
+    },
+    "operatorNote": "Заметка оператора",
+    "disconnectCta": "ОТКЛЮЧИТЬ",
+    "disconnectDone": "Счёт отключён.",
+    "formTitle": "Заявка на привязку счёта",
+    "firmLabel": "Проп-фирма",
+    "accountLoginLabel": "Логин/ID счёта у фирмы",
+    "accountLoginPlaceholder": "ID или логин вашего счёта",
+    "accountLoginHint": "Это идентификатор, а не пароль.",
+    "noteLabel": "Заметки (необязательно)",
+    "notePlaceholder": "Что нам стоит знать об этом счёте.",
+    "disclosuresTitle": "Раскрытие информации и подтверждения",
+    "disclosuresIntro": "Прочитайте каждое утверждение и подтвердите его перед отправкой.",
+    "confirm": {
+      "ownership": "Внешний счёт принадлежит мне, и я имею право им пользоваться.",
+      "externalRules": "Правила внешней проп-фирмы применяются к этому счёту и к любому инструменту, который я использую.",
+      "noProfitGuarantee": "Braxel не гарантирует прибыль, доходность или конкретный результат.",
+      "eligibility": "Подключение счёта зависит от допуска и авторизации провайдера.",
+      "dataDelayed": "Данные счёта могут быть с задержкой или неполными.",
+      "payoutsProvider": "Выплаты по-прежнему регулируются правилами внешнего провайдера. Braxel не обрабатывает выплаты проп-фирмы.",
+      "noFundsHeld": "Braxel не хранит средства клиентов и не является проп-фирмой."
+    },
+    "submit": "ОТПРАВИТЬ НА ПРОВЕРКУ",
+    "submitted": "Заявка отправлена. Мы скоро её рассмотрим.",
+    "pendingHint": "Ваша заявка ожидает проверки. После решения можно отправить новую.",
+    "draftNotice": "Черновой текст — ожидает юридической проверки. Braxel Markets предоставляет только услуги операционного управления и программного обеспечения. Она не является проп-фирмой, не хранит средства и не обрабатывает выплаты проп-фирмы.",
+    "executionDisabledNote": "Функции исполнения отключены. Ничто в этом процессе не размещает, не изменяет и не ликвидирует ордера.",
+    "providerNotice": "Торговля связана с существенным риском потерь. Прочитайте уведомление о рисках.",
+    "riskLink": "Уведомление о рисках",
+    "errors": {
+      "loadFailed": "Не удалось загрузить статус онбординга. Попробуйте снова.",
+      "missingFields": "Укажите фирму и логин/ID счёта.",
+      "confirmationsRequired": "Подтвердите каждое утверждение перед отправкой.",
+      "paymentRequired": "Для привязки счёта требуется активный платёж.",
+      "paymentNotActive": "Платёж по вашему счёту не активен. Обратитесь в поддержку.",
+      "alreadyOpen": "У вас уже есть открытая заявка на привязку.",
+      "invalidFirm": "Эта проп-фирма недоступна.",
+      "disabled": "Онбординг сейчас недоступен.",
+      "submitFailed": "Не удалось отправить заявку. Попробуйте снова.",
+      "unauthorized": "Войдите снова.",
+      "disconnectFailed": "Не удалось отключить счёт. Попробуйте снова."
+    }
+  },
+  operatorLinks: {
+    "title": "ПРИВЯЗКИ СЧЕТОВ",
+    "subtitle": "Проверка заявок на привязку счёта",
+    "noLinks": "Нет заявок на привязку",
+    "open": "ОТКРЫТЬ",
+    "detailTitle": "Заявка на привязку счёта",
+    "close": "Закрыть",
+    "firmLabel": "Фирма",
+    "planLabel": "План",
+    "accountLabel": "Логин/ID счёта",
+    "submittedLabel": "Отправлено",
+    "noteLabel": "Заметка оператора",
+    "paymentNotActive": "Платёж клиента не активен, поэтому привязку нельзя одобрить.",
+    "actions": {
+      "start_review": "НАЧАТЬ ПРОВЕРКУ",
+      "approve": "ОДОБРИТЬ",
+      "reject": "ОТКЛОНИТЬ",
+      "suspend": "ПРИОСТАНОВИТЬ",
+      "disconnect": "ОТКЛЮЧИТЬ"
+    }
+  },
+
     profileFields: {
       phone: "Телефон",
       country: "Страна",
@@ -10561,6 +11347,7 @@ usernameLabel: "Имя пользователя Tradovate",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "Перейти к онбордингу",
     verifying: "Проверка платежа…",
     backToPricing: "Вернуться к планам",
     couldNotVerify: "Нам пока не удалось подтвердить ваш платёж",
@@ -10685,6 +11472,10 @@ usernameLabel: "Имя пользователя Tradovate",
     disclaimer: "* Отказ от ответственности: прошлые результаты не гарантируют будущих. Прогнозы приведены исключительно в иллюстративных целях."
   },
   meta: {
+    onboarding: {
+      title: "Онбординг счёта | Braxel Markets",
+      description: "Привяжите внешний счёт проп-фирмы, который планируете использовать, и следите за статусом ручной проверки."
+    },
     accounts: {
       title: "Купить счёт prop-фирмы | Braxel Markets",
       description: "Купите оценочный или funded-счёт напрямую у фирмы по нашей ссылке и активируйте план сигналов в панели."
@@ -11034,6 +11825,114 @@ usernameLabel: "Имя пользователя Tradovate",
 };
 
 const zhTranslation = {
+  onboarding: {
+    "navLabel": "账户引导",
+    "eyebrow": "托管账户",
+    "title": "绑定您的自营交易公司账户",
+    "intro": "您的套餐已生效。请告知您打算使用的外部自营交易公司账户，我们将人工审核绑定。Braxel 仅在供应商规则和您的授权允许的范围内提供运营管理和监控。",
+    "disabledTitle": "引导不可用",
+    "disabledBody": "托管账户引导流程当前已停用。如账户需要帮助，请联系支持。",
+    "retry": "重试",
+    "payment": {
+      "active": "付款已确认",
+      "pending": "付款待处理",
+      "inactive": "付款未生效",
+      "none": "未找到付款",
+      "refunded": "付款已退款",
+      "canceled": "付款已取消",
+      "failed": "付款失败",
+      "rejected": "付款被拒绝",
+      "disputed": "付款有争议"
+    },
+    "goToPricing": "查看套餐",
+    "step1Title": "账户保留在公司",
+    "step1Body": "您直接在自营交易公司购买并拥有账户。Braxel 不开设账户，也不持有您的资金。",
+    "step2Title": "告知账户",
+    "step2Body": "只填写您在公司看到的账户登录名/ID。切勿输入密码、令牌或密钥。",
+    "step3Title": "人工审核",
+    "step3Body": "运营人员会审核每个请求。连接取决于供应商的资格和授权规则。",
+    "noPasswordNotice": "请勿在此输入经纪商密码、供应商令牌、CID 或密钥。我们只需要账户登录名/ID。Braxel 在此流程中绝不会索取凭据。",
+    "status": {
+      "pending": "待审核",
+      "in_review": "审核中",
+      "approved": "已批准",
+      "rejected": "已拒绝",
+      "suspended": "已暂停",
+      "disconnected": "已断开"
+    },
+    "statusDesc": {
+      "pending": "您的请求正在等待运营人员。",
+      "in_review": "运营人员正在审核您的请求。",
+      "approved": "绑定已批准。只要付款保持有效且供应商规则允许，运营监控将保持启用。",
+      "rejected": "请求被拒绝。请阅读运营备注，如适用可重新提交。",
+      "suspended": "绑定已暂停。在暂停解除前，运营监控已停止。",
+      "disconnected": "绑定已关闭。您可随时提交新请求。",
+      "suspendedByPayment": "此绑定对应的付款已不再有效，因此绑定已暂停。"
+    },
+    "operatorNote": "运营备注",
+    "disconnectCta": "断开连接",
+    "disconnectDone": "账户已断开。",
+    "formTitle": "账户绑定请求",
+    "firmLabel": "自营交易公司",
+    "accountLoginLabel": "公司账户登录名/ID",
+    "accountLoginPlaceholder": "您的账户 ID 或登录名",
+    "accountLoginHint": "这是标识符，不是密码。",
+    "noteLabel": "备注（可选）",
+    "notePlaceholder": "关于此账户我们需要了解的信息。",
+    "disclosuresTitle": "披露与确认",
+    "disclosuresIntro": "提交前请阅读并确认每一项声明。",
+    "confirm": {
+      "ownership": "该外部账户属于我，且我有权使用。",
+      "externalRules": "外部自营交易公司的规则适用于此账户以及我使用的任何工具。",
+      "noProfitGuarantee": "Braxel 不保证利润、回报或任何特定结果。",
+      "eligibility": "账户连接取决于供应商的资格和授权。",
+      "dataDelayed": "账户数据可能延迟或不完整。",
+      "payoutsProvider": "付款仍受外部供应商规则约束。Braxel 不处理自营交易公司的付款。",
+      "noFundsHeld": "Braxel 不持有客户资金，也不是自营交易公司。"
+    },
+    "submit": "提交审核",
+    "submitted": "请求已提交。我们将尽快审核。",
+    "pendingHint": "您的请求正在等待审核。决定后可提交新请求。",
+    "draftNotice": "草案文本——待法律审核。Braxel Markets 仅提供运营管理和软件服务。它不是自营交易公司，不保管资金，也不处理自营交易公司的付款。",
+    "executionDisabledNote": "执行功能已禁用。此流程不会下单、修改或平仓。",
+    "providerNotice": "交易存在重大亏损风险。请阅读风险提示。",
+    "riskLink": "风险提示",
+    "errors": {
+      "loadFailed": "无法加载引导状态。请重试。",
+      "missingFields": "请填写公司和账户登录名/ID。",
+      "confirmationsRequired": "提交前请确认每一项声明。",
+      "paymentRequired": "绑定账户前需要有效付款。",
+      "paymentNotActive": "您账户对应的付款未生效。请联系支持。",
+      "alreadyOpen": "您已有未关闭的账户绑定请求。",
+      "invalidFirm": "该自营交易公司不可用。",
+      "disabled": "引导流程当前不可用。",
+      "submitFailed": "无法提交请求。请重试。",
+      "unauthorized": "请重新登录。",
+      "disconnectFailed": "无法断开账户。请重试。"
+    }
+  },
+  operatorLinks: {
+    "title": "账户绑定",
+    "subtitle": "审核托管账户绑定请求",
+    "noLinks": "没有账户绑定请求",
+    "open": "打开",
+    "detailTitle": "账户绑定请求",
+    "close": "关闭",
+    "firmLabel": "公司",
+    "planLabel": "套餐",
+    "accountLabel": "账户登录名/ID",
+    "submittedLabel": "已提交",
+    "noteLabel": "运营备注",
+    "paymentNotActive": "客户的付款未生效，因此无法批准绑定。",
+    "actions": {
+      "start_review": "开始审核",
+      "approve": "批准",
+      "reject": "拒绝",
+      "suspend": "暂停",
+      "disconnect": "断开"
+    }
+  },
+
     profileFields: {
       phone: "电话",
       country: "国家",
@@ -12131,6 +13030,7 @@ usernameLabel: "Tradovate 用户名",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "继续引导",
     verifying: "正在验证付款…",
     backToPricing: "返回方案",
     couldNotVerify: "我们暂时无法验证您的付款",
@@ -12255,6 +13155,10 @@ usernameLabel: "Tradovate 用户名",
     disclaimer: "* 免责声明：过往表现并不保证未来结果。预测仅供参考。"
   },
   meta: {
+    onboarding: {
+      title: "账户引导 | Braxel Markets",
+      description: "绑定您打算使用的外部自营交易公司账户，并查看人工审核状态。"
+    },
     accounts: {
       title: "购买自营交易公司账户 | Braxel Markets",
       description: "通过我们的链接直接从该公司购买考核账户或资金账户，然后在面板中激活您的信号计划。"
@@ -12604,6 +13508,114 @@ usernameLabel: "Tradovate 用户名",
 };
 
 const jaTranslation = {
+  onboarding: {
+    "navLabel": "アカウントオンボーディング",
+    "eyebrow": "マネージドアカウント",
+    "title": "プロップファーム口座を連携",
+    "intro": "パッケージは有効です。使用予定の外部プロップファーム口座をお知らせください。連携は手動で審査します。Braxel は、プロバイダーの規則とお客様の承認が許す範囲でのみ運用管理と監視を提供します。",
+    "disabledTitle": "オンボーディングは利用できません",
+    "disabledBody": "マネージドアカウントのオンボーディングは現在無効です。口座についてサポートが必要な場合はお問い合わせください。",
+    "retry": "再試行",
+    "payment": {
+      "active": "支払い確認済み",
+      "pending": "支払い待ち",
+      "inactive": "支払いが有効ではありません",
+      "none": "支払いが見つかりません",
+      "refunded": "返金済み",
+      "canceled": "キャンセル済み",
+      "failed": "支払い失敗",
+      "rejected": "支払い拒否",
+      "disputed": "支払い係争中"
+    },
+    "goToPricing": "プランを見る",
+    "step1Title": "口座はファームに置く",
+    "step1Body": "口座はプロップファームで直接購入し所有します。Braxel は口座を開設せず、資金を保管しません。",
+    "step2Title": "口座を教えてください",
+    "step2Body": "ファームで表示されるログイン/ID のみを入力してください。パスワード、トークン、シークレットは絶対に入力しないでください。",
+    "step3Title": "手動審査",
+    "step3Body": "運営担当者がすべての申請を審査します。接続はプロバイダーの適格性と承認規則に依存します。",
+    "noPasswordNotice": "ここにブローカーのパスワード、プロバイダーのトークン、CID、シークレットを入力しないでください。必要なのは口座のログイン/ID のみです。Braxel はこのフローで認証情報を求めません。",
+    "status": {
+      "pending": "審査待ち",
+      "in_review": "審査中",
+      "approved": "承認済み",
+      "rejected": "却下",
+      "suspended": "停止中",
+      "disconnected": "切断済み"
+    },
+    "statusDesc": {
+      "pending": "申請は運営担当者を待っています。",
+      "in_review": "運営担当者が申請を審査しています。",
+      "approved": "連携は承認されました。支払いが有効でプロバイダーの規則が許す限り、運用監視が有効です。",
+      "rejected": "申請は却下されました。運営メモを読み、必要なら再申請してください。",
+      "suspended": "連携は停止中です。停止が解除されるまで運用監視は停止します。",
+      "disconnected": "連携は終了しました。いつでも再申請できます。",
+      "suspendedByPayment": "この連携の支払いが有効でなくなったため、連携は停止中です。"
+    },
+    "operatorNote": "運営メモ",
+    "disconnectCta": "切断",
+    "disconnectDone": "口座を切断しました。",
+    "formTitle": "口座連携の申請",
+    "firmLabel": "プロップファーム",
+    "accountLoginLabel": "ファームの口座ログイン/ID",
+    "accountLoginPlaceholder": "口座 ID またはログイン",
+    "accountLoginHint": "これは識別子であり、パスワードではありません。",
+    "noteLabel": "メモ（任意）",
+    "notePlaceholder": "この口座について知っておくべきこと。",
+    "disclosuresTitle": "開示と確認",
+    "disclosuresIntro": "送信前に各声明を読み、確認してください。",
+    "confirm": {
+      "ownership": "外部口座は私のものであり、使用する権限があります。",
+      "externalRules": "外部プロップファームの規則は、この口座と私が使用するツールに適用されます。",
+      "noProfitGuarantee": "Braxel は利益、リターン、特定の結果を保証しません。",
+      "eligibility": "口座の接続はプロバイダーの適格性と承認に依存します。",
+      "dataDelayed": "口座データは遅延または不完全な場合があります。",
+      "payoutsProvider": "支払いは引き続き外部プロバイダーの規則に従います。Braxel はプロップファームの支払いを処理しません。",
+      "noFundsHeld": "Braxel は顧客資金を保管せず、プロップファームではありません。"
+    },
+    "submit": "審査に送信",
+    "submitted": "申請を送信しました。まもなく審査します。",
+    "pendingHint": "申請は審査待ちです。決定後に新しい申請が可能です。",
+    "draftNotice": "草案文面 — 法務レビュー待ち。Braxel Markets は運用管理とソフトウェアサービスのみを提供します。プロップファームではなく、資金を保管せず、プロップファームの支払いを処理しません。",
+    "executionDisabledNote": "実行機能は無効です。このフローでは注文の発注、変更、清算は行いません。",
+    "providerNotice": "取引には重大な損失リスクがあります。リスク通知をお読みください。",
+    "riskLink": "リスク通知",
+    "errors": {
+      "loadFailed": "オンボーディング状況を読み込めませんでした。再試行してください。",
+      "missingFields": "ファームと口座ログイン/ID を入力してください。",
+      "confirmationsRequired": "送信前にすべての声明を確認してください。",
+      "paymentRequired": "口座を連携するには有効な支払いが必要です。",
+      "paymentNotActive": "口座の支払いが有効ではありません。サポートにお問い合わせください。",
+      "alreadyOpen": "すでに未完了の口座連携申請があります。",
+      "invalidFirm": "そのプロップファームは利用できません。",
+      "disabled": "オンボーディングは現在利用できません。",
+      "submitFailed": "申請を送信できませんでした。再試行してください。",
+      "unauthorized": "再度ログインしてください。",
+      "disconnectFailed": "口座を切断できませんでした。再試行してください。"
+    }
+  },
+  operatorLinks: {
+    "title": "アカウント連携",
+    "subtitle": "マネージドアカウント連携申請を審査",
+    "noLinks": "アカウント連携申請はありません",
+    "open": "開く",
+    "detailTitle": "アカウント連携申請",
+    "close": "閉じる",
+    "firmLabel": "ファーム",
+    "planLabel": "プラン",
+    "accountLabel": "口座ログイン/ID",
+    "submittedLabel": "送信済み",
+    "noteLabel": "運営メモ",
+    "paymentNotActive": "顧客の支払いが有効でないため、連携を承認できません。",
+    "actions": {
+      "start_review": "審査開始",
+      "approve": "承認",
+      "reject": "却下",
+      "suspend": "停止",
+      "disconnect": "切断"
+    }
+  },
+
     profileFields: {
       phone: "電話番号",
       country: "国",
@@ -13701,6 +14713,7 @@ usernameLabel: "Tradovate ユーザー名",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "オンボーディングへ進む",
     verifying: "お支払いを確認中…",
     backToPricing: "プランに戻る",
     couldNotVerify: "お支払いをまだ確認できません",
@@ -13825,6 +14838,10 @@ usernameLabel: "Tradovate ユーザー名",
     disclaimer: "* 免責事項：過去の実績は将来の結果を保証するものではありません。予測はあくまで例示目的です。"
   },
   meta: {
+    onboarding: {
+      title: "アカウントオンボーディング | Braxel Markets",
+      description: "使用予定の外部プロップファーム口座を連携し、手動審査の状況を確認します。"
+    },
     accounts: {
       title: "プロップファーム口座を購入 | Braxel Markets",
       description: "当社のリンクからファームの評価口座またはファンデッド口座を直接購入し、パネルでシグナルプランを有効化してください。"
@@ -14174,6 +15191,114 @@ usernameLabel: "Tradovate ユーザー名",
 };
 
 const arTranslation = {
+  onboarding: {
+    "navLabel": "تهيئة الحساب",
+    "eyebrow": "حساب مُدار",
+    "title": "اربط حساب شركة التمويل الخاصة بك",
+    "intro": "باقتك نشطة. أخبرنا بالحساب الخارجي الذي تنوي استخدامه وسنراجع الربط يدويًا. تقدم Braxel الإدارة التشغيلية والمراقبة فقط حيث تسمح قواعد المزود وتفويضك بذلك.",
+    "disabledTitle": "التهيئة غير متاحة",
+    "disabledBody": "عملية تهيئة الحساب المُدار معطّلة حاليًا. تواصل مع الدعم إذا كنت بحاجة إلى مساعدة.",
+    "retry": "إعادة المحاولة",
+    "payment": {
+      "active": "تم تأكيد الدفع",
+      "pending": "الدفع معلّق",
+      "inactive": "الدفع غير نشط",
+      "none": "لم يتم العثور على دفع",
+      "refunded": "تم استرداد الدفع",
+      "canceled": "تم إلغاء الدفع",
+      "failed": "فشل الدفع",
+      "rejected": "تم رفض الدفع",
+      "disputed": "الدفع متنازع عليه"
+    },
+    "goToPricing": "عرض الباقات",
+    "step1Title": "أبقِ الحساب لدى الشركة",
+    "step1Body": "تشتري الحساب وتملكه مباشرة من شركة التمويل. لا تفتح Braxel حسابات ولا تحتفظ بأموالك.",
+    "step2Title": "أخبرنا بالحساب",
+    "step2Body": "أدخل فقط اسم الدخول/المعرّف الذي تراه لدى الشركة. لا تُدخل أبدًا كلمة مرور أو رمزًا أو سرًا.",
+    "step3Title": "مراجعة يدوية",
+    "step3Body": "يراجع موظف كل طلب. يعتمد الاتصال على قواعد الأهلية والتفويض لدى المزود.",
+    "noPasswordNotice": "لا تُدخل هنا أبدًا كلمة مرور الوسيط أو رمز المزود أو CID أو السر. نحتاج فقط إلى اسم الدخول/المعرّف للحساب. لا تطلب Braxel أي بيانات اعتماد في هذه العملية.",
+    "status": {
+      "pending": "قيد الانتظار",
+      "in_review": "قيد المراجعة",
+      "approved": "تمت الموافقة",
+      "rejected": "مرفوض",
+      "suspended": "معلّق",
+      "disconnected": "منفصل"
+    },
+    "statusDesc": {
+      "pending": "طلبك في انتظار موظف.",
+      "in_review": "يقوم موظف بمراجعة طلبك.",
+      "approved": "تمت الموافقة على الربط. المراقبة التشغيلية نشطة ما دام الدفع نشطًا وتسمح قواعد المزود.",
+      "rejected": "تم رفض الطلب. اقرأ ملاحظة الموظف وأرسل طلبًا جديدًا إن أمكن.",
+      "suspended": "الربط معلّق. المراقبة التشغيلية متوقفة حتى تتم معالجة التعليق.",
+      "disconnected": "الربط مغلق. يمكنك إرسال طلب جديد متى شئت.",
+      "suspendedByPayment": "الدفع المرتبط بهذا الربط لم يعد نشطًا، لذا الربط معلّق."
+    },
+    "operatorNote": "ملاحظة الموظف",
+    "disconnectCta": "فصل",
+    "disconnectDone": "تم فصل الحساب.",
+    "formTitle": "طلب ربط الحساب",
+    "firmLabel": "شركة التمويل",
+    "accountLoginLabel": "اسم الدخول/المعرّف لدى الشركة",
+    "accountLoginPlaceholder": "معرّف حسابك أو اسم الدخول",
+    "accountLoginHint": "هذا معرّف وليس كلمة مرور.",
+    "noteLabel": "ملاحظات (اختياري)",
+    "notePlaceholder": "أي شيء يجب أن نعرفه عن هذا الحساب.",
+    "disclosuresTitle": "الإفصاحات والتأكيدات",
+    "disclosuresIntro": "اقرأ كل عبارة وأكّدها قبل الإرسال.",
+    "confirm": {
+      "ownership": "الحساب الخارجي ملكي وأنا مخوّل لاستخدامه.",
+      "externalRules": "تنطبق قواعد شركة التمويل الخارجية على هذا الحساب وعلى أي أداة أستخدمها.",
+      "noProfitGuarantee": "لا تضمن Braxel أرباحًا أو عوائد أو أي نتيجة محددة.",
+      "eligibility": "يعتمد اتصال الحساب على أهلية المزود وتفويضه.",
+      "dataDelayed": "قد تكون بيانات الحساب متأخرة أو غير مكتملة.",
+      "payoutsProvider": "تظل المدفوعات خاضعة لقواعد المزود الخارجي. لا تعالج Braxel مدفوعات شركة التمويل.",
+      "noFundsHeld": "لا تحتفظ Braxel بأموال العملاء وليست شركة التمويل."
+    },
+    "submit": "إرسال للمراجعة",
+    "submitted": "تم إرسال الطلب. سنراجعه قريبًا.",
+    "pendingHint": "طلبك في انتظار المراجعة. يمكنك إرسال طلب جديد بعد القرار.",
+    "draftNotice": "نص مسوّدة — بانتظار المراجعة القانونية. تقدم Braxel Markets خدمات الإدارة التشغيلية والبرمجيات فقط. ليست شركة التمويل ولا تحتفظ بالأموال ولا تعالج مدفوعات شركة التمويل.",
+    "executionDisabledNote": "ميزات التنفيذ معطّلة. لا شيء في هذه العملية يضع أو يعدّل أو يصفّي الأوامر.",
+    "providerNotice": "ينطوي التداول على مخاطر خسارة كبيرة. اقرأ إشعار المخاطر.",
+    "riskLink": "إشعار المخاطر",
+    "errors": {
+      "loadFailed": "تعذّر تحميل حالة التهيئة. حاول مرة أخرى.",
+      "missingFields": "يرجى إدخال الشركة واسم الدخول/المعرّف.",
+      "confirmationsRequired": "يرجى تأكيد كل عبارة قبل الإرسال.",
+      "paymentRequired": "يلزم دفع نشط قبل ربط الحساب.",
+      "paymentNotActive": "الدفع المرتبط بحسابك غير نشط. تواصل مع الدعم.",
+      "alreadyOpen": "لديك طلب ربط حساب مفتوح بالفعل.",
+      "invalidFirm": "شركة التمويل هذه غير متاحة.",
+      "disabled": "عملية التهيئة غير متاحة الآن.",
+      "submitFailed": "تعذّر إرسال طلبك. حاول مرة أخرى.",
+      "unauthorized": "يرجى تسجيل الدخول مرة أخرى.",
+      "disconnectFailed": "تعذّر فصل الحساب. حاول مرة أخرى."
+    }
+  },
+  operatorLinks: {
+    "title": "روابط الحساب",
+    "subtitle": "مراجعة طلبات ربط الحساب المُدار",
+    "noLinks": "لا توجد طلبات ربط حساب",
+    "open": "فتح",
+    "detailTitle": "طلب ربط الحساب",
+    "close": "إغلاق",
+    "firmLabel": "الشركة",
+    "planLabel": "الباقة",
+    "accountLabel": "اسم الدخول/المعرّف",
+    "submittedLabel": "تم الإرسال",
+    "noteLabel": "ملاحظة الموظف",
+    "paymentNotActive": "دفع العميل غير نشط، لذا لا يمكن الموافقة على الربط.",
+    "actions": {
+      "start_review": "بدء المراجعة",
+      "approve": "موافقة",
+      "reject": "رفض",
+      "suspend": "تعليق",
+      "disconnect": "فصل"
+    }
+  },
+
     profileFields: {
       phone: "الهاتف",
       country: "الدولة",
@@ -15281,6 +16406,7 @@ usernameLabel: "اسم مستخدم Tradovate",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "المتابعة إلى التهيئة",
     verifying: "جارٍ التحقق من الدفع…",
     backToPricing: "العودة إلى الخطط",
     couldNotVerify: "لم نتمكن بعد من التحقق من دفعتك",
@@ -15405,6 +16531,10 @@ usernameLabel: "اسم مستخدم Tradovate",
     disclaimer: "* إخلاء المسؤولية: الأداء السابق لا يضمن النتائج المستقبلية. التوقعات لأغراض توضيحية فقط."
   },
   meta: {
+    onboarding: {
+      title: "تهيئة الحساب | Braxel Markets",
+      description: "اربط الحساب الخارجي لشركة التمويل الذي تنوي استخدامه وتابع حالة المراجعة اليدوية."
+    },
     accounts: {
       title: "شراء حساب شركة تمويل | Braxel Markets",
       description: "اشترِ حساب التقييم أو الحساب المموّل مباشرة من الشركة عبر رابطنا، ثم فعّل خطة الإشارات في اللوحة."
@@ -15754,6 +16884,114 @@ usernameLabel: "اسم مستخدم Tradovate",
 };
 
 const heTranslation = {
+  onboarding: {
+    "navLabel": "אתחול חשבון",
+    "eyebrow": "חשבון מנוהל",
+    "title": "קשר את חשבון חברת הנכסים שלך",
+    "intro": "החבילה שלך פעילה. ספר לנו איזה חשבון חיצוני של חברת הנכסים בכוונתך להשתמש בו ונבדוק את הקישור ידנית. Braxel מספקת ניהול תפעולי וניטור רק היכן שכללי הספק וההרשאה שלך מאפשרים זאת.",
+    "disabledTitle": "האתחול אינו זמין",
+    "disabledBody": "תהליך אתחול החשבון המנוהל מושבת כרגע. פנה לתמיכה אם אתה צריך עזרה בחשבון.",
+    "retry": "נסה שוב",
+    "payment": {
+      "active": "התשלום אושר",
+      "pending": "התשלום ממתין",
+      "inactive": "התשלום אינו פעיל",
+      "none": "לא נמצא תשלום",
+      "refunded": "התשלום הוחזר",
+      "canceled": "התשלום בוטל",
+      "failed": "התשלום נכשל",
+      "rejected": "התשלום נדחה",
+      "disputed": "התשלום שנוי במחלוקת"
+    },
+    "goToPricing": "צפה בתוכניות",
+    "step1Title": "השאר את החשבון בחברה",
+    "step1Body": "אתה קונה ובעלים של החשבון ישירות בחברת הנכסים. Braxel אינה פותחת חשבונות ואינה מחזיקה בכספים שלך.",
+    "step2Title": "ספר לנו את החשבון",
+    "step2Body": "הזן רק את שם הכניסה/מזהה שאתה רואה בחברה. לעולם אל תזין סיסמה, אסימון או סוד.",
+    "step3Title": "בדיקה ידנית",
+    "step3Body": "מפעיל בודק כל בקשה. הקישוריות תלויה בכללי הזכאות וההרשאה של הספק.",
+    "noPasswordNotice": "לעולם אל תזין כאן סיסמת ברוקר, אסימון ספק, CID או סוד. אנחנו צריכים רק את שם הכניסה/מזהה של החשבון. Braxel לעולם אינה מבקשת פרטי התחברות בתהליך זה.",
+    "status": {
+      "pending": "ממתין",
+      "in_review": "בבדיקה",
+      "approved": "אושר",
+      "rejected": "נדחה",
+      "suspended": "מושהה",
+      "disconnected": "מנותק"
+    },
+    "statusDesc": {
+      "pending": "הבקשה שלך ממתינה למפעיל.",
+      "in_review": "מפעיל בודק את הבקשה שלך.",
+      "approved": "הקישור אושר. הניטור התפעולי פעיל כל עוד התשלום פעיל וכללי הספק מאפשרים זאת.",
+      "rejected": "הבקשה נדחתה. קרא את הערת המפעיל ושלח בקשה חדשה אם רלוונטי.",
+      "suspended": "הקישור מושהה. הניטור התפעולי עצור עד לפתרון ההשהיה.",
+      "disconnected": "הקישור סגור. תוכל לשלוח בקשה חדשה בכל עת.",
+      "suspendedByPayment": "התשלום שמאחורי הקישור אינו פעיל יותר, ולכן הקישור מושהה."
+    },
+    "operatorNote": "הערת מפעיל",
+    "disconnectCta": "נתק",
+    "disconnectDone": "החשבון נותק.",
+    "formTitle": "בקשת קישור חשבון",
+    "firmLabel": "חברת נכסים",
+    "accountLoginLabel": "שם כניסה/מזהה בחברה",
+    "accountLoginPlaceholder": "מזהה או שם הכניסה של החשבון",
+    "accountLoginHint": "זהו מזהה, לא סיסמה.",
+    "noteLabel": "הערות (אופציונלי)",
+    "notePlaceholder": "משהו שכדאי שנדע על החשבון הזה.",
+    "disclosuresTitle": "גילויים ואישורים",
+    "disclosuresIntro": "קרא כל הצהרה ואשר אותה לפני השליחה.",
+    "confirm": {
+      "ownership": "החשבון החיצוני שלי ואני מורשה להשתמש בו.",
+      "externalRules": "כללי חברת הנכסים החיצונית חלים על חשבון זה ועל כל כלי שאשתמש בו.",
+      "noProfitGuarantee": "Braxel אינה מבטיחה רווחים, תשואות או תוצאה ספציפית.",
+      "eligibility": "קישוריות החשבון תלויה בזכאות ובהרשאה של הספק.",
+      "dataDelayed": "נתוני החשבון עשויים להיות מעוכבים או חסרים.",
+      "payoutsProvider": "התשלומים כפופים עדיין לכללי הספק החיצוני. Braxel אינה מעבדת תשלומי חברת נכסים.",
+      "noFundsHeld": "Braxel אינה מחזיקה בכספי לקוחות ואינה חברת הנכסים."
+    },
+    "submit": "שלח לבדיקה",
+    "submitted": "הבקשה נשלחה. נבדוק אותה בקרוב.",
+    "pendingHint": "הבקשה שלך ממתינה לבדיקה. תוכל לשלוח חדשה לאחר החלטה.",
+    "draftNotice": "נוסח טיוטה — ממתין לבדיקה משפטית. Braxel Markets מספקת שירותי ניהול תפעולי ותוכנה בלבד. אינה חברת הנכסים, אינה מחזיקה בכספים ואינה מעבדת תשלומי חברת נכסים.",
+    "executionDisabledNote": "תכונות הביצוע מושבתות. דבר בתהליך זה אינו מבצע, משנה או מחסל פקודות.",
+    "providerNotice": "מסחר כרוך בסיכון מהותי להפסד. קרא את הודעת הסיכון.",
+    "riskLink": "הודעת סיכון",
+    "errors": {
+      "loadFailed": "לא הצלחנו לטעון את מצב האתחול. נסה שוב.",
+      "missingFields": "מלא את החברה ואת שם הכניסה/מזהה.",
+      "confirmationsRequired": "אשר כל הצהרה לפני השליחה.",
+      "paymentRequired": "נדרש תשלום פעיל לפני קישור חשבון.",
+      "paymentNotActive": "התשלום שמאחורי החשבון אינו פעיל. פנה לתמיכה.",
+      "alreadyOpen": "כבר יש לך בקשת קישור חשבון פתוחה.",
+      "invalidFirm": "חברת הנכסים הזו אינה זמינה.",
+      "disabled": "תהליך האתחול אינו זמין כעת.",
+      "submitFailed": "לא הצלחנו לשלוח את הבקשה. נסה שוב.",
+      "unauthorized": "התחבר שוב.",
+      "disconnectFailed": "לא הצלחנו לנתק את החשבון. נסה שוב."
+    }
+  },
+  operatorLinks: {
+    "title": "קישורי חשבון",
+    "subtitle": "סקירת בקשות קישור חשבון מנוהל",
+    "noLinks": "אין בקשות קישור חשבון",
+    "open": "פתח",
+    "detailTitle": "בקשת קישור חשבון",
+    "close": "סגור",
+    "firmLabel": "חברה",
+    "planLabel": "תוכנית",
+    "accountLabel": "שם כניסה/מזהה",
+    "submittedLabel": "נשלח",
+    "noteLabel": "הערת מפעיל",
+    "paymentNotActive": "התשלום של הלקוח אינו פעיל, ולכן לא ניתן לאשר את הקישור.",
+    "actions": {
+      "start_review": "התחל בדיקה",
+      "approve": "אשר",
+      "reject": "דחה",
+      "suspend": "השהה",
+      "disconnect": "נתק"
+    }
+  },
+
     profileFields: {
       phone: "טלפון",
       country: "מדינה",
@@ -16855,6 +18093,7 @@ usernameLabel: "שם משתמש Tradovate",
     }
   },
   checkoutSuccess: {
+    continueOnboarding: "המשך לאתחול",
     verifying: "מאמת תשלום…",
     backToPricing: "חזרה לתוכניות",
     couldNotVerify: "טרם ניתן היה לאמת את התשלום שלך",
@@ -16979,6 +18218,10 @@ usernameLabel: "שם משתמש Tradovate",
     disclaimer: "* כתב ויתור: ביצועי עבר אינם מבטיחים תוצאות עתידיות. התחזיות להמחשה בלבד."
   },
   meta: {
+    onboarding: {
+      title: "אתחול חשבון | Braxel Markets",
+      description: "קשר את החשבון החיצוני של חברת הנכסים שבו בכוונתך להשתמש ועקוב אחר מצב הבדיקה הידנית."
+    },
     accounts: {
       title: "רכישת חשבון חברת מסחר | Braxel Markets",
       description: "קנה חשבון הערכה או חשבון ממומן ישירות מהחברה דרך הקישור שלנו, ואז הפעל את תוכנית האיתותים בפאנל."

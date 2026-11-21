@@ -9,6 +9,7 @@ import PerformancePanel from '@/components/terminal/PerformancePanel';
 import TradovateConnectCard from '@/components/TradovateConnectCard';
 import TradovateWelcome from '@/components/TradovateWelcome';
 import ActivateAccountView from '@/components/ActivateAccountView';
+import OnboardingView from '@/components/OnboardingView';
 import ProfileEditor from '@/components/profile/ProfileEditor';
 import KycReminderBanner from '@/components/KycReminderBanner';
 import WithdrawalKycGate, { type KycStatus as WithdrawalKycStatus } from '@/components/WithdrawalKycGate';
@@ -42,7 +43,8 @@ import {
   Globe,
   CreditCard,
   Plug,
-  BadgeCheck
+  BadgeCheck,
+  Link2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,6 +56,7 @@ import { useTranslation } from 'react-i18next';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useTradovateConnection } from '@/hooks/useTradovateConnection';
 import { useActivationConfig } from '@/lib/activationConfig';
+import { useOnboardingConfig } from '@/lib/onboardingConfig';
 import { useLanguageLocale } from '@/hooks/useLanguageLocale';
 import { computePerformance } from '@/lib/tradovate/performance';
 import {
@@ -89,6 +92,8 @@ const Dashboard = () => {
   const tradovate = useTradovateConnection(true);
   // Account-activation flow config (firms, plan, ACTIVATION_FLOW_ENABLED).
   const activation = useActivationConfig();
+  // Managed-account onboarding config (firms, plans, ONBOARDING_FLOW_ENABLED).
+  const onboarding = useOnboardingConfig();
   const [settingsTab, setSettingsTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   interface ServiceRecord {
@@ -440,6 +445,9 @@ const Dashboard = () => {
               ...(activation.config.enabled
                 ? [{ id: 'activate', label: t('activation.navLabel'), icon: <BadgeCheck size={18} /> }]
                 : []),
+              ...(onboarding.config.enabled
+                ? [{ id: 'onboarding', label: t('onboarding.navLabel'), icon: <Link2 size={18} /> }]
+                : []),
               { id: 'myprofile', label: t('profile.navLabel'), icon: <User size={18} /> },
               { id: 'performance', label: t('dashboard.navPerformance'), icon: <BarChart3 size={18} /> },
               { id: 'withdraw', label: t('dashboard.withdraw'), icon: <Wallet size={18} /> },
@@ -579,6 +587,12 @@ const Dashboard = () => {
                 buying a prop-firm account, or the "Plan active" onboarding. */}
             {activeView === 'activate' && activation.config.enabled && (
               <ActivateAccountView />
+            )}
+
+            {/* Managed-account onboarding — declare the external prop-firm
+                account and follow the link request status. */}
+            {activeView === 'onboarding' && onboarding.config.enabled && (
+              <OnboardingView />
             )}
 
             {/* My profile — view and edit the saved contact + billing data */}

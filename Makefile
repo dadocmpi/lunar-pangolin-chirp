@@ -53,6 +53,10 @@ test-activation:
 test-activation-rls:
 	bash supabase/functions/_test/rls-activation/run.sh
 
+# Managed-account onboarding contract + scenario tests (pure modules, no DB).
+test-onboarding:
+	node scripts/check-onboarding-contract.mjs
+
 # Pending-migration apply-order + idempotency on a fresh Supabase Postgres.
 # Needs sudo docker; reproduces the current production baseline then applies
 # every pending migration in filename order.

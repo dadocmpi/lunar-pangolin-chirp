@@ -17,6 +17,7 @@
     "check:activation": "node scripts/check-activation-contract.mjs",
     "check:profile": "node scripts/check-profile-contract.mjs",
     "check:auth": "node scripts/check-auth-contract.mjs",
+    "check:onboarding": "node scripts/check-onboarding-contract.mjs",
     "smoke:functions": "node scripts/smoke-edge-functions.mjs",
     "bundle:functions": "node scripts/bundle-edge-functions.mjs",
     "check:security": "node scripts/check-security-contract.mjs"
