@@ -244,9 +244,10 @@ check('every Edge Function resolves CORS from the request',
 console.log('\n[10] Rate limiting on sensitive endpoints');
 for (const fn of [
   'profile-submit', 'kyc-submit', 'withdrawal-request', 'payment-status',
-  'kyc-action', 'stripe-checkout', 'crypto-checkout', 'wise-checkout',
-  'activation-submit', 'activation-review', 'account-link', 'operator-action',
-  'application-activate', 'application-reject', 'operator-notification',
+  'kyc-action', 'stripe-checkout', 'stripe-reconcile', 'crypto-checkout',
+  'wise-checkout', 'activation-submit', 'activation-review', 'account-link',
+  'operator-action', 'application-activate', 'application-reject',
+  'operator-notification',
 ]) {
   const src = read(`supabase/functions/${fn}/index.ts`);
   check(`${fn} is rate limited`, src.includes('createRateLimiter('));
