@@ -12,6 +12,11 @@ import {
   applyCheckoutConfirmation,
   flagCheckoutForManualReview,
 } from "../_shared/stripe/confirmation.ts";
+import {
+  activatePlanFromVerifiedPayment,
+  sendActivationEmailOnce,
+} from "../_shared/activation/activationService.ts";
+import { CONFIRMED_PAYMENT_STATUS } from "../_shared/activation/lifecycle.ts";
 
 /**
  * Recover a lost `checkout.session.completed` event.
@@ -110,7 +115,7 @@ serve(async (req) => {
   // explicitly scoped by user_id and the session id stored at checkout time.
   const { data: pendingPayments, error: listError } = await supabase
     .from("pending_payments")
-    .select("id, user_id, plan_id, amount_cents, currency, metadata, status_enum")
+    .select("id, user_id, plan_id, plan_name, amount_cents, currency, method, metadata, status_enum")
     .eq("user_id", user.id)
     .eq("method", "stripe");
 
@@ -135,6 +140,32 @@ serve(async (req) => {
   }
 
   if (pendingPayment.status_enum === "confirmed") {
+    // The webhook already confirmed. Ensure the activation + email exist too,
+    // in case that step failed after the payment write (idempotent).
+    try {
+      const activated = await activatePlanFromVerifiedPayment({
+        admin: supabase,
+        payment: {
+          id: pendingPayment.id,
+          user_id: pendingPayment.user_id ?? user.id,
+          plan_id: pendingPayment.plan_id ?? null,
+          plan_name: pendingPayment.plan_name ?? null,
+          amount_cents: pendingPayment.amount_cents ?? null,
+          currency: pendingPayment.currency ?? "USD",
+          method: "stripe",
+          status_enum: CONFIRMED_PAYMENT_STATUS,
+          metadata: (pendingPayment.metadata as Record<string, unknown> | null) ?? null,
+        },
+        source: "stripe",
+        actor: "system",
+        reason: "Reconcile: payment already confirmed",
+      });
+      if (activated.activation) {
+        await sendActivationEmailOnce({ admin: supabase, activation: activated.activation });
+      }
+    } catch (activationErr) {
+      console.error("[stripe-reconcile] activation failed", activationErr);
+    }
     return new Response(
       JSON.stringify({ ok: true, status: "confirmed", reconciled: false }),
       {
@@ -268,6 +299,33 @@ serve(async (req) => {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
+  }
+
+  if (applied.ok) {
+    try {
+      const activated = await activatePlanFromVerifiedPayment({
+        admin: supabase,
+        payment: {
+          id: pendingPayment.id,
+          user_id: pendingPayment.user_id ?? user.id,
+          plan_id: pendingPayment.plan_id ?? application.plan_key ?? null,
+          plan_name: pendingPayment.plan_name ?? null,
+          amount_cents: pendingPayment.amount_cents ?? null,
+          currency: pendingPayment.currency ?? "USD",
+          method: "stripe",
+          status_enum: CONFIRMED_PAYMENT_STATUS,
+          metadata: (pendingPayment.metadata as Record<string, unknown> | null) ?? null,
+        },
+        source: "stripe",
+        actor: "system",
+        reason: "Payment confirmed via Stripe session reconciliation (webhook recovery)",
+      });
+      if (activated.activation) {
+        await sendActivationEmailOnce({ admin: supabase, activation: activated.activation });
+      }
+    } catch (activationErr) {
+      console.error("[stripe-reconcile] activation failed", activationErr);
+    }
   }
 
   if (!applied.alreadyConfirmed) {

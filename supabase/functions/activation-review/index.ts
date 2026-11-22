@@ -30,6 +30,10 @@ import {
 import { ACTIVATION_FIELD_LIMITS, cleanText } from "../_shared/activation/limits.ts";
 import { activationConfigFromEnv } from "../_shared/activation/config.ts";
 import { logAccountLinkEvent } from "../_shared/activation/audit.ts";
+import {
+  activatePlanFromVerifiedPayment,
+  sendActivationEmailOnce,
+} from "../_shared/activation/activationService.ts";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { sendUserEmailInBackground } from "../_shared/userEmail.ts";
 import { readJsonBody } from "../_shared/http.ts";
@@ -132,7 +136,7 @@ serve(async (req) => {
 
   const { data: row, error: rowError } = await ctx.admin
     .from("account_activations")
-    .select("id, user_id, status, firm, plan_name, account_login, braxel_plan_name")
+    .select("id, user_id, status, firm, plan_name, account_login, braxel_plan_name, braxel_plan_key, payment_id")
     .eq("id", id)
     .maybeSingle();
   if (rowError) return json({ error: "lookup_failed" }, 500);
@@ -225,9 +229,56 @@ serve(async (req) => {
     idempotencyKey: `activation-review:${id}:${action}:${now}`,
   });
 
-  const { data: userData } = await ctx.admin.auth.admin.getUserById(row.user_id);
-  const email = userData?.user?.email ?? null;
-  sendUserEmailInBackground(customerEmail(to, row, note, email));
+  // Approving a link also guarantees the plan activation exists for the
+  // verified payment, and sends the professional activation email exactly
+  // once. When it was already sent (e.g. by the payment webhook) no duplicate
+  // is produced.
+  let activationEmailHandled = false;
+  if ((action === "approve" || action === "reinstate") && row.payment_id) {
+    try {
+      const { data: payment } = await ctx.admin
+        .from("pending_payments")
+        .select("id, user_id, plan_id, plan_name, amount_cents, currency, method, status, status_enum, metadata")
+        .eq("id", row.payment_id)
+        .eq("user_id", row.user_id)
+        .maybeSingle();
+      if (payment) {
+        const activated = await activatePlanFromVerifiedPayment({
+          admin: ctx.admin,
+          payment: {
+            id: payment.id,
+            user_id: payment.user_id,
+            plan_id: payment.plan_id ?? row.braxel_plan_key ?? null,
+            plan_name: payment.plan_name ?? row.braxel_plan_name ?? null,
+            amount_cents: payment.amount_cents ?? null,
+            currency: payment.currency ?? "USD",
+            method: payment.method ?? null,
+            status_enum: payment.status_enum ?? payment.status ?? null,
+            metadata: (payment.metadata as Record<string, unknown> | null) ?? null,
+          },
+          source: "admin",
+          actor: "operator",
+          actorId: ctx.user.id,
+          reason: `Account link approved by operator ${ctx.user.id}`,
+        });
+        if (activated.activation) {
+          const sent = await sendActivationEmailOnce({
+            admin: ctx.admin,
+            activation: activated.activation,
+          });
+          activationEmailHandled = sent.sent === true || sent.skipped === "already_sent";
+        }
+      }
+    } catch (activationErr) {
+      console.error("activation-review: activation failed (non-blocking)", activationErr);
+    }
+  }
+
+  if (!activationEmailHandled) {
+    const { data: userData } = await ctx.admin.auth.admin.getUserById(row.user_id);
+    const email = userData?.user?.email ?? null;
+    sendUserEmailInBackground(customerEmail(to, row, note, email));
+  }
 
   return json({ ok: true, status: to, reviewedAt: now });
 });

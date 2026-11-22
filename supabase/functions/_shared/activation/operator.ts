@@ -69,7 +69,11 @@ export async function requireOperator(req: Request): Promise<OperatorContext> {
     .getUserById(data.user.id);
   if (adminError || !adminUser) throw new ForbiddenError();
 
-  if (!isOperatorMeta(adminUser.app_metadata)) throw new ForbiddenError();
+  // supabase-js v2 returns `{ user }`; older typings returned the user
+  // directly. Accept either shape so authorization cannot silently fail.
+  const adminMeta = (adminUser as { app_metadata?: unknown }).app_metadata ??
+    (adminUser as { user?: { app_metadata?: unknown } }).user?.app_metadata;
+  if (!isOperatorMeta(adminMeta)) throw new ForbiddenError();
 
   return { user: { id: data.user.id, email: data.user.email }, admin };
 }

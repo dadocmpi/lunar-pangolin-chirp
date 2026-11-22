@@ -7,6 +7,12 @@ import {
   applyCheckoutConfirmation,
   flagCheckoutForManualReview,
 } from "../_shared/stripe/confirmation.ts";
+import {
+  activatePlanFromVerifiedPayment,
+  sendActivationEmailOnce,
+  sendPaymentLifecycleEmail,
+} from "../_shared/activation/activationService.ts";
+import { CONFIRMED_PAYMENT_STATUS } from "../_shared/activation/lifecycle.ts";
 
 serve(async (req) => {
   const corsHeaders = corsHeadersFor(req);
@@ -217,8 +223,10 @@ serve(async (req) => {
     id: string;
     user_id?: string | null;
     plan_id?: string | null;
+    plan_name?: string | null;
     amount_cents?: number | null;
     currency?: string | null;
+    method?: string | null;
     metadata: Record<string, unknown> | null;
     status_enum?: string | null;
   }
@@ -388,6 +396,36 @@ serve(async (req) => {
 
         const application = applied.application ?? applicationRow;
 
+        // Activation is created only from this validated, server-confirmed
+        // payment. The email is sent exactly once by the activation claim.
+        try {
+          const activated = await activatePlanFromVerifiedPayment({
+            admin: supabase,
+            payment: {
+              id: pendingPayment.id,
+              user_id: pendingPayment.user_id ?? "",
+              plan_id: pendingPayment.plan_id ?? application?.plan_key ?? null,
+              plan_name: null,
+              amount_cents: pendingPayment.amount_cents ?? null,
+              currency: pendingPayment.currency ?? "USD",
+              method: "stripe",
+              status_enum: CONFIRMED_PAYMENT_STATUS,
+              metadata,
+            },
+            source: "stripe",
+            actor: "system",
+            reason: `Stripe checkout.session.completed ${event.id} validated`,
+          });
+          if (activated.activation) {
+            await sendActivationEmailOnce({
+              admin: supabase,
+              activation: activated.activation,
+            });
+          }
+        } catch (activationErr) {
+          console.error("activation after confirmation failed (non-blocking)", activationErr);
+        }
+
         // Notify the operator with a secure dashboard link. Fire-and-forget; never blocks the webhook.
         // We pass the canonical USD amount and only the minimum PII required for operator action.
         try {
@@ -430,7 +468,7 @@ serve(async (req) => {
         // Find the pending payment by stripe_subscription_id in metadata
         const { data: pendingPayments, error: listError } = await supabase
           .from("pending_payments")
-          .select("id, metadata")
+          .select("id, user_id, plan_id, plan_name, amount_cents, currency, method, metadata, status_enum")
           .eq("method", "stripe");
 
         if (listError || !pendingPayments) {
@@ -567,7 +605,7 @@ serve(async (req) => {
 
         const { data: pendingPayments, error: listError } = await supabase
           .from("pending_payments")
-          .select("id, metadata")
+          .select("id, user_id, plan_id, plan_name, amount_cents, currency, method, metadata, status_enum")
           .eq("method", "stripe");
 
         if (listError || !pendingPayments) {
@@ -636,6 +674,25 @@ serve(async (req) => {
           }
         }
 
+        if (pendingPayment.user_id) {
+          await sendPaymentLifecycleEmail({
+            admin: supabase,
+            payment: {
+              id: pendingPayment.id,
+              user_id: pendingPayment.user_id,
+              plan_id: pendingPayment.plan_id ?? null,
+              plan_name: pendingPayment.plan_name ?? null,
+              amount_cents: pendingPayment.amount_cents ?? null,
+              currency: pendingPayment.currency ?? "USD",
+              method: "stripe",
+              status_enum: "past_due",
+              metadata,
+            },
+            template: "payment_failed",
+            note: "The renewal payment was not completed.",
+          });
+        }
+
         notifyOwnerInBackground({
           type: "pagamento",
           subject: "Pagamento falhou (Stripe)",
@@ -661,7 +718,7 @@ serve(async (req) => {
 
         const { data: pendingPayments, error: listError } = await supabase
           .from("pending_payments")
-          .select("id, metadata")
+          .select("id, user_id, plan_id, plan_name, amount_cents, currency, method, metadata, status_enum")
           .eq("method", "stripe");
 
         if (listError || !pendingPayments) {
@@ -775,6 +832,25 @@ serve(async (req) => {
           }
         }
 
+        if (canonicalStatus === "past_due" && pendingPayment.user_id) {
+          await sendPaymentLifecycleEmail({
+            admin: supabase,
+            payment: {
+              id: pendingPayment.id,
+              user_id: pendingPayment.user_id,
+              plan_id: pendingPayment.plan_id ?? null,
+              plan_name: pendingPayment.plan_name ?? null,
+              amount_cents: pendingPayment.amount_cents ?? null,
+              currency: pendingPayment.currency ?? "USD",
+              method: "stripe",
+              status_enum: "past_due",
+              metadata,
+            },
+            template: "payment_failed",
+            note: "Your subscription is past due.",
+          });
+        }
+
         notifyOwnerInBackground({
           type: "pagamento",
           subject: `Assinatura atualizada (${canonicalStatus}) — Stripe`,
@@ -800,7 +876,7 @@ serve(async (req) => {
 
         const { data: pendingPayments, error: listError } = await supabase
           .from("pending_payments")
-          .select("id, metadata")
+          .select("id, user_id, plan_id, plan_name, amount_cents, currency, method, metadata, status_enum")
           .eq("method", "stripe");
 
         if (listError || !pendingPayments) {
@@ -903,7 +979,7 @@ serve(async (req) => {
         // Locate the pending payment by stored charge or payment_intent id in metadata.
         const { data: pendingPayments, error: listError } = await supabase
           .from("pending_payments")
-          .select("id, user_id, metadata, status_enum")
+          .select("id, user_id, plan_id, plan_name, amount_cents, currency, method, metadata, status_enum")
           .eq("method", "stripe");
 
         if (listError || !pendingPayments) {
@@ -999,6 +1075,24 @@ serve(async (req) => {
           created_at: new Date().toISOString(),
         });
 
+        if (pendingPayment.user_id) {
+          await sendPaymentLifecycleEmail({
+            admin: supabase,
+            payment: {
+              id: pendingPayment.id,
+              user_id: pendingPayment.user_id,
+              plan_id: pendingPayment.plan_id ?? null,
+              plan_name: pendingPayment.plan_name ?? null,
+              amount_cents: pendingPayment.amount_cents ?? null,
+              currency: pendingPayment.currency ?? "USD",
+              method: "stripe",
+              status_enum: "refunded",
+              metadata,
+            },
+            template: "payment_refunded",
+          });
+        }
+
         notifyOwnerInBackground({
           type: "pagamento",
           subject: "Reembolso processado (Stripe)",
@@ -1029,7 +1123,7 @@ serve(async (req) => {
 
         const { data: pendingPayments, error: listError } = await supabase
           .from("pending_payments")
-          .select("id, user_id, metadata, status_enum")
+          .select("id, user_id, plan_id, plan_name, amount_cents, currency, method, metadata, status_enum")
           .eq("method", "stripe");
 
         if (listError || !pendingPayments) {
@@ -1122,6 +1216,24 @@ serve(async (req) => {
           })`,
           created_at: new Date().toISOString(),
         });
+
+        if (pendingPayment.user_id) {
+          await sendPaymentLifecycleEmail({
+            admin: supabase,
+            payment: {
+              id: pendingPayment.id,
+              user_id: pendingPayment.user_id,
+              plan_id: pendingPayment.plan_id ?? null,
+              plan_name: pendingPayment.plan_name ?? null,
+              amount_cents: pendingPayment.amount_cents ?? null,
+              currency: pendingPayment.currency ?? "USD",
+              method: "stripe",
+              status_enum: "disputed",
+              metadata,
+            },
+            template: "payment_disputed",
+          });
+        }
 
         notifyOwnerInBackground({
           type: "erro",

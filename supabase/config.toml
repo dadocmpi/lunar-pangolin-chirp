@@ -45,3 +45,10 @@ verify_jwt = true
 # signed-in customer opens the checkout, so it always requires a JWT.
 [functions.checkout-config]
 verify_jwt = true
+
+# operator-payments is the operator view + manual payment actions. It must
+# always require a JWT: authorization is re-checked server-side against
+# app_metadata.operator === true. Kept explicit so a future edit cannot make it
+# public.
+[functions.operator-payments]
+verify_jwt = true

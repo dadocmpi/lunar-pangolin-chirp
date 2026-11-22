@@ -10,6 +10,7 @@ import TradovateConnectCard from '@/components/TradovateConnectCard';
 import TradovateWelcome from '@/components/TradovateWelcome';
 import ActivateAccountView from '@/components/ActivateAccountView';
 import ProfileEditor from '@/components/profile/ProfileEditor';
+import PaymentLifecycleCard from '@/components/dashboard/PaymentLifecycleCard';
 import KycReminderBanner from '@/components/KycReminderBanner';
 import WithdrawalKycGate, { type KycStatus as WithdrawalKycStatus } from '@/components/WithdrawalKycGate';
 import {
@@ -53,6 +54,7 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useTradovateConnection } from '@/hooks/useTradovateConnection';
+import { useLatestPaymentStatus } from '@/hooks/usePaymentStatus';
 import { useActivationConfig } from '@/lib/activationConfig';
 import { useLanguageLocale } from '@/hooks/useLanguageLocale';
 import { computePerformance } from '@/lib/tradovate/performance';
@@ -89,6 +91,8 @@ const Dashboard = () => {
   const tradovate = useTradovateConnection(true);
   // Account-activation flow config (firms, plan, ACTIVATION_FLOW_ENABLED).
   const activation = useActivationConfig();
+  // Server-authoritative payment lifecycle for the dashboard payment card.
+  const paymentStatus = useLatestPaymentStatus(15000);
   const [settingsTab, setSettingsTab] = useState('profile');
   const [loading, setLoading] = useState(true);
   interface ServiceRecord {
@@ -432,6 +436,7 @@ const Dashboard = () => {
 
             {[
               { id: 'services', label: t('nav.dashboard'), icon: <LayoutDashboard size={18} /> },
+              { id: 'payments', label: t('paymentCard.navLabel'), icon: <CreditCard size={18} /> },
               // The Tradovate terminal view is hidden entirely when the feature
               // is off at runtime, so the customer never sees a broken screen.
               ...(tradovate.enabled
@@ -566,6 +571,13 @@ const Dashboard = () => {
                 )}
               </div>
               )
+            )}
+
+            {/* Payments — server-authoritative payment + activation lifecycle */}
+            {activeView === 'payments' && (
+              <div className="space-y-6">
+                <PaymentLifecycleCard response={paymentStatus.response} error={paymentStatus.error} />
+              </div>
             )}
 
             {/* Tradovate trading terminal — real data from the user's linked

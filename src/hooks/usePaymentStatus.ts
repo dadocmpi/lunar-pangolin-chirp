@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { functionsUrl, supabase } from "@/integrations/supabase/client";
 
 export type CheckoutPaymentStatus =
@@ -13,111 +13,169 @@ export type CheckoutPaymentStatus =
   | "refunded"
   | "disputed"
   | "canceled"
+  | "past_due"
   | "pending_manual";
+
+export type PaymentLifecycleState =
+  | "created"
+  | "pending"
+  | "processing"
+  | "manual_review"
+  | "confirmed"
+  | "activation_pending"
+  | "active"
+  | "failed"
+  | "expired"
+  | "cancelled"
+  | "refunded"
+  | "disputed"
+  | "past_due"
+  | "suspended"
+  | "disconnected";
+
+export type PaymentNextAction =
+  | "complete_payment"
+  | "await_confirmation"
+  | "await_manual_review"
+  | "await_activation"
+  | "connect_provider"
+  | "update_payment_method"
+  | "restart_checkout"
+  | "contact_support"
+  | "none";
 
 export interface PaymentStatusView {
   id: string;
   status: CheckoutPaymentStatus;
+  status_raw: string;
   plan_id: string | null;
   plan_name: string | null;
   amount_cents: number;
   currency: string;
   network: string | null;
-  method: "wise" | "crypto" | "card" | null;
+  method: "wise" | "crypto" | "card" | "stripe" | null;
+  reference: string | null;
+  expires_at: string | null;
   is_test: boolean;
-  created_at: string;
-  updated_at: string;
+  created_at: string | null;
+  updated_at: string | null;
+  confirmed_at: string | null;
+}
+
+export interface PaymentActivationView {
+  id: string;
+  status: "activation_pending" | "active" | "suspended" | "disconnected";
+  account_id: string;
+  plan_key: string;
+  plan_name: string;
+  activated_at: string | null;
+  suspended_at: string | null;
+  suspended_reason: string | null;
+  disconnected_at: string | null;
+  disconnected_reason: string | null;
+  activation_email_sent_at: string | null;
+  updated_at: string | null;
+}
+
+export interface PaymentStatusResponse {
+  ok: boolean;
+  mode?: string;
+  lifecycle: PaymentLifecycleState;
+  next_action: PaymentNextAction;
+  processing: boolean;
+  activation: PaymentActivationView | null;
+  payment: PaymentStatusView | null;
 }
 
 /**
- * Polls the payment-status Edge Function for one payment.
+ * Fetch the server-authoritative payment status.
  *
- * Correctness contract:
- *   - When `paymentId` is null, the hook is idle (no network).
- *   - When `paymentId` is set, the hook fires an immediate tick and then
- *     polls every `intervalMs` ms.
- *   - The hook is safe across React strict-mode double-invocation and
- *     across re-renders that do not change `paymentId` or `intervalMs`.
- *   - On unmount or when the dependencies change, the previous interval
- *     is cleared and any in-flight tick is short-circuited via a ref.
+ * `paymentId` null => the latest payment for the signed-in user.
+ * Returns null on any network/auth failure; the UI keeps its previous state.
+ */
+export async function fetchPaymentStatus(
+  paymentId: string | null,
+): Promise<PaymentStatusResponse | null> {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) return null;
+  const suffix = paymentId ? `?paymentId=${encodeURIComponent(paymentId)}` : "";
+  try {
+    const res = await fetch(`${functionsUrl("payment-status")}${suffix}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    if (!res.ok) return null;
+    const json = await res.json().catch(() => null);
+    if (!json || typeof json !== "object") return null;
+    return json as PaymentStatusResponse;
+  } catch {
+    return null;
+  }
+}
+
+function usePolling(
+  paymentId: string | null,
+  enabled: boolean,
+  intervalMs: number,
+) {
+  const [response, setResponse] = useState<PaymentStatusResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const stoppedRef = useRef<boolean>(false);
+  const [nonce, setNonce] = useState(0);
+
+  const reload = useCallback(() => setNonce((n) => n + 1), []);
+
+  useEffect(() => {
+    stoppedRef.current = false;
+    setResponse(null);
+    setError(null);
+    if (!enabled) return undefined;
+
+    const tick = async () => {
+      if (stoppedRef.current) return;
+      const next = await fetchPaymentStatus(paymentId);
+      if (stoppedRef.current) return;
+      if (next) {
+        setResponse(next);
+        setError(null);
+      } else {
+        setError("unavailable");
+      }
+    };
+
+    tick();
+    const intervalId = setInterval(tick, intervalMs);
+    return () => {
+      stoppedRef.current = true;
+      if (intervalId !== undefined) clearInterval(intervalId);
+    };
+  }, [paymentId, enabled, intervalMs, nonce]);
+
+  return { response, error, reload };
+}
+
+/**
+ * Polls one payment. `paymentId` null keeps the hook idle.
  *
- * Why a ref for the stopped flag:
- *   - useState would re-run the effect on every state change. That would
- *     re-create the interval on every tick, which leaks a stale interval
- *     per poll and can race with cleanup.
- *   - A ref can be flipped inside the cleanup function without retriggering
- *     the effect.
+ * The returned `view` is the payment object for backward compatibility with
+ * the existing checkout screens; `response` carries the activation + lifecycle.
  */
 export function usePaymentStatus(
   paymentId: string | null,
   intervalMs: number = 5000,
-): { view: PaymentStatusView | null; error: string | null } {
-  const [view, setView] = useState<PaymentStatusView | null>(null);
-  const [error, setError] = useState<string | null>(null);
+): { view: PaymentStatusView | null; error: string | null; response: PaymentStatusResponse | null } {
+  const { response, error } = usePolling(paymentId, Boolean(paymentId), intervalMs);
+  return { view: response?.payment ?? null, error, response };
+}
 
-  // One ref per render. The ref is never reassigned, only mutated, so the
-  // effect does not list it as a dependency.
-  const stoppedRef = useRef<boolean>(false);
-
-  useEffect(() => {
-    // New paymentId or new interval — restart cleanly.
-    stoppedRef.current = false;
-    setView(null);
-    setError(null);
-
-    if (!paymentId) {
-      return undefined;
-    }
-
-    const tick = async () => {
-      // Skip if the effect has been torn down.
-      if (stoppedRef.current) return;
-
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (!session?.access_token) {
-          if (!stoppedRef.current) setError("unauthorized");
-          return;
-        }
-
-        const url =
-          `${functionsUrl('payment-status')}?paymentId=${encodeURIComponent(paymentId)}`;
-        const res = await fetch(url, {
-          headers: { Authorization: `Bearer ${session.access_token}` },
-        });
-
-        if (stoppedRef.current) return;
-
-        if (!res.ok) {
-          setError(`http_${res.status}`);
-          return;
-        }
-
-        const data = await res.json();
-        if (data?.payment) {
-          setView(data.payment as PaymentStatusView);
-          setError(null);
-        }
-      } catch (e) {
-        if (!stoppedRef.current) setError(String(e));
-      }
-    };
-
-    // Fire one immediate tick, then schedule.
-    tick();
-    const intervalId = setInterval(tick, intervalMs);
-
-    return () => {
-      // Order matters: flip the flag first so any in-flight tick resolves
-      // to a no-op, then clear the interval.
-      stoppedRef.current = true;
-      if (intervalId !== undefined) {
-        clearInterval(intervalId);
-      }
-    };
-  }, [paymentId, intervalMs]);
-
-  return { view, error };
+/** Polls the latest payment for the signed-in user (dashboard card). */
+export function useLatestPaymentStatus(
+  intervalMs: number = 15000,
+): {
+  response: PaymentStatusResponse | null;
+  error: string | null;
+  reload: () => void;
+} {
+  return usePolling(null, true, intervalMs);
 }
 
 export default usePaymentStatus;

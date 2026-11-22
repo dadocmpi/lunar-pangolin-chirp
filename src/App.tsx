@@ -32,6 +32,7 @@ const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const Accounts = lazy(() => import("./pages/Accounts"));
 const OperatorActivations = lazy(() => import("./pages/OperatorActivations"));
+const OperatorPayments = lazy(() => import("./pages/OperatorPayments"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Disclaimer = lazy(() => import("./pages/Disclaimer"));
@@ -92,6 +93,7 @@ const App = () => (
             <Route path="/disclaimer" element={<RouteView><Disclaimer /></RouteView>} />
             <Route path="/dashboard" element={<RouteView><Dashboard /></RouteView>} />
             <Route path="/operator/activations" element={<RouteView><OperatorActivations /></RouteView>} />
+            <Route path="/operator/payments" element={<RouteView><OperatorPayments /></RouteView>} />
             <Route path="/checkout" element={<RouteView><Checkout /></RouteView>} />
             <Route path="/checkout/success" element={<RouteView><CheckoutSuccess /></RouteView>} />
             <Route path="*" element={<RouteView><NotFound /></RouteView>} />
