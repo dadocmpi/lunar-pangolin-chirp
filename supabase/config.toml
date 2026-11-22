@@ -11,6 +11,12 @@
 [functions.stripe-webhook]
 verify_jwt = false
 
+# stripe-reconcile is called by the authenticated success page with the user's
+# JWT. It confirms a payment only after retrieving the session from Stripe, so
+# it must always require a JWT. Kept explicit so a future edit cannot expose it.
+[functions.stripe-reconcile]
+verify_jwt = true
+
 # card-checkout and paypal-checkout are hard-disabled (HTTP 410). JWT
 # verification is left off to preserve their historical invocation behaviour;
 # they never process a payment, so there is nothing to authorise.

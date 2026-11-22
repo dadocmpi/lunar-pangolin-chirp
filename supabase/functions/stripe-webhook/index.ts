@@ -2,6 +2,11 @@ import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.99.0";
 import { notifyOwnerInBackground } from "../_shared/email.ts";
 import { corsHeadersFor } from "../_shared/cors.ts";
+import { validateCheckoutSession } from "../_shared/stripe/sessionValidation.ts";
+import {
+  applyCheckoutConfirmation,
+  flagCheckoutForManualReview,
+} from "../_shared/stripe/confirmation.ts";
 
 serve(async (req) => {
   const corsHeaders = corsHeadersFor(req);
@@ -172,6 +177,9 @@ serve(async (req) => {
 
   // Parse the event
   interface StripeSession {
+    id?: unknown;
+    mode?: unknown;
+    payment_status?: unknown;
     metadata?: Record<string, unknown> | null;
     customer?: unknown;
     subscription?: unknown;
@@ -208,6 +216,9 @@ serve(async (req) => {
   interface PendingPaymentRow {
     id: string;
     user_id?: string | null;
+    plan_id?: string | null;
+    amount_cents?: number | null;
+    currency?: string | null;
     metadata: Record<string, unknown> | null;
     status_enum?: string | null;
   }
@@ -263,7 +274,7 @@ serve(async (req) => {
         // Get the pending payment record
         const { data: pendingPaymentRaw, error: pendingError } = await supabase
           .from("pending_payments")
-          .select("id, user_id, metadata, status_enum")
+          .select("id, user_id, metadata, status_enum, plan_id, amount_cents, currency")
           .eq("id", pendingPaymentId)
           .single();
 
@@ -285,69 +296,97 @@ serve(async (req) => {
           break;
         }
 
-        // Update the pending payment with stripe customer and subscription ids
-        const updateData: Record<string, unknown> = {
-          status_enum: "confirmed", // canonical
-          metadata: {
-            ...metadata,
-            stripe_customer_id: session.customer,
-            stripe_subscription_id: session.subscription,
-            last_applied_status: "confirmed",
-            // Add the event id to processed list
-            processed_event_ids: [...processedEventIds, event.id],
-          },
-        };
+        // Fetch the application BEFORE confirming so the plan can be validated
+        // against the pending payment. A confirmation is never applied when the
+        // two disagree.
+        const { data: applicationRow, error: appFetchError } = await supabase
+          .from("applications")
+          .select("id, user_id, plan_key, full_name, email, country")
+          .eq("id", applicationId)
+          .single();
 
-        const { error: updateError } = await supabase
-          .from("pending_payments")
-          .update(updateData)
-          .eq("id", pendingPaymentId);
-
-        if (updateError) {
-          console.error("Failed to update pending payment:", updateError);
+        if (appFetchError || !applicationRow) {
+          console.error(
+            "checkout.session.completed: application fetch failed; refusing to confirm",
+            appFetchError,
+          );
+          await flagCheckoutForManualReview({
+            supabase,
+            pendingPayment,
+            eventId: event.id,
+            reason: "application_not_found",
+          });
           break;
         }
 
-        // Update the application record
-        // payment_status uses "payment_confirmed" per spec; activation is NEVER automatic.
-        const { data: application, error: appError } = await supabase
-          .from("applications")
-          .update({
-            payment_status: "payment_confirmed",
-            activation_status: "activation_pending",
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", applicationId)
-          .select("id, user_id, plan_key, full_name, email, country")
-          .single();
-
-        if (appError || !application) {
-          console.error("Failed to update application:", appError);
-          // We don't break here because the pending payment update succeeded, but we should log the error
+        // The pending payment and the application must belong to the same user.
+        if (
+          pendingPayment.user_id && applicationRow.user_id &&
+          pendingPayment.user_id !== applicationRow.user_id
+        ) {
           console.error(
-            "Application update failed, but pending payment was updated.",
+            "checkout.session.completed: pending payment and application owners differ",
           );
-        }
-
-        // Create an audit log entry for the payment confirmation
-        const { error: auditError } = await supabase
-          .from("payment_audit_log")
-          .insert({
-            payment_table: "pending_payments",
-            payment_id: pendingPaymentId,
-            user_id: pendingPayment.user_id,
-            actor: "system",
-            source: "stripe",
-            event_id: event.id,
-            previous_status: null, // We don't have the previous status easily; we'll set to null
-            new_status: "payment_confirmed",
-            reason: "Payment confirmed via Stripe checkout.session.completed",
-            created_at: new Date().toISOString(),
+          await flagCheckoutForManualReview({
+            supabase,
+            pendingPayment,
+            eventId: event.id,
+            reason: "owner_mismatch",
           });
-
-        if (auditError) {
-          console.error("Audit log error:", auditError);
+          break;
         }
+
+        // Full server-side validation: mode, currency, payment_status, amount,
+        // plan and subscription presence. Only a clean pass may confirm.
+        const validation = validateCheckoutSession({
+          session,
+          pendingPayment,
+          applicationPlanKey: applicationRow.plan_key,
+        });
+
+        if (!validation.ok) {
+          console.error(
+            `checkout.session.completed: validation failed (${validation.code}): ${validation.reason}`,
+          );
+          await flagCheckoutForManualReview({
+            supabase,
+            pendingPayment,
+            eventId: event.id,
+            reason: `validation_failed:${validation.code ?? "unknown"}`,
+          });
+          notifyOwnerInBackground({
+            type: "erro",
+            subject: "Pagamento Stripe precisa de revisão manual",
+            data: {
+              payment_id: pendingPayment.id,
+              application_id: applicationId,
+              motivo: validation.code ?? "validation_failed",
+              detalhe: validation.reason ?? null,
+              status_http: 200,
+              origem: "stripe-webhook",
+            },
+            idempotencyKey: `stripe:${event.id}:validation_failed`,
+          });
+          break;
+        }
+
+        // Validation passed — apply the confirmation idempotently.
+        const applied = await applyCheckoutConfirmation({
+          supabase,
+          pendingPayment,
+          applicationId,
+          session,
+          eventId: event.id,
+          reason:
+            "Payment confirmed via Stripe checkout.session.completed (validated)",
+        });
+
+        if (!applied.ok) {
+          console.error("Failed to confirm pending payment:", applied.error);
+          break;
+        }
+
+        const application = applied.application ?? applicationRow;
 
         // Notify the operator with a secure dashboard link. Fire-and-forget; never blocks the webhook.
         // We pass the canonical USD amount and only the minimum PII required for operator action.

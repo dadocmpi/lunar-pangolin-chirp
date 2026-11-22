@@ -71,6 +71,11 @@ Vite + React + TS SPA. Single-page app with client-side routing.
 - `card-checkout` and `paypal-checkout` are **hard-disabled** (HTTP 410): they used to activate a paid service from client-supplied values with no payment verification. Do not re-enable them; card payments go through `stripe-checkout`.
 - Test mode is server-side only (`TEST_PAYMENT_MODE` env). Never trust an `isTest` flag from the request body.
 
+## Stripe confirmation hardening (2026-11-22, `fix/stripe-confirmation-hardening`)
+- **Three blockers fixed (explicit user request; overrides the default "do not touch payment logic" rule for this change).** (1) The DB accepts every Stripe lifecycle status the webhook writes, including `past_due`: `20261123000000_payment_lifecycle_status.sql` widens `pending_payments.status_enum` (and adds `confirmed_at` defensively) and converts `applications.payment_status` to text if it is still the narrow enum. (2) `checkout.session.completed` no longer confirms on the event alone — `_shared/stripe/sessionValidation.ts` requires `mode=subscription`, USD, `payment_status` `paid`/`no_payment_required`, the canonical amount, the plan match, a subscription id and a same-owner application; a failed check flags `pending_manual` and never confirms. (3) A lost `checkout.session.completed` is recovered by `stripe-reconcile` (JWT, rate-limited, payments-gated), which retrieves the session from Stripe and applies the same validation and `_shared/stripe/confirmation.ts` writes idempotently; `CheckoutSuccess` calls it before polling.
+- **Confirmation writes live in one place:** `_shared/stripe/confirmation.ts` (`applyCheckoutConfirmation`, `flagCheckoutForManualReview`). Do not re-add inline confirmation writes in the webhook.
+- `stripe-reconcile` is `verify_jwt = true` in `supabase/config.toml` and is in the `check:security` rate-limit list. Test: `make test-stripe`.
+
 ## Owner notifications (Resend)
 - ONE module sends every owner email: `supabase/functions/_shared/email.ts` → `notifyOwner({ type, subject, data, replyTo, idempotencyKey })`. Never call `api.resend.com` directly from new code; route through `notifyOwner` / `notifyOwnerInBackground`.
 - `src/lib/notifyOwner.ts` is the browser-side helper. It forwards to the `notify-owner` Edge Function (which owns the Resend key) — the key must never reach the client bundle.

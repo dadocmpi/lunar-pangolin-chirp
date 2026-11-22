@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Loader2, ShieldCheck, CheckCircle2, ShieldAlert, ArrowLeft } from "lucide-react";
-import { supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
+import { supabase, isSupabaseConfigured, functionsUrl } from "@/integrations/supabase/client";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -105,6 +105,26 @@ const CheckoutSuccess = () => {
         setLookupError(t("checkoutSuccess.couldNotVerify"));
         setLoading(false);
         return;
+      }
+
+      // Webhook recovery: if Stripe's `checkout.session.completed` never
+      // arrived, reconcile directly with Stripe server-side. This is idempotent
+      // and only confirms when Stripe reports the session as paid.
+      try {
+        const { data: { session: authSession } } = await supabase.auth.getSession();
+        if (authSession?.access_token) {
+          await fetch(functionsUrl("stripe-reconcile"), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${authSession.access_token}`,
+            },
+            body: JSON.stringify({ sessionId }),
+          });
+        }
+      } catch (reconcileErr) {
+        // Best-effort: the status poll below still reports the server state.
+        console.warn("stripe-reconcile failed", reconcileErr);
       }
 
       setPendingPaymentId(chosen.id);
