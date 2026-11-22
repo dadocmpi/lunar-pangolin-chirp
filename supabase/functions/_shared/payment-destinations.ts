@@ -31,7 +31,9 @@ export interface BankDetails {
 const TRANSFER_REFERENCE =
   "Include your user email in the transfer reference";
 
-function env(name: string): string | null {
+export type DestinationEnvReader = (name: string) => string | null;
+
+function denoEnv(name: string): string | null {
   const value = Deno.env.get(name);
   return value && value.trim().length > 0 ? value.trim() : null;
 }
@@ -39,28 +41,35 @@ function env(name: string): string | null {
 /**
  * Real Wise bank details from secrets, or null when under-configured.
  * Requires at least a holder, a bank name, and an account number or IBAN.
+ * The env reader is injectable so configuration can be tested without
+ * touching the process environment.
  */
-export function resolveBankDetails(): BankDetails | null {
-  const holder = env("WISE_HOLDER_NAME");
-  const bankName = env("WISE_BANK_NAME");
-  const account = env("WISE_ACCOUNT_NUMBER");
-  const iban = env("WISE_IBAN");
+export function resolveBankDetails(
+  read: DestinationEnvReader = denoEnv,
+): BankDetails | null {
+  const holder = read("WISE_HOLDER_NAME");
+  const bankName = read("WISE_BANK_NAME");
+  const account = read("WISE_ACCOUNT_NUMBER");
+  const iban = read("WISE_IBAN");
   if (!holder || !bankName || (!account && !iban)) return null;
   return {
     holder_name: holder,
     bank_name: bankName,
     account_number: account ?? iban ?? "",
-    routing_number: env("WISE_ROUTING_NUMBER") ?? "",
-    swift: env("WISE_SWIFT") ?? "",
+    routing_number: read("WISE_ROUTING_NUMBER") ?? "",
+    swift: read("WISE_SWIFT") ?? "",
     reference: TRANSFER_REFERENCE,
   };
 }
 
 /** The real deposit address for a network, or null when unset. */
-export function resolveCryptoAddress(networkId: string): string | null {
+export function resolveCryptoAddress(
+  networkId: string,
+  read: DestinationEnvReader = denoEnv,
+): string | null {
   const network = CRYPTO_NETWORKS.find((n) => n.id === networkId);
   if (!network) return null;
-  return env(network.addressEnv);
+  return read(network.addressEnv);
 }
 
 export function testBankDetails(): BankDetails {

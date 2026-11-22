@@ -9,6 +9,8 @@
 // ============================================================================
 
 export interface BillingInput {
+  firstName?: unknown;
+  lastName?: unknown;
   fullName?: unknown;
   email?: unknown;
   phoneCountryCode?: unknown;
@@ -60,8 +62,13 @@ export function sanitizeBilling(input: BillingInput | null | undefined): Sanitiz
   const line1 = [clean(src.street, 200), clean(src.number, 20)]
     .filter(Boolean)
     .join(", ");
+  // Prefer the split name (first + last) when present; fall back to the single
+  // full name the profile editor and legacy callers send.
+  const splitName = [clean(src.firstName, 60), clean(src.lastName, 60)]
+    .filter(Boolean)
+    .join(" ");
   return {
-    name: clean(src.fullName, 120),
+    name: splitName || clean(src.fullName, 120),
     email: clean(src.email, 254),
     phone: [clean(src.phoneCountryCode, 8), clean(src.phone, 20)]
       .filter(Boolean)

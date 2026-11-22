@@ -324,6 +324,28 @@ serve(async (req) => {
     .single();
 
   if (pendingError || !pendingPayment) {
+    // A repeated idempotency key means this checkout intent already exists.
+    // Return a distinct, non-retryable signal instead of a generic 500 so the
+    // UI can show the "duplicate checkout" state and link to its status.
+    if (pendingError?.code === "23505") {
+      const { data: existing } = await supabase
+        .from("pending_payments")
+        .select("id, status_enum")
+        .eq("user_id", user.id)
+        .eq("idempotency_key", idempotencyKey)
+        .maybeSingle();
+      return new Response(
+        JSON.stringify({
+          error: "duplicate_checkout",
+          payment_id: existing?.id ?? null,
+          status: existing?.status_enum ?? null,
+        }),
+        {
+          status: 409,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
+      );
+    }
     return new Response(
       JSON.stringify({ error: "Failed to create pending payment" }),
       {

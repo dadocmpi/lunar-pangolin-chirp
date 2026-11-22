@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security test-stripe typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security test-stripe test-checkout typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -37,6 +37,13 @@ test-tradovate:
 # rate limiter, operator-only endpoints). No network, no DB, no secrets.
 test-security:
 	node scripts/check-security-contract.mjs
+
+# Single-page checkout + payment-method orchestration (profile prefill,
+# address validation, Stripe plan/amount/currency, crypto asset gating, Wise
+# pending/fake-success rules, duplicate/expired states, 11 locales, responsive
+# and accessibility contract). No network, no DB.
+test-checkout:
+	deno run -A supabase/functions/_test/checkout-redesign-tests.ts
 
 # Stripe confirmation hardening (DB lifecycle status, validated confirmation,
 # lost-event reconciliation). No network, no DB, no secrets.
