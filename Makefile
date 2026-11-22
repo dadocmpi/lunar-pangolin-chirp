@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security test-stripe test-checkout typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security test-stripe test-checkout test-payment-activation typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -61,6 +61,14 @@ test-activation:
 	deno run -A supabase/functions/_test/activation-submit-tests.ts
 	deno run -A supabase/functions/_test/activation-review-tests.ts
 	deno run -A supabase/functions/_test/onboarding-tests.ts
+	deno run -A supabase/functions/_test/payment-activation-tests.ts
+
+# Production checkout -> payment status -> activation -> email contract.
+# Profile prefill, forged webhook, wrong amount/currency/Price ID, duplicate
+# webhook, reconciliation, manual review, email-once, refund/dispute,
+# cross-user, operator authorization and all 11 locales. No network, no DB.
+test-payment-activation:
+	deno run -A supabase/functions/_test/payment-activation-tests.ts
 
 # Customer onboarding + managed-account lifecycle (entitlement, duplicate,
 # suspended/disconnected, execution kill switch, refund/cancel).

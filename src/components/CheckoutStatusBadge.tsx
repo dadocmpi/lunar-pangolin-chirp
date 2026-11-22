@@ -14,6 +14,7 @@ const LABEL: Record<CheckoutPaymentStatus, string> = {
   refunded:        "checkoutStatus.refunded",
   disputed:        "checkoutStatus.disputed",
   canceled:        "checkoutStatus.canceled",
+  past_due:        "paymentCard.statuses.past_due",
   pending_manual:  "checkoutStatus.pending_manual",
 };
 
@@ -27,6 +28,7 @@ const TONE: Record<CheckoutPaymentStatus, string> = {
   refunded:       "bg-orange-500/10 text-orange-300 border-orange-500/30",
   disputed:       "bg-orange-500/10 text-orange-300 border-orange-500/30",
   canceled:       "bg-slate-500/10 text-slate-300 border-slate-500/30",
+  past_due:       "bg-orange-500/10 text-orange-300 border-orange-500/30",
   pending_manual: "bg-yellow-500/10 text-yellow-300 border-yellow-500/30",
 };
 

@@ -33,6 +33,8 @@ const TARGETS = [
   'src/pages/Dashboard.tsx',
   'src/pages/Accounts.tsx',
   'src/pages/OperatorActivations.tsx',
+  'src/pages/OperatorPayments.tsx',
+  'src/components/dashboard',
 ];
 
 // Attributes that render user-visible text.

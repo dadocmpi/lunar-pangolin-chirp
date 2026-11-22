@@ -81,9 +81,13 @@ serve(async (req) => {
   }
 
   // Check if the user is an operator (assuming app_metadata.operator === true)
+  // supabase-js v2 returns `{ user }`; older typings returned the user
+  // directly. Accept either shape so authorization cannot silently fail.
   const adminMeta =
     (adminUser as { app_metadata?: Record<string, unknown> | null })
-      ?.app_metadata ?? {};
+      ?.app_metadata ??
+    (adminUser as { user?: { app_metadata?: Record<string, unknown> | null } })
+      ?.user?.app_metadata ?? {};
   const isOperator = adminMeta.operator === true;
   if (!isOperator) {
     return new Response(
