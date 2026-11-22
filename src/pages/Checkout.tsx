@@ -7,6 +7,7 @@ import { ArrowLeft, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import CheckoutStatusBadge from "@/components/CheckoutStatusBadge";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
 import CheckoutNotice from "@/components/checkout/CheckoutNotice";
@@ -30,6 +31,7 @@ import {
   fetchCheckoutConfig,
   paymentStatusNotice,
   prefillCheckoutCustomer,
+  resolveCheckoutPlanKey,
   resolveMethodAvailability,
   toBillingPayload,
   validateCheckoutCustomer,
@@ -65,17 +67,6 @@ function newIdempotencyKey(): string {
   const buf = new Uint8Array(12);
   crypto.getRandomValues(buf);
   return Array.from(buf, (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-function resolvePlanKey(plan: unknown): string | null {
-  if (!plan || typeof plan !== "object") return null;
-  const candidate = plan as { id?: unknown; plan_key?: unknown };
-  const key = typeof candidate.id === "string"
-    ? candidate.id
-    : typeof candidate.plan_key === "string"
-    ? candidate.plan_key
-    : null;
-  return key && key in PLAN_PRICING ? key : null;
 }
 
 const BADGE_STATUSES: CheckoutPaymentStatus[] = [
@@ -139,9 +130,16 @@ const Checkout = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [paymentId, setPaymentId] = useState<string | null>(null);
 
+  const [consent, setConsent] = useState({ terms: false, privacy: false });
+  const [consentError, setConsentError] = useState<string | null>(null);
+
   const keysRef = useRef<Partial<Record<CheckoutMethodId, string>>>({});
-  const stateApplicationId = (location.state as { applicationId?: string } | null)?.applicationId;
+  const ensuredApplicationRef = useRef<string | null>(null);
   const statePlan = (location.state as { plan?: unknown } | null)?.plan;
+  const resolvedPlanKey = resolveCheckoutPlanKey({
+    statePlan,
+    queryPlan: new URLSearchParams(location.search).get("plan"),
+  });
 
   const { view: serverStatus } = usePaymentStatus(
     paymentsEnabled ? paymentId : null,
@@ -159,52 +157,42 @@ const Checkout = () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
       if (cancelled) return;
       if (!authUser) {
-        navigate("/login", { state: { from: { pathname: "/checkout" } } });
+        // Return to the exact plan after login. The query string survives the
+        // round-trip; the router state keeps the first render instant.
+        const returnTo = resolvedPlanKey
+          ? `/checkout?plan=${resolvedPlanKey}`
+          : "/pricing";
+        navigate("/login", {
+          state: { from: returnTo, plan: statePlan },
+          replace: true,
+        });
+        return;
+      }
+      if (!resolvedPlanKey) {
+        setLoading(false);
         return;
       }
 
-      // Resolve the application that carries the selected plan. A direct visit
-      // may pass only the plan key, so fall back to the customer's most recent
-      // application for that plan (owner-scoped by RLS).
+      // A previous application for this plan may exist; it is only a prefill
+      // fallback. The authoritative create-or-reuse happens server-side in
+      // application-ensure when the customer actually starts a payment.
       let app: ApplicationRecord | null = null;
-      if (stateApplicationId) {
-        const { data, error } = await supabase
-          .from("applications")
-          .select("id, user_id, plan_key, plan_name, email")
-          .eq("id", stateApplicationId)
-          .eq("user_id", authUser.id)
-          .maybeSingle();
-        if (!error && data) app = data as ApplicationRecord;
-      } else {
-        const planKey = resolvePlanKey(statePlan) ??
-          new URLSearchParams(location.search).get("plan");
-        if (planKey) {
-          const { data, error } = await supabase
-            .from("applications")
-            .select("id, user_id, plan_key, plan_name, email")
-            .eq("user_id", authUser.id)
-            .eq("plan_key", planKey)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .maybeSingle();
-          if (!error && data) app = data as ApplicationRecord;
-        }
-      }
-
+      const { data, error } = await supabase
+        .from("applications")
+        .select("id, user_id, plan_key, plan_name, email")
+        .eq("user_id", authUser.id)
+        .eq("plan_key", resolvedPlanKey)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (!error && data) app = data as ApplicationRecord;
       if (cancelled) return;
-      if (!app) {
-        navigate("/register-application", { state: { plan: statePlan } });
-        return;
-      }
       setApplication(app);
+      ensuredApplicationRef.current = null;
 
       let profileRaw: Record<string, unknown> | null = null;
       try {
         const profile = await fetchProfile(authUser.id);
-        if (profile && profile.profileCompleted === false) {
-          navigate("/complete-profile", { state: { from: "/checkout" } });
-          return;
-        }
         profileRaw = profile?.raw ?? null;
       } catch (profileErr) {
         // Fail open: a profile read error must not block a paying customer.
@@ -227,7 +215,7 @@ const Checkout = () => {
     return () => {
       cancelled = true;
     };
-  }, [location.search, navigate, stateApplicationId, statePlan]);
+  }, [navigate, resolvedPlanKey, statePlan]);
 
   // Provider availability is server-driven. When the endpoint is unreachable we
   // keep every method selectable; the payment functions still enforce the real
@@ -254,9 +242,9 @@ const Checkout = () => {
     };
   }, [paymentsEnabled]);
 
-  const planKey = application && application.plan_key in PLAN_PRICING
-    ? application.plan_key
-    : null;
+  // The plan selector comes from the URL/state; the server re-derives the
+  // canonical plan, price and currency from its own table.
+  const planKey = resolvedPlanKey;
   const planIsKnown = planKey !== null;
 
   const enhancedPlan = useMemo(() => {
@@ -288,7 +276,51 @@ const Checkout = () => {
     if (elementId) document.getElementById(elementId)?.focus();
   };
 
-  const prepareBilling = async (): Promise<CheckoutBillingPayload | null> => {
+  /**
+   * Create-or-reuse the application for this plan server-side. The function
+   * scopes everything to the JWT user, validates the plan against the server
+   * table and never trusts a client price/currency. The id is cached for this
+   * checkout session so a retry cannot create a second application.
+   */
+  const ensureApplication = async (billing: CheckoutBillingPayload): Promise<string> => {
+    if (!resolvedPlanKey) throw new CheckoutCallError("invalid_plan");
+    if (ensuredApplicationRef.current) return ensuredApplicationRef.current;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) throw new CheckoutCallError("unauthorized");
+    const res = await fetch(functionsUrl("application-ensure"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({
+        planKey: resolvedPlanKey,
+        billing,
+        termsAccepted: consent.terms,
+        privacyAccepted: consent.privacy,
+      }),
+    });
+    const json = await res.json().catch(() => ({}));
+    const applicationId = typeof json?.application_id === "string"
+      ? json.application_id
+      : null;
+    if (!res.ok || !applicationId) {
+      throw new CheckoutCallError(
+        typeof json?.error === "string" ? json.error : `http_${res.status}`,
+      );
+    }
+    ensuredApplicationRef.current = applicationId;
+    return applicationId;
+  };
+
+  interface PreparedCheckout {
+    billing: CheckoutBillingPayload;
+    applicationId: string;
+    planKey: NonNullable<typeof resolvedPlanKey>;
+  }
+
+  const prepareBilling = async (): Promise<PreparedCheckout | null> => {
+    if (!resolvedPlanKey) return null;
     const validation = validateCheckoutCustomer(fields);
     setErrors(validation.errors);
     if (!validation.ok) {
@@ -296,6 +328,17 @@ const Checkout = () => {
       focusFirstError(validation.errors);
       return null;
     }
+    if (!consent.terms) {
+      setConsentError(t("application.errors.terms_required"));
+      document.getElementById("checkout-consent-terms")?.focus();
+      return null;
+    }
+    if (!consent.privacy) {
+      setConsentError(t("application.errors.privacy_required"));
+      document.getElementById("checkout-consent-privacy")?.focus();
+      return null;
+    }
+    setConsentError(null);
     if (updateProfile) {
       try {
         await saveProfile({ ...validation.value, fullName: validation.fullName });
@@ -303,7 +346,9 @@ const Checkout = () => {
         console.error("Profile update from checkout failed:", profileErr);
       }
     }
-    return toBillingPayload(validation.value, validation.fullName);
+    const billing = toBillingPayload(validation.value, validation.fullName);
+    const applicationId = await ensureApplication(billing);
+    return { billing, applicationId, planKey: resolvedPlanKey };
   };
 
   const callEdgeFunction = async (
@@ -343,10 +388,10 @@ const Checkout = () => {
     await notifyOwner({
       type: "erro",
       subject: "Falha ao iniciar checkout",
-      replyTo: application?.email ?? null,
+      replyTo: fields.email || null,
       data: {
-        plano: application?.plan_key,
-        email: application?.email,
+        plano: resolvedPlanKey,
+        email: fields.email || null,
         metodo: which,
         erro: code,
         origem: "checkout",
@@ -366,18 +411,18 @@ const Checkout = () => {
   };
 
   const handleCard = async () => {
-    if (!application || busyMethod) return;
+    if (busyMethod) return;
     beginCheckout("card");
     try {
-      const billing = await prepareBilling();
-      if (!billing) return;
+      const prepared = await prepareBilling();
+      if (!prepared) return;
       const res = await callEdgeFunction("stripe-checkout", {
-        planId: application.plan_key,
-        applicationId: application.id,
+        planId: prepared.planKey,
+        applicationId: prepared.applicationId,
         currency: "USD",
         idempotencyKey: idempotencyKey("card"),
         isTest: testMode,
-        billing,
+        billing: prepared.billing,
       });
       setResponses((prev) => ({ ...prev, card: res }));
       if (res.pending_payment_id) setPaymentId(res.pending_payment_id);
@@ -394,7 +439,7 @@ const Checkout = () => {
   };
 
   const handleCrypto = async () => {
-    if (!application || busyMethod) return;
+    if (busyMethod) return;
     if (!cryptoNetwork) {
       setMethodErrors((prev) => ({
         ...prev,
@@ -404,15 +449,16 @@ const Checkout = () => {
     }
     beginCheckout("crypto");
     try {
-      const billing = await prepareBilling();
-      if (!billing) return;
+      const prepared = await prepareBilling();
+      if (!prepared) return;
       const res = await callEdgeFunction("crypto-checkout", {
-        planId: application.plan_key,
+        planId: prepared.planKey,
+        applicationId: prepared.applicationId,
         currency: "USD",
         network: cryptoNetwork,
         idempotencyKey: idempotencyKey("crypto"),
         isTest: testMode,
-        billing,
+        billing: prepared.billing,
       });
       setResponses((prev) => ({ ...prev, crypto: res }));
       if (res.payment?.id) setPaymentId(res.payment.id);
@@ -424,17 +470,18 @@ const Checkout = () => {
   };
 
   const handleBank = async () => {
-    if (!application || busyMethod) return;
+    if (busyMethod) return;
     beginCheckout("bank");
     try {
-      const billing = await prepareBilling();
-      if (!billing) return;
+      const prepared = await prepareBilling();
+      if (!prepared) return;
       const res = await callEdgeFunction("wise-checkout", {
-        planId: application.plan_key,
+        planId: prepared.planKey,
+        applicationId: prepared.applicationId,
         currency: "USD",
         idempotencyKey: idempotencyKey("bank"),
         isTest: testMode,
-        billing,
+        billing: prepared.billing,
       });
       setResponses((prev) => ({ ...prev, bank: res }));
       if (res.payment?.id) setPaymentId(res.payment.id);
@@ -451,7 +498,7 @@ const Checkout = () => {
     setSubmitError(null);
   };
 
-  if (loading || !application) {
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#05070A]">
         <Loader2 className="animate-spin text-[#C5A059]" size={48} aria-hidden="true" />
@@ -604,6 +651,65 @@ const Checkout = () => {
                     onChange={handleFieldChange}
                     onUpdateProfileChange={setUpdateProfile}
                   />
+                </section>
+
+                <section
+                  aria-labelledby="checkout-consent-title"
+                  className="space-y-4 border border-white/10 bg-[#080B12] p-5 md:p-7"
+                >
+                  <h2
+                    id="checkout-consent-title"
+                    className="text-[11px] font-bold uppercase tracking-[0.3em] text-white"
+                  >
+                    {t("checkoutPage.consentTitle")}
+                  </h2>
+                  <label className="flex items-start gap-3">
+                    <Checkbox
+                      id="checkout-consent-terms"
+                      checked={consent.terms}
+                      onCheckedChange={(value) => {
+                        setConsent((prev) => ({ ...prev, terms: value === true }));
+                        setConsentError(null);
+                      }}
+                      aria-invalid={Boolean(consentError)}
+                      aria-describedby={consentError ? "checkout-consent-error" : undefined}
+                      className="mt-0.5 border-white/20 data-[state=checked]:border-[#C5A059] data-[state=checked]:bg-[#C5A059]"
+                    />
+                    <span className="text-[10px] leading-relaxed text-slate-400">
+                      {t("application.terms_accepted")}{" "}
+                      <Link to="/terms" className="text-[#C5A059] underline">
+                        {t("application.viewTerms")}
+                      </Link>
+                    </span>
+                  </label>
+                  <label className="flex items-start gap-3">
+                    <Checkbox
+                      id="checkout-consent-privacy"
+                      checked={consent.privacy}
+                      onCheckedChange={(value) => {
+                        setConsent((prev) => ({ ...prev, privacy: value === true }));
+                        setConsentError(null);
+                      }}
+                      aria-invalid={Boolean(consentError)}
+                      aria-describedby={consentError ? "checkout-consent-error" : undefined}
+                      className="mt-0.5 border-white/20 data-[state=checked]:border-[#C5A059] data-[state=checked]:bg-[#C5A059]"
+                    />
+                    <span className="text-[10px] leading-relaxed text-slate-400">
+                      {t("application.privacy_accepted")}{" "}
+                      <Link to="/privacy" className="text-[#C5A059] underline">
+                        {t("application.viewPrivacy")}
+                      </Link>
+                    </span>
+                  </label>
+                  {consentError && (
+                    <p
+                      id="checkout-consent-error"
+                      role="alert"
+                      className="text-[10px] font-bold uppercase tracking-widest text-red-400"
+                    >
+                      {consentError}
+                    </p>
+                  )}
                 </section>
 
                 <section className="space-y-5 border border-white/10 bg-[#080B12] p-5 md:p-7">

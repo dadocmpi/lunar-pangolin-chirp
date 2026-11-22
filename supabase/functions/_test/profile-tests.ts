@@ -146,11 +146,14 @@ check("creates a customer via the Stripe API", stripe.includes('"/customers"'));
 check("refreshes an existing customer", /`\/customers\/\$\{existing\}`/.test(stripe));
 
 // ---------------------------------------------------------------------------
-console.log("\n[8] Wiring: the client checkout blocks an incomplete profile");
+console.log("\n[8] Wiring: the client checkout prefills the profile");
 const checkout = read("src/pages/Checkout.tsx");
-check("redirects an incomplete profile to /complete-profile", checkout.includes("/complete-profile"));
 check("pre-fills billing from the profile", checkout.includes("prefillCheckoutCustomer("));
-check("passes billing to every checkout function", (checkout.match(/^\s*billing,$/gm) || []).length >= 3);
+check(
+  "collects missing fields inline instead of a second form",
+  !checkout.includes('navigate("/complete-profile"'),
+);
+check("passes billing to every checkout function", (checkout.match(/billing:\s*prepared\.billing/g) || []).length >= 3);
 check("offers the update-my-profile option", checkout.includes("updateProfile={updateProfile}"));
 
 // ---------------------------------------------------------------------------

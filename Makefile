@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security test-stripe test-checkout test-payment-activation typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security test-stripe test-checkout test-plan-selection test-payment-activation typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -44,6 +44,12 @@ test-security:
 # and accessibility contract). No network, no DB.
 test-checkout:
 	deno run -A supabase/functions/_test/checkout-redesign-tests.ts
+	deno run -A supabase/functions/_test/plan-selection-prefill-tests.ts
+
+# Authenticated plan selection -> /checkout: four plans, profile prefill,
+# missing fields, edits, login round-trip, no duplicate application, locales.
+test-plan-selection:
+	deno run -A supabase/functions/_test/plan-selection-prefill-tests.ts
 
 # Stripe confirmation hardening (DB lifecycle status, validated confirmation,
 # lost-event reconciliation). No network, no DB, no secrets.

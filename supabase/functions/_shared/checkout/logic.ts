@@ -80,6 +80,54 @@ export const EMPTY_CHECKOUT_CUSTOMER: CheckoutCustomerFields = {
   postalCode: "",
 };
 
+/**
+ * The only plan keys the checkout selector accepts. These are selectors, not
+ * prices: the server re-derives the canonical plan, amount, currency and
+ * interval from its own table on every payment call.
+ */
+export const CHECKOUT_PLAN_KEYS = ["starter", "professional", "business", "enterprise"] as const;
+export type CheckoutPlanKey = (typeof CHECKOUT_PLAN_KEYS)[number];
+
+export function isCheckoutPlanKey(value: unknown): value is CheckoutPlanKey {
+  return typeof value === "string" && (CHECKOUT_PLAN_KEYS as readonly string[]).includes(value);
+}
+
+function planKeyFromState(value: unknown): CheckoutPlanKey | null {
+  if (!value || typeof value !== "object") return null;
+  const candidate = value as { id?: unknown; plan_key?: unknown };
+  const key = typeof candidate.id === "string"
+    ? candidate.id
+    : typeof candidate.plan_key === "string"
+    ? candidate.plan_key
+    : null;
+  return isCheckoutPlanKey(key) ? key : null;
+}
+
+/**
+ * True when an existing application can be reused for a new payment attempt
+ * instead of inserting a duplicate. A confirmed/refunded/disputed application
+ * is a finished record; only pending or failed attempts are reusable.
+ */
+export function isReusableApplicationStatus(paymentStatus: unknown): boolean {
+  const status = String(paymentStatus ?? "pending").trim().toLowerCase();
+  return status === "pending" || status === "failed" || status === "";
+}
+
+/**
+ * Resolve the plan the customer picked on /pricing. Router state wins, then
+ * the `?plan=` query (which survives a login round-trip and a refresh). An
+ * unknown key resolves to null so the page can show the invalid-plan state.
+ */
+export function resolveCheckoutPlanKey(args: {
+  statePlan?: unknown;
+  queryPlan?: string | null;
+}): CheckoutPlanKey | null {
+  const fromState = planKeyFromState(args.statePlan);
+  if (fromState) return fromState;
+  const fromQuery = typeof args.queryPlan === "string" ? args.queryPlan.trim() : "";
+  return isCheckoutPlanKey(fromQuery) ? fromQuery : null;
+}
+
 function str(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
@@ -172,12 +220,12 @@ export function validateCheckoutCustomer(fields: CheckoutCustomerFields): Checko
     errors[key as CheckoutFieldKey] = code;
   }
 
-  if (baseErrors.fullName) {
-    if (!fields.firstName.trim()) errors.firstName = "required";
-    if (!fields.lastName.trim()) errors.lastName = "required";
-    if (fields.firstName.trim() && fields.lastName.trim()) {
-      errors.firstName = baseErrors.fullName;
-    }
+  // First and last name are required individually, even when the combined
+  // value would satisfy the looser full-name rule.
+  if (!fields.firstName.trim()) errors.firstName = "required";
+  if (!fields.lastName.trim()) errors.lastName = "required";
+  if (baseErrors.fullName && fields.firstName.trim() && fields.lastName.trim()) {
+    errors.firstName = baseErrors.fullName;
   }
 
   if (!isValidEmail(fields.email)) errors.email = "invalid_email";

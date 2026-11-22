@@ -42,8 +42,8 @@ check(
   /currency:\s*"USD"/.test(checkout),
 );
 check(
-  'stripe checkout sends applicationId',
-  /applicationId:\s*application\.id/.test(checkout),
+  'stripe checkout sends the server-ensured applicationId',
+  /applicationId:\s*prepared\.applicationId/.test(checkout),
 );
 check('checkout calls wise-checkout', /"wise-checkout"/.test(checkout));
 check('checkout calls crypto-checkout', /"crypto-checkout"/.test(checkout));
