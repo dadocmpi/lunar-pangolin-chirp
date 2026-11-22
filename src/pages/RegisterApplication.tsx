@@ -1,201 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { functionsUrl, supabase } from '@/integrations/supabase/client';
-import { useTranslation } from 'react-i18next';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
-import ApplicationForm, { type PlanInfo } from '@/components/ApplicationForm';
-import { Button } from '@/components/ui/button';
-import { ShieldAlert, Loader2, CheckCircle2 } from 'lucide-react';
-import { PLAN_PRICING, formatUsd } from '@/lib/plans';
+import { Navigate, useLocation } from "react-router-dom";
+import { resolveCheckoutPlanKey } from "@/lib/checkout";
 
-// Display-only fallbacks when no plan is passed. Amounts come from the shared
-// PLAN_PRICING table so they stay identical across pricing, application, and
-// checkout. The server (supabase/functions/_shared/plans.ts) is the source of
-// truth for what is actually charged.
-const PLAN_META = [
-  { id: 'starter', name: 'Starter', iconType: 'zap' },
-  { id: 'professional', name: 'Professional', iconType: 'award' },
-  { id: 'business', name: 'Business', iconType: 'shield' },
-  { id: 'enterprise', name: 'Enterprise', iconType: 'crown' },
-] as const;
-
-const FALLBACK_PLANS: Record<string, PlanInfo> = Object.fromEntries(
-  PLAN_META.map(({ id, name, iconType }) => {
-    const pricing = PLAN_PRICING[id];
-    return [
-      id,
-      {
-        id,
-        name,
-        iconType,
-        price: pricing.monthlyUsd,
-        priceUSD: pricing.monthlyUsd,
-        accountSize: formatUsd(pricing.managedCapitalUsd),
-      } satisfies PlanInfo,
-    ];
-  }),
-);
-
-const resolvePlan = (candidate: unknown): PlanInfo | null => {
-  if (!candidate || typeof candidate !== 'object') return null;
-  const c = candidate as { id?: unknown; plan_key?: unknown };
-  const key = typeof c.id === 'string' ? c.id : typeof c.plan_key === 'string' ? c.plan_key : null;
-  if (!key || !FALLBACK_PLANS[key]) return null;
-  const base = FALLBACK_PLANS[key];
-  const src = candidate as Partial<PlanInfo>;
-  return {
-    ...base,
-    name: typeof src.name === 'string' && src.name ? src.name : base.name,
-    priceUSD: typeof src.priceUSD === 'number' ? src.priceUSD : base.priceUSD,
-    accountSize: typeof src.accountSize === 'string' ? src.accountSize : base.accountSize,
-    iconType: typeof src.iconType === 'string' ? src.iconType : base.iconType,
-    features: Array.isArray(src.features) ? src.features : base.features,
-    popular: src.popular ?? base.popular,
-  };
-};
-
+/**
+ * Legacy entry point kept for old links. The single-page checkout at
+ * /checkout is the only application flow, so this route forwards the selected
+ * plan (router state or ?plan=) instead of rendering a second form.
+ */
 const RegisterApplication = () => {
-  const { t } = useTranslation();
   const location = useLocation();
-  const navigate = useNavigate();
-
-  const [plan, setPlan] = useState<PlanInfo | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [applicationId, setApplicationId] = useState<string | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  // Render the real application form even when no plan was carried over from
-  // the pricing page (direct visit / refresh). Falls back to the query string,
-  // then to Starter, instead of bouncing the visitor back to /pricing.
-  useEffect(() => {
-    const planKeyFromQuery = new URLSearchParams(location.search).get('plan');
-    const resolved =
-      resolvePlan(location.state?.plan) ??
-      resolvePlan({ id: planKeyFromQuery }) ??
-      FALLBACK_PLANS.starter;
-    setPlan(resolved);
-    setLoading(false);
-  }, [location.state, location.search]);
-
-  const handleApplicationSubmit = async (applicationData: Record<string, unknown>) => {
-    setSubmitError(null);
-    setSubmitting(true);
-    try {
-      // Call the application submission Edge Function
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        throw new Error('Unauthorized');
-      }
-
-      const res = await fetch(
-        functionsUrl('application-submit'),
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            ...applicationData,
-            // Location-state plan reference for verification only.
-            plan_id_from_location: plan.id,
-          }),
-        }
-      );
-
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json.error || `HTTP ${res.status}`);
-      }
-
-      // Assuming the function returns the application ID
-      if (json.application_id) {
-        setApplicationId(json.application_id);
-        // Navigate to checkout with the application ID in state
-        navigate('/checkout', { state: { applicationId: json.application_id } });
-      } else {
-        throw new Error('No application ID returned');
-      }
-    } catch (err: unknown) {
-      console.error('Application submission error:', err);
-      setSubmitError(err instanceof Error ? err.message : t('application.errors.submit_failed'));
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  if (loading || !plan) {
-    return (
-      <div className="min-h-screen bg-[#05070A] flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#C5A059]" size={48} />
-      </div>
-    );
-  }
+  const planKey = resolveCheckoutPlanKey({
+    statePlan: location.state?.plan,
+    queryPlan: new URLSearchParams(location.search).get("plan"),
+  }) ?? "starter";
 
   return (
-    <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
-      <Navbar />
-      <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
-        <div className="mb-8">
-          <Link
-            to="/pricing"
-            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-[#C5A059] transition-colors"
-          >
-            <span className="text-[10px] font-bold uppercase tracking-widest">{t('nav.pricing')}</span>
-          </Link>
-          <h1 className="mt-4 text-3xl font-black uppercase tracking-tighter">
-            {t('application.title')} <span className="text-[#C5A059]">{t('application.subtitle')}</span>
-          </h1>
-        </div>
-
-        <div className="bg-[#080B12] border border-white/10 p-8 space-y-6">
-          <div className="flex justify-between items-center pb-4 border-b border-white/5">
-            <div>
-              <h2 className="font-bold text-2xl uppercase tracking-tight">
-                {t(`plans.${plan.id}`, { defaultValue: plan.name })}
-              </h2>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">
-                {t('application.plan_selected')}
-              </p>
-            </div>
-            <div className="text-right">
-              <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                {formatUsd(plan.priceUSD ?? PLAN_PRICING.starter.monthlyUsd)}
-              </span>
-              <p className="text-[9px] text-slate-600 uppercase tracking-widest">
-                {t('application.billed_monthly')}
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <p className="text-[10px] text-slate-400">
-              {t('application.plan_description', { plan: t(`plans.${plan.id}`, { defaultValue: plan.name }) })}
-            </p>
-            <p className="text-[10px] text-slate-400">
-              {t('application.plan_price_detail', {
-                price: formatUsd(plan.priceUSD ?? PLAN_PRICING.starter.monthlyUsd),
-              })}
-            </p>
-          </div>
-        </div>
-
-        {submitError && (
-          <div className="p-4 border border-red-500/30 bg-red-500/10 text-red-300 text-[10px] font-bold uppercase tracking-widest">
-            {submitError}
-          </div>
-        )}
-
-        <ApplicationForm
-          plan={plan}
-          onSubmit={handleApplicationSubmit}
-        />
-      </div>
-
-      <Footer />
-    </div>
+    <Navigate
+      to={`/checkout?plan=${planKey}`}
+      replace
+      state={{ plan: { id: planKey } }}
+    />
   );
 };
 

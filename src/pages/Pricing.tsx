@@ -97,7 +97,9 @@ const Pricing = () => {
     price: string;
     priceUSD: number;
   }) => {
-    navigate('/checkout', { state: { plan } });
+    // The query survives a login round-trip and a refresh; the state makes
+    // the first render instant. The server still re-derives the plan/price.
+    navigate(`/checkout?plan=${plan.id}`, { state: { plan } });
   };
 
   return (

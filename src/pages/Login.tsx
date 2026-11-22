@@ -24,7 +24,12 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = location.state?.from || '/dashboard';
+  const rawFrom = location.state?.from as unknown;
+  const from = typeof rawFrom === 'string'
+    ? rawFrom
+    : rawFrom && typeof rawFrom === 'object' && typeof (rawFrom as { pathname?: unknown }).pathname === 'string'
+    ? `${(rawFrom as { pathname: string }).pathname}${(rawFrom as { search?: string }).search ?? ''}`
+    : '/dashboard';
   const plan = location.state?.plan;
 
   // Where to send a signed-in user. If they closed the page before finishing
@@ -35,7 +40,9 @@ const Login = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const profile = await fetchProfile(user.id);
-        if (profile && profile.profileCompleted === false) {
+        // Checkout collects any missing profile fields inline, so a customer
+        // returning to the selected plan is not bounced to a second form.
+        if (profile && profile.profileCompleted === false && !from.startsWith('/checkout')) {
           return { path: '/complete-profile', state: { from, plan } };
         }
       }

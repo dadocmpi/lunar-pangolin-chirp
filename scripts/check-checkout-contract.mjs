@@ -91,7 +91,8 @@ check('all three methods are present', ['card', 'crypto', 'bank'].every((m) => S
 
 console.log('\n[6] Server is the source of truth');
 check('page sends currency USD', /currency:\s*"USD"/.test(S.page));
-check('page sends applicationId for Stripe', /applicationId:\s*application\.id/.test(S.page));
+check('page sends the server-ensured applicationId', /applicationId:\s*prepared\.applicationId/.test(S.page));
+check('page ensures the application server-side', S.page.includes('functionsUrl("application-ensure")'));
 check('page never sends an amount', !/amountCents\s*:/.test(S.page));
 check('stripe re-derives the plan', S.stripe.includes('getPlan(planKey)'));
 check('stripe uses the canonical amount', S.stripe.includes('amount_cents: canonicalPlan.priceCents'));

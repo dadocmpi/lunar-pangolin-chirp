@@ -204,10 +204,14 @@ if (!/resolveStripeCustomer/.test(stripe)) fail('stripe-checkout does not resolv
 if (!/stripe_customer_id/.test(stripe)) fail('stripe-checkout does not persist stripe_customer_id');
 pass('stripe-checkout reuses/creates a Stripe Customer and stores its id');
 
-// The checkout must block an incomplete profile before payment.
+// The single-page checkout prefills the profile and collects any missing
+// fields inline; it must not bounce the customer to a second form.
 const checkout = read('src/pages/Checkout.tsx');
-if (!/complete-profile/.test(checkout)) fail('checkout does not redirect an incomplete profile to step 2');
-pass('checkout redirects an incomplete profile to /complete-profile');
+if (!/prefillCheckoutCustomer\(/.test(checkout)) fail('checkout does not prefill from the profile');
+if (/navigate\("\.\/complete-profile|navigate\("\/complete-profile/.test(checkout)) {
+  fail('checkout still hard-redirects an incomplete profile to /complete-profile');
+}
+pass('checkout prefills the profile and collects missing fields inline');
 
 // The register page must not store a password anywhere but Supabase Auth.
 const register = read('src/pages/Register.tsx');

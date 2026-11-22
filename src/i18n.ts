@@ -72,6 +72,7 @@ const enTranslation = {
       detailsSaved: "Details saved successfully.",
     },
     checkoutPage: {
+      consentTitle: "Legal consent",
       "eyebrow": "Secure checkout",
       "title": "Complete your subscription",
       "subtitle": "Review your plan, confirm your details and choose how to pay.",
@@ -1891,6 +1892,7 @@ const ptTranslation = {
       detailsSaved: "Dados guardados com sucesso.",
     },
     checkoutPage: {
+      consentTitle: "Consentimento legal",
       "eyebrow": "Checkout seguro",
       "title": "Conclua a sua assinatura",
       "subtitle": "Reveja o seu plano, confirme os seus dados e escolha como pagar.",
@@ -3712,6 +3714,7 @@ const itTranslation = {
       detailsSaved: "Dati salvati correttamente.",
     },
     checkoutPage: {
+      consentTitle: "Consenso legale",
       "eyebrow": "Checkout sicuro",
       "title": "Completa l'abbonamento",
       "subtitle": "Controlla il piano, conferma i tuoi dati e scegli come pagare.",
@@ -5533,6 +5536,7 @@ const esTranslation = {
       detailsSaved: "Datos guardados correctamente.",
     },
     checkoutPage: {
+      consentTitle: "Consentimiento legal",
       "eyebrow": "Pago seguro",
       "title": "Completa tu suscripción",
       "subtitle": "Revisa tu plan, confirma tus datos y elige cómo pagar.",
@@ -7354,6 +7358,7 @@ const frTranslation = {
       detailsSaved: "Informations enregistrées avec succès.",
     },
     checkoutPage: {
+      consentTitle: "Consentement légal",
       "eyebrow": "Paiement sécurisé",
       "title": "Finalisez votre abonnement",
       "subtitle": "Vérifiez votre forfait, confirmez vos informations et choisissez votre moyen de paiement.",
@@ -9175,6 +9180,7 @@ const deTranslation = {
       detailsSaved: "Daten erfolgreich gespeichert.",
     },
     checkoutPage: {
+      consentTitle: "Rechtliche Einwilligung",
       "eyebrow": "Sichere Kasse",
       "title": "Abonnement abschließen",
       "subtitle": "Prüfen Sie Ihren Tarif, bestätigen Sie Ihre Daten und wählen Sie die Zahlungsart.",
@@ -10994,6 +11000,7 @@ const ruTranslation = {
       detailsSaved: "Данные успешно сохранены.",
     },
     checkoutPage: {
+      consentTitle: "Правовое согласие",
       "eyebrow": "Безопасная оплата",
       "title": "Завершите оформление подписки",
       "subtitle": "Проверьте тариф, подтвердите данные и выберите способ оплаты.",
@@ -12817,6 +12824,7 @@ const zhTranslation = {
       detailsSaved: "资料保存成功。",
     },
     checkoutPage: {
+      consentTitle: "法律同意",
       "eyebrow": "安全结账",
       "title": "完成订阅",
       "subtitle": "查看您的方案，确认信息并选择支付方式。",
@@ -14634,6 +14642,7 @@ const jaTranslation = {
       detailsSaved: "情報を保存しました。",
     },
     checkoutPage: {
+      consentTitle: "法的同意",
       "eyebrow": "安全なチェックアウト",
       "title": "サブスクリプションを完了する",
       "subtitle": "プランを確認し、情報を確定して支払い方法を選択してください。",
@@ -16451,6 +16460,7 @@ const arTranslation = {
       detailsSaved: "تم حفظ البيانات بنجاح.",
     },
     checkoutPage: {
+      consentTitle: "الموافقة القانونية",
       "eyebrow": "دفع آمن",
       "title": "أكمل اشتراكك",
       "subtitle": "راجع خطتك، وأكد بياناتك، واختر طريقة الدفع.",
@@ -18278,6 +18288,7 @@ const heTranslation = {
       detailsSaved: "הפרטים נשמרו בהצלחה.",
     },
     checkoutPage: {
+      consentTitle: "הסכמה משפטית",
       "eyebrow": "תשלום מאובטח",
       "title": "השלמת המנוי",
       "subtitle": "עיינו בתוכנית, אשרו את הפרטים ובחרו אמצעי תשלום.",
