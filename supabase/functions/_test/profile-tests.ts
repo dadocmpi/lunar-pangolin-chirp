@@ -149,9 +149,9 @@ check("refreshes an existing customer", /`\/customers\/\$\{existing\}`/.test(str
 console.log("\n[8] Wiring: the client checkout blocks an incomplete profile");
 const checkout = read("src/pages/Checkout.tsx");
 check("redirects an incomplete profile to /complete-profile", checkout.includes("/complete-profile"));
-check("pre-fills billing from the profile", checkout.includes("toProfileFields(profile.raw)"));
-check("passes billing to every checkout function", (checkout.match(/billing:\s*bill/g) || []).length >= 3);
-check("offers the update-my-profile option", checkout.includes("updateProfileWithBilling"));
+check("pre-fills billing from the profile", checkout.includes("prefillCheckoutCustomer("));
+check("passes billing to every checkout function", (checkout.match(/^\s*billing,$/gm) || []).length >= 3);
+check("offers the update-my-profile option", checkout.includes("updateProfile={updateProfile}"));
 
 // ---------------------------------------------------------------------------
 console.log("\n[9] Wiring: registration is two steps and never stores a password client-side");

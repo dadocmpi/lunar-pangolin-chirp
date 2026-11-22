@@ -71,6 +71,76 @@ const enTranslation = {
       saveError: "Could not save your details. Please try again.",
       detailsSaved: "Details saved successfully.",
     },
+    checkoutPage: {
+      "eyebrow": "Secure checkout",
+      "title": "Complete your subscription",
+      "subtitle": "Review your plan, confirm your details and choose how to pay.",
+      "planLabel": "Plan",
+      "intervalLabel": "Billing interval",
+      "currencyLabel": "Currency",
+      "recurringDisclosure": "Recurring monthly subscription. Your plan renews every month at the amount shown until you cancel.",
+      "changePlan": "Change plan",
+      "customerTitle": "Customer information",
+      "requiredNote": "Fields marked with * are required.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "missingFieldsNote": "Some details are missing. Complete the required fields to continue.",
+      "methodsDesc": "Choose how you want to pay. Availability depends on your country, currency and payment provider.",
+      "copy": "Copy",
+      "confirmedCta": "Continue to onboarding",
+      "configUnavailable": "Payment availability could not be loaded. The provider will confirm availability when you continue.",
+      "serverTruthNote": "Plan, price, currency and payment status are confirmed by the server. A browser redirect never grants access.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "Card payments are not configured yet.",
+          "crypto_not_configured": "No crypto network is configured yet.",
+          "bank_not_configured": "Bank transfer is not configured yet.",
+          "providerUnavailable": "This method is not available right now."
+        }
+      },
+      "card": {
+        "secureNote": "You will continue to Stripe's secure hosted page. Braxel never sees or stores your card number.",
+        "continue": "Continue to secure card payment"
+      },
+      "crypto": {
+        "assetLabel": "Asset and network",
+        "wrongNetworkWarning": "Send only on the selected network. Sending on the wrong network can result in permanent loss of funds.",
+        "createInstruction": "Get deposit instructions",
+        "noConfiguredAsset": "No crypto asset is configured. Choose another method or contact support.",
+        "pendingTitle": "Awaiting your transfer",
+        "pendingDesc": "Send the amount shown to the address above. Access is granted only after the payment is verified on-chain.",
+        "networkLabel": "Network",
+        "expiryLabel": "Expires at"
+      },
+      "bank": {
+        "settlementNote": "Bank transfers can take one to three business days to settle. Access is granted only after the transfer is verified.",
+        "createInstruction": "Get transfer instructions",
+        "pendingTitle": "Awaiting your transfer",
+        "pendingDesc": "Send the amount shown with the reference above. Each transfer is verified manually, so access may take a little longer.",
+        "notPaidNotice": "Generating these instructions does not mark the payment as paid.",
+        "expiryLabel": "Expires at"
+      },
+      "notices": {
+        "confirmed": "Payment confirmed by the server. You can continue to onboarding.",
+        "pending": "Payment registered. We are waiting for the provider to confirm it.",
+        "webhookDelayed": "Payment received. We are waiting for the provider confirmation; this page updates automatically.",
+        "failed": "The payment failed or was rejected. No access was granted. You can try again.",
+        "expired": "This checkout session expired. Start a new checkout to continue.",
+        "manualReview": "This payment requires manual review. Our team will verify it before granting access."
+      },
+      "errors": {
+        "generic": "We could not start the payment. Please try again.",
+        "providerUnavailable": "This payment method is not available right now. Choose another method or contact support.",
+        "rateLimited": "Too many attempts. Please wait a moment and try again.",
+        "duplicateCheckout": "A checkout for this plan is already in progress. Check its status before starting another.",
+        "sessionExpired": "Your session expired. Sign in again to continue.",
+        "unsupportedCurrency": "This currency is not supported. Payment is charged in USD.",
+        "unsupportedMethod": "This payment method is not supported for this plan.",
+        "invalidAddress": "Some billing details are invalid. Review the highlighted fields.",
+        "invalidEmail": "Enter a valid email address."
+      }
+    },
     checkoutBilling: {
       title: "Billing details",
       description: "Pre-filled from your profile. You can edit them for this purchase. They appear on your receipt.",
@@ -1718,6 +1788,76 @@ const ptTranslation = {
       fixErrors: "Corrija os campos assinalados.",
       saveError: "Não foi possível guardar os seus dados. Tente novamente.",
       detailsSaved: "Dados guardados com sucesso.",
+    },
+    checkoutPage: {
+      "eyebrow": "Checkout seguro",
+      "title": "Conclua a sua assinatura",
+      "subtitle": "Reveja o seu plano, confirme os seus dados e escolha como pagar.",
+      "planLabel": "Plano",
+      "intervalLabel": "Periodicidade",
+      "currencyLabel": "Moeda",
+      "recurringDisclosure": "Assinatura mensal recorrente. O seu plano renova todos os meses pelo valor indicado até que cancele.",
+      "changePlan": "Alterar plano",
+      "customerTitle": "Dados do cliente",
+      "requiredNote": "Os campos marcados com * são obrigatórios.",
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "email": "E-mail",
+      "missingFieldsNote": "Faltam alguns dados. Preencha os campos obrigatórios para continuar.",
+      "methodsDesc": "Escolha como quer pagar. A disponibilidade depende do seu país, da moeda e do prestador de pagamentos.",
+      "copy": "Copiar",
+      "confirmedCta": "Continuar para a integração",
+      "configUnavailable": "Não foi possível carregar a disponibilidade dos pagamentos. O prestador confirmará a disponibilidade quando continuar.",
+      "serverTruthNote": "Plano, preço, moeda e estado do pagamento são confirmados pelo servidor. Um redirecionamento no navegador nunca concede acesso.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "Os pagamentos com cartão ainda não estão configurados.",
+          "crypto_not_configured": "Ainda não existe nenhuma rede de criptomoeda configurada.",
+          "bank_not_configured": "A transferência bancária ainda não está configurada.",
+          "providerUnavailable": "Este método não está disponível neste momento."
+        }
+      },
+      "card": {
+        "secureNote": "Vai continuar para a página segura alojada pela Stripe. A Braxel nunca vê nem armazena o número do seu cartão.",
+        "continue": "Continuar para o pagamento seguro"
+      },
+      "crypto": {
+        "assetLabel": "Ativo e rede",
+        "wrongNetworkWarning": "Envie apenas na rede selecionada. Enviar na rede errada pode causar a perda permanente dos fundos.",
+        "createInstruction": "Obter instruções de depósito",
+        "noConfiguredAsset": "Não existe nenhum ativo de criptomoeda configurado. Escolha outro método ou contacte o suporte.",
+        "pendingTitle": "A aguardar a sua transferência",
+        "pendingDesc": "Envie o valor indicado para o endereço acima. O acesso só é concedido após a verificação do pagamento na rede.",
+        "networkLabel": "Rede",
+        "expiryLabel": "Expira em"
+      },
+      "bank": {
+        "settlementNote": "As transferências bancárias podem demorar um a três dias úteis a compensar. O acesso só é concedido após a verificação da transferência.",
+        "createInstruction": "Obter instruções de transferência",
+        "pendingTitle": "A aguardar a sua transferência",
+        "pendingDesc": "Envie o valor indicado com a referência acima. Cada transferência é verificada manualmente, pelo que o acesso pode demorar um pouco mais.",
+        "notPaidNotice": "Gerar estas instruções não marca o pagamento como pago.",
+        "expiryLabel": "Expira em"
+      },
+      "notices": {
+        "confirmed": "Pagamento confirmado pelo servidor. Pode continuar para a integração.",
+        "pending": "Pagamento registado. Aguardamos a confirmação do prestador.",
+        "webhookDelayed": "Pagamento recebido. Aguardamos a confirmação do prestador; esta página atualiza automaticamente.",
+        "failed": "O pagamento falhou ou foi rejeitado. Nenhum acesso foi concedido. Pode tentar novamente.",
+        "expired": "Esta sessão de checkout expirou. Inicie um novo checkout para continuar.",
+        "manualReview": "Este pagamento requer revisão manual. A nossa equipa irá verificá-lo antes de conceder acesso."
+      },
+      "errors": {
+        "generic": "Não foi possível iniciar o pagamento. Tente novamente.",
+        "providerUnavailable": "Esta forma de pagamento não está disponível neste momento. Escolha outra ou contacte o suporte.",
+        "rateLimited": "Demasiadas tentativas. Aguarde um momento e tente novamente.",
+        "duplicateCheckout": "Já existe um checkout em curso para este plano. Verifique o estado antes de iniciar outro.",
+        "sessionExpired": "A sua sessão expirou. Inicie sessão novamente para continuar.",
+        "unsupportedCurrency": "Esta moeda não é suportada. O pagamento é cobrado em USD.",
+        "unsupportedMethod": "Esta forma de pagamento não é suportada para este plano.",
+        "invalidAddress": "Alguns dados de faturação são inválidos. Reveja os campos assinalados.",
+        "invalidEmail": "Introduza um endereço de e-mail válido."
+      }
     },
     checkoutBilling: {
       title: "Dados de faturação",
@@ -3369,6 +3509,76 @@ const itTranslation = {
       saveError: "Impossibile salvare i tuoi dati. Riprova.",
       detailsSaved: "Dati salvati correttamente.",
     },
+    checkoutPage: {
+      "eyebrow": "Checkout sicuro",
+      "title": "Completa l'abbonamento",
+      "subtitle": "Controlla il piano, conferma i tuoi dati e scegli come pagare.",
+      "planLabel": "Piano",
+      "intervalLabel": "Periodicità",
+      "currencyLabel": "Valuta",
+      "recurringDisclosure": "Abbonamento mensile ricorrente. Il piano si rinnova ogni mese all'importo indicato finché non annulli.",
+      "changePlan": "Cambia piano",
+      "customerTitle": "Dati del cliente",
+      "requiredNote": "I campi contrassegnati con * sono obbligatori.",
+      "firstName": "Nome",
+      "lastName": "Cognome",
+      "email": "Email",
+      "missingFieldsNote": "Mancano alcuni dati. Completa i campi obbligatori per continuare.",
+      "methodsDesc": "Scegli come pagare. La disponibilità dipende dal Paese, dalla valuta e dal fornitore di pagamento.",
+      "copy": "Copia",
+      "confirmedCta": "Prosegui all'onboarding",
+      "configUnavailable": "Impossibile caricare la disponibilità dei pagamenti. Il fornitore confermerà la disponibilità quando continui.",
+      "serverTruthNote": "Piano, prezzo, valuta e stato del pagamento sono confermati dal server. Un reindirizzamento del browser non concede mai l'accesso.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "I pagamenti con carta non sono ancora configurati.",
+          "crypto_not_configured": "Nessuna rete di criptovalute è ancora configurata.",
+          "bank_not_configured": "Il bonifico bancario non è ancora configurato.",
+          "providerUnavailable": "Questo metodo non è disponibile al momento."
+        }
+      },
+      "card": {
+        "secureNote": "Verrai reindirizzato alla pagina sicura ospitata da Stripe. Braxel non vede né memorizza il numero della carta.",
+        "continue": "Continua al pagamento sicuro"
+      },
+      "crypto": {
+        "assetLabel": "Asset e rete",
+        "wrongNetworkWarning": "Invia solo sulla rete selezionata. Inviare sulla rete sbagliata può causare la perdita permanente dei fondi.",
+        "createInstruction": "Ottieni istruzioni di deposito",
+        "noConfiguredAsset": "Nessun asset cripto è configurato. Scegli un altro metodo o contatta l'assistenza.",
+        "pendingTitle": "In attesa del tuo trasferimento",
+        "pendingDesc": "Invia l'importo indicato all'indirizzo sopra. L'accesso viene concesso solo dopo la verifica del pagamento sulla rete.",
+        "networkLabel": "Rete",
+        "expiryLabel": "Scade il"
+      },
+      "bank": {
+        "settlementNote": "I bonifici bancari possono richiedere da uno a tre giorni lavorativi. L'accesso viene concesso solo dopo la verifica del bonifico.",
+        "createInstruction": "Ottieni istruzioni di bonifico",
+        "pendingTitle": "In attesa del tuo bonifico",
+        "pendingDesc": "Invia l'importo indicato con il riferimento sopra. Ogni bonifico viene verificato manualmente, quindi l'accesso può richiedere più tempo.",
+        "notPaidNotice": "Generare queste istruzioni non segna il pagamento come pagato.",
+        "expiryLabel": "Scade il"
+      },
+      "notices": {
+        "confirmed": "Pagamento confermato dal server. Puoi procedere all'onboarding.",
+        "pending": "Pagamento registrato. Attendiamo la conferma del fornitore.",
+        "webhookDelayed": "Pagamento ricevuto. Attendiamo la conferma del fornitore; questa pagina si aggiorna automaticamente.",
+        "failed": "Il pagamento non è riuscito o è stato rifiutato. Nessun accesso è stato concesso. Puoi riprovare.",
+        "expired": "Questa sessione di checkout è scaduta. Avvia un nuovo checkout per continuare.",
+        "manualReview": "Questo pagamento richiede una revisione manuale. Il nostro team lo verificherà prima di concedere l'accesso."
+      },
+      "errors": {
+        "generic": "Impossibile avviare il pagamento. Riprova.",
+        "providerUnavailable": "Questo metodo di pagamento non è disponibile al momento. Scegline un altro o contatta l'assistenza.",
+        "rateLimited": "Troppi tentativi. Attendi un momento e riprova.",
+        "duplicateCheckout": "È già in corso un checkout per questo piano. Controlla lo stato prima di avviarne un altro.",
+        "sessionExpired": "La sessione è scaduta. Accedi di nuovo per continuare.",
+        "unsupportedCurrency": "Questa valuta non è supportata. Il pagamento viene addebitato in USD.",
+        "unsupportedMethod": "Questo metodo di pagamento non è supportato per questo piano.",
+        "invalidAddress": "Alcuni dati di fatturazione non sono validi. Controlla i campi evidenziati.",
+        "invalidEmail": "Inserisci un indirizzo email valido."
+      }
+    },
     checkoutBilling: {
       title: "Dati di fatturazione",
       description: "Precompilati dal tuo profilo. Puoi modificarli per questo acquisto. Compaiono sulla ricevuta.",
@@ -5018,6 +5228,76 @@ const esTranslation = {
       fixErrors: "Corrige los campos resaltados.",
       saveError: "No se pudieron guardar tus datos. Inténtalo de nuevo.",
       detailsSaved: "Datos guardados correctamente.",
+    },
+    checkoutPage: {
+      "eyebrow": "Pago seguro",
+      "title": "Completa tu suscripción",
+      "subtitle": "Revisa tu plan, confirma tus datos y elige cómo pagar.",
+      "planLabel": "Plan",
+      "intervalLabel": "Periodicidad",
+      "currencyLabel": "Moneda",
+      "recurringDisclosure": "Suscripción mensual recurrente. Tu plan se renueva cada mes por el importe indicado hasta que lo canceles.",
+      "changePlan": "Cambiar plan",
+      "customerTitle": "Datos del cliente",
+      "requiredNote": "Los campos marcados con * son obligatorios.",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo electrónico",
+      "missingFieldsNote": "Faltan algunos datos. Completa los campos obligatorios para continuar.",
+      "methodsDesc": "Elige cómo pagar. La disponibilidad depende de tu país, la moneda y el proveedor de pagos.",
+      "copy": "Copiar",
+      "confirmedCta": "Continuar con la incorporación",
+      "configUnavailable": "No se pudo cargar la disponibilidad de los pagos. El proveedor confirmará la disponibilidad al continuar.",
+      "serverTruthNote": "El plan, el precio, la moneda y el estado del pago los confirma el servidor. Una redirección del navegador nunca concede acceso.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "Los pagos con tarjeta aún no están configurados.",
+          "crypto_not_configured": "Aún no hay ninguna red de criptomonedas configurada.",
+          "bank_not_configured": "La transferencia bancaria aún no está configurada.",
+          "providerUnavailable": "Este método no está disponible en este momento."
+        }
+      },
+      "card": {
+        "secureNote": "Continuarás a la página segura alojada por Stripe. Braxel nunca ve ni almacena el número de tu tarjeta.",
+        "continue": "Continuar al pago seguro"
+      },
+      "crypto": {
+        "assetLabel": "Activo y red",
+        "wrongNetworkWarning": "Envía solo en la red seleccionada. Enviar en la red incorrecta puede provocar la pérdida permanente de fondos.",
+        "createInstruction": "Obtener instrucciones de depósito",
+        "noConfiguredAsset": "No hay ningún activo cripto configurado. Elige otro método o contacta con soporte.",
+        "pendingTitle": "Esperando tu transferencia",
+        "pendingDesc": "Envía el importe indicado a la dirección anterior. El acceso solo se concede tras verificar el pago en la red.",
+        "networkLabel": "Red",
+        "expiryLabel": "Caduca el"
+      },
+      "bank": {
+        "settlementNote": "Las transferencias bancarias pueden tardar de uno a tres días hábiles en liquidarse. El acceso solo se concede tras verificar la transferencia.",
+        "createInstruction": "Obtener instrucciones de transferencia",
+        "pendingTitle": "Esperando tu transferencia",
+        "pendingDesc": "Envía el importe indicado con la referencia anterior. Cada transferencia se verifica manualmente, por lo que el acceso puede tardar algo más.",
+        "notPaidNotice": "Generar estas instrucciones no marca el pago como pagado.",
+        "expiryLabel": "Caduca el"
+      },
+      "notices": {
+        "confirmed": "Pago confirmado por el servidor. Puedes continuar con la incorporación.",
+        "pending": "Pago registrado. Estamos esperando la confirmación del proveedor.",
+        "webhookDelayed": "Pago recibido. Estamos esperando la confirmación del proveedor; esta página se actualiza automáticamente.",
+        "failed": "El pago falló o fue rechazado. No se concedió acceso. Puedes intentarlo de nuevo.",
+        "expired": "Esta sesión de pago ha caducado. Inicia un nuevo pago para continuar.",
+        "manualReview": "Este pago requiere revisión manual. Nuestro equipo lo verificará antes de conceder acceso."
+      },
+      "errors": {
+        "generic": "No pudimos iniciar el pago. Inténtalo de nuevo.",
+        "providerUnavailable": "Este método de pago no está disponible en este momento. Elige otro o contacta con soporte.",
+        "rateLimited": "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
+        "duplicateCheckout": "Ya hay un pago en curso para este plan. Revisa su estado antes de iniciar otro.",
+        "sessionExpired": "Tu sesión ha caducado. Inicia sesión de nuevo para continuar.",
+        "unsupportedCurrency": "Esta moneda no es compatible. El pago se cobra en USD.",
+        "unsupportedMethod": "Este método de pago no es compatible con este plan.",
+        "invalidAddress": "Algunos datos de facturación no son válidos. Revisa los campos resaltados.",
+        "invalidEmail": "Introduce una dirección de correo electrónico válida."
+      }
     },
     checkoutBilling: {
       title: "Datos de facturación",
@@ -6669,6 +6949,76 @@ const frTranslation = {
       saveError: "Impossible d'enregistrer vos informations. Veuillez réessayer.",
       detailsSaved: "Informations enregistrées avec succès.",
     },
+    checkoutPage: {
+      "eyebrow": "Paiement sécurisé",
+      "title": "Finalisez votre abonnement",
+      "subtitle": "Vérifiez votre forfait, confirmez vos informations et choisissez votre moyen de paiement.",
+      "planLabel": "Forfait",
+      "intervalLabel": "Périodicité",
+      "currencyLabel": "Devise",
+      "recurringDisclosure": "Abonnement mensuel récurrent. Votre forfait est renouvelé chaque mois au montant indiqué jusqu'à résiliation.",
+      "changePlan": "Changer de forfait",
+      "customerTitle": "Informations client",
+      "requiredNote": "Les champs marqués d'un * sont obligatoires.",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "E-mail",
+      "missingFieldsNote": "Certaines informations manquent. Complétez les champs obligatoires pour continuer.",
+      "methodsDesc": "Choisissez comment payer. La disponibilité dépend de votre pays, de la devise et du prestataire de paiement.",
+      "copy": "Copier",
+      "confirmedCta": "Passer à l'intégration",
+      "configUnavailable": "La disponibilité des paiements n'a pas pu être chargée. Le prestataire confirmera la disponibilité lorsque vous continuerez.",
+      "serverTruthNote": "Le forfait, le prix, la devise et le statut du paiement sont confirmés par le serveur. Une redirection du navigateur n'accorde jamais l'accès.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "Les paiements par carte ne sont pas encore configurés.",
+          "crypto_not_configured": "Aucun réseau de cryptomonnaie n'est encore configuré.",
+          "bank_not_configured": "Le virement bancaire n'est pas encore configuré.",
+          "providerUnavailable": "Ce moyen de paiement n'est pas disponible pour le moment."
+        }
+      },
+      "card": {
+        "secureNote": "Vous allez continuer vers la page sécurisée hébergée par Stripe. Braxel ne voit ni ne stocke jamais votre numéro de carte.",
+        "continue": "Continuer vers le paiement sécurisé"
+      },
+      "crypto": {
+        "assetLabel": "Actif et réseau",
+        "wrongNetworkWarning": "Envoyez uniquement sur le réseau sélectionné. Un envoi sur le mauvais réseau peut entraîner une perte définitive des fonds.",
+        "createInstruction": "Obtenir les instructions de dépôt",
+        "noConfiguredAsset": "Aucun actif crypto n'est configuré. Choisissez un autre moyen ou contactez le support.",
+        "pendingTitle": "En attente de votre virement",
+        "pendingDesc": "Envoyez le montant indiqué à l'adresse ci-dessus. L'accès n'est accordé qu'après vérification du paiement sur le réseau.",
+        "networkLabel": "Réseau",
+        "expiryLabel": "Expire le"
+      },
+      "bank": {
+        "settlementNote": "Les virements bancaires peuvent prendre un à trois jours ouvrés. L'accès n'est accordé qu'après vérification du virement.",
+        "createInstruction": "Obtenir les instructions de virement",
+        "pendingTitle": "En attente de votre virement",
+        "pendingDesc": "Envoyez le montant indiqué avec la référence ci-dessus. Chaque virement est vérifié manuellement, l'accès peut donc prendre un peu plus de temps.",
+        "notPaidNotice": "Générer ces instructions ne marque pas le paiement comme payé.",
+        "expiryLabel": "Expire le"
+      },
+      "notices": {
+        "confirmed": "Paiement confirmé par le serveur. Vous pouvez passer à l'intégration.",
+        "pending": "Paiement enregistré. Nous attendons la confirmation du prestataire.",
+        "webhookDelayed": "Paiement reçu. Nous attendons la confirmation du prestataire ; cette page se met à jour automatiquement.",
+        "failed": "Le paiement a échoué ou a été refusé. Aucun accès n'a été accordé. Vous pouvez réessayer.",
+        "expired": "Cette session de paiement a expiré. Lancez un nouveau paiement pour continuer.",
+        "manualReview": "Ce paiement nécessite une vérification manuelle. Notre équipe le vérifiera avant d'accorder l'accès."
+      },
+      "errors": {
+        "generic": "Nous n'avons pas pu lancer le paiement. Veuillez réessayer.",
+        "providerUnavailable": "Ce moyen de paiement n'est pas disponible pour le moment. Choisissez-en un autre ou contactez le support.",
+        "rateLimited": "Trop de tentatives. Patientez un instant et réessayez.",
+        "duplicateCheckout": "Un paiement est déjà en cours pour ce forfait. Vérifiez son statut avant d'en lancer un autre.",
+        "sessionExpired": "Votre session a expiré. Reconnectez-vous pour continuer.",
+        "unsupportedCurrency": "Cette devise n'est pas prise en charge. Le paiement est facturé en USD.",
+        "unsupportedMethod": "Ce moyen de paiement n'est pas pris en charge pour ce forfait.",
+        "invalidAddress": "Certaines informations de facturation sont invalides. Vérifiez les champs signalés.",
+        "invalidEmail": "Saisissez une adresse e-mail valide."
+      }
+    },
     checkoutBilling: {
       title: "Informations de facturation",
       description: "Pré-remplies depuis votre profil. Vous pouvez les modifier pour cet achat. Elles figurent sur votre reçu.",
@@ -8319,6 +8669,76 @@ const deTranslation = {
       saveError: "Ihre Daten konnten nicht gespeichert werden. Bitte versuchen Sie es erneut.",
       detailsSaved: "Daten erfolgreich gespeichert.",
     },
+    checkoutPage: {
+      "eyebrow": "Sichere Kasse",
+      "title": "Abonnement abschließen",
+      "subtitle": "Prüfen Sie Ihren Tarif, bestätigen Sie Ihre Daten und wählen Sie die Zahlungsart.",
+      "planLabel": "Tarif",
+      "intervalLabel": "Abrechnungszeitraum",
+      "currencyLabel": "Währung",
+      "recurringDisclosure": "Wiederkehrendes Monatsabonnement. Ihr Tarif verlängert sich jeden Monat zum angezeigten Betrag, bis Sie kündigen.",
+      "changePlan": "Tarif ändern",
+      "customerTitle": "Kundendaten",
+      "requiredNote": "Mit * markierte Felder sind Pflichtfelder.",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "missingFieldsNote": "Es fehlen einige Angaben. Füllen Sie die Pflichtfelder aus, um fortzufahren.",
+      "methodsDesc": "Wählen Sie, wie Sie zahlen möchten. Die Verfügbarkeit hängt von Land, Währung und Zahlungsanbieter ab.",
+      "copy": "Kopieren",
+      "confirmedCta": "Weiter zum Onboarding",
+      "configUnavailable": "Die Zahlungsverfügbarkeit konnte nicht geladen werden. Der Anbieter bestätigt die Verfügbarkeit, wenn Sie fortfahren.",
+      "serverTruthNote": "Tarif, Preis, Währung und Zahlungsstatus werden vom Server bestätigt. Eine Browser-Weiterleitung gewährt niemals Zugang.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "Kartenzahlungen sind noch nicht konfiguriert.",
+          "crypto_not_configured": "Es ist noch kein Krypto-Netzwerk konfiguriert.",
+          "bank_not_configured": "Die Banküberweisung ist noch nicht konfiguriert.",
+          "providerUnavailable": "Diese Zahlungsart ist derzeit nicht verfügbar."
+        }
+      },
+      "card": {
+        "secureNote": "Sie werden zur sicheren, von Stripe gehosteten Seite weitergeleitet. Braxel sieht und speichert Ihre Kartennummer niemals.",
+        "continue": "Weiter zur sicheren Kartenzahlung"
+      },
+      "crypto": {
+        "assetLabel": "Asset und Netzwerk",
+        "wrongNetworkWarning": "Senden Sie nur im ausgewählten Netzwerk. Eine Überweisung im falschen Netzwerk kann zum dauerhaften Verlust der Mittel führen.",
+        "createInstruction": "Einzahlungsanweisungen abrufen",
+        "noConfiguredAsset": "Es ist kein Krypto-Asset konfiguriert. Wählen Sie eine andere Methode oder kontaktieren Sie den Support.",
+        "pendingTitle": "Warten auf Ihre Überweisung",
+        "pendingDesc": "Senden Sie den angezeigten Betrag an die obige Adresse. Der Zugang wird erst nach der Verifizierung der Zahlung im Netzwerk gewährt.",
+        "networkLabel": "Netzwerk",
+        "expiryLabel": "Läuft ab am"
+      },
+      "bank": {
+        "settlementNote": "Banküberweisungen können ein bis drei Werktage dauern. Der Zugang wird erst nach Verifizierung der Überweisung gewährt.",
+        "createInstruction": "Überweisungsanweisungen abrufen",
+        "pendingTitle": "Warten auf Ihre Überweisung",
+        "pendingDesc": "Senden Sie den angezeigten Betrag mit der obigen Referenz. Jede Überweisung wird manuell geprüft, daher kann der Zugang etwas länger dauern.",
+        "notPaidNotice": "Das Erzeugen dieser Anweisungen markiert die Zahlung nicht als bezahlt.",
+        "expiryLabel": "Läuft ab am"
+      },
+      "notices": {
+        "confirmed": "Zahlung vom Server bestätigt. Sie können mit dem Onboarding fortfahren.",
+        "pending": "Zahlung registriert. Wir warten auf die Bestätigung des Anbieters.",
+        "webhookDelayed": "Zahlung erhalten. Wir warten auf die Bestätigung des Anbieters; diese Seite aktualisiert sich automatisch.",
+        "failed": "Die Zahlung ist fehlgeschlagen oder wurde abgelehnt. Es wurde kein Zugang gewährt. Sie können es erneut versuchen.",
+        "expired": "Diese Checkout-Sitzung ist abgelaufen. Starten Sie einen neuen Checkout, um fortzufahren.",
+        "manualReview": "Diese Zahlung erfordert eine manuelle Prüfung. Unser Team prüft sie vor der Freigabe."
+      },
+      "errors": {
+        "generic": "Die Zahlung konnte nicht gestartet werden. Bitte versuchen Sie es erneut.",
+        "providerUnavailable": "Diese Zahlungsart ist derzeit nicht verfügbar. Wählen Sie eine andere oder kontaktieren Sie den Support.",
+        "rateLimited": "Zu viele Versuche. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
+        "duplicateCheckout": "Für diesen Tarif läuft bereits ein Checkout. Prüfen Sie dessen Status, bevor Sie einen neuen starten.",
+        "sessionExpired": "Ihre Sitzung ist abgelaufen. Melden Sie sich erneut an, um fortzufahren.",
+        "unsupportedCurrency": "Diese Währung wird nicht unterstützt. Die Zahlung wird in USD abgerechnet.",
+        "unsupportedMethod": "Diese Zahlungsart wird für diesen Tarif nicht unterstützt.",
+        "invalidAddress": "Einige Rechnungsdaten sind ungültig. Prüfen Sie die markierten Felder.",
+        "invalidEmail": "Geben Sie eine gültige E-Mail-Adresse ein."
+      }
+    },
     checkoutBilling: {
       title: "Rechnungsdaten",
       description: "Vorausgefüllt aus Ihrem Profil. Sie können sie für diesen Kauf bearbeiten. Sie erscheinen auf Ihrem Beleg.",
@@ -9966,6 +10386,76 @@ const ruTranslation = {
       fixErrors: "Исправьте выделенные поля.",
       saveError: "Не удалось сохранить ваши данные. Попробуйте снова.",
       detailsSaved: "Данные успешно сохранены.",
+    },
+    checkoutPage: {
+      "eyebrow": "Безопасная оплата",
+      "title": "Завершите оформление подписки",
+      "subtitle": "Проверьте тариф, подтвердите данные и выберите способ оплаты.",
+      "planLabel": "Тариф",
+      "intervalLabel": "Периодичность",
+      "currencyLabel": "Валюта",
+      "recurringDisclosure": "Повторяющаяся ежемесячная подписка. Тариф продлевается каждый месяц на указанную сумму до отмены.",
+      "changePlan": "Изменить тариф",
+      "customerTitle": "Данные клиента",
+      "requiredNote": "Поля, отмеченные *, обязательны.",
+      "firstName": "Имя",
+      "lastName": "Фамилия",
+      "email": "Эл. почта",
+      "missingFieldsNote": "Некоторые данные отсутствуют. Заполните обязательные поля, чтобы продолжить.",
+      "methodsDesc": "Выберите способ оплаты. Доступность зависит от страны, валюты и платёжного провайдера.",
+      "copy": "Копировать",
+      "confirmedCta": "Перейти к онбордингу",
+      "configUnavailable": "Не удалось загрузить доступность платежей. Провайдер подтвердит доступность при продолжении.",
+      "serverTruthNote": "Тариф, цена, валюта и статус платежа подтверждаются сервером. Перенаправление в браузере никогда не предоставляет доступ.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "Оплата картой ещё не настроена.",
+          "crypto_not_configured": "Ни одна криптосеть ещё не настроена.",
+          "bank_not_configured": "Банковский перевод ещё не настроен.",
+          "providerUnavailable": "Этот способ сейчас недоступен."
+        }
+      },
+      "card": {
+        "secureNote": "Вы перейдёте на защищённую страницу Stripe. Braxel никогда не видит и не хранит номер вашей карты.",
+        "continue": "Перейти к безопасной оплате"
+      },
+      "crypto": {
+        "assetLabel": "Актив и сеть",
+        "wrongNetworkWarning": "Отправляйте только в выбранной сети. Отправка в неверной сети может привести к безвозвратной потере средств.",
+        "createInstruction": "Получить инструкции по депозиту",
+        "noConfiguredAsset": "Криптоактив не настроен. Выберите другой способ или обратитесь в поддержку.",
+        "pendingTitle": "Ожидание вашего перевода",
+        "pendingDesc": "Отправьте указанную сумму на адрес выше. Доступ предоставляется только после проверки платежа в сети.",
+        "networkLabel": "Сеть",
+        "expiryLabel": "Действует до"
+      },
+      "bank": {
+        "settlementNote": "Банковские переводы могут занимать от одного до трёх рабочих дней. Доступ предоставляется только после проверки перевода.",
+        "createInstruction": "Получить инструкции по переводу",
+        "pendingTitle": "Ожидание вашего перевода",
+        "pendingDesc": "Отправьте указанную сумму с указанным назначением. Каждый перевод проверяется вручную, поэтому доступ может занять немного больше времени.",
+        "notPaidNotice": "Создание этих инструкций не отмечает платёж как оплаченный.",
+        "expiryLabel": "Действует до"
+      },
+      "notices": {
+        "confirmed": "Платёж подтверждён сервером. Можно перейти к онбордингу.",
+        "pending": "Платёж зарегистрирован. Ожидаем подтверждения от провайдера.",
+        "webhookDelayed": "Платёж получен. Ожидаем подтверждения от провайдера; страница обновится автоматически.",
+        "failed": "Платёж не прошёл или был отклонён. Доступ не предоставлен. Можно повторить попытку.",
+        "expired": "Сеанс оформления истёк. Начните новое оформление, чтобы продолжить.",
+        "manualReview": "Этот платёж требует ручной проверки. Наша команда проверит его перед предоставлением доступа."
+      },
+      "errors": {
+        "generic": "Не удалось начать платёж. Попробуйте ещё раз.",
+        "providerUnavailable": "Этот способ оплаты сейчас недоступен. Выберите другой или обратитесь в поддержку.",
+        "rateLimited": "Слишком много попыток. Подождите немного и повторите.",
+        "duplicateCheckout": "Для этого тарифа уже идёт оформление. Проверьте его статус, прежде чем начинать новое.",
+        "sessionExpired": "Сеанс истёк. Войдите снова, чтобы продолжить.",
+        "unsupportedCurrency": "Эта валюта не поддерживается. Оплата взимается в USD.",
+        "unsupportedMethod": "Этот способ оплаты не поддерживается для данного тарифа.",
+        "invalidAddress": "Некоторые платёжные данные недействительны. Проверьте выделенные поля.",
+        "invalidEmail": "Введите действительный адрес эл. почты."
+      }
     },
     checkoutBilling: {
       title: "Платёжные данные",
@@ -11619,6 +12109,76 @@ const zhTranslation = {
       saveError: "无法保存您的资料。请重试。",
       detailsSaved: "资料保存成功。",
     },
+    checkoutPage: {
+      "eyebrow": "安全结账",
+      "title": "完成订阅",
+      "subtitle": "查看您的方案，确认信息并选择支付方式。",
+      "planLabel": "方案",
+      "intervalLabel": "计费周期",
+      "currencyLabel": "货币",
+      "recurringDisclosure": "按月自动续费订阅。您的方案将按所示金额每月续订，直至取消。",
+      "changePlan": "更改方案",
+      "customerTitle": "客户信息",
+      "requiredNote": "带 * 的字段为必填项。",
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "电子邮箱",
+      "missingFieldsNote": "缺少一些信息。请填写必填字段以继续。",
+      "methodsDesc": "选择支付方式。可用性取决于您的国家/地区、货币和支付服务商。",
+      "copy": "复制",
+      "confirmedCta": "继续完成入门流程",
+      "configUnavailable": "无法加载支付可用性。继续时服务商将确认可用性。",
+      "serverTruthNote": "方案、价格、货币和付款状态均由服务器确认。浏览器重定向绝不会授予访问权限。",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "银行卡支付尚未配置。",
+          "crypto_not_configured": "尚未配置任何加密货币网络。",
+          "bank_not_configured": "银行转账尚未配置。",
+          "providerUnavailable": "该方式目前不可用。"
+        }
+      },
+      "card": {
+        "secureNote": "您将继续前往 Stripe 托管的安全页面。Braxel 绝不会查看或存储您的卡号。",
+        "continue": "继续前往安全支付"
+      },
+      "crypto": {
+        "assetLabel": "资产与网络",
+        "wrongNetworkWarning": "请仅在所选网络上发送。在错误网络上发送可能导致资金永久损失。",
+        "createInstruction": "获取存款说明",
+        "noConfiguredAsset": "未配置任何加密资产。请选择其他方式或联系客服。",
+        "pendingTitle": "等待您的转账",
+        "pendingDesc": "请将所示金额发送至上述地址。只有在链上验证付款后才会授予访问权限。",
+        "networkLabel": "网络",
+        "expiryLabel": "有效期至"
+      },
+      "bank": {
+        "settlementNote": "银行转账可能需要一至三个工作日结算。只有在验证转账后才会授予访问权限。",
+        "createInstruction": "获取转账说明",
+        "pendingTitle": "等待您的转账",
+        "pendingDesc": "请使用上述参考号发送所示金额。每笔转账均需人工核验，因此访问权限可能需要更长时间。",
+        "notPaidNotice": "生成这些说明不会将付款标记为已支付。",
+        "expiryLabel": "有效期至"
+      },
+      "notices": {
+        "confirmed": "服务器已确认付款。您可以继续完成入门流程。",
+        "pending": "付款已登记。我们正在等待服务商确认。",
+        "webhookDelayed": "已收到付款。我们正在等待服务商确认；此页面会自动更新。",
+        "failed": "付款失败或被拒绝。未授予访问权限。您可以重试。",
+        "expired": "此结账会话已过期。请开始新的结账以继续。",
+        "manualReview": "此付款需要人工审核。我们的团队将在授予访问权限前进行核验。"
+      },
+      "errors": {
+        "generic": "无法启动付款。请重试。",
+        "providerUnavailable": "该支付方式目前不可用。请选择其他方式或联系客服。",
+        "rateLimited": "尝试次数过多。请稍候再试。",
+        "duplicateCheckout": "此方案已有结账正在进行。请先查看其状态再开始新的结账。",
+        "sessionExpired": "您的会话已过期。请重新登录以继续。",
+        "unsupportedCurrency": "不支持此货币。付款以 USD 收取。",
+        "unsupportedMethod": "此方案不支持该支付方式。",
+        "invalidAddress": "部分账单信息无效。请检查突出显示的字段。",
+        "invalidEmail": "请输入有效的电子邮箱地址。"
+      }
+    },
     checkoutBilling: {
       title: "账单信息",
       description: "已根据您的资料自动填写。您可以针对本次购买进行修改。这些信息会显示在您的收据上。",
@@ -13265,6 +13825,76 @@ const jaTranslation = {
       saveError: "情報を保存できませんでした。もう一度お試しください。",
       detailsSaved: "情報を保存しました。",
     },
+    checkoutPage: {
+      "eyebrow": "安全なチェックアウト",
+      "title": "サブスクリプションを完了する",
+      "subtitle": "プランを確認し、情報を確定して支払い方法を選択してください。",
+      "planLabel": "プラン",
+      "intervalLabel": "請求間隔",
+      "currencyLabel": "通貨",
+      "recurringDisclosure": "毎月の自動更新サブスクリプションです。キャンセルするまで、表示された金額で毎月更新されます。",
+      "changePlan": "プランを変更",
+      "customerTitle": "お客様情報",
+      "requiredNote": "* の付いた項目は必須です。",
+      "firstName": "名",
+      "lastName": "姓",
+      "email": "メールアドレス",
+      "missingFieldsNote": "一部の情報が不足しています。必須項目を入力して続行してください。",
+      "methodsDesc": "支払い方法を選択してください。利用可否は国、通貨、決済プロバイダーによって異なります。",
+      "copy": "コピー",
+      "confirmedCta": "オンボーディングへ進む",
+      "configUnavailable": "支払いの利用可否を読み込めませんでした。続行時にプロバイダーが確認します。",
+      "serverTruthNote": "プラン、価格、通貨、支払い状況はサーバーが確認します。ブラウザのリダイレクトだけでアクセスが付与されることはありません。",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "カード決済はまだ設定されていません。",
+          "crypto_not_configured": "暗号資産ネットワークがまだ設定されていません。",
+          "bank_not_configured": "銀行振込はまだ設定されていません。",
+          "providerUnavailable": "この方法は現在ご利用いただけません。"
+        }
+      },
+      "card": {
+        "secureNote": "Stripe がホストする安全なページへ進みます。Braxel がカード番号を表示・保存することはありません。",
+        "continue": "安全なカード決済へ進む"
+      },
+      "crypto": {
+        "assetLabel": "資産とネットワーク",
+        "wrongNetworkWarning": "選択したネットワークでのみ送金してください。誤ったネットワークへの送金は資金の永久喪失につながる可能性があります。",
+        "createInstruction": "入金手順を取得",
+        "noConfiguredAsset": "暗号資産が設定されていません。別の方法を選択するか、サポートにお問い合わせください。",
+        "pendingTitle": "送金をお待ちしています",
+        "pendingDesc": "上記のアドレスへ表示された金額を送金してください。アクセスはオンチェーンでの支払い確認後にのみ付与されます。",
+        "networkLabel": "ネットワーク",
+        "expiryLabel": "有効期限"
+      },
+      "bank": {
+        "settlementNote": "銀行振込の決済には1〜3営業日かかる場合があります。アクセスは振込確認後にのみ付与されます。",
+        "createInstruction": "振込手順を取得",
+        "pendingTitle": "振込をお待ちしています",
+        "pendingDesc": "上記の参照番号を付けて表示された金額を送金してください。各振込は手動で確認されるため、アクセス付与に少し時間がかかる場合があります。",
+        "notPaidNotice": "この手順を生成しても支払い済みにはなりません。",
+        "expiryLabel": "有効期限"
+      },
+      "notices": {
+        "confirmed": "サーバーが支払いを確認しました。オンボーディングへ進めます。",
+        "pending": "支払いを登録しました。プロバイダーの確認を待っています。",
+        "webhookDelayed": "支払いを受け付けました。プロバイダーの確認を待っています。このページは自動的に更新されます。",
+        "failed": "支払いに失敗したか拒否されました。アクセスは付与されていません。もう一度お試しください。",
+        "expired": "このチェックアウトセッションは期限切れです。新しいチェックアウトを開始してください。",
+        "manualReview": "この支払いは手動審査が必要です。アクセス付与前に当社チームが確認します。"
+      },
+      "errors": {
+        "generic": "支払いを開始できませんでした。もう一度お試しください。",
+        "providerUnavailable": "この支払い方法は現在ご利用いただけません。別の方法を選択するか、サポートにお問い合わせください。",
+        "rateLimited": "試行回数が多すぎます。少し待ってから再度お試しください。",
+        "duplicateCheckout": "このプランのチェックアウトがすでに進行中です。新しく開始する前にステータスを確認してください。",
+        "sessionExpired": "セッションが期限切れです。再度サインインして続行してください。",
+        "unsupportedCurrency": "この通貨はサポートされていません。支払いは USD で請求されます。",
+        "unsupportedMethod": "このプランではこの支払い方法を利用できません。",
+        "invalidAddress": "一部の請求情報が無効です。強調表示された項目を確認してください。",
+        "invalidEmail": "有効なメールアドレスを入力してください。"
+      }
+    },
     checkoutBilling: {
       title: "請求情報",
       description: "プロフィールから自動入力されています。今回の購入のために編集できます。領収書に表示されます。",
@@ -14910,6 +15540,76 @@ const arTranslation = {
       fixErrors: "يرجى تصحيح الحقول المميزة.",
       saveError: "تعذر حفظ بياناتك. حاول مرة أخرى.",
       detailsSaved: "تم حفظ البيانات بنجاح.",
+    },
+    checkoutPage: {
+      "eyebrow": "دفع آمن",
+      "title": "أكمل اشتراكك",
+      "subtitle": "راجع خطتك، وأكد بياناتك، واختر طريقة الدفع.",
+      "planLabel": "الخطة",
+      "intervalLabel": "دورة الفوترة",
+      "currencyLabel": "العملة",
+      "recurringDisclosure": "اشتراك شهري متكرر. يتم تجديد خطتك كل شهر بالمبلغ الموضح حتى تقوم بالإلغاء.",
+      "changePlan": "تغيير الخطة",
+      "customerTitle": "بيانات العميل",
+      "requiredNote": "الحقول المميزة بـ * مطلوبة.",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "email": "البريد الإلكتروني",
+      "missingFieldsNote": "بعض البيانات مفقودة. أكمل الحقول المطلوبة للمتابعة.",
+      "methodsDesc": "اختر كيفية الدفع. يعتمد التوفر على بلدك وعملتك ومزود الدفع.",
+      "copy": "نسخ",
+      "confirmedCta": "المتابعة إلى الإعداد",
+      "configUnavailable": "تعذر تحميل توفر الدفع. سيؤكد المزود التوفر عند المتابعة.",
+      "serverTruthNote": "يتم تأكيد الخطة والسعر والعملة وحالة الدفع من الخادم. إعادة التوجيه في المتصفح لا تمنح الوصول أبدًا.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "لم يتم إعداد مدفوعات البطاقات بعد.",
+          "crypto_not_configured": "لم يتم إعداد أي شبكة عملات رقمية بعد.",
+          "bank_not_configured": "لم يتم إعداد التحويل البنكي بعد.",
+          "providerUnavailable": "هذه الطريقة غير متاحة الآن."
+        }
+      },
+      "card": {
+        "secureNote": "ستنتقل إلى الصفحة الآمنة المستضافة لدى Stripe. لا ترى Braxel رقم بطاقتك ولا تخزنه أبدًا.",
+        "continue": "المتابعة إلى الدفع الآمن"
+      },
+      "crypto": {
+        "assetLabel": "الأصل والشبكة",
+        "wrongNetworkWarning": "أرسل فقط على الشبكة المحددة. الإرسال على الشبكة الخاطئة قد يؤدي إلى فقدان الأموال بشكل دائم.",
+        "createInstruction": "الحصول على تعليمات الإيداع",
+        "noConfiguredAsset": "لا يوجد أصل رقمي مُعد. اختر طريقة أخرى أو تواصل مع الدعم.",
+        "pendingTitle": "بانتظار تحويلك",
+        "pendingDesc": "أرسل المبلغ الموضح إلى العنوان أعلاه. لا يُمنح الوصول إلا بعد التحقق من الدفع على الشبكة.",
+        "networkLabel": "الشبكة",
+        "expiryLabel": "تنتهي في"
+      },
+      "bank": {
+        "settlementNote": "قد يستغرق التحويل البنكي من يوم إلى ثلاثة أيام عمل للتسوية. لا يُمنح الوصول إلا بعد التحقق من التحويل.",
+        "createInstruction": "الحصول على تعليمات التحويل",
+        "pendingTitle": "بانتظار تحويلك",
+        "pendingDesc": "أرسل المبلغ الموضح مع المرجع أعلاه. يتم التحقق من كل تحويل يدويًا، لذا قد يستغرق الوصول وقتًا أطول قليلًا.",
+        "notPaidNotice": "إنشاء هذه التعليمات لا يعني أن الدفع قد تم.",
+        "expiryLabel": "تنتهي في"
+      },
+      "notices": {
+        "confirmed": "تم تأكيد الدفع من الخادم. يمكنك المتابعة إلى الإعداد.",
+        "pending": "تم تسجيل الدفع. ننتظر تأكيد المزود.",
+        "webhookDelayed": "تم استلام الدفع. ننتظر تأكيد المزود؛ يتم تحديث هذه الصفحة تلقائيًا.",
+        "failed": "فشل الدفع أو تم رفضه. لم يُمنح الوصول. يمكنك المحاولة مرة أخرى.",
+        "expired": "انتهت صلاحية جلسة الدفع هذه. ابدأ عملية دفع جديدة للمتابعة.",
+        "manualReview": "يتطلب هذا الدفع مراجعة يدوية. سيتحقق فريقنا منه قبل منح الوصول."
+      },
+      "errors": {
+        "generic": "تعذر بدء الدفع. يرجى المحاولة مرة أخرى.",
+        "providerUnavailable": "طريقة الدفع هذه غير متاحة الآن. اختر طريقة أخرى أو تواصل مع الدعم.",
+        "rateLimited": "محاولات كثيرة جدًا. يرجى الانتظار قليلًا والمحاولة مرة أخرى.",
+        "duplicateCheckout": "توجد عملية دفع قيد التنفيذ لهذه الخطة بالفعل. تحقق من حالتها قبل بدء أخرى.",
+        "sessionExpired": "انتهت صلاحية جلستك. سجّل الدخول مرة أخرى للمتابعة.",
+        "unsupportedCurrency": "هذه العملة غير مدعومة. يتم تحصيل الدفع بالدولار الأمريكي.",
+        "unsupportedMethod": "طريقة الدفع هذه غير مدعومة لهذه الخطة.",
+        "invalidAddress": "بعض بيانات الفوترة غير صالحة. راجع الحقول المميزة.",
+        "invalidEmail": "أدخل بريدًا إلكترونيًا صالحًا."
+      }
     },
     checkoutBilling: {
       title: "بيانات الفوترة",
@@ -16566,6 +17266,76 @@ const heTranslation = {
       fixErrors: "אנא תקן את השדות המסומנים.",
       saveError: "לא ניתן לשמור את הפרטים שלך. נסה שוב.",
       detailsSaved: "הפרטים נשמרו בהצלחה.",
+    },
+    checkoutPage: {
+      "eyebrow": "תשלום מאובטח",
+      "title": "השלמת המנוי",
+      "subtitle": "עיינו בתוכנית, אשרו את הפרטים ובחרו אמצעי תשלום.",
+      "planLabel": "תוכנית",
+      "intervalLabel": "מחזור חיוב",
+      "currencyLabel": "מטבע",
+      "recurringDisclosure": "מנוי חודשי מתחדש. התוכנית מתחדשת בכל חודש בסכום המוצג עד לביטול.",
+      "changePlan": "שינוי תוכנית",
+      "customerTitle": "פרטי הלקוח",
+      "requiredNote": "שדות המסומנים ב-* הם שדות חובה.",
+      "firstName": "שם פרטי",
+      "lastName": "שם משפחה",
+      "email": "דואר אלקטרוני",
+      "missingFieldsNote": "חסרים פרטים. השלימו את שדות החובה כדי להמשיך.",
+      "methodsDesc": "בחרו כיצד לשלם. הזמינות תלויה במדינה, במטבע ובספק התשלומים.",
+      "copy": "העתקה",
+      "confirmedCta": "המשך לתהליך ההצטרפות",
+      "configUnavailable": "לא ניתן היה לטעון את זמינות התשלומים. הספק יאשר את הזמינות בהמשך.",
+      "serverTruthNote": "התוכנית, המחיר, המטבע ומצב התשלום מאושרים על ידי השרת. הפניה בדפדפן לעולם אינה מעניקה גישה.",
+      "methods": {
+        "reasons": {
+          "card_not_configured": "תשלומי כרטיס עדיין אינם מוגדרים.",
+          "crypto_not_configured": "לא הוגדרה עדיין רשת קריפטו.",
+          "bank_not_configured": "העברה בנקאית עדיין אינה מוגדרת.",
+          "providerUnavailable": "אמצעי זה אינו זמין כעת."
+        }
+      },
+      "card": {
+        "secureNote": "תמשיכו לדף המאובטח המתארח ב-Stripe. Braxel אינה רואה ואינה שומרת את מספר הכרטיס שלכם.",
+        "continue": "המשך לתשלום בכרטיס מאובטח"
+      },
+      "crypto": {
+        "assetLabel": "נכס ורשת",
+        "wrongNetworkWarning": "שלחו רק ברשת שנבחרה. שליחה ברשת שגויה עלולה לגרום לאובדן כספים לצמיתות.",
+        "createInstruction": "קבלת הוראות הפקדה",
+        "noConfiguredAsset": "לא הוגדר נכס קריפטו. בחרו אמצעי אחר או פנו לתמיכה.",
+        "pendingTitle": "ממתין להעברה שלכם",
+        "pendingDesc": "שלחו את הסכום המוצג לכתובת שלמעלה. הגישה ניתנת רק לאחר אימות התשלום ברשת.",
+        "networkLabel": "רשת",
+        "expiryLabel": "בתוקף עד"
+      },
+      "bank": {
+        "settlementNote": "העברות בנקאיות עשויות להימשך בין יום לשלושה ימי עסקים. הגישה ניתנת רק לאחר אימות ההעברה.",
+        "createInstruction": "קבלת הוראות העברה",
+        "pendingTitle": "ממתין להעברה שלכם",
+        "pendingDesc": "שלחו את הסכום המוצג עם האסמכתה שלמעלה. כל העברה נבדקת ידנית, ולכן הגישה עשויה להימשך זמן רב יותר.",
+        "notPaidNotice": "יצירת ההוראות הללו אינה מסמנת את התשלום כשולם.",
+        "expiryLabel": "בתוקף עד"
+      },
+      "notices": {
+        "confirmed": "התשלום אושר על ידי השרת. ניתן להמשיך לתהליך ההצטרפות.",
+        "pending": "התשלום נרשם. אנו ממתינים לאישור הספק.",
+        "webhookDelayed": "התשלום התקבל. אנו ממתינים לאישור הספק; הדף מתעדכן אוטומטית.",
+        "failed": "התשלום נכשל או נדחה. לא ניתנה גישה. ניתן לנסות שוב.",
+        "expired": "פג תוקף הפעולה. התחילו תשלום חדש כדי להמשיך.",
+        "manualReview": "תשלום זה דורש בדיקה ידנית. הצוות שלנו יאמת אותו לפני מתן גישה."
+      },
+      "errors": {
+        "generic": "לא הצלחנו להתחיל את התשלום. נסו שוב.",
+        "providerUnavailable": "אמצעי תשלום זה אינו זמין כעת. בחרו אמצעי אחר או פנו לתמיכה.",
+        "rateLimited": "יותר מדי ניסיונות. המתינו רגע ונסו שוב.",
+        "duplicateCheckout": "כבר מתבצע תשלום עבור תוכנית זו. בדקו את מצבו לפני התחלת תשלום נוסף.",
+        "sessionExpired": "פג תוקף ההפעלה. התחברו מחדש כדי להמשיך.",
+        "unsupportedCurrency": "מטבע זה אינו נתמך. התשלום נגבה ב-USD.",
+        "unsupportedMethod": "אמצעי תשלום זה אינו נתמך עבור תוכנית זו.",
+        "invalidAddress": "חלק מפרטי החיוב אינם תקינים. בדקו את השדות המסומנים.",
+        "invalidEmail": "הזינו כתובת דואר אלקטרוני תקינה."
+      }
     },
     checkoutBilling: {
       title: "פרטי חיוב",

@@ -39,3 +39,9 @@ verify_jwt = false
 # request body. Kept explicit so a future config edit cannot make it public.
 [functions.account-link]
 verify_jwt = true
+
+# checkout-config reports which payment methods and crypto networks the backend
+# can actually service. It contains no secret and no user data, but only a
+# signed-in customer opens the checkout, so it always requires a JWT.
+[functions.checkout-config]
+verify_jwt = true

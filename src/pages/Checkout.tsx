@@ -1,116 +1,65 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
-import {
-  ShieldCheck,
-  ArrowLeft,
-  Loader2,
-  CheckCircle2,
-  ShieldAlert,
-  Building2,
-  Bitcoin,
-  Lock,
-  CreditCard,
-} from "lucide-react";
-import { functionsUrl, supabase, isSupabaseConfigured } from "@/integrations/supabase/client";
-import { showError } from "@/utils/toast";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { ArrowLeft, Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { useTranslation } from "react-i18next";
-import { CheckoutStatusBadge } from "@/components/CheckoutStatusBadge";
-import { usePaymentStatus } from "@/hooks/usePaymentStatus";
+import CheckoutStatusBadge from "@/components/CheckoutStatusBadge";
 import { PaymentsDisabledNotice } from "@/components/PaymentsDisabledNotice";
+import CheckoutNotice from "@/components/checkout/CheckoutNotice";
+import PlanSummaryCard from "@/components/checkout/PlanSummaryCard";
+import CheckoutCustomerForm from "@/components/checkout/CheckoutCustomerForm";
+import PaymentMethodSelector from "@/components/checkout/PaymentMethodSelector";
+import CardPaymentPanel from "@/components/checkout/CardPaymentPanel";
+import CryptoPaymentPanel from "@/components/checkout/CryptoPaymentPanel";
+import BankTransferPanel from "@/components/checkout/BankTransferPanel";
+import { functionsUrl, isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import { notifyOwner } from "@/lib/notifyOwner";
-import { formatUsd, PLAN_PRICING } from "@/lib/plans";
+import { PLAN_PRICING } from "@/lib/plans";
 import { isPaymentsEnabled, isTestPaymentMode } from "@/lib/paymentsFlag";
-import CheckoutBillingForm, { type BillingDetails } from "@/components/checkout/CheckoutBillingForm";
 import { fetchProfile, saveProfile } from "@/lib/profile";
+import { usePaymentStatus, type CheckoutPaymentStatus } from "@/hooks/usePaymentStatus";
 import {
-  hasProfileErrors,
-  normalizeProfile,
-  toProfileFields,
-  validateProfile,
-  type ProfileErrors,
-} from "@/lib/profileValidation";
-
-const EMPTY_BILLING: BillingDetails = {
-  email: "",
-  fullName: "",
-  phoneCountryCode: "",
-  phone: "",
-  country: "",
-  street: "",
-  number: "",
-  complement: "",
-  city: "",
-  state: "",
-  postalCode: "",
-};
-
-export type CheckoutPaymentStatus =
-  | "created"
-  | "pending"
-  | "processing"
-  | "confirmed"
-  | "failed"
-  | "rejected"
-  | "refunded"
-  | "disputed"
-  | "canceled"
-  | "pending_manual";
-
-interface CheckoutResponse {
-  ok: boolean;
-  mode?: string;
-  reason?: string;
-  test_mode?: boolean;
-  payment: {
-    id: string;
-    status: CheckoutPaymentStatus;
-    plan_id: string;
-    plan_name: string;
-    amount_cents: number;
-    currency: string | null;
-    network?: string | null;
-    created?: boolean;
-    is_test?: boolean;
-  } | null;
-  bank_details?: {
-    holder_name: string;
-    bank_name: string;
-    account_number: string;
-    routing_number: string;
-    swift: string;
-    reference: string;
-  } | null;
-  deposit_address?: string;
-  warnings?: string[];
-  url?: string; // For Stripe checkout
-  pending_payment_id?: string; // For Stripe checkout
-}
+  checkoutErrorKey,
+  configuredCryptoNetworks,
+  defaultMethod,
+  EMPTY_CHECKOUT_CUSTOMER,
+  fetchCheckoutConfig,
+  paymentStatusNotice,
+  prefillCheckoutCustomer,
+  resolveMethodAvailability,
+  toBillingPayload,
+  validateCheckoutCustomer,
+  type CheckoutBillingPayload,
+  type CheckoutConfig,
+  type CheckoutCustomerFields,
+  type CheckoutErrors,
+  type CheckoutFieldKey,
+  type CheckoutMethodId,
+  type CheckoutResponse,
+} from "@/lib/checkout";
 
 interface ApplicationRecord {
   id: string;
   user_id: string;
   plan_key: string;
   plan_name?: string | null;
-  status?: string | null;
-  amount_cents?: number | null;
-  currency?: string | null;
   email?: string | null;
-  full_name?: string | null;
 }
 
-const CRYPTO_NETWORKS = [
-  { id: "BTC", symbol: "BTC", name: "Bitcoin (BTC)" },
-  { id: "TRC20", symbol: "USDT", name: "TRON (TRC20)" },
-  { id: "ETH", symbol: "ETH", name: "Ethereum (ERC20)" },
-  { id: "BNB", symbol: "BNB", name: "BNB Chain (BEP20)" },
-  { id: "POLYGON", symbol: "MATIC", name: "Polygon (MATIC)" },
-  { id: "SOL", symbol: "SOL", name: "Solana (SOL)" },
-] as const;
+class CheckoutCallError extends Error {
+  code: string;
+  paymentId: string | null;
+  constructor(code: string, paymentId: string | null = null) {
+    super(code);
+    this.name = "CheckoutCallError";
+    this.code = code;
+    this.paymentId = paymentId;
+  }
+}
 
 function newIdempotencyKey(): string {
   const buf = new Uint8Array(12);
@@ -118,46 +67,81 @@ function newIdempotencyKey(): string {
   return Array.from(buf, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function resolvePlanKey(plan: unknown): string | null {
+  if (!plan || typeof plan !== "object") return null;
+  const candidate = plan as { id?: unknown; plan_key?: unknown };
+  const key = typeof candidate.id === "string"
+    ? candidate.id
+    : typeof candidate.plan_key === "string"
+    ? candidate.plan_key
+    : null;
+  return key && key in PLAN_PRICING ? key : null;
+}
+
+const BADGE_STATUSES: CheckoutPaymentStatus[] = [
+  "created",
+  "pending",
+  "processing",
+  "confirmed",
+  "failed",
+  "rejected",
+  "refunded",
+  "disputed",
+  "canceled",
+  "pending_manual",
+];
+
+/** The badge only accepts canonical statuses; unknown provider values are ignored. */
+function badgeStatus(value: string | null | undefined): CheckoutPaymentStatus | null {
+  return value && (BADGE_STATUSES as string[]).includes(value)
+    ? (value as CheckoutPaymentStatus)
+    : null;
+}
+
+const FIELD_ELEMENT_IDS: Partial<Record<CheckoutFieldKey, string>> = {
+  firstName: "checkout-firstName",
+  lastName: "checkout-lastName",
+  email: "checkout-email",
+  phoneCountryCode: "checkout-phoneCountryCode",
+  phone: "checkout-phone",
+  country: "checkout-country",
+  street: "checkout-street",
+  number: "checkout-number",
+  complement: "checkout-complement",
+  city: "checkout-city",
+  state: "checkout-state",
+  postalCode: "checkout-postalCode",
+};
+
 const Checkout = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<{ id: string; email?: string | null } | null>(null);
-  const [showCrypto, setShowCrypto] = useState(false);
-  const [showWise, setShowWise] = useState(false);
-  const [showStripe, setShowStripe] = useState(false);
-  const [wiseConfirmed, setWiseConfirmed] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  // Guard against double-submits (rapid clicks / slow network). A single
-  // idempotency key plus a single "creating" confirmation makes the checkout
-  // intent creation atomic from the user's point of view.
-  const [creating, setCreating] = useState(false);
-  const [wiseResponse, setWiseResponse] = useState<CheckoutResponse | null>(null);
-  const [cryptoResponse, setCryptoResponse] = useState<CheckoutResponse | null>(null);
-  const [stripeResponse, setStripeResponse] = useState<CheckoutResponse | null>(null);
-  const [submitError, setSubmitError] = useState<string | null>(null);
-  const [paymentId, setPaymentId] = useState<string | null>(null);
-  const [application, setApplication] = useState<ApplicationRecord | null>(null); // Application data
-
-  // Billing details, pre-filled from the profile and editable for this purchase.
-  const [billing, setBilling] = useState<BillingDetails>(EMPTY_BILLING);
-  const [billingErrors, setBillingErrors] = useState<ProfileErrors>({});
-  const [updateProfileWithBilling, setUpdateProfileWithBilling] = useState(false);
-
-  const selectedCryptoIdRef = useRef<string>("BTC");
-  const wiseKeyRef = useRef<string | null>(null);
-  const cryptoKeyRef = useRef<string | null>(null);
-  const stripeKeyRef = useRef<string | null>(null);
-
-  // Get applicationId from location.state (set by RegisterApplication page)
-  const applicationId = location.state?.applicationId;
-
-  // Production gate. Single source of truth: src/lib/paymentsFlag.ts.
-  // When neither flag is on, render PaymentsDisabledNotice.
   const testMode = isTestPaymentMode();
   const paymentsEnabled = isPaymentsEnabled();
+
+  const [loading, setLoading] = useState(true);
+  const [application, setApplication] = useState<ApplicationRecord | null>(null);
+  const [fields, setFields] = useState<CheckoutCustomerFields>(EMPTY_CHECKOUT_CUSTOMER);
+  const [errors, setErrors] = useState<CheckoutErrors>({});
+  const [updateProfile, setUpdateProfile] = useState(false);
+  const [initialIncomplete, setInitialIncomplete] = useState(false);
+
+  const [config, setConfig] = useState<CheckoutConfig | null>(null);
+  const [configUnavailable, setConfigUnavailable] = useState(false);
+  const [method, setMethod] = useState<CheckoutMethodId | null>(null);
+  const [cryptoNetwork, setCryptoNetwork] = useState<string | null>(null);
+
+  const [busyMethod, setBusyMethod] = useState<CheckoutMethodId | null>(null);
+  const [responses, setResponses] = useState<Partial<Record<CheckoutMethodId, CheckoutResponse>>>({});
+  const [methodErrors, setMethodErrors] = useState<Partial<Record<CheckoutMethodId, string>>>({});
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [paymentId, setPaymentId] = useState<string | null>(null);
+
+  const keysRef = useRef<Partial<Record<CheckoutMethodId, string>>>({});
+  const stateApplicationId = (location.state as { applicationId?: string } | null)?.applicationId;
+  const statePlan = (location.state as { plan?: unknown } | null)?.plan;
 
   const { view: serverStatus } = usePaymentStatus(
     paymentsEnabled ? paymentId : null,
@@ -165,310 +149,327 @@ const Checkout = () => {
   );
 
   useEffect(() => {
-    if (!applicationId) {
-      // If no applicationId, redirect to pre-registration page
-      navigate("/register-application", { state: { plan: location.state?.plan } });
-      return;
-    }
     if (!isSupabaseConfigured()) {
-      // Public fail-closed state: render PaymentsDisabledNotice instead of
-      // crashing on an unconfigured Supabase client (matches the existing
-      // public-pages-when-unset pattern).
       setLoading(false);
       return;
     }
-    const checkUserAndApplication = async () => {
+
+    let cancelled = false;
+    const load = async () => {
       const { data: { user: authUser } } = await supabase.auth.getUser();
-      setUser(authUser);
-
-      // Fetch the application data to verify ownership and get plan details
-      const { data: appData, error: appError } = await supabase
-        .from("applications")
-        .select("*, plan_key")
-        .eq("id", applicationId)
-        .eq("user_id", authUser?.id)
-        .single();
-
-      if (appError || !appData) {
-        // If application not found or not owned by user, redirect to pre-registration
-        navigate("/register-application");
+      if (cancelled) return;
+      if (!authUser) {
+        navigate("/login", { state: { from: { pathname: "/checkout" } } });
         return;
       }
 
-      // Check if plan_key is present
-      if (!appData.plan_key) {
-        // If plan_key is missing, redirect to pre-registration
-        navigate("/register-application");
-        return;
+      // Resolve the application that carries the selected plan. A direct visit
+      // may pass only the plan key, so fall back to the customer's most recent
+      // application for that plan (owner-scoped by RLS).
+      let app: ApplicationRecord | null = null;
+      if (stateApplicationId) {
+        const { data, error } = await supabase
+          .from("applications")
+          .select("id, user_id, plan_key, plan_name, email")
+          .eq("id", stateApplicationId)
+          .eq("user_id", authUser.id)
+          .maybeSingle();
+        if (!error && data) app = data as ApplicationRecord;
+      } else {
+        const planKey = resolvePlanKey(statePlan) ??
+          new URLSearchParams(location.search).get("plan");
+        if (planKey) {
+          const { data, error } = await supabase
+            .from("applications")
+            .select("id, user_id, plan_key, plan_name, email")
+            .eq("user_id", authUser.id)
+            .eq("plan_key", planKey)
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (!error && data) app = data as ApplicationRecord;
+        }
       }
 
-      setApplication(appData);
+      if (cancelled) return;
+      if (!app) {
+        navigate("/register-application", { state: { plan: statePlan } });
+        return;
+      }
+      setApplication(app);
 
-      // Load the profile and pre-fill the billing details. If step 2 was never
-      // finished, send the customer to complete it before checkout.
+      let profileRaw: Record<string, unknown> | null = null;
       try {
-        const profile = authUser ? await fetchProfile(authUser.id) : null;
+        const profile = await fetchProfile(authUser.id);
         if (profile && profile.profileCompleted === false) {
           navigate("/complete-profile", { state: { from: "/checkout" } });
           return;
         }
-        const base = profile ? toProfileFields(profile.raw) : EMPTY_BILLING;
-        setBilling({
-          ...EMPTY_BILLING,
-          ...base,
-          fullName: base.fullName || (authUser?.user_metadata?.full_name as string) || "",
-          email: authUser?.email ?? "",
-        });
+        profileRaw = profile?.raw ?? null;
       } catch (profileErr) {
         // Fail open: a profile read error must not block a paying customer.
         console.error("Checkout profile prefill failed:", profileErr);
-        setBilling((prev) => ({ ...prev, email: authUser?.email ?? "" }));
       }
+      if (cancelled) return;
 
+      const prefilled = prefillCheckoutCustomer({
+        profile: profileRaw,
+        application: app as unknown as Record<string, unknown>,
+        authEmail: authUser.email,
+        authFullName: (authUser.user_metadata?.full_name as string) ?? null,
+      });
+      setFields(prefilled);
+      setInitialIncomplete(!validateCheckoutCustomer(prefilled).ok);
       setLoading(false);
     };
-    checkUserAndApplication();
-  }, [applicationId, navigate]);
 
-  const handleBillingChange = (field: keyof BillingDetails, value: string) => {
-    setBilling((prev) => ({ ...prev, [field]: value }));
-    setBillingErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
-  };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [location.search, navigate, stateApplicationId, statePlan]);
 
-  // Validate the billing details and, when requested, persist them to the
-  // profile. Returns the normalized values to send to the server, or null when
-  // something is invalid (the caller stops the payment).
-  const prepareBilling = async (): Promise<BillingDetails | null> => {
-    const validation = validateProfile(billing);
-    setBillingErrors(validation);
-    if (hasProfileErrors(validation)) {
-      setSubmitError(t("checkoutBilling.incomplete"));
-      return null;
-    }
-    const normalized = { ...normalizeProfile(billing), email: billing.email.trim() };
-    if (updateProfileWithBilling) {
-      try {
-        await saveProfile(normalized);
-      } catch (err) {
-        console.error("Profile update from checkout failed:", err);
-      }
-    }
-    return normalized;
-  };
+  // Provider availability is server-driven. When the endpoint is unreachable we
+  // keep every method selectable; the payment functions still enforce the real
+  // destination and fail closed, so no unsupported payment can be created.
+  useEffect(() => {
+    if (!paymentsEnabled) return;
+    let cancelled = false;
+    (async () => {
+      const fetched = await fetchCheckoutConfig();
+      if (cancelled) return;
+      setConfig(fetched);
+      setConfigUnavailable(fetched === null);
+      setMethod((current) => {
+        if (current && resolveMethodAvailability(fetched, current).available) return current;
+        return defaultMethod(fetched) ?? current ?? "card";
+      });
+      const networks = configuredCryptoNetworks(fetched);
+      setCryptoNetwork((current) =>
+        current && networks.some((n) => n.id === current) ? current : networks[0]?.id ?? null
+      );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [paymentsEnabled]);
 
-  // Get the plan key from the application data. Only a key present in the
-  // canonical table is accepted — this avoids silently showing the Starter
-  // price for an unknown key while the server would reject the checkout.
-  const rawPlanKey = application?.plan_key;
-  const planKey = rawPlanKey && rawPlanKey in PLAN_PRICING ? rawPlanKey : null;
+  const planKey = application && application.plan_key in PLAN_PRICING
+    ? application.plan_key
+    : null;
   const planIsKnown = planKey !== null;
 
-  // The amount due is always USD and comes from the shared plan table, so the
-  // checkout total matches the pricing page exactly. The server
-  // (supabase/functions/_shared/plans.ts) is the source of truth for what is
-  // actually charged.
-  const enhancedPlan = planKey
-    ? {
-        id: planKey,
-        // Prefer the plan name stored on the application (created by the
-        // server); fall back to the localized plan label, then to title-case.
-        name: application?.plan_name ||
-          t(`plans.${planKey}`, {
-            defaultValue:
-              planKey.charAt(0).toUpperCase() + planKey.slice(1).toLowerCase(),
-          }),
-        price: PLAN_PRICING[planKey].monthlyUsd,
-        features: [],
-      }
+  const enhancedPlan = useMemo(() => {
+    if (!planKey) return null;
+    return {
+      id: planKey,
+      name: application?.plan_name ||
+        t(`plans.${planKey}`, {
+          defaultValue: planKey.charAt(0).toUpperCase() + planKey.slice(1),
+        }),
+      amountUsd: PLAN_PRICING[planKey].monthlyUsd,
+    };
+  }, [application?.plan_name, planKey, t]);
+
+  const statusNotice = serverStatus
+    ? paymentStatusNotice(serverStatus.status, method)
     : null;
+  const confirmed = serverStatus?.status === "confirmed";
+  const availableNetworks = configuredCryptoNetworks(config);
 
-  const formattedPrice = formatUsd(enhancedPlan?.price ?? 0);
-
-  const handleBack = () => {
-    setShowCrypto(false);
-    setShowWise(false);
-    setShowStripe(false);
-    setWiseConfirmed(false);
-    setWiseResponse(null);
-    setCryptoResponse(null);
-    setStripeResponse(null);
-    setPaymentId(null);
+  const handleFieldChange = (field: CheckoutFieldKey, value: string) => {
+    setFields((prev) => ({ ...prev, [field]: value }));
+    setErrors((prev) => (prev[field] ? { ...prev, [field]: undefined } : prev));
   };
 
-  async function callEdgeFunction(
-    fn: "wise-checkout" | "crypto-checkout" | "stripe-checkout",
-    body: Record<string, unknown>,
-  ): Promise<CheckoutResponse> {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session?.access_token) throw new Error("unauthorized");
-    const res = await fetch(
-      functionsUrl(fn),
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify(body),
+  const focusFirstError = (nextErrors: CheckoutErrors) => {
+    const firstKey = Object.keys(nextErrors)[0] as CheckoutFieldKey | undefined;
+    const elementId = firstKey ? FIELD_ELEMENT_IDS[firstKey] : undefined;
+    if (elementId) document.getElementById(elementId)?.focus();
+  };
+
+  const prepareBilling = async (): Promise<CheckoutBillingPayload | null> => {
+    const validation = validateCheckoutCustomer(fields);
+    setErrors(validation.errors);
+    if (!validation.ok) {
+      setSubmitError(t("checkoutPage.errors.invalidAddress"));
+      focusFirstError(validation.errors);
+      return null;
+    }
+    if (updateProfile) {
+      try {
+        await saveProfile({ ...validation.value, fullName: validation.fullName });
+      } catch (profileErr) {
+        console.error("Profile update from checkout failed:", profileErr);
       }
-    );
+    }
+    return toBillingPayload(validation.value, validation.fullName);
+  };
+
+  const callEdgeFunction = async (
+    fn: "stripe-checkout" | "crypto-checkout" | "wise-checkout",
+    body: Record<string, unknown>,
+  ): Promise<CheckoutResponse> => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) throw new CheckoutCallError("unauthorized");
+    const res = await fetch(functionsUrl(fn), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
+    });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error(json?.error ?? `http_${res.status}`);
+      throw new CheckoutCallError(
+        typeof json?.error === "string" ? json.error : `http_${res.status}`,
+        typeof json?.payment_id === "string" ? json.payment_id : null,
+      );
     }
     return json as CheckoutResponse;
-  }
+  };
 
-  // Normalize an edge-function failure into a localized, user-safe message.
-  // The raw error code is sent to the owner notification, never shown raw.
-  const handleCheckoutError = async (
-    method: "wise" | "crypto" | "stripe",
-    e: unknown,
-  ) => {
-    const code = e instanceof Error ? e.message : String(e);
-    setSubmitError(
-      code === "payment_destination_unconfigured"
-        ? t("checkout.notConfigured")
-        : t("checkout.startFailed"),
-    );
+  const handleCheckoutError = async (which: CheckoutMethodId, err: unknown) => {
+    const code = err instanceof CheckoutCallError
+      ? err.code
+      : err instanceof Error
+      ? err.message
+      : "unknown";
+    setMethodErrors((prev) => ({ ...prev, [which]: t(checkoutErrorKey(code)) }));
+    if (err instanceof CheckoutCallError && err.paymentId) {
+      setPaymentId(err.paymentId);
+    }
     await notifyOwner({
       type: "erro",
       subject: "Falha ao iniciar checkout",
-      replyTo: application?.email,
+      replyTo: application?.email ?? null,
       data: {
         plano: application?.plan_key,
         email: application?.email,
-        metodo: method,
+        metodo: which,
         erro: code,
         origem: "checkout",
       },
     });
   };
 
-  const handleWiseSubmit = async () => {
-    if (!wiseConfirmed) {
-      showError(t("checkout.wiseConfirmRequired"));
-      return;
-    }
-    // Re-entrancy guard: one in-flight creation at a time.
-    if (!application || creating) return;
-    setCreating(true);
-    setProcessing(true);
-    setSubmitError(null);
-    try {
-      const bill = await prepareBilling();
-      if (!bill) return;
-      if (!wiseKeyRef.current) wiseKeyRef.current = newIdempotencyKey();
-      const res = await callEdgeFunction("wise-checkout", {
-        planId: application.plan_key, // Use the plan_key from the application
-        currency: "USD", // server enforces USD; declared explicitly
-        idempotencyKey: wiseKeyRef.current,
-        isTest: testMode,
-        billing: bill,
-      });
-      setWiseResponse(res);
-      if (res.payment?.id) setPaymentId(res.payment.id);
-    } catch (e: unknown) {
-      await handleCheckoutError("wise", e);
-    } finally {
-      setProcessing(false);
-      setCreating(false);
-    }
+  const idempotencyKey = (which: CheckoutMethodId): string => {
+    if (!keysRef.current[which]) keysRef.current[which] = newIdempotencyKey();
+    return keysRef.current[which] as string;
   };
 
-  const handleCryptoSubmit = async () => {
-    if (!application || creating) return;
-    setCreating(true);
-    setProcessing(true);
+  const beginCheckout = (which: CheckoutMethodId) => {
+    setBusyMethod(which);
     setSubmitError(null);
-    try {
-      const bill = await prepareBilling();
-      if (!bill) return;
-      if (!cryptoKeyRef.current) cryptoKeyRef.current = newIdempotencyKey();
-      const res = await callEdgeFunction("crypto-checkout", {
-        planId: application.plan_key,
-        currency: "USD",
-        network: selectedCryptoIdRef.current,
-        idempotencyKey: cryptoKeyRef.current,
-        isTest: testMode,
-        billing: bill,
-      });
-      setCryptoResponse(res);
-      if (res.payment?.id) setPaymentId(res.payment.id);
-    } catch (e: unknown) {
-      await handleCheckoutError("crypto", e);
-    } finally {
-      setProcessing(false);
-      setCreating(false);
-    }
+    setMethodErrors((prev) => ({ ...prev, [which]: undefined }));
   };
 
-  const handleStripeSubmit = async () => {
-    if (!application || creating) return;
-    setCreating(true);
-    setProcessing(true);
-    setSubmitError(null);
+  const handleCard = async () => {
+    if (!application || busyMethod) return;
+    beginCheckout("card");
     try {
-      const bill = await prepareBilling();
-      if (!bill) return;
-      if (!stripeKeyRef.current) stripeKeyRef.current = newIdempotencyKey();
-      // The application id is required: the server re-derives the plan from
-      // the stored application and verifies ownership. The browser never
-      // declares the price.
+      const billing = await prepareBilling();
+      if (!billing) return;
       const res = await callEdgeFunction("stripe-checkout", {
         planId: application.plan_key,
         applicationId: application.id,
         currency: "USD",
-        idempotencyKey: stripeKeyRef.current,
+        idempotencyKey: idempotencyKey("card"),
         isTest: testMode,
-        billing: bill,
+        billing,
       });
-      setStripeResponse(res);
-      if (res.pending_payment_id) {
-        setPaymentId(res.pending_payment_id);
-      }
-      // Redirect to Stripe Checkout
+      setResponses((prev) => ({ ...prev, card: res }));
+      if (res.pending_payment_id) setPaymentId(res.pending_payment_id);
       if (res.url) {
         window.location.href = res.url;
+      } else {
+        setMethodErrors((prev) => ({ ...prev, card: t("checkoutPage.errors.generic") }));
       }
-    } catch (e: unknown) {
-      await handleCheckoutError("stripe", e);
+    } catch (err) {
+      await handleCheckoutError("card", err);
     } finally {
-      setProcessing(false);
-      setCreating(false);
+      setBusyMethod(null);
     }
+  };
+
+  const handleCrypto = async () => {
+    if (!application || busyMethod) return;
+    if (!cryptoNetwork) {
+      setMethodErrors((prev) => ({
+        ...prev,
+        crypto: t("checkoutPage.errors.unsupportedMethod"),
+      }));
+      return;
+    }
+    beginCheckout("crypto");
+    try {
+      const billing = await prepareBilling();
+      if (!billing) return;
+      const res = await callEdgeFunction("crypto-checkout", {
+        planId: application.plan_key,
+        currency: "USD",
+        network: cryptoNetwork,
+        idempotencyKey: idempotencyKey("crypto"),
+        isTest: testMode,
+        billing,
+      });
+      setResponses((prev) => ({ ...prev, crypto: res }));
+      if (res.payment?.id) setPaymentId(res.payment.id);
+    } catch (err) {
+      await handleCheckoutError("crypto", err);
+    } finally {
+      setBusyMethod(null);
+    }
+  };
+
+  const handleBank = async () => {
+    if (!application || busyMethod) return;
+    beginCheckout("bank");
+    try {
+      const billing = await prepareBilling();
+      if (!billing) return;
+      const res = await callEdgeFunction("wise-checkout", {
+        planId: application.plan_key,
+        currency: "USD",
+        idempotencyKey: idempotencyKey("bank"),
+        isTest: testMode,
+        billing,
+      });
+      setResponses((prev) => ({ ...prev, bank: res }));
+      if (res.payment?.id) setPaymentId(res.payment.id);
+    } catch (err) {
+      await handleCheckoutError("bank", err);
+    } finally {
+      setBusyMethod(null);
+    }
+  };
+
+  const handleMethodChange = (next: CheckoutMethodId) => {
+    if (!resolveMethodAvailability(config, next).available) return;
+    setMethod(next);
+    setSubmitError(null);
   };
 
   if (loading || !application) {
     return (
-      <div className="min-h-screen bg-[#05070A] flex items-center justify-center">
-        <Loader2 className="animate-spin text-[#C5A059]" size={48} />
+      <div className="flex min-h-screen items-center justify-center bg-[#05070A]">
+        <Loader2 className="animate-spin text-[#C5A059]" size={48} aria-hidden="true" />
+        <span className="sr-only">{t("checkout.loading")}</span>
       </div>
     );
   }
 
-  if (loading || processing) {
-    return (
-      <div className="min-h-screen bg-[#05070A] flex flex-col items-center justify-center gap-6">
-        <Loader2 className="animate-spin text-[#C5A059]" size={48} />
-        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C5A059]">
-          {processing ? t("checkout.processing") : t("checkout.loading")}
-        </p>
-      </div>
-    );
-  }
-
-  // Fail-closed gate
   if (!paymentsEnabled) {
     return (
       <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
         <Navbar />
-        <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
+        <div className="container mx-auto px-4 pb-20 pt-[140px] md:px-8">
           <Link
             to="/pricing"
-            className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-[#C5A059] mb-12 transition-colors"
+            className="mb-12 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-[#C5A059] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059]"
           >
-            <ArrowLeft size={14} /> {t("nav.pricing")}
+            <ArrowLeft size={14} aria-hidden="true" /> {t("nav.pricing")}
           </Link>
           <PaymentsDisabledNotice />
         </div>
@@ -477,23 +478,19 @@ const Checkout = () => {
     );
   }
 
-  // The application carries a plan the server does not recognise. Do not let
-  // the visitor start a checkout that the server will reject; send them back
-  // to re-select a plan. This keeps the displayed price and the charged price
-  // from ever diverging.
   if (!planIsKnown || !enhancedPlan) {
     return (
       <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
         <Navbar />
-        <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
-          <div className="max-w-xl bg-[#080B12] border border-white/10 p-8">
-            <h1 className="text-lg font-bold uppercase tracking-widest text-yellow-300 mb-4">
+        <div className="container mx-auto px-4 pb-20 pt-[140px] md:px-8">
+          <div className="max-w-xl border border-white/10 bg-[#080B12] p-8">
+            <h1 className="mb-4 text-lg font-bold uppercase tracking-widest text-[#E4C88B]">
               {t("checkout.invalidPlanTitle")}
             </h1>
-            <p className="text-[11px] text-slate-400 leading-relaxed mb-8">
+            <p className="mb-8 text-[11px] leading-relaxed text-slate-400">
               {t("checkout.invalidPlanDesc")}
             </p>
-            <Button asChild className="rounded-none h-12 px-6 text-[11px] font-black uppercase tracking-[0.2em] bg-[#C5A059] hover:bg-[#C5A059]/80 text-white">
+            <Button asChild className="h-12 rounded-none bg-[#C5A059] px-6 text-[11px] font-black uppercase tracking-[0.2em] text-[#05070A] hover:bg-[#C5A059]/85">
               <Link to="/pricing">{t("nav.pricing")}</Link>
             </Button>
           </div>
@@ -503,378 +500,166 @@ const Checkout = () => {
     );
   }
 
+  const activeError = method ? methodErrors[method] : null;
+
   return (
     <div className="min-h-screen bg-[#05070A] text-white selection:bg-[#D4AF37] selection:text-black">
       <Navbar />
 
-      <div className="container mx-auto px-4 md:px-8 pt-[140px] pb-20">
+      <main className="container mx-auto px-4 pb-20 pt-[140px] md:px-8">
         <Link
           to="/pricing"
-          className="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 hover:text-[#C5A059] mb-12 transition-colors"
+          className="mb-8 inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-500 transition-colors hover:text-[#C5A059] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C5A059]"
         >
-          <ArrowLeft size={14} /> {t("nav.pricing")}
+          <ArrowLeft size={14} aria-hidden="true" /> {t("checkoutSuccess.backToPricing")}
         </Link>
 
+        <header className="mb-10 max-w-2xl">
+          <span className="mb-2 block text-[10px] font-bold uppercase tracking-[0.4em] text-[#C5A059]">
+            {t("checkoutPage.eyebrow")}
+          </span>
+          <h1 className="text-3xl font-black uppercase tracking-tight md:text-4xl">
+            {t("checkoutPage.title")}
+          </h1>
+          <p className="mt-3 text-[11px] leading-relaxed text-slate-400">
+            {t("checkoutPage.subtitle")}
+          </p>
+        </header>
+
         {testMode && (
-          <div className="mb-8 p-4 border-2 border-yellow-500/60 bg-yellow-500/10 text-yellow-300 text-[10px] font-bold uppercase tracking-widest flex items-center gap-3">
-            <ShieldAlert size={18} />
-            {t('checkout.testModeBanner')}
+          <div className="mb-8 flex items-center gap-3 border-2 border-yellow-500/60 bg-yellow-500/10 p-4 text-[10px] font-bold uppercase tracking-widest text-yellow-300">
+            <ShieldAlert size={18} aria-hidden="true" />
+            {t("checkout.testModeBanner")}
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          {/* Summary */}
-          <div className="lg:col-span-5 space-y-8">
-            <div className="animate-fadeInUp">
-              <span className="text-[#C5A059] text-[10px] font-bold uppercase tracking-[0.4em] mb-2 block">
-                {t("checkout.summary")}
-              </span>
-              <h1 className="text-4xl font-black uppercase tracking-tighter">
-                {t("checkout.subscriptionTitle")} <span className="text-[#C5A059]">{t("checkout.subscriptionSubtitle")}</span>
-              </h1>
-            </div>
-
-            <div className="bg-[#080B12] border border-white/10 p-8 space-y-8 relative overflow-hidden">
-              <div className="absolute top-0 right-0 p-4 opacity-5">
-                <ShieldCheck size={160} />
-              </div>
-
-              <div className="flex justify-between items-center pb-8 border-b border-white/5">
-                <div>
-                  <h3 className="font-bold text-2xl uppercase tracking-tight">
-                    {enhancedPlan.name}
-                  </h3>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1">
-                    {t("checkout.tierLabel")}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <span className="text-3xl font-serif font-bold text-[#C5A059]">
-                    {formattedPrice}
-                  </span>
-                  <p className="text-[9px] text-slate-600 uppercase tracking-widest">
-                    {t("checkout.billedMonthly")}
-                  </p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white border-l-2 border-[#C5A059] pl-3">
-                    {t("checkout.detailsTitle")}
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span className="text-slate-500">{t("checkout.serviceAccess")}</span>
-                      <span className="text-[22px] font-serif font-bold text-[#C5A059]">
-                        {formattedPrice}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-widest">
-                      <span className="text-slate-500">{t("checkout.setupFee")}</span>
-                      <span className="text-green-500">{t("checkout.waived")}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-bold uppercase tracking-widest text-white border-l-2 border-[#C5A059] pl-3">
-                    {t("checkout.infrastructureTitle")}
-                  </h4>
-                  <ul className="space-y-2">
-                    {enhancedPlan.features?.map((f: string, i: number) => (
-                      <li
-                        key={i}
-                        className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400"
-                      >
-                        <CheckCircle2 size={12} className="text-[#C5A059]" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6 bg-white/[0.02] border border-dashed border-white/10 flex gap-4">
-              <ShieldAlert className="text-[#C5A059] shrink-0" size={20} />
-              <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500 leading-relaxed">
-                {t("checkout.riskDisclosure")}
-              </p>
-            </div>
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-5">
+            <PlanSummaryCard
+              planName={enhancedPlan.name}
+              amountUsd={enhancedPlan.amountUsd}
+              currency="USD"
+            />
           </div>
 
-          {/* Payment */}
-          <div className="lg:col-span-7 space-y-8">
-            <div className="bg-[#080B12] border border-white/10 p-8 space-y-8">
-              {user && (
-                <div className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 truncate max-w-[200px]">
-                    {user.email}
-                  </span>
-                  <ShieldCheck size={16} className="text-green-500 shrink-0" />
-                </div>
-              )}
+          <div className="space-y-8 lg:col-span-7">
+            {configUnavailable && (
+              <CheckoutNotice tone="warning">
+                {t("checkoutPage.configUnavailable")}
+              </CheckoutNotice>
+            )}
 
-              {paymentId && serverStatus && (
-                <div className="p-4 border border-white/10 bg-white/[0.02] space-y-2">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-500">{t("checkoutSuccess.currentStatus")}</p>
-                  <CheckoutStatusBadge status={serverStatus.status} />
-                  <p className="text-[9px] text-slate-500">ID: {paymentId}</p>
-                </div>
-              )}
-
-              {submitError && (
-                <div className="p-4 border border-red-500/30 bg-red-500/10 text-red-300 text-[10px] font-bold uppercase tracking-widest">
-                  {submitError}
-                </div>
-              )}
-
-              {/* Billing details, pre-filled from the profile. Passed to Stripe
-                  (customer + billing_details) and used on the receipt. */}
-              <CheckoutBillingForm
-                billing={billing}
-                errors={billingErrors}
-                updateProfile={updateProfileWithBilling}
-                onChange={handleBillingChange}
-                onCountryChange={(code) => handleBillingChange("country", code)}
-                onUpdateProfileChange={setUpdateProfileWithBilling}
-              />
-
-              {!showWise && !showCrypto && !showStripe ? (
-                <div className="space-y-8 animate-fadeInUp">
-                  <div className="space-y-4">
-                    <h2 className="text-[12px] font-bold uppercase tracking-[0.3em]">
-                      {t("checkout.selectPaymentMethod")}
-                    </h2>
-                    <p className="text-slate-500 text-[10px] uppercase tracking-widest leading-relaxed">
-                      {t("checkout.choosePayment")}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-6">
-                    <button
-                      onClick={() => setShowWise(true)}
-                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-emerald-500 transition-all text-left group"
-                    >
-                      <div className="w-16 h-16 bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center border border-white/10 mb-4">
-                        <Building2 size={28} className="text-emerald-500" />
-                      </div>
-                      <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">
-                        {t("checkout.wiseTransfer")}
-                      </h3>
-                      <p className="text-[10px] text-slate-500 leading-relaxed">
-                        {t("checkout.wiseDesc")}
-                      </p>
-                    </button>
-
-                    <button
-                      onClick={() => setShowCrypto(true)}
-                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-orange-500 transition-all text-left group"
-                    >
-                      <div className="w-16 h-16 bg-gradient-to-br from-orange-500/20 to-orange-500/5 flex items-center justify-center border border-white/10 mb-4">
-                        <Bitcoin size={28} className="text-orange-500" />
-                      </div>
-                      <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">
-                        {t("checkout.crypto")}
-                      </h3>
-                      <p className="text-[10px] text-slate-500 leading-relaxed">
-                        {t("checkout.cryptoDesc")}
-                      </p>
-                    </button>
-
-                    <button
-                      onClick={() => setShowStripe(true)}
-                      className="relative p-8 bg-gradient-to-b from-white/[0.03] to-white/[0.01] border border-white/10 hover:border-[#C5A059] transition-all text-left group"
-                    >
-                      <div className="w-16 h-16 bg-gradient-to-br from-[#C5A059]/20 to-[#C5A059]/5 flex items-center justify-center border border-white/10 mb-4">
-                        <CreditCard size={28} className="text-[#C5A059]" />
-                      </div>
-                      <h3 className="text-[12px] font-bold uppercase tracking-[0.2em] text-white mb-1">
-                        {t("checkout.card")}
-                      </h3>
-                      <p className="text-[10px] text-slate-500 leading-relaxed">
-                        {t("checkout.cardDesc")}
-                      </p>
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-6 animate-fadeInUp">
-                  <button
-                    onClick={handleBack}
-                    className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-[#C5A059]/10 border border-[#C5A059]/30 hover:bg-[#C5A059]/20 text-[#C5A059]"
+            {paymentId && (
+              <section
+                aria-labelledby="checkout-status-title"
+                className="space-y-3 border border-white/10 bg-[#080B12] p-5"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <h2
+                    id="checkout-status-title"
+                    className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-400"
                   >
-                    <ArrowLeft size={18} />
-                    <span className="text-[11px] font-bold uppercase tracking-widest">
-                      {t("checkout.back")}
-                    </span>
-                  </button>
-
-                  {showCrypto && !cryptoResponse && (
-                    <div className="space-y-6">
-                      <div className="p-4 bg-white/[0.02] border border-white/5">
-                        <p className="text-[9px] text-slate-500 uppercase tracking-widest">
-                          {t("checkout.amountToPay")}
-                        </p>
-                        <p className="text-2xl font-bold text-[#C5A059]">
-                          {formattedPrice}
-                        </p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
-                          {t("checkout.selectNetwork")}
-                        </p>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                          {CRYPTO_NETWORKS.map((n) => (
-                            <button
-                              key={n.id}
-                              onClick={() => {
-                                selectedCryptoIdRef.current = n.id;
-                              }}
-                              className="p-3 border border-white/10 bg-white/[0.02] text-left transition-all hover:border-[#C5A059]"
-                            >
-                              <span className="text-[9px] font-bold uppercase tracking-widest block">
-                                {n.symbol}
-                              </span>
-                              <span className="text-[8px] text-slate-500">{n.id}</span>
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      <Button
-                        onClick={handleCryptoSubmit}
-                        disabled={processing || creating}
-                        className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-60"
-                      >
-                        {t("checkout.confirmCrypto")}
-                      </Button>
-                    </div>
-                  )}
-
-                  {showCrypto && cryptoResponse && (
-                    <CryptoAwaitingView response={cryptoResponse} />
-                  )}
-
-                  {showWise && !wiseResponse && (
-                    <div className="space-y-6">
-                      <label className="flex items-start gap-3 cursor-pointer p-4 bg-white/[0.02] border border-white/10">
-                        <input
-                          type="checkbox"
-                          checked={wiseConfirmed}
-                          onChange={(e) => setWiseConfirmed(e.target.checked)}
-                          className="mt-1 w-4 h-4 accent-emerald-500"
-                        />
-                        <span className="text-[9px] text-slate-400 leading-relaxed">
-                          {t("checkout.wiseConfirmText")}
-                        </span>
-                      </label>
-
-                      <Button
-                        onClick={handleWiseSubmit}
-                        disabled={!wiseConfirmed || processing || creating}
-                        className={`w-full rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] ${
-                          wiseConfirmed
-                            ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                            : "bg-slate-700 text-slate-500 cursor-not-allowed"
-                        }`}
-                      >
-                        {t("checkout.confirmWise")}
-                      </Button>
-                    </div>
-                  )}
-
-                  {showWise && wiseResponse && (
-                    <WiseAwaitingView response={wiseResponse} />
-                  )}
-
-                  {showStripe && !stripeResponse && (
-                    <div className="space-y-6">
-                      <div className="p-4 bg-white/[0.02] border border-white/5">
-                        <p className="text-[9px] text-slate-500 uppercase tracking-widest">
-                          {t("checkout.amountToPay")}
-                        </p>
-                        <p className="text-2xl font-bold text-[#C5A059]">
-                          {formattedPrice}
-                        </p>
-                      </div>
-
-                      <Button
-                        onClick={handleStripeSubmit}
-                        disabled={processing || creating}
-                        className="w-full bg-[#C5A059] hover:bg-[#C5A059]/80 text-white rounded-none h-14 font-black text-[11px] uppercase tracking-[0.2em] disabled:opacity-60"
-                      >
-                        {t("checkout.confirmCard")}
-                      </Button>
-                    </div>
-                  )}
-
-                  {showStripe && stripeResponse && (
-                    <div className="space-y-4">
-                      <p className="text-[10px] text-slate-500">
-                        {t("checkout.redirecting")}
-                      </p>
-                    </div>
+                    {t("checkoutSuccess.currentStatus")}
+                  </h2>
+                  {serverStatus?.status && (
+                    <CheckoutStatusBadge status={serverStatus.status} />
                   )}
                 </div>
-              )}
-            </div>
+                {statusNotice && (
+                  <CheckoutNotice tone={statusNotice.tone}>
+                    {t(statusNotice.key)}
+                  </CheckoutNotice>
+                )}
+                <p className="break-all text-[9px] uppercase tracking-widest text-slate-600">
+                  {t("checkoutSuccess.paymentId")}: {paymentId}
+                </p>
+                {confirmed && (
+                  <Button
+                    asChild
+                    className="h-12 w-full rounded-none bg-[#C5A059] text-[11px] font-black uppercase tracking-[0.2em] text-[#05070A] hover:bg-[#C5A059]/85 sm:w-auto"
+                  >
+                    <Link to="/dashboard">{t("checkoutPage.confirmedCta")}</Link>
+                  </Button>
+                )}
+              </section>
+            )}
+
+            {!confirmed && (
+              <>
+                {initialIncomplete && !submitError && (
+                  <CheckoutNotice tone="warning">
+                    {t("checkoutPage.missingFieldsNote")}
+                  </CheckoutNotice>
+                )}
+
+                {submitError && (
+                  <CheckoutNotice tone="error">{submitError}</CheckoutNotice>
+                )}
+
+                <section className="border border-white/10 bg-[#080B12] p-5 md:p-7">
+                  <CheckoutCustomerForm
+                    fields={fields}
+                    errors={errors}
+                    updateProfile={updateProfile}
+                    onChange={handleFieldChange}
+                    onUpdateProfileChange={setUpdateProfile}
+                  />
+                </section>
+
+                <section className="space-y-5 border border-white/10 bg-[#080B12] p-5 md:p-7">
+                  <PaymentMethodSelector
+                    config={config}
+                    value={method}
+                    onChange={handleMethodChange}
+                  />
+
+                  {method === "card" && (
+                    <CardPaymentPanel
+                      busy={busyMethod === "card"}
+                      disabled={!resolveMethodAvailability(config, "card").available}
+                      onContinue={handleCard}
+                    />
+                  )}
+
+                  {method === "crypto" && (
+                    <CryptoPaymentPanel
+                      networks={availableNetworks}
+                      selectedNetwork={cryptoNetwork}
+                      onSelectNetwork={setCryptoNetwork}
+                      onCreate={handleCrypto}
+                      busy={busyMethod === "crypto"}
+                      disabled={!resolveMethodAvailability(config, "crypto").available}
+                      response={responses.crypto ?? null}
+                      status={badgeStatus(serverStatus?.status ?? responses.crypto?.payment?.status)}
+                    />
+                  )}
+
+                  {method === "bank" && (
+                    <BankTransferPanel
+                      onCreate={handleBank}
+                      busy={busyMethod === "bank"}
+                      disabled={!resolveMethodAvailability(config, "bank").available}
+                      response={responses.bank ?? null}
+                      status={badgeStatus(serverStatus?.status ?? responses.bank?.payment?.status)}
+                    />
+                  )}
+
+                  {activeError && <CheckoutNotice tone="error">{activeError}</CheckoutNotice>}
+
+                  <p className="flex items-start gap-2 border border-dashed border-white/10 p-3 text-[9px] uppercase leading-relaxed tracking-widest text-slate-600">
+                    <ShieldCheck size={14} aria-hidden="true" className="mt-0.5 shrink-0" />
+                    {t("checkoutPage.serverTruthNote")}
+                  </p>
+                </section>
+              </>
+            )}
           </div>
         </div>
-      </div>
+      </main>
 
       <Footer />
     </div>
   );
 };
-
-function WiseAwaitingView({ response }: { response: CheckoutResponse }) {
-  const { t } = useTranslation();
-  return (
-    <div className="space-y-4">
-      {response.payment && (
-        <CheckoutStatusBadge
-          status={(response.payment.status ?? "pending_manual")}
-        />
-      )}
-      {response.warnings?.map((w, i) => (
-        <p key={i} className="text-[10px] text-yellow-300">
-          ⚠️ {w}
-        </p>
-      ))}
-      {response.bank_details && (
-        <div className="p-4 bg-white/[0.02] border border-white/10 text-[10px] text-slate-300 font-mono space-y-1">
-          <p>{t("checkout.accountHolder")}: {response.bank_details.holder_name}</p>
-          <p>{t("checkout.bankName")}: {response.bank_details.bank_name}</p>
-          <p>{t("checkout.accountNumber")}: {response.bank_details.account_number}</p>
-          <p>{t("checkout.routingNumber")}: {response.bank_details.routing_number}</p>
-          <p>{t("checkout.swiftLabel")}: {response.bank_details.swift}</p>
-          <p>{t("checkout.referenceLabel")}: {response.bank_details.reference}</p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function CryptoAwaitingView({ response }: { response: CheckoutResponse }) {
-  return (
-    <div className="space-y-4">
-      {response.payment && (
-        <CheckoutStatusBadge status={(response.payment.status ?? "pending")} />
-      )}
-      {response.warnings?.map((w, i) => (
-        <p key={i} className="text-[10px] text-yellow-300">
-          ⚠️ {w}
-        </p>
-      ))}
-      {response.deposit_address && (
-        <div className="p-4 bg-white/[0.02] border border-white/10 text-[10px] text-slate-300 font-mono break-all">
-          {response.deposit_address}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default Checkout;
