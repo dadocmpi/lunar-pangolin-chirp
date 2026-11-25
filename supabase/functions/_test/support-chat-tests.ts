@@ -7,7 +7,7 @@
 //   grounded answer, unknown question, prompt injection, financial-advice
 //   request, secret request/sharing, cross-user conversation access, timeout,
 //   rate limiting, human escalation, no unauthorized payment/account action,
-//   and all 11 locales.
+//   the OpenRouter and Gemini providers, and all 11 locales.
 // ============================================================================
 
 import {
@@ -39,9 +39,19 @@ import {
 } from "../_shared/chat/policy.ts";
 import {
   CHAT_PROVIDER_REGISTRY,
+  ChatProviderError,
   createChatProviderFromEnv,
+  createOpenRouterChatProvider,
+  DEFAULT_CHAT_MODELS,
+  DEFAULT_CHAT_PROVIDER,
   extractGeminiText,
+  extractOpenRouterText,
+  isChatProviderTimeout,
+  mapHttpStatusToCode,
+  OPENROUTER_ATTRIBUTION,
+  OPENROUTER_ENDPOINT,
   resolveChatApiKey,
+  resolveChatProviderName,
 } from "../_shared/chat/provider.ts";
 import { rateLimitKey, resolveChatIdentity } from "../_shared/chat/identity.ts";
 import { createRateLimiter } from "../_shared/rateLimit.ts";
@@ -471,20 +481,49 @@ for (const locale of SUPPORTED_LOCALES) {
 }
 
 // ---------------------------------------------------------------------------
-console.log("\n[12] Provider abstraction and key protection");
+console.log("\n[12] Provider selection and key protection");
 check("no key => no provider", createChatProviderFromEnv({}) === null);
-check("CHAT_AI_API_KEY builds the gemini provider", createChatProviderFromEnv({ CHAT_AI_API_KEY: "k" })?.name === "gemini");
-check("KYC_AI_API_KEY is reused when the chat key is unset", createChatProviderFromEnv({ KYC_AI_API_KEY: "k" })?.name === "gemini");
+check("the default provider is openrouter", DEFAULT_CHAT_PROVIDER === "openrouter");
+check("no config resolves to openrouter", resolveChatProviderName({}) === "openrouter");
+check(
+  "CHAT_AI_API_KEY with no provider builds openrouter",
+  createChatProviderFromEnv({ CHAT_AI_API_KEY: "k" })?.name === "openrouter",
+);
+check(
+  "CHAT_AI_PROVIDER=openrouter builds openrouter",
+  createChatProviderFromEnv({ CHAT_AI_API_KEY: "k", CHAT_AI_PROVIDER: "openrouter" })?.name === "openrouter",
+);
+check(
+  "CHAT_AI_PROVIDER=gemini keeps the optional gemini provider",
+  createChatProviderFromEnv({ CHAT_AI_API_KEY: "k", CHAT_AI_PROVIDER: "gemini" })?.name === "gemini",
+);
+check(
+  "the legacy KYC_AI_API_KEY still builds gemini when nothing else is set",
+  createChatProviderFromEnv({ KYC_AI_API_KEY: "k" })?.name === "gemini",
+);
+check(
+  "the KYC key is never used for openrouter",
+  createChatProviderFromEnv({ KYC_AI_API_KEY: "k", CHAT_AI_PROVIDER: "openrouter" }) === null,
+);
+check("resolveChatApiKey rejects the KYC key for openrouter", resolveChatApiKey({ KYC_AI_API_KEY: "kyc" }, "openrouter") === "");
+check("resolveChatApiKey reuses the KYC key for gemini", resolveChatApiKey({ KYC_AI_API_KEY: "kyc" }, "gemini") === "kyc");
 check("CHAT_AI_API_KEY wins over KYC_AI_API_KEY", resolveChatApiKey({ CHAT_AI_API_KEY: "chat", KYC_AI_API_KEY: "kyc" }) === "chat");
 check("unknown provider fails closed", createChatProviderFromEnv({ CHAT_AI_API_KEY: "k", CHAT_AI_PROVIDER: "nope" }) === null);
+check("registry exposes openrouter", typeof CHAT_PROVIDER_REGISTRY.openrouter === "function");
 check("registry exposes gemini", typeof CHAT_PROVIDER_REGISTRY.gemini === "function");
+check("the default openrouter model is openrouter/free", DEFAULT_CHAT_MODELS.openrouter === "openrouter/free");
+check("the default gemini model is unchanged", DEFAULT_CHAT_MODELS.gemini === "gemini-2.0-flash");
 check(
   "gemini text is extracted",
   extractGeminiText({ candidates: [{ content: { parts: [{ text: "hello" }] } }] }) === "hello",
 );
+
 const providerSrc = read("supabase/functions/_shared/chat/provider.ts");
 check("key travels in a header, not the URL", providerSrc.includes("x-goog-api-key") && !/generateContent\?key=/.test(providerSrc));
+check("openrouter key travels in the Authorization header", /Authorization: `Bearer \$\{opts\.apiKey\}`/.test(providerSrc));
+check("openrouter key is never placed in the URL", !/chat\/completions\?/.test(providerSrc) && !/\?api_key/.test(providerSrc));
 check("provider source has no VITE_ AI key", !/VITE_[A-Z_]*AI|VITE_GEMINI/.test(providerSrc));
+check("provider never logs", !/console\.(log|info|warn|error|debug)/.test(providerSrc));
 check("provider data-flow note exists", providerSrc.includes("CHAT_DATA_FLOW"));
 check(
   "no chat module reads a VITE_ AI key",
@@ -492,6 +531,156 @@ check(
     /VITE_[A-Z_]*AI|VITE_GEMINI/.test(read(`supabase/functions/_shared/chat/${f}`))
   ),
 );
+
+// ---------------------------------------------------------------------------
+console.log("\n[12a] OpenRouter request shape");
+check("endpoint is the documented OpenRouter URL", OPENROUTER_ENDPOINT === "https://openrouter.ai/api/v1/chat/completions");
+check("HTTP-Referer header is set", OPENROUTER_ATTRIBUTION["HTTP-Referer"] === "https://braxelmarkets.vercel.app");
+check("X-OpenRouter-Title header is set", OPENROUTER_ATTRIBUTION["X-OpenRouter-Title"] === "Braxel Markets");
+check(
+  "OpenRouter text is extracted from choices[0].message.content",
+  extractOpenRouterText({ choices: [{ message: { content: "hello" } }] }) === "hello",
+);
+check(
+  "OpenRouter array content is joined",
+  extractOpenRouterText({ choices: [{ message: { content: [{ text: "a" }, { text: "b" }] } }] }) === "ab",
+);
+check("OpenRouter empty payload is empty text", extractOpenRouterText({ choices: [] }) === "");
+
+type Call = { url: string; init: RequestInit };
+function recordingFetch(respond: () => Response | Promise<Response>) {
+  const calls: Call[] = [];
+  const fetchImpl = ((url: string | URL | Request, init?: RequestInit) => {
+    calls.push({ url: String(url), init: init ?? {} });
+    return Promise.resolve(respond());
+  }) as unknown as typeof fetch;
+  return { calls, fetchImpl };
+}
+
+const jsonRes = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json" } });
+
+const okCall = recordingFetch(() =>
+  jsonRes({ choices: [{ message: { role: "assistant", content: '{"answer":"hi","article_ids":["plans"]}' } }] })
+);
+const okProvider = createOpenRouterChatProvider({ apiKey: "sk-or-test", fetchImpl: okCall.fetchImpl });
+const okText = await okProvider.complete({
+  system: "SYSTEM",
+  messages: [
+    { role: "user", content: "first" },
+    { role: "assistant", content: "second" },
+    { role: "user", content: "third" },
+  ],
+  timeoutMs: 5000,
+});
+check("openrouter returns the assistant text", okText.includes('"answer":"hi"'));
+check("openrouter posts to the documented endpoint", okCall.calls[0]?.url === OPENROUTER_ENDPOINT);
+check("openrouter key is never in the URL", !okCall.calls[0]?.url.includes("sk-or-test"));
+
+const okHeaders = (okCall.calls[0]?.init.headers ?? {}) as Record<string, string>;
+check("openrouter sends the bearer key", okHeaders.Authorization === "Bearer sk-or-test");
+check("openrouter sends Content-Type", okHeaders["Content-Type"] === "application/json");
+check("openrouter sends HTTP-Referer", okHeaders["HTTP-Referer"] === "https://braxelmarkets.vercel.app");
+check("openrouter sends X-OpenRouter-Title", okHeaders["X-OpenRouter-Title"] === "Braxel Markets");
+
+const okBody = JSON.parse(String(okCall.calls[0]?.init.body ?? "{}"));
+check("openrouter defaults to openrouter/free", okBody.model === "openrouter/free");
+check("openrouter puts the system prompt first", okBody.messages?.[0]?.role === "system" && okBody.messages[0].content === "SYSTEM");
+check("openrouter keeps turn order and roles", okBody.messages?.[1]?.role === "user" && okBody.messages?.[2]?.role === "assistant");
+check("openrouter is not streaming", okBody.stream === false);
+check("openrouter does not send a response_format that some models reject", okBody.response_format === undefined);
+check("openrouter keeps a low temperature", okBody.temperature === 0.2);
+
+const customCall = recordingFetch(() => jsonRes({ choices: [{ message: { content: "x" } }] }));
+await createOpenRouterChatProvider({ apiKey: "k", model: "openai/gpt-4o-mini", fetchImpl: customCall.fetchImpl })
+  .complete({ system: "s", messages: [], timeoutMs: 5000 });
+check(
+  "an explicit model overrides the default",
+  JSON.parse(String(customCall.calls[0]?.init.body)).model === "openai/gpt-4o-mini",
+);
+
+const envCall = recordingFetch(() => jsonRes({ choices: [{ message: { content: "x" } }] }));
+const envProvider = createChatProviderFromEnv(
+  { CHAT_AI_API_KEY: "k", CHAT_AI_PROVIDER: "openrouter", CHAT_AI_MODEL: "meta-llama/llama-3-8b-instruct" },
+  envCall.fetchImpl,
+);
+await envProvider?.complete({ system: "s", messages: [], timeoutMs: 5000 });
+check(
+  "CHAT_AI_MODEL drives the request",
+  JSON.parse(String(envCall.calls[0]?.init.body)).model === "meta-llama/llama-3-8b-instruct",
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[12b] OpenRouter failures are safe and classified");
+async function failureOf(fetchImpl: typeof fetch, apiKey = "sk-or-secret"): Promise<unknown> {
+  try {
+    await createOpenRouterChatProvider({ apiKey, fetchImpl }).complete({
+      system: "s",
+      messages: [{ role: "user", content: "q" }],
+      timeoutMs: 5000,
+    });
+    return null;
+  } catch (e) {
+    return e;
+  }
+}
+
+check("401 maps to unauthorized", mapHttpStatusToCode(401) === "ai_provider_unauthorized");
+check("403 maps to unauthorized", mapHttpStatusToCode(403) === "ai_provider_unauthorized");
+check("429 maps to rate limited", mapHttpStatusToCode(429) === "ai_provider_rate_limited");
+check("500 maps to a generic http code", mapHttpStatusToCode(500) === "ai_provider_http_500");
+
+const invalidKey = await failureOf(recordingFetch(() => jsonRes({ error: { message: "invalid api key" } }, 401)).fetchImpl);
+check("an invalid key raises ChatProviderError", invalidKey instanceof ChatProviderError);
+check("an invalid key is classified", (invalidKey as ChatProviderError)?.code === "ai_provider_unauthorized");
+check("the invalid-key error carries no key", !String((invalidKey as Error)?.message).includes("sk-or-secret"));
+check("the invalid-key error carries no provider body", !/invalid api key/i.test(String((invalidKey as Error)?.message)));
+
+const rateLimited = await failureOf(recordingFetch(() => jsonRes({ error: { message: "rate limited" } }, 429)).fetchImpl);
+check("a provider 429 is classified", (rateLimited as ChatProviderError)?.code === "ai_provider_rate_limited");
+
+const serverError = await failureOf(recordingFetch(() => new Response("boom", { status: 503 })).fetchImpl);
+check("a provider 5xx is classified", (serverError as ChatProviderError)?.code === "ai_provider_http_503");
+
+const networkError = await failureOf(((() => { throw new TypeError("fetch failed"); }) as unknown) as typeof fetch);
+check("a network failure is classified", (networkError as ChatProviderError)?.code === "ai_provider_network");
+check("the network error carries no key", !String((networkError as Error)?.message).includes("sk-or-secret"));
+
+const abortedFetch = ((_url: unknown, init?: RequestInit) =>
+  new Promise<Response>((_resolve, reject) => {
+    init?.signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")));
+  })) as unknown as typeof fetch;
+const timeoutError = await failureOf(abortedFetch);
+check("a timeout is classified", (timeoutError as ChatProviderError)?.code === "ai_provider_timeout");
+check("isChatProviderTimeout recognises our timeout", isChatProviderTimeout(timeoutError));
+check("isChatProviderTimeout recognises AbortError", isChatProviderTimeout(new DOMException("Aborted", "AbortError")));
+check("isChatProviderTimeout rejects other errors", !isChatProviderTimeout(new Error("nope")));
+
+const rateLimitedReply = await handleChat(
+  { message: "How do I reset my password?", locale: "en", history: [] },
+  {
+    ...DEPS,
+    provider: {
+      name: "openrouter",
+      complete: async () => { throw new ChatProviderError("ai_provider_rate_limited", 429); },
+    },
+  },
+);
+check("a provider 429 degrades to grounded knowledge", rateLimitedReply.type === "answered");
+check("a provider 429 leaks no provider detail", !/rate|provider|429|openrouter/i.test(rateLimitedReply.reply));
+
+const timeoutReply = await handleChat(
+  { message: "How do I reset my password?", locale: "en", history: [] },
+  {
+    ...DEPS,
+    provider: {
+      name: "openrouter",
+      complete: async () => { throw new ChatProviderError("ai_provider_timeout"); },
+    },
+  },
+);
+check("a provider timeout returns the timeout state", timeoutReply.type === "timeout", timeoutReply.type);
+check("a provider timeout leaks no provider detail", !/ai_provider|openrouter/i.test(timeoutReply.reply));
 
 // ---------------------------------------------------------------------------
 console.log("\n[13] Knowledge, links and feature switch");

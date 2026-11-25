@@ -701,6 +701,190 @@ function sanitizeAnswer(raw) {
   return { text, downgraded: false, reason: null };
 }
 
+// supabase/functions/_shared/chat/provider.ts
+var DEFAULT_CHAT_PROVIDER = "openrouter";
+var DEFAULT_CHAT_MODELS = {
+  openrouter: "openrouter/free",
+  gemini: "gemini-2.0-flash"
+};
+var OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
+var OPENROUTER_ATTRIBUTION = {
+  "HTTP-Referer": "https://braxelmarkets.vercel.app",
+  "X-OpenRouter-Title": "Braxel Markets"
+};
+var ChatProviderError = class extends Error {
+  code;
+  status;
+  constructor(code, status = null) {
+    super(code);
+    this.name = "ChatProviderError";
+    this.code = code;
+    this.status = status;
+  }
+};
+function mapHttpStatusToCode(status) {
+  if (status === 401 || status === 403) return "ai_provider_unauthorized";
+  if (status === 429) return "ai_provider_rate_limited";
+  return `ai_provider_http_${status}`;
+}
+function isChatProviderTimeout(error) {
+  if (!error || typeof error !== "object") return false;
+  const name = error.name;
+  const code = error.code;
+  return name === "AbortError" || code === "ai_provider_timeout";
+}
+function extractOpenRouterText(payload) {
+  if (typeof payload !== "object" || payload === null) return "";
+  const choices = payload.choices;
+  if (!Array.isArray(choices) || choices.length === 0) return "";
+  const message = choices[0]?.message;
+  const content = message?.content;
+  if (typeof content === "string") return content.trim();
+  if (Array.isArray(content)) {
+    const chunks = [];
+    for (const part of content) {
+      const text = part?.text;
+      if (typeof text === "string") chunks.push(text);
+    }
+    return chunks.join("").trim();
+  }
+  return "";
+}
+function createOpenRouterChatProvider(opts) {
+  const model = opts.model?.trim() || DEFAULT_CHAT_MODELS.openrouter;
+  const doFetch = opts.fetchImpl ?? fetch;
+  return {
+    name: "openrouter",
+    async complete(input) {
+      const messages = [
+        { role: "system", content: input.system },
+        ...input.messages.map((turn) => ({
+          role: turn.role === "assistant" ? "assistant" : "user",
+          content: turn.content
+        }))
+      ];
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), Math.max(1e3, input.timeoutMs));
+      let res;
+      try {
+        res = await doFetch(OPENROUTER_ENDPOINT, {
+          method: "POST",
+          signal: controller.signal,
+          headers: {
+            "Content-Type": "application/json",
+            // Key in a header, never the URL, so it cannot leak via access logs.
+            Authorization: `Bearer ${opts.apiKey}`,
+            ...OPENROUTER_ATTRIBUTION
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature: 0.2,
+            stream: false
+          })
+        });
+      } catch (e) {
+        throw isChatProviderTimeout(e) ? new ChatProviderError("ai_provider_timeout") : new ChatProviderError("ai_provider_network");
+      } finally {
+        clearTimeout(timer);
+      }
+      if (!res.ok) {
+        throw new ChatProviderError(mapHttpStatusToCode(res.status), res.status);
+      }
+      return extractOpenRouterText(await res.json());
+    }
+  };
+}
+function extractGeminiText(payload) {
+  if (typeof payload !== "object" || payload === null) return "";
+  const candidates = payload.candidates;
+  if (!Array.isArray(candidates) || candidates.length === 0) return "";
+  const content = candidates[0]?.content;
+  const parts = content?.parts;
+  if (!Array.isArray(parts)) return "";
+  const chunks = [];
+  for (const part of parts) {
+    const text = part?.text;
+    if (typeof text === "string") chunks.push(text);
+  }
+  return chunks.join("").trim();
+}
+function createGeminiChatProvider(opts) {
+  const model = opts.model?.trim() || DEFAULT_CHAT_MODELS.gemini;
+  const doFetch = opts.fetchImpl ?? fetch;
+  return {
+    name: "gemini",
+    async complete(input) {
+      const contents = input.messages.map((turn) => ({
+        role: turn.role === "assistant" ? "model" : "user",
+        parts: [{ text: turn.content }]
+      }));
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), Math.max(1e3, input.timeoutMs));
+      let res;
+      try {
+        res = await doFetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+          {
+            method: "POST",
+            signal: controller.signal,
+            headers: {
+              "Content-Type": "application/json",
+              // Key in a header, never the URL, so it cannot leak via access logs.
+              "x-goog-api-key": opts.apiKey
+            },
+            body: JSON.stringify({
+              systemInstruction: { parts: [{ text: input.system }] },
+              contents,
+              generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
+            })
+          }
+        );
+      } catch (e) {
+        throw isChatProviderTimeout(e) ? new ChatProviderError("ai_provider_timeout") : new ChatProviderError("ai_provider_network");
+      } finally {
+        clearTimeout(timer);
+      }
+      if (!res.ok) {
+        throw new ChatProviderError(mapHttpStatusToCode(res.status), res.status);
+      }
+      return extractGeminiText(await res.json());
+    }
+  };
+}
+var CHAT_PROVIDER_REGISTRY = {
+  openrouter: (env, fetchImpl) => createOpenRouterChatProvider({
+    apiKey: resolveChatApiKey(env, "openrouter"),
+    model: env.CHAT_AI_MODEL,
+    fetchImpl
+  }),
+  gemini: (env, fetchImpl) => createGeminiChatProvider({
+    apiKey: resolveChatApiKey(env, "gemini"),
+    model: env.CHAT_AI_MODEL,
+    fetchImpl
+  })
+};
+function resolveChatProviderName(env) {
+  const explicit = (env.CHAT_AI_PROVIDER ?? "").trim().toLowerCase();
+  if (explicit) return explicit;
+  if ((env.CHAT_AI_API_KEY ?? "").trim()) return "openrouter";
+  if ((env.KYC_AI_API_KEY ?? "").trim()) return "gemini";
+  return DEFAULT_CHAT_PROVIDER;
+}
+function resolveChatApiKey(env, providerName) {
+  const primary = (env.CHAT_AI_API_KEY ?? "").trim();
+  if (primary) return primary;
+  const name = (providerName ?? resolveChatProviderName(env)).trim().toLowerCase();
+  return name === "gemini" ? (env.KYC_AI_API_KEY ?? "").trim() : "";
+}
+function createChatProviderFromEnv(env, fetchImpl) {
+  const name = resolveChatProviderName(env);
+  const factory = CHAT_PROVIDER_REGISTRY[name];
+  if (!factory) return null;
+  if (!resolveChatApiKey(env, name)) return null;
+  return factory(env, fetchImpl);
+}
+
 // supabase/functions/_shared/chat/types.ts
 var MAX_MESSAGE_CHARS = 2e3;
 var MAX_HISTORY_TURNS = 8;
@@ -964,7 +1148,7 @@ async function handleChat(input, deps) {
         provider: deps.provider.name
       });
     } catch (e) {
-      if (e instanceof ChatTimeoutError) {
+      if (e instanceof ChatTimeoutError || isChatProviderTimeout(e)) {
         return baseReply({ type: "timeout", reply: REPLY_TEXT.timeout, provider: deps.provider.name });
       }
     }
@@ -980,77 +1164,6 @@ async function handleChat(input, deps) {
     });
   }
   return baseReply({ type: "unknown", reply: REPLY_TEXT.unknown });
-}
-
-// supabase/functions/_shared/chat/provider.ts
-function extractGeminiText(payload) {
-  if (typeof payload !== "object" || payload === null) return "";
-  const candidates = payload.candidates;
-  if (!Array.isArray(candidates) || candidates.length === 0) return "";
-  const content = candidates[0]?.content;
-  const parts = content?.parts;
-  if (!Array.isArray(parts)) return "";
-  const chunks = [];
-  for (const part of parts) {
-    const text = part?.text;
-    if (typeof text === "string") chunks.push(text);
-  }
-  return chunks.join("").trim();
-}
-function createGeminiChatProvider(opts) {
-  const model = opts.model ?? "gemini-2.0-flash";
-  const doFetch = opts.fetchImpl ?? fetch;
-  return {
-    name: "gemini",
-    async complete(input) {
-      const contents = input.messages.map((turn) => ({
-        role: turn.role === "assistant" ? "model" : "user",
-        parts: [{ text: turn.content }]
-      }));
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), Math.max(1e3, input.timeoutMs));
-      try {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-        const res = await doFetch(url, {
-          method: "POST",
-          signal: controller.signal,
-          headers: {
-            "Content-Type": "application/json",
-            // Key in a header, never the URL, so it cannot leak via access logs.
-            "x-goog-api-key": opts.apiKey
-          },
-          body: JSON.stringify({
-            systemInstruction: { parts: [{ text: input.system }] },
-            contents,
-            generationConfig: { temperature: 0.2, responseMimeType: "application/json" }
-          })
-        });
-        if (!res.ok) {
-          throw new Error(`ai_provider_http_${res.status}`);
-        }
-        return extractGeminiText(await res.json());
-      } finally {
-        clearTimeout(timer);
-      }
-    }
-  };
-}
-var CHAT_PROVIDER_REGISTRY = {
-  gemini: (env, fetchImpl) => createGeminiChatProvider({
-    apiKey: env.CHAT_AI_API_KEY ?? env.KYC_AI_API_KEY ?? "",
-    model: env.CHAT_AI_MODEL,
-    fetchImpl
-  })
-};
-function resolveChatApiKey(env) {
-  return (env.CHAT_AI_API_KEY ?? "").trim() || (env.KYC_AI_API_KEY ?? "").trim();
-}
-function createChatProviderFromEnv(env, fetchImpl) {
-  if (!resolveChatApiKey(env)) return null;
-  const name = (env.CHAT_AI_PROVIDER ?? "gemini").toLowerCase();
-  const factory = CHAT_PROVIDER_REGISTRY[name];
-  if (!factory) return null;
-  return factory(env, fetchImpl);
 }
 
 // supabase/functions/_shared/chat/identity.ts

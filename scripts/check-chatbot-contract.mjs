@@ -141,17 +141,29 @@ check('no-store response', /Cache-Control/.test(index) && /no-store/.test(index)
 check('safe error body', /invalid_message/.test(index) && !/\b(error|err|e)\.message\b/.test(index));
 
 // ---------------------------------------------------------------------------
-console.log('\n[7-8] Server-only key and kill switch');
+console.log('\n[7-8] Server-only key, provider selection and kill switch');
 const frontend = [
   'src/lib/supportChat.ts',
   'src/components/SupportChatbot.tsx',
 ].map(read).join('\n');
-check('frontend has no AI key', !/AIza|VITE_GEMINI|generativelanguage|CHAT_AI_API_KEY/.test(frontend));
+const providerSrc = read('supabase/functions/_shared/chat/provider.ts');
+check('frontend has no AI key', !/AIza|VITE_GEMINI|generativelanguage|CHAT_AI_API_KEY|OPENROUTER/i.test(frontend));
 check('frontend stores no conversation', !/localStorage|sessionStorage|document\.cookie/.test(stripComments(frontend)));
-check('provider key is a server secret', read('supabase/functions/_shared/chat/provider.ts').includes('CHAT_AI_API_KEY'));
-check('key is sent in a header', read('supabase/functions/_shared/chat/provider.ts').includes('x-goog-api-key'));
+check('provider key is a server secret', providerSrc.includes('CHAT_AI_API_KEY'));
+check('gemini key is sent in a header', providerSrc.includes('x-goog-api-key'));
+check('openrouter key is sent in the Authorization header', /Authorization:\s*`Bearer \$\{opts\.apiKey\}`/.test(providerSrc));
+check('openrouter uses the documented endpoint', providerSrc.includes('https://openrouter.ai/api/v1/chat/completions'));
+check('openrouter sends HTTP-Referer', /"HTTP-Referer":\s*"https:\/\/braxelmarkets\.vercel\.app"/.test(providerSrc));
+check('openrouter sends X-OpenRouter-Title', /"X-OpenRouter-Title":\s*"Braxel Markets"/.test(providerSrc));
+check('openrouter default model is openrouter/free', /openrouter:\s*"openrouter\/free"/.test(providerSrc));
+check('openrouter never receives the KYC gemini key', /name === "gemini" \? \(env\.KYC_AI_API_KEY/.test(providerSrc));
+check('no key in a URL', !/completions\?|\?key=|\?api_key/.test(providerSrc));
+check('provider never logs', !/console\.(log|info|warn|error|debug)/.test(providerSrc));
 check('no VITE_ AI key in env template', !/VITE_GEMINI_API_KEY|VITE_.*AI.*KEY/.test(read('.env.example')));
 check('env template documents the chat secret', /CHAT_AI_API_KEY/.test(read('.env.example')));
+check('env template documents the openrouter provider', /CHAT_AI_PROVIDER=openrouter/.test(read('.env.example')));
+check('env template documents the openrouter model', /CHAT_AI_MODEL=openrouter\/free/.test(read('.env.example')));
+check('runbook documents the openrouter provider', /openrouter/i.test(read('docs/support-chatbot-runbook.md')));
 check('kill switch exists', /isSupportChatEnabled/.test(read('supabase/functions/_shared/features.ts')));
 check('kill switch is wired in the function', /isSupportChatEnabled/.test(index) && /feature_disabled/.test(index));
 

@@ -15,8 +15,9 @@
 // database writes and no operator/payment/activation calls. It cannot change a
 // payment, an account or a connection status, and it never claims to.
 //
-// Secrets: CHAT_AI_API_KEY (preferred) or the existing KYC_AI_API_KEY. The key
-// is server-only, sent in a header, never logged and never returned.
+// Secrets: CHAT_AI_API_KEY (OpenRouter by default; the legacy Gemini KYC key
+// is only reused when CHAT_AI_PROVIDER=gemini). The key is server-only, sent in
+// a request header, never logged and never returned.
 // ============================================================================
 
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";

@@ -21,19 +21,38 @@ rate-limit key. The request body never supplies a user id.
 
 ## Provider and secret
 
-The chatbot reuses the existing Gemini AI integration and the same server-only
-key posture as the KYC AI check.
+The chatbot talks to a model through a small server-side provider abstraction
+(`supabase/functions/_shared/chat/provider.ts`). Two providers are supported and
+selected by configuration; both use the same server-only key posture.
+
+| Provider | Status | Endpoint | Key |
+| --- | --- | --- | --- |
+| `openrouter` | **Default** | `https://openrouter.ai/api/v1/chat/completions` (OpenAI-compatible) | `CHAT_AI_API_KEY` only |
+| `gemini` | Optional | `generativelanguage.googleapis.com` | `CHAT_AI_API_KEY`, else `KYC_AI_API_KEY` |
+
+The OpenRouter request sends the key in the `Authorization: Bearer …` header,
+never in the URL, and adds the optional attribution headers
+`HTTP-Referer: https://braxelmarkets.vercel.app` and
+`X-OpenRouter-Title: Braxel Markets`. The key is never logged and never
+returned in an error: a failure surfaces as a stable code
+(`ai_provider_unauthorized`, `ai_provider_rate_limited`, `ai_provider_http_<n>`,
+`ai_provider_network`, `ai_provider_timeout`).
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
-| `CHAT_AI_API_KEY` | Preferred | — | Dedicated Gemini key for the chatbot. |
-| `KYC_AI_API_KEY` | Fallback | — | Existing Gemini key, reused when `CHAT_AI_API_KEY` is unset. |
-| `CHAT_AI_MODEL` | No | `gemini-2.0-flash` | Gemini model id. |
-| `CHAT_AI_PROVIDER` | No | `gemini` | Provider registry id. |
+| `CHAT_AI_PROVIDER` | No | `openrouter` | `openrouter` (default) or `gemini`. An unknown id fails closed. |
+| `CHAT_AI_API_KEY` | Yes (for AI answers) | — | Server-side OpenRouter key. The only key OpenRouter ever receives. |
+| `CHAT_AI_MODEL` | No | `openrouter/free` (openrouter) / `gemini-2.0-flash` (gemini) | Model id passed to the provider. |
+| `KYC_AI_API_KEY` | No | — | Existing **Gemini** key. Reused only by the gemini provider; never sent to OpenRouter. |
 | `SUPPORT_CHAT_ENABLED` | No | on | Only the exact string `"false"` disables the function. |
 | `SUPPORT_CHAT_TIMEOUT_MS` | No | `20000` | Provider timeout, clamped to 2000–30000 ms. |
 | `APP_URL` | No | `https://braxelmarkets.vercel.app` | Origin used to build official source links. |
 | `SUPPORT_INBOX_EMAIL` | No | `marketsbraxel@ouvidor.net` | Human handoff address. |
+
+Provider resolution order when `CHAT_AI_PROVIDER` is unset: a `CHAT_AI_API_KEY`
+selects `openrouter`; otherwise a legacy `KYC_AI_API_KEY` selects `gemini`;
+otherwise the default `openrouter` (with no key, which yields the deterministic
+fallback).
 
 Set the key as a **Supabase Edge Function secret**, never in a `VITE_*`
 variable. Vite inlines `VITE_*` values into the browser bundle.
@@ -120,11 +139,20 @@ link to `/contact`.
 2. Deploy the function:
    `supabase functions deploy support-chat` (or paste
    `docs/edge-functions/support-chat.ts` into the dashboard editor).
-3. Set the secret:
-   `supabase secrets set CHAT_AI_API_KEY=<your Gemini key>`.
-4. Optional: set `CHAT_AI_MODEL`, `SUPPORT_CHAT_TIMEOUT_MS`, `APP_URL`.
+3. Set the secrets:
+   ```bash
+   supabase secrets set CHAT_AI_PROVIDER=openrouter
+   supabase secrets set CHAT_AI_MODEL=openrouter/free
+   supabase secrets set CHAT_AI_API_KEY=<server-side OpenRouter key>
+   ```
+   `openrouter/free` is the documented default; set `CHAT_AI_MODEL` to any
+   OpenRouter model id your account can use. To keep using Gemini instead:
+   `CHAT_AI_PROVIDER=gemini` with a Gemini key in `CHAT_AI_API_KEY`.
+4. Optional: set `SUPPORT_CHAT_TIMEOUT_MS`, `APP_URL`.
 5. Verify: open the site, send “How do I reset my password?” and confirm the
-   answer and the `/reset-password` source link.
+   answer and the `/reset-password` source link. Then check the function log for
+   `[support-chat] { type, provider: "openrouter", … }` — it must never contain
+   the key or message text.
 6. To disable: `supabase secrets set SUPPORT_CHAT_ENABLED=false`. The endpoint
    returns 503 and the UI hides the panel on the next load.
 
@@ -138,12 +166,20 @@ npm run check:chatbot
 The suite covers grounded answers, unknown questions, prompt injection,
 financial-advice requests, secret requests and sharing, cross-user access,
 timeouts, rate limiting, human escalation, the absence of any privileged
-payment/account action, and all 11 locales.
+payment/account action, and all 11 locales. The provider sections [12]–[12b]
+cover OpenRouter provider selection and the request shape (endpoint, bearer
+header, `HTTP-Referer`/`X-OpenRouter-Title`, model default and override) plus
+success, invalid key (401), rate limit (429), 5xx, network failure and timeout,
+asserting no key or provider body ever reaches the user.
 
 ## Known limitations
 
 - Without `CHAT_AI_API_KEY` / `KYC_AI_API_KEY` the deterministic answers are
   **English**; the model path is what answers in the other 10 locales.
+- The default OpenRouter model `openrouter/free` is a free-tier route and can be
+  rate limited or slow. Set `CHAT_AI_MODEL` to a paid model for production
+  traffic. A provider 429 degrades to the approved-knowledge answer (it does not
+  fail the request); a provider timeout returns the localized timeout state.
 - The legal pages are drafts pending legal review. The assistant links to them
   and escalates legal questions; it does not give legal advice.
 - Rate limiting is per Edge instance (soft). The hard ceiling remains the
