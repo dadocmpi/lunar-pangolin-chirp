@@ -248,7 +248,7 @@ for (const fn of [
   'wise-checkout', 'activation-submit', 'activation-review', 'account-link',
   'operator-action', 'application-activate', 'application-reject',
   'operator-notification', 'checkout-config', 'operator-payments',
-  'application-ensure',
+  'application-ensure', 'support-chat',
 ]) {
   const src = read(`supabase/functions/${fn}/index.ts`);
   check(`${fn} is rate limited`, src.includes('createRateLimiter('));

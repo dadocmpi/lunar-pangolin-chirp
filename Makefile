@@ -1,4 +1,4 @@
-.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security test-stripe test-checkout test-plan-selection test-payment-activation typecheck build
+.PHONY: test test-payment test-payment-option-a test-tradovate test-tradovate-rls test-activation test-onboarding test-activation-rls test-migrations test-security test-stripe test-checkout test-plan-selection test-payment-activation test-support-chat typecheck build
 
 # ---------------------------------------------------------------------------
 # Local validation only. No deploy. No migration. No secrets.
@@ -32,6 +32,12 @@ test-tradovate:
 	deno run -A supabase/functions/_test/activation-submit-tests.ts
 	deno run -A supabase/functions/_test/activation-review-tests.ts
 	deno run -A supabase/functions/_test/profile-tests.ts
+
+
+# AI support chatbot (grounded answers, refusals, escalation, timeout,
+# rate limiting, no privileged action, 11 locales). No network, no DB, no key.
+test-support-chat:
+	deno run -A supabase/functions/_test/support-chat-tests.ts
 
 # Security contract tests (signed KYC tokens, bounded bodies, CORS allowlist,
 # rate limiter, operator-only endpoints). No network, no DB, no secrets.

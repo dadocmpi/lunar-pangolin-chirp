@@ -57,3 +57,12 @@ verify_jwt = true
 # public.
 [functions.operator-payments]
 verify_jwt = true
+
+# support-chat is the public AI support assistant. Visitors who cannot sign in
+# still need help with account creation, email confirmation and password
+# recovery, so a JWT is optional. When a bearer token is present it is verified
+# and used only as a rate-limit key; no user id is read from the body. The
+# function is stateless (no conversation storage), has no tools, and cannot
+# change any payment, account or connection state.
+[functions.support-chat]
+verify_jwt = false
