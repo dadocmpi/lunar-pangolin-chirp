@@ -1435,7 +1435,9 @@ function mostRecentHistoryLanguage(history) {
     const turn = history[i];
     if (turn.role !== "user") continue;
     const detection = detectMessageLanguage(turn.content);
-    if (detection.locale && !detection.short) return detection.locale;
+    if (detection.locale && (!detection.short || detection.confidence >= 0.8)) {
+      return detection.locale;
+    }
   }
   return null;
 }

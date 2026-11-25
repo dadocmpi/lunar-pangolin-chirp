@@ -806,6 +806,14 @@ for (const short of ["ok", "lo", "hi", "sim"]) {
     `${r.locale}/${r.source}`,
   );
 }
+check(
+  "a short greeting in history is a clear signal",
+  resolveResponseLanguage({ message: "ok", history: [{ role: "user", content: "olá" }], locale: "en" }).locale === "pt",
+);
+check(
+  "a short script match in history is a clear signal",
+  resolveResponseLanguage({ message: "ok", history: [{ role: "user", content: "你好" }], locale: "en" }).locale === "zh",
+);
 const esHistory = [{ role: "user" as const, content: "¿Cómo restablezco mi contraseña?" }];
 check("short message reuses recent spanish", resolveResponseLanguage({ message: "ok", history: esHistory, locale: "en" }).locale === "es");
 check("a clear message beats the website locale", resolveResponseLanguage({ message: "hello", history: ptHistory, locale: "es" }).locale === "en");

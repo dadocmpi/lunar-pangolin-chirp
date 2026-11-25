@@ -205,7 +205,7 @@ deno run -A supabase/functions/_test/support-chat-tests.ts   # or: make test-sup
 npm run check:chatbot
 ```
 
-The suite (800 checks) covers grounded answers, unknown questions, prompt
+The suite (802 checks) covers grounded answers, unknown questions, prompt
 injection, financial-advice requests, secret requests and sharing, cross-user
 access, timeouts, rate limiting, human escalation, the absence of any privileged
 payment/account action, and all 11 locales. Sections [15]–[17] cover
