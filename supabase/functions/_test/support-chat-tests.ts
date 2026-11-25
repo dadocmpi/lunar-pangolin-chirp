@@ -22,6 +22,15 @@ import {
   withTimeout,
 } from "../_shared/chat/chat.ts";
 import {
+  detectMessageLanguage,
+  isAnswerInLanguage,
+  isShortMessage,
+  localeFromAcceptLanguage,
+  resolveResponseLanguage,
+  type SupportedLocale,
+} from "../_shared/chat/language.ts";
+import { CHAT_MESSAGES, chatMessage, escalationMessage } from "../_shared/chat/messages.ts";
+import {
   KNOWLEDGE_ARTICLES,
   officialUrl,
   selectRelevantArticles,
@@ -406,7 +415,7 @@ check(
 check(
   "reply shape is the documented contract",
   Object.keys(activate).every((k) =>
-    ["type", "reply", "reason", "sources", "escalation", "disclaimer", "articleIds", "provider"].includes(k)
+    ["type", "reply", "locale", "reason", "sources", "escalation", "disclaimer", "articleIds", "provider"].includes(k)
   ),
 );
 
@@ -423,7 +432,8 @@ const REQUIRED_CHATBOT_KEYS = [
   "handoffCta", "handoffEmailLabel", "errorTitle", "errorRetry", "errorTimeout",
   "errorRateLimited", "errorUnavailable", "errorDisabled", "errorNotConfigured",
   "errorInvalidMessage", "placeholder", "send", "openChat", "close",
-  "minimize", "maximize", "supportDialog",
+  "minimize", "maximize", "supportDialog", "brandName", "online", "helpBadge",
+  "suggestionsTitle", "talkToHuman", "humanHandoffTitle", "humanHandoffBody",
 ];
 const REQUIRED_REFUSALS = ["advice", "secret", "injection", "promise"];
 const REQUIRED_CATEGORIES = [
@@ -463,14 +473,21 @@ for (const locale of SUPPORTED_LOCALES) {
   const categories = (chatbot.category ?? {}) as Record<string, unknown>;
   const missingRefusals = REQUIRED_REFUSALS.filter((k) => typeof refusals[k] !== "string" || !(refusals[k] as string).trim());
   const missingCategories = REQUIRED_CATEGORIES.filter((k) => typeof categories[k] !== "string" || !(categories[k] as string).trim());
+  const suggestions = (chatbot.suggestions ?? {}) as Record<string, unknown>;
+  const missingSuggestions = ["password", "plans", "payment", "activation"].filter(
+    (k) => typeof suggestions[k] !== "string" || !(suggestions[k] as string).trim(),
+  );
   check(
     `${locale}: chatbot strings are complete`,
-    missing.length === 0 && missingRefusals.length === 0 && missingCategories.length === 0,
-    [...missing, ...missingRefusals, ...missingCategories].join(","),
+    missing.length === 0 && missingRefusals.length === 0 && missingCategories.length === 0 && missingSuggestions.length === 0,
+    [...missing, ...missingRefusals, ...missingCategories, ...missingSuggestions].join(","),
   );
 
   const prompt = buildSystemPrompt(locale);
-  check(`${locale}: system prompt names the locale`, prompt.includes(`locale: ${locale}`));
+  check(
+    `${locale}: system prompt names the locale explicitly`,
+    prompt.includes(`language is ${locale}`) && prompt.includes(`answer in ${locale}`),
+  );
   check(`${locale}: system prompt carries the marker`, prompt.includes(SYSTEM_MARKER));
 
   const reply = await handleChat(
@@ -718,7 +735,7 @@ const plain = parseModelReply("just prose");
 check("plain prose is ungrounded", plain.parsed === false && plain.text === "just prose");
 
 const ungrounded = await handleChat(
-  { message: "Tell me about the service", locale: "en", history: [] },
+  { message: "Zebra quantum flux capacitor", locale: "en", history: [] },
   { ...DEPS, provider: fakeProvider(async () => `{"answer":"Something unverified.","article_ids":[]}`) },
 );
 check("an ungrounded model answer is dropped", ungrounded.type === "unknown", ungrounded.type);
@@ -735,6 +752,338 @@ check("client stores nothing", !/localStorage|sessionStorage|document\.cookie/.t
 check("client has a timeout", /AbortController|CLIENT_TIMEOUT_MS/.test(clientSrc));
 check("client validates source URLs", /safeHttpUrl/.test(clientSrc));
 check("client does not contain an AI key", !/AIza|gemini|generativelanguage/i.test(clientSrc));
+
+// ---------------------------------------------------------------------------
+console.log("\n[15] Deterministic language detection");
+const languageCases: Array<[string, SupportedLocale]> = [
+  ["hello", "en"],
+  ["How do I reset my password?", "en"],
+  ["Olá, como redefino a minha senha?", "pt"],
+  ["¿Cómo restablezco mi contraseña?", "es"],
+  ["Come reimposto la mia password?", "it"],
+  ["Comment réinitialiser mon mot de passe ?", "fr"],
+  ["Wie setze ich mein Passwort zurück?", "de"],
+  ["Привет, как сбросить пароль?", "ru"],
+  ["你好，如何重置密码？", "zh"],
+  ["こんにちは、パスワードをリセットするには？", "ja"],
+  ["مرحبا، كيف أعيد تعيين كلمة المرور؟", "ar"],
+  ["שלום, איך מאפסים סיסמה?", "he"],
+];
+for (const [text, expected] of languageCases) {
+  const d = detectMessageLanguage(text);
+  check(
+    `detects ${expected} from "${text.slice(0, 26)}"`,
+    d.locale === expected,
+    `${d.locale}/${d.reason}`,
+  );
+}
+check("english greeting is english", detectMessageLanguage("hello").locale === "en");
+check("portuguese greeting is portuguese", detectMessageLanguage("olá").locale === "pt");
+check("spanish greeting is spanish", detectMessageLanguage("hola").locale === "es");
+check("script detection is decisive for russian", detectMessageLanguage("привет").reason === "script");
+check("script detection is decisive for japanese", detectMessageLanguage("こんにちは").reason === "script");
+check("pure han is chinese", detectMessageLanguage("你好").locale === "zh");
+check("kana wins over han", detectMessageLanguage("日本語のテスト").locale === "ja");
+check("short ok is ambiguous", detectMessageLanguage("ok").locale === null);
+check("short lo is ambiguous", detectMessageLanguage("lo").locale === null);
+check("short hi is short", isShortMessage("hi"));
+check("hello is not short", !isShortMessage("hello"));
+check("empty message is undetected", detectMessageLanguage("   ").locale === null);
+check("accept-language picks a supported tag", localeFromAcceptLanguage("pt-BR,pt;q=0.9,en;q=0.8") === "pt");
+check("accept-language rejects unsupported tags", localeFromAcceptLanguage("xx-YY") === null);
+
+const mixedPt = detectMessageLanguage("Olá, preciso de ajuda com o pagamento. Can you help?");
+check("mixed pt/en resolves deterministically", mixedPt.locale === "pt", String(mixedPt.locale));
+const mixedEs = detectMessageLanguage("Hola, necesito ayuda con mi cuenta. Can you help?");
+check("mixed es/en resolves deterministically", mixedEs.locale === "es", String(mixedEs.locale));
+
+const ptHistory = [{ role: "user" as const, content: "Como redefino a minha senha?" }];
+for (const short of ["ok", "lo", "hi", "sim"]) {
+  const r = resolveResponseLanguage({ message: short, history: ptHistory, locale: "es" });
+  check(
+    `short "${short}" reuses the recent portuguese language`,
+    r.locale === "pt" && r.source === "history",
+    `${r.locale}/${r.source}`,
+  );
+}
+check(
+  "a short greeting in history is a clear signal",
+  resolveResponseLanguage({ message: "ok", history: [{ role: "user", content: "olá" }], locale: "en" }).locale === "pt",
+);
+check(
+  "a short script match in history is a clear signal",
+  resolveResponseLanguage({ message: "ok", history: [{ role: "user", content: "你好" }], locale: "en" }).locale === "zh",
+);
+const esHistory = [{ role: "user" as const, content: "¿Cómo restablezco mi contraseña?" }];
+check("short message reuses recent spanish", resolveResponseLanguage({ message: "ok", history: esHistory, locale: "en" }).locale === "es");
+check("a clear message beats the website locale", resolveResponseLanguage({ message: "hello", history: ptHistory, locale: "es" }).locale === "en");
+check(
+  "a clear portuguese message beats the spanish website locale",
+  resolveResponseLanguage({ message: "Olá, como redefino a minha senha?", history: [], locale: "es" }).locale === "pt",
+);
+check("website locale is the last resort", resolveResponseLanguage({ message: "ok", history: [], locale: "es" }).locale === "es");
+check("a decisive short greeting is used without history", resolveResponseLanguage({ message: "sim", history: [], locale: "en" }).locale === "pt");
+check("fallback after a previous language was detected", resolveResponseLanguage({ message: "obrigado", history: ptHistory, locale: "en" }).locale === "pt");
+check("isAnswerInLanguage accepts the target", isAnswerInLanguage("Como redefinir a minha senha?", "pt"));
+check("isAnswerInLanguage rejects a clear mismatch", !isAnswerInLanguage("How do I reset my password?", "pt"));
+
+const ptAnswer = await handleChat(
+  { message: "Como redefinir a minha senha?", locale: "es", history: [] },
+  DEPS,
+);
+check("portuguese input -> portuguese reply", ptAnswer.locale === "pt" && /senha|página oficial|suporte/i.test(ptAnswer.reply), ptAnswer.reply.slice(0, 60));
+const esAnswer = await handleChat(
+  { message: "¿Cómo restablezco mi contraseña?", locale: "en", history: [] },
+  DEPS,
+);
+check("spanish input -> spanish reply", esAnswer.locale === "es" && /contraseña|página oficial|soporte/i.test(esAnswer.reply), esAnswer.reply.slice(0, 60));
+const enAnswer = await handleChat({ message: "hello", locale: "es", history: [] }, DEPS);
+check("hello -> english reply", enAnswer.locale === "en");
+const ambiguous = await handleChat(
+  { message: "ok", locale: "es", history: [{ role: "user", content: "Como redefinir a minha senha?" }] },
+  DEPS,
+);
+check("short ambiguous input reuses the previous language", ambiguous.locale === "pt", String(ambiguous.locale));
+
+// ---------------------------------------------------------------------------
+console.log("\n[16] Localized deterministic fallbacks");
+const MESSAGE_KEYS = [
+  "unknown", "timeout", "providerError", "rateLimited", "disabled",
+  "invalidMessage", "knowledgeFallback", "secret", "advice", "injection", "promise",
+] as const;
+const ESCALATION_CATEGORIES = [
+  "payment_dispute", "kyc", "account_suspension", "legal",
+  "provider_problem", "refund", "human_request",
+] as const;
+for (const locale of SUPPORTED_LOCALES) {
+  for (const key of MESSAGE_KEYS) {
+    const msg = chatMessage(locale, key);
+    check(`${locale}: ${key} is present`, typeof msg === "string" && msg.length > 10);
+    if (locale !== "en") {
+      check(`${locale}: ${key} is not the english fallback`, msg !== chatMessage("en", key));
+    }
+  }
+  for (const category of ESCALATION_CATEGORIES) {
+    const msg = escalationMessage(locale, category);
+    check(`${locale}: escalation ${category} is present`, msg.length > 10);
+    if (locale !== "en") {
+      check(`${locale}: escalation ${category} is localized`, msg !== escalationMessage("en", category));
+    }
+  }
+  const samples = [
+    chatMessage(locale, "unknown"),
+    chatMessage(locale, "timeout"),
+    chatMessage(locale, "rateLimited"),
+    chatMessage(locale, "disabled"),
+    chatMessage(locale, "knowledgeFallback"),
+  ];
+  check(
+    `${locale}: fallback messages are detected as ${locale}`,
+    samples.every((m) => detectMessageLanguage(m).locale === locale),
+    samples.map((m) => String(detectMessageLanguage(m).locale)).join(","),
+  );
+}
+
+// ---------------------------------------------------------------------------
+console.log("\n[17] Provider failure and deterministic fallback in every language");
+const unknownQuestions: Record<SupportedLocale, string> = {
+  en: "What is the weather on Mars tomorrow?",
+  pt: "Como está o tempo em Marte amanhã?",
+  es: "¿Qué tiempo hace en Marte mañana?",
+  it: "Che tempo fa su Marte domani?",
+  fr: "Quel temps fait-il sur Mars demain ?",
+  de: "Wie ist das Wetter auf Mars morgen?",
+  ru: "Какая погода на Марсе завтра?",
+  zh: "火星上的天气怎么样？",
+  ja: "火星の天気はどうですか？",
+  ar: "كيف حال الطقس في المريخ غدا؟",
+  he: "איך מזג האוויר במאדים מחר?",
+};
+for (const locale of SUPPORTED_LOCALES) {
+  const q = unknownQuestions[locale];
+  check(`${locale}: the unknown question is detected`, detectMessageLanguage(q).locale === locale, String(detectMessageLanguage(q).locale));
+  const r = await handleChat(
+    { message: q, locale: "en", history: [] },
+    {
+      ...DEPS,
+      provider: fakeProvider(async () => {
+        throw new ChatProviderError("ai_provider_http_500", 500);
+      }),
+    },
+  );
+  check(
+    `${locale}: provider error -> localized unknown`,
+    r.type === "unknown" && r.locale === locale && r.reply === chatMessage(locale, "unknown"),
+    `${r.type}/${r.locale}`,
+  );
+  const t = await handleChat(
+    { message: q, locale: "en", history: [] },
+    {
+      ...DEPS,
+      provider: fakeProvider(async () => {
+        throw new ChatProviderError("ai_provider_timeout");
+      }),
+    },
+  );
+  check(
+    `${locale}: provider timeout -> localized timeout`,
+    t.type === "timeout" && t.locale === locale && t.reply === chatMessage(locale, "timeout"),
+    `${t.type}/${t.locale}`,
+  );
+}
+
+const mismatched = await handleChat(
+  { message: "Como redefinir a minha senha?", locale: "en", history: [] },
+  {
+    ...DEPS,
+    provider: fakeProvider(async () =>
+      JSON.stringify({ answer: "Use the Forgot password link on the Login page.", article_ids: ["password_recovery"] })
+    ),
+  },
+);
+check(
+  "a model answer in the wrong language is not shown",
+  mismatched.locale === "pt" && mismatched.reply === chatMessage("pt", "knowledgeFallback"),
+  `${mismatched.locale}/${mismatched.reply.slice(0, 40)}`,
+);
+
+const ptModel = await handleChat(
+  { message: "Como redefinir a minha senha?", locale: "en", history: [] },
+  {
+    ...DEPS,
+    provider: fakeProvider(async () =>
+      JSON.stringify({
+        answer: "Use a ligação «Esqueceu-se da palavra-passe?» na página de início de sessão.",
+        article_ids: ["password_recovery"],
+      })
+    ),
+  },
+);
+check(
+  "a model answer in the detected language is shown",
+  ptModel.type === "answered" && ptModel.locale === "pt" && /palavra-passe/i.test(ptModel.reply),
+  `${ptModel.type}/${ptModel.locale}`,
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[18] Expanded approved knowledge");
+const requiredExpanded = [
+  "public_routes", "company_overview", "how_it_works", "account_creation",
+  "email_confirmation", "password_recovery", "profile_and_signup", "plans",
+  "accounts_prop_firms", "checkout", "payment_methods", "payment_status",
+  "refunds_cancellation", "onboarding", "activation", "dashboard_usage",
+  "tradovate_connection", "withdrawal_kyc", "support_procedures",
+  "contact_and_company", "faq_help", "account_actions", "security_privacy",
+  "languages", "legal_documents",
+];
+check(
+  "knowledge base covers every audited section",
+  requiredExpanded.every((id) => KNOWLEDGE_ARTICLES.some((a) => a.id === id)),
+  requiredExpanded.filter((id) => !KNOWLEDGE_ARTICLES.some((a) => a.id === id)).join(","),
+);
+check("article ids are unique", new Set(KNOWLEDGE_ARTICLES.map((a) => a.id)).size === KNOWLEDGE_ARTICLES.length);
+check("every article has a title and a body", KNOWLEDGE_ARTICLES.every((a) => a.title.length > 3 && a.body.length > 40));
+check("every article has keywords", KNOWLEDGE_ARTICLES.every((a) => a.keywords.length > 0));
+
+const routesArticle = KNOWLEDGE_ARTICLES.find((a) => a.id === "public_routes")!;
+for (const route of [
+  "/pricing", "/how-it-works", "/about", "/accounts", "/contact", "/login",
+  "/register", "/complete-profile", "/reset-password", "/terms", "/privacy",
+  "/disclaimer", "/checkout", "/checkout/success", "/dashboard",
+]) {
+  check(`public routes article lists ${route}`, routesArticle.body.includes(route));
+}
+
+const paymentArticle = KNOWLEDGE_ARTICLES.find((a) => a.id === "payment_methods")!;
+check("payment methods cover stripe", /stripe/i.test(paymentArticle.body));
+check("payment methods cover bank/wise", /bank/i.test(paymentArticle.body) && /wise/i.test(paymentArticle.body));
+check("payment methods cover crypto", /crypto/i.test(paymentArticle.body));
+check("payment methods state USD", /USD/.test(paymentArticle.body));
+check("payment methods do not promise paypal", !/paypal.*(available|works|enabled)/i.test(paymentArticle.body));
+
+const refundsArticle = KNOWLEDGE_ARTICLES.find((a) => a.id === "refunds_cancellation")!;
+check(
+  "refunds article invents no refund window",
+  !/\b(7|14|30|60|90)\s*(days?|dias?|días?|jours?|tage?|дней|天)\b/i.test(refundsArticle.body),
+);
+check("refunds article routes to a person", /person/i.test(refundsArticle.body));
+
+check("company article has the public address", /Madrid, Spain/.test(KNOWLEDGE_ARTICLES.find((a) => a.id === "company_overview")!.body));
+check("support email is canonical", KNOWLEDGE_ARTICLES.some((a) => a.body.includes("marketsbraxel@ouvidor.net")));
+check("knowledge has no crypto wallet address", !KNOWLEDGE_ARTICLES.some((a) => /\b(0x[a-fA-F0-9]{20,}|bc1[a-z0-9]{20,}|tb1q[a-z0-9]{20,})\b/.test(a.body)));
+check("knowledge has no IBAN", !KNOWLEDGE_ARTICLES.some((a) => /\b[A-Z]{2}\d{2}[A-Z0-9]{10,}\b/.test(a.body)));
+check("knowledge does not claim to read customer status", !KNOWLEDGE_ARTICLES.some((a) => /I can see your (payment|account|trade)/i.test(a.body)));
+check("knowledge states the assistant cannot act", /cannot execute a payment/i.test(KNOWLEDGE_ARTICLES.find((a) => a.id === "account_actions")!.body));
+check("tradovate article states read-only", /read-only/i.test(KNOWLEDGE_ARTICLES.find((a) => a.id === "tradovate_connection")!.body));
+check("withdrawal article gates KYC server-side", /server-side/i.test(KNOWLEDGE_ARTICLES.find((a) => a.id === "withdrawal_kyc")!.body));
+
+const publicQuestionCases: Array<[string, string]> = [
+  ["How do I register?", "account_creation"],
+  ["How do I confirm my email?", "email_confirmation"],
+  ["I forgot my password", "password_recovery"],
+  ["How much is the Starter plan?", "plans"],
+  ["How do I buy a prop firm account?", "accounts_prop_firms"],
+  ["How does checkout work?", "checkout"],
+  ["Can I pay with crypto?", "payment_methods"],
+  ["What is the payment status?", "payment_status"],
+  ["What happens after payment?", "onboarding"],
+  ["How do I activate my account?", "activation"],
+  ["What is in the dashboard?", "dashboard_usage"],
+  ["Is Tradovate read only?", "tradovate_connection"],
+  ["What documents are needed for a withdrawal?", "withdrawal_kyc"],
+  ["How do I contact support?", "support_procedures"],
+  ["What is your address?", "contact_and_company"],
+  ["Where can I find the FAQ?", "faq_help"],
+  ["Can you activate my account for me?", "account_actions"],
+  ["Is the chat stored?", "security_privacy"],
+  ["Which languages do you support?", "languages"],
+  ["What are the terms?", "legal_documents"],
+  ["What pages are on the website?", "public_routes"],
+  ["Who founded Braxel?", "company_overview"],
+  ["How does the service work?", "how_it_works"],
+  ["Can I edit my profile?", "profile_and_signup"],
+];
+for (const [q, id] of publicQuestionCases) {
+  const r = await handleChat({ message: q, locale: "en", history: [] }, DEPS);
+  check(
+    `"${q}" is grounded in ${id}`,
+    r.type === "answered" && r.articleIds.includes(id),
+    `${r.type}:${r.articleIds.join(",")}`,
+  );
+}
+const refundEscalation = await handleChat({ message: "Can I get a refund?", locale: "en", history: [] }, DEPS);
+check(
+  "a refund question is escalated to a person, not answered by the model",
+  refundEscalation.type === "escalated" && refundEscalation.escalation?.category === "refund",
+  `${refundEscalation.type}/${refundEscalation.escalation?.category}`,
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[19] Support widget UI contract");
+const uiSrc = read("src/components/SupportChatbot.tsx");
+check("uses the lucide headset icon", /Headset/.test(uiSrc) && !/MessageSquare/.test(uiSrc));
+check("launcher is circular and fixed bottom-right", /rounded-full/.test(uiSrc) && /fixed bottom-5 end-4/.test(uiSrc));
+check("launcher has hover, focus and pressed states", /hover:scale/.test(uiSrc) && /focus-visible:ring/.test(uiSrc) && /active:scale/.test(uiSrc));
+check("launcher exposes an open state", /data-open=\{isOpen\}/.test(uiSrc) && /aria-expanded=\{isOpen\}/.test(uiSrc));
+check("accessible launcher label is translated", /t\("chatbot\.openChat"\)/.test(uiSrc) && /t\("chatbot\.close"\)/.test(uiSrc));
+check("subtle help indicator", /motion-safe:animate-pulse/.test(uiSrc) && /chatbot\.helpBadge/.test(uiSrc));
+check("panel is a dialog", /role="dialog"/.test(uiSrc) && /aria-modal="false"/.test(uiSrc) && /aria-labelledby="braxel-chatbot-title"/.test(uiSrc));
+check("panel has branding, online status and title", /chatbot\.brandName/.test(uiSrc) && /chatbot\.online/.test(uiSrc) && /chatbot\.title/.test(uiSrc));
+check("panel has close and minimize", /chatbot\.close/.test(uiSrc) && /chatbot\.minimize/.test(uiSrc) && /chatbot\.maximize/.test(uiSrc));
+check("scrollable message area", /overflow-y-auto/.test(uiSrc) && /role="log"/.test(uiSrc));
+check("loading indicator", /chatbot\.thinking/.test(uiSrc) && /role="status"/.test(uiSrc));
+check("error state", /role="alert"/.test(uiSrc) && /chatbot\.errorRetry/.test(uiSrc));
+check("input and send button", /chatbot\.inputLabel/.test(uiSrc) && /chatbot\.send/.test(uiSrc));
+check("suggested questions", /chatbot\.suggestionsTitle/.test(uiSrc) && /SUGGESTION_KEYS/.test(uiSrc));
+check("human-support escalation action", /chatbot\.talkToHuman/.test(uiSrc) && /chatbot\.humanHandoffBody/.test(uiSrc));
+check("mobile bottom sheet", /inset-x-0 bottom-0/.test(uiSrc) && /max-h-\[90dvh\]/.test(uiSrc) && /env\(safe-area-inset-bottom\)/.test(uiSrc));
+check("desktop compact window", /sm:w-\[400px\]/.test(uiSrc) && /sm:h-\[640px\]/.test(uiSrc));
+check("reduced motion respected", /motion-reduce:/.test(uiSrc));
+check("focus is returned to the launcher on close", /launcherRef\.current\?\.focus\(\)/.test(uiSrc));
+check("escape closes the panel", /e\.key === "Escape"/.test(uiSrc));
+check("no emoji as the main icon", !/[\u{1F300}-\u{1FAFF}]/u.test(uiSrc));
+check("server-localized messages are rendered verbatim", /\{message\.content\}/.test(uiSrc) && !/REFUSAL_KEY/.test(uiSrc));
+
 
 // ---------------------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed`);

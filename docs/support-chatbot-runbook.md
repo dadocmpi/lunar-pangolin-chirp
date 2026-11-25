@@ -8,8 +8,11 @@ connection status.
 ## What it is
 
 - **Edge Function:** `support-chat` (`verify_jwt = false`).
-- **UI:** floating panel on the home page and the dashboard
-  (`src/components/SupportChatbot.tsx`).
+- **UI:** a circular headset launcher fixed at the bottom-right of the home
+  page and the dashboard, opening a branded support window on desktop and a
+  near-full-width bottom sheet on mobile (`src/components/SupportChatbot.tsx`).
+  It includes suggested questions, a loading state, an error state with retry,
+  a human-handoff action, focus management and reduced-motion support.
 - **Client:** `src/lib/supportChat.ts`.
 - **Server logic:** `supabase/functions/_shared/chat/`.
 - **Kill switch:** `SUPPORT_CHAT_ENABLED` (exact `"false"` disables it).
@@ -63,20 +66,36 @@ approved knowledge base. It never fabricates an answer.
 ## Knowledge sources
 
 `supabase/functions/_shared/chat/knowledge.ts` is the single approved source.
-It covers:
+It was audited against `src/App.tsx`, the public pages, `src/i18n.ts`,
+`src/lib/plans.ts`, the canonical server `PLANS` table and `AGENTS.md`, and
+covers:
 
-- account creation
-- email confirmation
-- password recovery
+- every public route and page (`public_routes`)
+- company overview, leadership and business address (`company_overview`)
+- how the service works (`how_it_works`)
+- account creation, email confirmation and password recovery
+- profile and two-step signup details (`profile_and_signup`)
 - plans and pricing (read from the canonical server `PLANS` table)
-- checkout and payment methods
-- payment status
-- onboarding
-- account activation
-- dashboard usage
-- Tradovate connection status
-- support procedures
+- prop-firm accounts and the affiliate disclosure (`accounts_prop_firms`)
+- checkout (`checkout`) and card / Wise bank transfer / crypto
+  (`payment_methods`)
+- payment status (`payment_status`)
+- refunds and cancellation, routed to a person (`refunds_cancellation`)
+- onboarding (`onboarding`) and account activation (`activation`)
+- dashboard features (`dashboard_usage`)
+- Tradovate connection and its read-only limits (`tradovate_connection`)
+- withdrawals and the server-side KYC gate (`withdrawal_kyc`)
+- support procedures (`support_procedures`)
+- contact details and business address (`contact_and_company`)
+- the public FAQ topics (`faq_help`)
+- what the assistant can and cannot do (`account_actions`)
+- chat privacy and security (`security_privacy`)
+- the 11 supported languages (`languages`)
 - Terms, Privacy, Disclaimer and the risk warning (marked as drafts)
+
+The knowledge base never invents prices, wallet addresses, bank details, legal
+claims, Tradovate compatibility or company promises. It does not claim to know
+an individual customer's payment, activation, account or trading status.
 
 Official links are built server-side from `APP_URL`; the model cannot supply a
 URL. An answer with no approved article is returned as **unknown**, never as a
@@ -85,7 +104,8 @@ guess.
 ## Behaviour rules
 
 1. Identifies itself as an AI support assistant.
-2. Answers in the requested locale (`en, pt, it, es, fr, de, ru, zh, ja, ar, he`).
+2. Answers in the language of the customer's **latest message**
+   (`en, pt, it, es, fr, de, ru, zh, ja, ar, he`), not the website locale.
 3. Says clearly when it does not know.
 4. Includes official Braxel links when available.
 5. Escalates payment disputes, KYC, account suspension, legal questions,
@@ -102,11 +122,33 @@ guess.
 11. Conversations are per browser tab; there is no conversation id.
 12. Conversations are not stored.
 
+## Language detection
+
+`supabase/functions/_shared/chat/language.ts` is deterministic and pure:
+
+1. Script ranges decide Russian, Chinese, Japanese, Arabic and Hebrew.
+2. For Latin scripts, distinctive function words and diacritics are scored;
+   the winner needs a minimum score and margin.
+3. The latest message wins when it is clear. A short/ambiguous message
+   (`ok`, `lo`, `hi`, `sim`) reuses the most recent clearly detected **user**
+   language from the supplied history. The website locale is used only when no
+   message language can be detected.
+4. The detected language is written explicitly into the system prompt, and a
+   model completion that confidently answers in a different language is not
+   shown (the localized deterministic fallback is used instead).
+
+All deterministic messages — unknown, timeout, provider error, rate limit,
+disabled feature, refusals and every human-handoff category — exist in
+`supabase/functions/_shared/chat/messages.ts` for all 11 locales. The function
+also localizes its 429/503/504/400 bodies, so a Portuguese customer does not get
+an English error because the site locale is English.
+
 ## Privacy and retention
 
 - **Stored:** nothing. No table, no log of message content, no conversation id.
-- **Logged:** reply type, provider name, escalation flag and whether the caller
-  was authenticated. No message text, no user id, no email.
+- **Logged:** reply type, provider name, escalation flag, whether the caller
+  was authenticated, the detected locale and where the language decision came
+  from. No message text, no user id, no email.
 - **Sent to the provider:** the recent turns (up to 8) and the approved
   knowledge prompt. No account data, no secrets.
 - **Response header:** `Cache-Control: no-store`.
@@ -163,19 +205,28 @@ deno run -A supabase/functions/_test/support-chat-tests.ts   # or: make test-sup
 npm run check:chatbot
 ```
 
-The suite covers grounded answers, unknown questions, prompt injection,
-financial-advice requests, secret requests and sharing, cross-user access,
-timeouts, rate limiting, human escalation, the absence of any privileged
-payment/account action, and all 11 locales. The provider sections [12]–[12b]
-cover OpenRouter provider selection and the request shape (endpoint, bearer
-header, `HTTP-Referer`/`X-OpenRouter-Title`, model default and override) plus
-success, invalid key (401), rate limit (429), 5xx, network failure and timeout,
-asserting no key or provider body ever reaches the user.
+The suite (802 checks) covers grounded answers, unknown questions, prompt
+injection, financial-advice requests, secret requests and sharing, cross-user
+access, timeouts, rate limiting, human escalation, the absence of any privileged
+payment/account action, and all 11 locales. Sections [15]–[17] cover
+deterministic language detection (English, Portuguese, Spanish, Italian, French,
+German, Russian, Chinese, Japanese, Arabic, Hebrew, mixed input, short ambiguous
+input, history fallback, website-locale last resort), localized fallbacks and
+provider failure in every language. Section [18] covers the expanded knowledge
+base and the public questions for every major site section. Section [19] covers
+the widget UI contract (headset icon, states, accessibility, mobile/desktop,
+reduced motion). The provider sections [12]–[12b] cover OpenRouter provider
+selection and the request shape (endpoint, bearer header,
+`HTTP-Referer`/`X-OpenRouter-Title`, model default and override) plus success,
+invalid key (401), rate limit (429), 5xx, network failure and timeout, asserting
+no key or provider body ever reaches the user.
 
 ## Known limitations
 
-- Without `CHAT_AI_API_KEY` / `KYC_AI_API_KEY` the deterministic answers are
-  **English**; the model path is what answers in the other 10 locales.
+- Without `CHAT_AI_API_KEY` / `KYC_AI_API_KEY` the deterministic answer is the
+  full approved article for English, and a localized pointer to the official
+  page plus source links for the other 10 locales. The model path is what
+  produces a full prose answer in those languages.
 - The default OpenRouter model `openrouter/free` is a free-tier route and can be
   rate limited or slow. Set `CHAT_AI_MODEL` to a paid model for production
   traffic. A provider 429 degrades to the approved-knowledge answer (it does not
