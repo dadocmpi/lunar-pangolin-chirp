@@ -6,6 +6,12 @@
 // recovery. A bearer JWT is OPTIONAL: when present it is verified and used only
 // as a rate-limit key. No user id is ever read from the body.
 //
+// Language: the reply language is detected deterministically from the latest
+// user message (see _shared/chat/language.ts). Every deterministic fallback —
+// unknown, timeout, provider error, rate limit, refusal and human handoff — is
+// localized in all 11 locales, so the customer never gets an English answer
+// merely because the website locale is English.
+//
 // Privacy: conversations are STATELESS. The browser sends the recent turns
 // with each request; this function stores nothing, logs no message content and
 // returns `Cache-Control: no-store`. There is no conversation table, so one
@@ -23,9 +29,11 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { corsHeadersFor } from "../_shared/cors.ts";
 import { readJsonBody } from "../_shared/http.ts";
-import { createRateLimiter } from "../_shared/rateLimit.ts";
+import { createRateLimiter, clientIp } from "../_shared/rateLimit.ts";
 import { isSupportChatEnabled } from "../_shared/features.ts";
-import { handleChat, normalizeMessage } from "../_shared/chat/chat.ts";
+import { handleChat, normalizeHistory, normalizeMessage } from "../_shared/chat/chat.ts";
+import { localeFromAcceptLanguage, resolveResponseLanguage } from "../_shared/chat/language.ts";
+import { chatMessage } from "../_shared/chat/messages.ts";
 import { createChatProviderFromEnv } from "../_shared/chat/provider.ts";
 import { rateLimitKey, resolveChatIdentity } from "../_shared/chat/identity.ts";
 import type { ChatTurn } from "../_shared/chat/types.ts";
@@ -60,19 +68,34 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
   if (req.method !== "POST") return json({ ok: false, error: "method_not_allowed" }, 405);
 
+  // Before the body is parsed we only have the browser's language hint. It is
+  // used for kill-switch and IP-limit messages, never to decide an answer.
+  const hintLocale = localeFromAcceptLanguage(req.headers.get("accept-language")) ?? "en";
+
   // Runtime kill switch. Off => the endpoint refuses (fail closed).
   if (!isSupportChatEnabled()) {
-    return json({ ok: false, error: "feature_disabled", feature: "support_chat" }, 503);
+    return json(
+      {
+        ok: false,
+        error: "feature_disabled",
+        feature: "support_chat",
+        locale: hintLocale,
+        reply: chatMessage(hintLocale, "disabled"),
+      },
+      503,
+    );
   }
 
-  const identity = await resolveChatIdentity(req);
-  const key = rateLimitKey(identity);
-  const limited = identity.userId
-    ? userLimiter.hit(key) || ipLimiter.hit(`ip:${identity.ip}`)
-    : ipLimiter.hit(key);
-  if (limited) {
+  // Cheap IP ceiling before any body read or Auth round-trip.
+  const ipKey = `ip:${clientIp(req)}`;
+  if (ipLimiter.hit(ipKey)) {
     return new Response(
-      JSON.stringify({ ok: false, error: "rate_limited" }),
+      JSON.stringify({
+        ok: false,
+        error: "rate_limited",
+        locale: hintLocale,
+        reply: chatMessage(hintLocale, "rateLimited"),
+      }),
       {
         status: 429,
         headers: {
@@ -88,7 +111,12 @@ serve(async (req) => {
   const body = await readJsonBody<Record<string, unknown>>(req, MAX_BODY_BYTES);
   if (!body.ok) {
     return json(
-      { ok: false, error: body.error },
+      {
+        ok: false,
+        error: body.error,
+        locale: hintLocale,
+        reply: chatMessage(hintLocale, "invalidMessage"),
+      },
       body.error === "payload_too_large" ? 413 : 400,
     );
   }
@@ -96,10 +124,49 @@ serve(async (req) => {
   // ONLY these three fields are read. Any user id, conversation id, status or
   // action field in the body is ignored by design.
   const message = normalizeMessage(body.value.message);
-  if (!message) return json({ ok: false, error: "invalid_message" }, 400);
+  if (!message) {
+    return json(
+      {
+        ok: false,
+        error: "invalid_message",
+        locale: hintLocale,
+        reply: chatMessage(hintLocale, "invalidMessage"),
+      },
+      400,
+    );
+  }
 
-  const locale = typeof body.value.locale === "string" ? body.value.locale : "en";
-  const history = body.value.history;
+  const websiteLocale = typeof body.value.locale === "string" ? body.value.locale : "en";
+  const history = normalizeHistory(body.value.history);
+
+  // Detect before rate limiting so even a 429 is in the customer's language.
+  const language = resolveResponseLanguage({
+    message,
+    history,
+    locale: websiteLocale,
+  });
+  const locale = language.locale;
+
+  const identity = await resolveChatIdentity(req);
+  if (identity.userId && userLimiter.hit(rateLimitKey(identity))) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        error: "rate_limited",
+        locale,
+        reply: chatMessage(locale, "rateLimited"),
+      }),
+      {
+        status: 429,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+          "Cache-Control": "no-store",
+          "Retry-After": "600",
+        },
+      },
+    );
+  }
 
   const provider = createChatProviderFromEnv({
     CHAT_AI_API_KEY: Deno.env.get("CHAT_AI_API_KEY") ?? undefined,
@@ -109,7 +176,7 @@ serve(async (req) => {
   });
 
   const reply = await handleChat(
-    { message, locale, history: history as ChatTurn[] },
+    { message, locale: websiteLocale, history: history as ChatTurn[] },
     {
       provider,
       appUrl: Deno.env.get("APP_URL") ?? DEFAULT_APP_URL,
@@ -118,12 +185,15 @@ serve(async (req) => {
     },
   );
 
-  // Observability without user data: reply type, provider, escalation flag.
+  // Observability without user data: reply type, provider, escalation flag,
+  // detected language and where the language decision came from.
   console.log("[support-chat]", {
     type: reply.type,
     provider: reply.provider,
     escalated: Boolean(reply.escalation),
     authenticated: identity.authenticated,
+    locale,
+    languageSource: language.source,
   });
 
   const status = reply.type === "timeout" ? 504 : 200;
@@ -135,6 +205,6 @@ serve(async (req) => {
     sources: reply.sources,
     escalation: reply.escalation,
     disclaimer: reply.disclaimer,
-    locale,
+    locale: reply.locale ?? locale,
   }, status);
 });

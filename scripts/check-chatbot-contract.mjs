@@ -115,6 +115,47 @@ for (const [message, category] of [
   check(`"${message}" escalates to ${category}`, reply.type === 'escalated' && reply.escalation?.category === category);
 }
 
+// Language detection is deterministic and message-driven, not locale-driven.
+const language = await bundle('supabase/functions/_shared/chat/language.ts');
+const messages = await bundle('supabase/functions/_shared/chat/messages.ts');
+check('english input is detected as english', language.detectMessageLanguage('hello').locale === 'en');
+check('portuguese input is detected as portuguese', language.detectMessageLanguage('Olá, como redefino a minha senha?').locale === 'pt');
+check('spanish input is detected as spanish', language.detectMessageLanguage('¿Cómo restablezco mi contraseña?').locale === 'es');
+check('script input is detected', language.detectMessageLanguage('こんにちは、パスワードをリセットするには？').locale === 'ja');
+check('short ambiguous input is not guessed', language.detectMessageLanguage('ok').locale === null);
+check(
+  'short input reuses the recent language',
+  language.resolveResponseLanguage({
+    message: 'ok',
+    history: [{ role: 'user', content: 'Olá, como redefino a minha senha?' }],
+    locale: 'es',
+  }).locale === 'pt',
+);
+check(
+  'a clear message beats the website locale',
+  language.resolveResponseLanguage({ message: 'hello', history: [], locale: 'es' }).locale === 'en',
+);
+
+const ptReply = await chat.handleChat(
+  { message: 'Como redefinir a minha senha?', locale: 'es', history: [] },
+  DEPS,
+);
+check('portuguese input produces a portuguese reply', ptReply.locale === 'pt' && ptReply.reply === messages.chatMessage('pt', 'knowledgeFallback'));
+const esReply = await chat.handleChat(
+  { message: '¿Cómo restablezco mi contraseña?', locale: 'en', history: [] },
+  DEPS,
+);
+check('spanish input produces a spanish reply', esReply.locale === 'es' && esReply.reply === messages.chatMessage('es', 'knowledgeFallback'));
+const enReply = await chat.handleChat({ message: 'hello', locale: 'es', history: [] }, DEPS);
+check('hello produces an english reply', enReply.locale === 'en');
+
+const allLocales = ['en', 'pt', 'it', 'es', 'fr', 'de', 'ru', 'zh', 'ja', 'ar', 'he'];
+for (const locale of allLocales) {
+  check(`${locale}: unknown fallback is localized`, messages.chatMessage(locale, 'unknown').length > 10 && (locale === 'en' || messages.chatMessage(locale, 'unknown') !== messages.chatMessage('en', 'unknown')));
+  check(`${locale}: rate-limit fallback is localized`, messages.chatMessage(locale, 'rateLimited').length > 10 && (locale === 'en' || messages.chatMessage(locale, 'rateLimited') !== messages.chatMessage('en', 'rateLimited')));
+  check(`${locale}: human handoff is localized`, messages.escalationMessage(locale, 'human_request').length > 10 && (locale === 'en' || messages.escalationMessage(locale, 'human_request') !== messages.escalationMessage('en', 'human_request')));
+}
+
 // ---------------------------------------------------------------------------
 console.log('\n[5-6] Stateless, bounded, no privileged action');
 const index = stripComments(read('supabase/functions/support-chat/index.ts'));
@@ -125,6 +166,8 @@ const modules = [
   stripComments(read('supabase/functions/_shared/chat/policy.ts')),
   stripComments(read('supabase/functions/_shared/chat/provider.ts')),
   stripComments(read('supabase/functions/_shared/chat/identity.ts')),
+  stripComments(read('supabase/functions/_shared/chat/language.ts')),
+  stripComments(read('supabase/functions/_shared/chat/messages.ts')),
 ].join('\n');
 
 check('support-chat function exists', has('supabase/functions/support-chat/index.ts'));
@@ -175,7 +218,8 @@ const required = [
   'greeting', 'aiDisclosure', 'disclaimer', 'unknownTitle', 'unknownBody',
   'handoffTitle', 'handoffBody', 'handoffCta', 'errorTimeout', 'errorRateLimited',
   'sourcesTitle', 'privacyNote', 'clear', 'inputLabel', 'messagesLabel',
-  'refusal', 'category',
+  'refusal', 'category', 'brandName', 'online', 'helpBadge', 'suggestionsTitle',
+  'suggestions', 'talkToHuman', 'humanHandoffTitle', 'humanHandoffBody',
 ];
 for (const locale of locales) {
   const start = i18n.indexOf(`const ${locale}Translation = `);
@@ -189,6 +233,41 @@ for (const locale of locales) {
   const missing = required.filter((k) => !new RegExp(`\\b${k}:`).test(chatbot));
   check(`${locale}: chatbot strings present`, missing.length === 0, missing.join(','));
 }
+
+// ---------------------------------------------------------------------------
+console.log('\n[9b] Expanded knowledge + widget UI');
+const knowledgeSrc = read('supabase/functions/_shared/chat/knowledge.ts');
+const requiredTopics = [
+  'public_routes', 'company_overview', 'how_it_works', 'account_creation',
+  'email_confirmation', 'password_recovery', 'profile_and_signup', 'plans',
+  'accounts_prop_firms', 'checkout', 'payment_methods', 'payment_status',
+  'refunds_cancellation', 'onboarding', 'activation', 'dashboard_usage',
+  'tradovate_connection', 'withdrawal_kyc', 'support_procedures',
+  'contact_and_company', 'faq_help', 'account_actions', 'security_privacy',
+  'languages', 'legal_documents',
+];
+for (const id of requiredTopics) {
+  check(`knowledge covers ${id}`, new RegExp(`id: "${id}"`).test(knowledgeSrc));
+}
+check('knowledge reads prices from the canonical plan table', /PLAN_IDS\.map/.test(knowledgeSrc) && /PLANS\[id\]/.test(knowledgeSrc));
+check('knowledge contains no wallet address', !/\b(0x[a-fA-F0-9]{20,}|bc1[a-z0-9]{20,}|tb1q[a-z0-9]{20,})\b/.test(knowledgeSrc));
+check('knowledge contains no IBAN', !/\b[A-Z]{2}\d{2}[A-Z0-9]{10,}\b/.test(knowledgeSrc));
+
+const ui = read('src/components/SupportChatbot.tsx');
+check('widget uses the headset icon', /Headset/.test(ui) && !/MessageSquare/.test(ui));
+check('widget launcher is circular and fixed bottom-right', /rounded-full/.test(ui) && /fixed bottom-5 end-4/.test(ui));
+check('widget has hover, focus, pressed and open states', /hover:scale/.test(ui) && /focus-visible:ring/.test(ui) && /active:scale/.test(ui) && /data-open=\{isOpen\}/.test(ui));
+check('widget launcher label is translated', /t\("chatbot\.openChat"\)/.test(ui));
+check('widget has a subtle help indicator', /chatbot\.helpBadge/.test(ui) && /motion-safe:animate-pulse/.test(ui));
+check('widget panel is an accessible dialog', /role="dialog"/.test(ui) && /aria-labelledby="braxel-chatbot-title"/.test(ui));
+check('widget shows branding and online status', /chatbot\.brandName/.test(ui) && /chatbot\.online/.test(ui));
+check('widget has suggested questions', /chatbot\.suggestionsTitle/.test(ui) && /SUGGESTION_KEYS/.test(ui));
+check('widget has a human handoff action', /chatbot\.talkToHuman/.test(ui) && /chatbot\.humanHandoffBody/.test(ui));
+check('widget is a mobile bottom sheet with safe spacing', /inset-x-0 bottom-0/.test(ui) && /env\(safe-area-inset-bottom\)/.test(ui));
+check('widget is a desktop compact window', /sm:w-\[400px\]/.test(ui) && /sm:h-\[640px\]/.test(ui));
+check('widget respects reduced motion', /motion-reduce:/.test(ui));
+check('widget returns focus to the launcher', /launcherRef\.current\?\.focus\(\)/.test(ui));
+check('widget renders the server-localized reply verbatim', /\{message\.content\}/.test(ui));
 
 // ---------------------------------------------------------------------------
 console.log('\n[10] Bundle + tests + docs');

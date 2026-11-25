@@ -48,8 +48,10 @@ export type ChatRefusalReason = "advice" | "secret" | "injection" | "promise";
 
 export interface ChatReply {
   type: ChatReplyType;
-  /** English canonical text. The UI localizes refusal/unknown/handoff states. */
+  /** Localized text in the language detected from the latest user message. */
   reply: string;
+  /** Language the reply is written in (detected, not the website locale). */
+  locale?: string;
   /** For `refused`, why the request was refused (the UI picks localized copy). */
   reason?: ChatRefusalReason;
   sources: ChatSource[];

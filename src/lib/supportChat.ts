@@ -55,7 +55,7 @@ export type ChatSendError =
 
 export type ChatSendResult =
   | { ok: true; reply: ChatReply }
-  | { ok: false; error: ChatSendError };
+  | { ok: false; error: ChatSendError; reply?: string };
 
 const TYPES: ChatReplyType[] = [
   "answered", "unknown", "escalated", "refused", "timeout", "error",
@@ -176,15 +176,40 @@ export async function sendChatMessage(input: SendChatInput): Promise<ChatSendRes
       }),
     });
 
-    if (res.status === 429) return { ok: false, error: "rate_limited" };
-    if (res.status === 503) return { ok: false, error: "disabled" };
-    if (res.status === 504) return { ok: false, error: "timeout" };
-    if (res.status === 400) return { ok: false, error: "invalid_message" };
-    if (!res.ok) return { ok: false, error: "unavailable" };
+    // Read the body once. A server error response carries a localized
+    // `reply` in the language detected from the customer's message, so the UI
+    // can show it instead of falling back to the website locale.
+    let data: unknown = null;
+    try {
+      data = await res.json();
+    } catch {
+      data = null;
+    }
+    const serverReply = data && typeof data === "object" &&
+        typeof (data as { reply?: unknown }).reply === "string"
+      ? (data as { reply: string }).reply.slice(0, 4000)
+      : undefined;
 
-    const reply = resolveChatReply(await res.json());
-    if (reply.type === "timeout") return { ok: false, error: "timeout" };
-    if (reply.type === "error") return { ok: false, error: "unavailable" };
+    if (res.status === 429) return { ok: false, error: "rate_limited", reply: serverReply };
+    if (res.status === 503) return { ok: false, error: "disabled", reply: serverReply };
+    if (res.status === 504) {
+      if (serverReply) {
+        return {
+          ok: true,
+          reply: { type: "timeout", reply: serverReply, sources: [], escalation: null },
+        };
+      }
+      return { ok: false, error: "timeout" };
+    }
+    if (res.status === 400 || res.status === 413) {
+      return { ok: false, error: "invalid_message", reply: serverReply };
+    }
+    if (!res.ok) return { ok: false, error: "unavailable", reply: serverReply };
+
+    const reply = resolveChatReply(data);
+    if (!reply.reply) {
+      return { ok: false, error: reply.type === "timeout" ? "timeout" : "unavailable" };
+    }
     return { ok: true, reply };
   } catch (e) {
     if (e instanceof DOMException && e.name === "AbortError") {
