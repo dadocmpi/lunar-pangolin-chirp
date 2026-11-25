@@ -10,6 +10,13 @@ import { functionsUrl, isSupabaseConfigured } from "@/integrations/supabase/clie
 
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
 
+/**
+ * Public human-support address. This is the inbox the server-side
+ * `support-message` function routes to; it is safe to show in the UI and is
+ * used as the fallback when the server does not return one.
+ */
+export const SUPPORT_EMAIL = "marketsbraxel@ouvidor.net";
+
 export interface SupportMessageInput {
   name: string;
   email: string;

@@ -11,6 +11,8 @@ import TradovateWelcome from '@/components/TradovateWelcome';
 import ActivateAccountView from '@/components/ActivateAccountView';
 import ProfileEditor from '@/components/profile/ProfileEditor';
 import PaymentLifecycleCard from '@/components/dashboard/PaymentLifecycleCard';
+import SupportChatbot from '@/components/SupportChatbot';
+import SupportChatbotBoundary from '@/components/SupportChatbotBoundary';
 import KycReminderBanner from '@/components/KycReminderBanner';
 import WithdrawalKycGate, { type KycStatus as WithdrawalKycStatus } from '@/components/WithdrawalKycGate';
 import {
@@ -1108,6 +1110,10 @@ const Dashboard = () => {
           </main>
         </div>
       </div>
+
+      <SupportChatbotBoundary>
+        <SupportChatbot />
+      </SupportChatbotBoundary>
 
       <Footer />
     </div>

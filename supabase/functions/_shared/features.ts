@@ -18,6 +18,8 @@
 //   EXECUTION_CAPABILITY_ENABLED   Opt-in only: execution is OFF unless this is
 //                                  exactly "true". It is a forward-looking kill
 //                                  switch; no execution code ships in this phase.
+//   SUPPORT_CHAT_ENABLED           "false" -> support-chat returns 503 and the
+//                                             chat widget hides in the UI.
 //
 // The server flag is the boundary. The client reads the public
 // `activation-config` Edge Function (src/lib/activationConfig.ts) purely to
@@ -30,6 +32,7 @@ export interface FeatureEnv {
   WITHDRAWAL_KYC_GATE_ENABLED?: string;
   ACTIVATION_FLOW_ENABLED?: string;
   EXECUTION_CAPABILITY_ENABLED?: string;
+  SUPPORT_CHAT_ENABLED?: string;
 }
 
 /** A feature is off only when its switch is exactly "false". Default ON. */
@@ -51,6 +54,11 @@ export function isWithdrawalKycGateEnabled(env: FeatureEnv = defaultEnv()): bool
 
 export function isActivationFlowEnabled(env: FeatureEnv = defaultEnv()): boolean {
   return flagEnabled(env.ACTIVATION_FLOW_ENABLED);
+}
+
+/** Support chatbot kill switch. Off => support-chat refuses with 503. */
+export function isSupportChatEnabled(env: FeatureEnv = defaultEnv()): boolean {
+  return flagEnabled(env.SUPPORT_CHAT_ENABLED);
 }
 
 /**
@@ -95,5 +103,6 @@ function defaultEnv(): FeatureEnv {
     WITHDRAWAL_KYC_GATE_ENABLED: Deno.env.get("WITHDRAWAL_KYC_GATE_ENABLED") ?? undefined,
     ACTIVATION_FLOW_ENABLED: Deno.env.get("ACTIVATION_FLOW_ENABLED") ?? undefined,
     EXECUTION_CAPABILITY_ENABLED: Deno.env.get("EXECUTION_CAPABILITY_ENABLED") ?? undefined,
+    SUPPORT_CHAT_ENABLED: Deno.env.get("SUPPORT_CHAT_ENABLED") ?? undefined,
   };
 }

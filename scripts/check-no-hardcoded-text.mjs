@@ -30,6 +30,7 @@ const TARGETS = [
   'src/components/WithdrawalKycGate.tsx',
   'src/components/ActivateAccountView.tsx',
   'src/components/PlanActiveChecklist.tsx',
+  'src/components/SupportChatbot.tsx',
   'src/pages/Dashboard.tsx',
   'src/pages/Accounts.tsx',
   'src/pages/OperatorActivations.tsx',

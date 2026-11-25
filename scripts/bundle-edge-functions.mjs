@@ -28,6 +28,7 @@ const FUNCTIONS = [
   'tradovate-disconnect',
   'tradovate-status',
   'tradovate-sync',
+  'support-chat',
 ];
 
 const OUT = 'docs/edge-functions';
