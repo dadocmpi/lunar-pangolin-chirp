@@ -29,7 +29,7 @@ import {
   sanitizeAnswer,
   SYSTEM_MARKER,
 } from "./policy.ts";
-import type { ChatProvider } from "./provider.ts";
+import { isChatProviderTimeout, type ChatProvider } from "./provider.ts";
 import {
   MAX_HISTORY_TURNS,
   MAX_MESSAGE_CHARS,
@@ -390,10 +390,11 @@ export async function handleChat(
         provider: deps.provider.name,
       });
     } catch (e) {
-      if (e instanceof ChatTimeoutError) {
+      if (e instanceof ChatTimeoutError || isChatProviderTimeout(e)) {
         return baseReply({ type: "timeout", reply: REPLY_TEXT.timeout, provider: deps.provider.name });
       }
-      // Provider error: fall through to the deterministic knowledge fallback.
+      // Provider error (401/429/5xx/network): fall through to the deterministic
+      // knowledge fallback. The provider error text is never shown to the user.
     }
   }
 
