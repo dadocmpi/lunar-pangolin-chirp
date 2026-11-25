@@ -12,6 +12,11 @@
 // localized in all 11 locales, so the customer never gets an English answer
 // merely because the website locale is English.
 //
+// Understanding: the message is classified against the approved knowledge base
+// (see _shared/chat/intent.ts) so informal, abbreviated, misspelled and
+// conversational messages are answered from the right topic, and a genuinely
+// ambiguous message gets one short clarifying question instead of a guess.
+//
 // Privacy: conversations are STATELESS. The browser sends the recent turns
 // with each request; this function stores nothing, logs no message content and
 // returns `Cache-Control: no-store`. There is no conversation table, so one
@@ -194,6 +199,8 @@ serve(async (req) => {
     authenticated: identity.authenticated,
     locale,
     languageSource: language.source,
+    // Approved article ids only (no message text, no user data).
+    intent: reply.articleIds[0] ?? null,
   });
 
   const status = reply.type === "timeout" ? 504 : 200;
