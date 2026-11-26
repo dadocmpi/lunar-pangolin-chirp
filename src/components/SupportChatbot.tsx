@@ -75,6 +75,10 @@ const SupportChatbot = () => {
   const [error, setError] = useState<{ code: ChatSendError; reply?: string } | null>(null);
   const [lastSent, setLastSent] = useState<string | null>(null);
   const [showHumanCard, setShowHumanCard] = useState(false);
+  // The short greeting is shown once per chat session: on the first open, or
+  // after a clear. Closing, minimizing and reopening never repeats it.
+  const [greetingVisible, setGreetingVisible] = useState(false);
+  const greetingShownRef = useRef(false);
 
   const launcherRef = useRef<HTMLButtonElement | null>(null);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
@@ -95,10 +99,19 @@ const SupportChatbot = () => {
     [messages],
   );
 
+  const openChat = useCallback(() => {
+    setIsOpen(true);
+    if (!greetingShownRef.current && messages.length === 0) {
+      greetingShownRef.current = true;
+      setGreetingVisible(true);
+    }
+  }, [messages.length]);
+
   const close = useCallback(() => {
     setIsOpen(false);
     setIsMinimized(false);
     setShowHumanCard(false);
+    setGreetingVisible(false);
     requestAnimationFrame(() => launcherRef.current?.focus());
   }, []);
 
@@ -108,6 +121,7 @@ const SupportChatbot = () => {
       if (!text || isLoading) return;
       setError(null);
       setShowHumanCard(false);
+      setGreetingVisible(false);
       setLastSent(text);
       setMessages((prev) => [...prev, { id: nextId(), role: "user", content: text }]);
       setInputValue("");
@@ -160,6 +174,9 @@ const SupportChatbot = () => {
     setLastSent(null);
     setIsLoading(false);
     setShowHumanCard(false);
+    // A cleared chat is a new session: the greeting may be shown once more.
+    greetingShownRef.current = false;
+    setGreetingVisible(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -173,7 +190,7 @@ const SupportChatbot = () => {
       <button
         ref={launcherRef}
         type="button"
-        onClick={() => (isOpen ? close() : setIsOpen(true))}
+        onClick={() => (isOpen ? close() : openChat())}
         aria-label={isOpen ? t("chatbot.close") : t("chatbot.openChat")}
         aria-expanded={isOpen}
         aria-controls="braxel-support-panel"
@@ -284,8 +301,20 @@ const SupportChatbot = () => {
                 className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[#05070A] px-4 py-4"
               >
                 <div className="border border-[#D4AF37]/20 bg-[#D4AF37]/[0.04] p-3">
-                  <p className="text-[10px] leading-relaxed text-slate-300">{t("chatbot.greeting")}</p>
-                  <p className="mt-2 flex items-start gap-1.5 text-[9px] leading-relaxed text-slate-500">
+                  {greetingVisible && !hasConversation && (
+                    <p
+                      data-chatbot-greeting="visible"
+                      className="text-[10px] leading-relaxed text-slate-300"
+                    >
+                      {t("chatbot.greeting")}
+                    </p>
+                  )}
+                  <p
+                    className={cn(
+                      "flex items-start gap-1.5 text-[9px] leading-relaxed text-slate-500",
+                      greetingVisible && !hasConversation && "mt-2",
+                    )}
+                  >
                     <ShieldAlert size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
                     {t("chatbot.aiDisclosure")}
                   </p>

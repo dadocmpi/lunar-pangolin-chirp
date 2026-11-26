@@ -178,6 +178,7 @@ const modules = [
   stripComments(read('supabase/functions/_shared/chat/provider.ts')),
   stripComments(read('supabase/functions/_shared/chat/identity.ts')),
   stripComments(read('supabase/functions/_shared/chat/language.ts')),
+  stripComments(read('supabase/functions/_shared/chat/context.ts')),
   stripComments(read('supabase/functions/_shared/chat/messages.ts')),
 ].join('\n');
 
@@ -313,6 +314,78 @@ check('answers.ts promises nothing', !/guaranteed profit|risk-free|garantia de l
 check('knowledge entries carry aliases, informal questions and related topics', /aliases:/.test(knowledgeSrc) && /informalQuestions:/.test(knowledgeSrc) && /relatedTopics:/.test(knowledgeSrc));
 check('knowledge is categorised', /KNOWLEDGE_CATEGORIES/.test(knowledgeSrc) && /CATEGORY_LABELS/.test(knowledgeSrc));
 check('new modules are stateless', !/localStorage|sessionStorage|document\.cookie/.test(normalizeSrc + matchSrc + intentSrc + answersSrc));
+
+// ---------------------------------------------------------------------------
+console.log('\n[12] Conversation experience (greeting, language switch, context)');
+const contextSrc = read('supabase/functions/_shared/chat/context.ts');
+const indexSrc = stripComments(read('supabase/functions/support-chat/index.ts'));
+const languageSrc = read('supabase/functions/_shared/chat/language.ts');
+const typesSrc = read('supabase/functions/_shared/chat/types.ts');
+const answersSrc2 = read('supabase/functions/_shared/chat/answers.ts');
+const clientSrc = read('src/lib/supportChat.ts');
+const widget = read('src/components/SupportChatbot.tsx');
+
+check('the context compaction module exists', has('supabase/functions/_shared/chat/context.ts'));
+check('chat.ts compacts the conversation', /compactHistory\(/.test(chatSrc));
+check('the context window is larger than 8 turns', /MAX_HISTORY_TURNS = (\d+)/.test(typesSrc) && Number(/MAX_HISTORY_TURNS = (\d+)/.exec(typesSrc)[1]) >= 24);
+check('the context has a character budget', /MAX_HISTORY_CHARS = [\d_]+/.test(typesSrc));
+check('a single retained turn is capped', /MAX_HISTORY_TURN_CHARS = [\d_]+/.test(typesSrc));
+check('the client sends the whole bounded conversation', /transportHistory\(input\.history\)/.test(clientSrc) && !/slice\(-8\)/.test(clientSrc));
+check('the client uses the shared bounds', /MAX_HISTORY_TURNS/.test(clientSrc) && /MAX_HISTORY_CHARS/.test(clientSrc));
+check('compaction preserves the latest user turn', /role === "user"/.test(contextSrc) && /pinned/i.test(contextSrc));
+check('compaction preserves the previous assistant answer', /role === "assistant"/.test(contextSrc));
+check('compaction preserves an open question', /hasOpenQuestion/.test(contextSrc));
+check('compaction preserves reference anchors', /isReferential/.test(contextSrc));
+check('compaction keeps the customer language', /language: historyLanguage/.test(contextSrc));
+check('compaction redacts secrets', /redactSecrets/.test(contextSrc));
+check('the prompt carries the context summary', /CONVERSATION CONTEXT/.test(chatSrc));
+check('the prompt says not to repeat answers', /Do not repeat information/.test(chatSrc));
+check('the prompt refuses to claim private status', /Never claim access to the customer/.test(chatSrc));
+check('the prompt forbids listing languages', /Do not list all supported languages/.test(chatSrc));
+check('the current message is redacted before the provider', /content: redactSecrets\(message\)/.test(chatSrc));
+
+check('language-switch detection exists', /detectLanguageSwitchRequest/.test(languageSrc));
+check('the language switch is wired in chat.ts', /detectLanguageSwitchRequest\(message\)/.test(chatSrc));
+check('the language switch has a short localized reply', /languageSwitchReply/.test(chatSrc) && /languageSwitchReply/.test(answersSrc2));
+check('the language switch is localised in 11 locales', (answersSrc2.match(/languageSwitch: "/g) ?? []).length === 11);
+check('a language switch persists in the conversation', /requestedLanguageFromHistory/.test(languageSrc) && /requestedLanguageFromHistory/.test(languageSrc.slice(languageSrc.indexOf('resolveResponseLanguage'))));
+
+// Short greeting in all 11 locales, shown once per session.
+const greetingLocales = ['en', 'pt', 'it', 'es', 'fr', 'de', 'ru', 'zh', 'ja', 'ar', 'he'];
+for (const locale of greetingLocales) {
+  const start = i18n.indexOf(`const ${locale}Translation = `);
+  const next = greetingLocales
+    .map((l) => i18n.indexOf(`const ${l}Translation = `))
+    .filter((i) => i > start)
+    .sort((a, b) => a - b)[0] ?? i18n.indexOf('const resources =');
+  const segment = i18n.slice(start, next);
+  const chatbotStart = segment.indexOf('chatbot: {');
+  const greetingMatch = chatbotStart >= 0
+    ? /\n    greeting: "((?:[^"\\]|\\.)*)"/.exec(segment.slice(chatbotStart))
+    : null;
+  const greeting = greetingMatch ? JSON.parse(`"${greetingMatch[1]}"`) : '';
+  check(`${locale}: greeting is short`, greeting.length > 0 && greeting.length <= 80, String(greeting.length));
+  check(`${locale}: greeting has no link`, !/https?:|www\./i.test(greeting), greeting);
+  check(
+    `${locale}: greeting does not list languages or capabilities`,
+    !/portugu|espa[nñ]|english|italian|french|german|russian|chinese|japanese|arabic|hebrew|русск|中文|日本語|العربية|עברית|checkout|onboarding|Tradovate|support procedures/i.test(greeting),
+    greeting,
+  );
+}
+check('the widget shows the greeting once per session', /greetingVisible && !hasConversation/.test(widget) && /greetingShownRef/.test(widget));
+check('the widget opens through the once-per-session handler', /openChat/.test(widget) && /setGreetingVisible\(true\)/.test(widget));
+check('sending hides the greeting', /setGreetingVisible\(false\)/.test(widget));
+check('closing hides the greeting without clearing the once flag', /const close = useCallback\([\s\S]*?setGreetingVisible\(false\)/.test(widget));
+check('clearing starts a new greeting session', /greetingShownRef\.current = false/.test(widget));
+check('the AI disclosure stays visible', /chatbot\.aiDisclosure/.test(widget));
+
+check('the chat path stores nothing', !/localStorage|sessionStorage|document\.cookie|indexedDB/.test(chatSrc + contextSrc + indexSrc));
+check(
+  'no message content is logged',
+  !/console\.(log|info|warn|error|debug)\([^)]*(message|content|reply\.reply)/s.test(chatSrc + contextSrc + indexSrc),
+);
+check('the log carries counts and article ids only', /historyTurns: history\.length/.test(indexSrc) && /articleIds\[0\]/.test(indexSrc));
+check('the new tests cover the conversation improvements', /\[28\] Short localized greeting/.test(read('supabase/functions/_test/support-chat-tests.ts')) && /\[33\] No conversation persistence/.test(read('supabase/functions/_test/support-chat-tests.ts')));
 
 // ---------------------------------------------------------------------------
 console.log('\n[10] Bundle + tests + docs');

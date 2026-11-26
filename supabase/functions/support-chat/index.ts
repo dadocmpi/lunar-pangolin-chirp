@@ -37,7 +37,11 @@ import { readJsonBody } from "../_shared/http.ts";
 import { createRateLimiter, clientIp } from "../_shared/rateLimit.ts";
 import { isSupportChatEnabled } from "../_shared/features.ts";
 import { handleChat, normalizeHistory, normalizeMessage } from "../_shared/chat/chat.ts";
-import { localeFromAcceptLanguage, resolveResponseLanguage } from "../_shared/chat/language.ts";
+import {
+  detectLanguageSwitchRequest,
+  localeFromAcceptLanguage,
+  resolveResponseLanguage,
+} from "../_shared/chat/language.ts";
 import { chatMessage } from "../_shared/chat/messages.ts";
 import { createChatProviderFromEnv } from "../_shared/chat/provider.ts";
 import { rateLimitKey, resolveChatIdentity } from "../_shared/chat/identity.ts";
@@ -150,7 +154,7 @@ serve(async (req) => {
     history,
     locale: websiteLocale,
   });
-  const locale = language.locale;
+  const locale = detectLanguageSwitchRequest(message) ?? language.locale;
 
   const identity = await resolveChatIdentity(req);
   if (identity.userId && userLimiter.hit(rateLimitKey(identity))) {
@@ -199,7 +203,8 @@ serve(async (req) => {
     authenticated: identity.authenticated,
     locale,
     languageSource: language.source,
-    // Approved article ids only (no message text, no user data).
+    // Counts and approved article ids only (no message text, no user data).
+    historyTurns: history.length,
     intent: reply.articleIds[0] ?? null,
   });
 

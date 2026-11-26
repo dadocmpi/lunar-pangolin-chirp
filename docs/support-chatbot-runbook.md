@@ -140,7 +140,13 @@ guess.
    (`ok`, `lo`, `hi`, `sim`) reuses the most recent clearly detected **user**
    language from the supplied history. The website locale is used only when no
    message language can be detected.
-4. The detected language is written explicitly into the system prompt, and a
+4. An explicit switch request (`fala português`, `speak english`, `habla
+   español`, `日本語で`, …) is detected by `detectLanguageSwitchRequest`,
+   acknowledged with one short sentence in the requested language, and stored
+   in the conversation so the following short messages stay in that language.
+   A switch that also asks a question (`fala português, como pago?`) answers the
+   question in the requested language instead of only acknowledging.
+5. The detected language is written explicitly into the system prompt, and a
    model completion that confidently answers in a different language is not
    shown (the localized deterministic fallback is used instead).
 
@@ -162,17 +168,47 @@ The reply is chosen in this order (`supabase/functions/_shared/chat/chat.ts`):
    knowledge index (`match.ts`: phrase containment, token order, weighted
    aliases/keywords/informal questions, typo tolerance via bounded edit
    distance, prefix matching for truncations).
-3. Greeting or thank-you -> one short localized line.
-4. Genuinely ambiguous (`AMBIGUITY_MARGIN`, `AMBIGUITY_TOP_MAX`) and no usable
+3. A switch-only request (`fala português`) gets the one-line acknowledgement.
+4. Greeting or thank-you -> one short localized line.
+5. Genuinely ambiguous (`AMBIGUITY_MARGIN`, `AMBIGUITY_TOP_MAX`) and no usable
    context -> one short clarifying question naming at most two topics.
-5. Otherwise the top topic is used: with a provider, the model answers with the
-   classified intent, the related topics and the conversation context in the
-   prompt; without a provider, `answers.ts` returns the localized short answer
-   for that topic (English uses the canonical article answer, or the full body
-   when the customer asked for a simple/step-by-step explanation).
+6. Otherwise the top topic is used: with a provider, the model answers with the
+   classified intent, the related topics and the deterministic conversation
+   context in the prompt; without a provider, `answers.ts` returns the
+   localized short answer for that topic (English uses the canonical article
+   answer, or the full body when the customer asked for a simple/step-by-step
+   explanation).
+
+### Conversation context
+
+The browser sends the whole visible conversation, bounded by
+`MAX_HISTORY_TURNS` (30) and `MAX_HISTORY_CHARS` (16 000) in
+`_shared/chat/types.ts`; `transportHistory` in `src/lib/supportChat.ts` applies
+the same bounds before the request leaves the browser. The server then runs the
+deterministic `compactHistory` (`_shared/chat/context.ts`):
+
+- the whole conversation is used when it fits;
+- otherwise it pins, in order, the latest user turn, the previous assistant
+  answer, the latest unresolved question, reference anchors (`isso`, `aquele`,
+  `e agora?`, `já fiz`) and the turn before each anchor, then fills the
+  remaining budget newest-first and re-sorts by original position;
+- it reports `truncated`, `droppedTurns`, `hasOpenQuestion` and the retained
+  topic list, which the prompt renders as a `CONVERSATION CONTEXT` block;
+- every turn is redacted (`redactSecrets`) and capped before it is stored in
+  the compacted result, and the current message is redacted again before the
+  provider call. Nothing is written anywhere.
+
+Short follow-ups use the most recent **customer** topic before the assistant's
+answer, because an answer often mentions several topics. `isso` therefore
+resolves to what the customer asked about, and `me explica melhor` expands that
+same topic instead of starting an unrelated answer. `já paguei` is treated as a
+"what next?" question and routed to the onboarding process; the assistant never
+claims to see an individual payment or activation status.
 
 Normalisation never rewrites the message that is sent to the model — it is used
-for matching only, so the model still sees exactly what the customer typed.
+for matching only, so the model still sees exactly what the customer typed,
+except that secret-like values (API keys, card numbers, long tokens, private
+keys) are replaced with `[redacted]` first.
 
 `answers.ts` holds one short answer per core topic (15 topics) in all 11
 locales, plus the topic labels used by the clarifying question and the
@@ -184,20 +220,26 @@ promise, and the contract gate enforces that.
 Known asymmetry: the localized short answers are used only when no model is
 configured or the model output is rejected. With a provider, the model writes
 the step-by-step explanation in the detected language; without one, a
-non-English "explain simply" request gets the localized short answer plus the
-official source links.
+non-English "explain simply" request gets the localized short answer for the
+topic plus the localized short answers of its related approved topics (and the
+official source links).
 
 ## Privacy and retention
 
 - **Stored:** nothing. No table, no log of message content, no conversation id.
 - **Logged:** reply type, provider name, escalation flag, whether the caller
-  was authenticated, the detected locale and where the language decision came
-  from. No message text, no user id, no email.
-- **Sent to the provider:** the recent turns (up to 8) and the approved
-  knowledge prompt. No account data, no secrets.
+  was authenticated, the detected locale, where the language decision came
+  from, the number of turns received and the first approved article id. No
+  message text, no user id, no email.
+- **Sent to the provider:** the compacted conversation (whole conversation when
+  it fits, otherwise the bounded pinned summary described above) and the
+  approved knowledge prompt. Secret-like values are redacted first. No account
+  data, no secrets.
 - **Response header:** `Cache-Control: no-store`.
 - **Client:** messages live in React state only; no `localStorage`,
-  `sessionStorage` or cookie persistence.
+  `sessionStorage` or cookie persistence. The short greeting is also state-only:
+  it is shown once when the chat is first opened (or after Clear) and never
+  repeated by closing, minimizing or reopening.
 
 Because the server is stateless and never reads a user id from the body, one
 user cannot read another user's conversation through this API.
@@ -206,7 +248,8 @@ user cannot read another user's conversation through this API.
 
 - JSON body cap: 32 KB.
 - Message cap: 2000 characters.
-- History cap: 8 turns.
+- Context: 30 turns / 16 000 characters, compacted deterministically when the
+  conversation is longer (one turn is capped at 1200 characters).
 - Reply cap: 4000 characters.
 - Rate limit: 30 messages / 10 min per verified user and 40 / 10 min per IP
   (soft, per Edge instance). A 429 response carries `Retry-After: 600`.
@@ -249,7 +292,7 @@ deno run -A supabase/functions/_test/support-chat-tests.ts   # or: make test-sup
 npm run check:chatbot
 ```
 
-The suite (1314 checks) covers grounded answers, unknown questions, prompt
+The suite (1445 checks) covers grounded answers, unknown questions, prompt
 injection, financial-advice requests, secret requests and sharing, cross-user
 access, timeouts, rate limiting, human escalation, the absence of any privileged
 payment/account action, and all 11 locales. Sections [15]–[17] cover
@@ -274,12 +317,22 @@ selection and the request shape (endpoint, bearer header,
 invalid key (401), rate limit (429), 5xx, network failure and timeout, asserting
 no key or provider body ever reaches the user.
 
+Sections [28]–[33] cover the conversation-experience work: the short localized
+greeting in all 11 locales and its once-per-session widget behaviour, language
+switching (`Fala português`, Spanish question then Portuguese switch, a switch
+that also asks a question, persistence for a short follow-up), contextual
+answers (`e agora?`, `isso`, `me explica melhor`, `já paguei`, `ainda não
+paguei`), long-conversation compaction (turn/character budgets, pinned turns,
+order, provider context), secrets removed from the provider context, and the
+no-persistence / no-message-logging checks.
+
 ## Known limitations
 
 - Without `CHAT_AI_API_KEY` / `KYC_AI_API_KEY` the deterministic answer is the
-  full approved article for English, and a localized pointer to the official
-  page plus source links for the other 10 locales. The model path is what
-  produces a full prose answer in those languages.
+  full approved article for English. For the other 10 locales the reply is the
+  localized short answer for the topic; an "explain more" request adds the
+  localized short answers of the related approved topics on the same subject.
+  The model path is what produces a full prose answer in those languages.
 - The default OpenRouter model `openrouter/free` is a free-tier route and can be
   rate limited or slow. Set `CHAT_AI_MODEL` to a paid model for production
   traffic. A provider 429 degrades to the approved-knowledge answer (it does not

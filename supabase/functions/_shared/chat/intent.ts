@@ -64,6 +64,8 @@ export interface IntentResult {
   planId: string | null;
   /** True when the customer asked for a simpler or step-by-step explanation. */
   explain: boolean;
+  /** True when the message says the payment was already made. */
+  paidFollowUp: boolean;
   /** True when the message points at something said earlier. */
   referential: boolean;
   greeting: boolean;
@@ -175,6 +177,34 @@ const EXPLAIN_PATTERNS = [
   /\bпроще\b/, /\bпошагово\b/, /\b简单\b/, /\b簡単に\b/, /\bببساطة\b/, /\bבפשטות\b/,
 ];
 
+/** "I already paid" follow-ups: the next step is onboarding, never a status check. */
+const PAID_PHRASES = [
+  "ja paguei", "paguei", "pagamento feito", "payment done", "payment made",
+  "already paid", "i paid", "i have paid", "ya pague", "ya lo pague", "he pagado",
+  "j'ai paye", "jai paye", "habe bezahlt", "ich habe bezahlt", "оплатил",
+  "я оплатил", "已付款", "我付款了", "支払いました", "دفعت", "لقد دفعت", "שילמתי",
+];
+
+const NEGATED_PAID = [
+  "nao paguei", "no pague", "didnt pay", "did not pay", "havent paid",
+  "haven't paid", "no he pagado", "nicht bezahlt", "не оплатил",
+];
+
+const NORMALIZED_PAID = PAID_PHRASES.map((phrase) => normalizeQuery(phrase));
+const NORMALIZED_NEGATED_PAID = NEGATED_PAID.map((phrase) => normalizeQuery(phrase));
+
+export function isPaidFollowUp(normalized: string): boolean {
+  const padded = ` ${normalized} `;
+  if (NORMALIZED_NEGATED_PAID.some((phrase) => padded.includes(` ${phrase} `))) return false;
+  return NORMALIZED_PAID.some((phrase) => padded.includes(` ${phrase} `));
+}
+
+/** "I have not paid yet": the next step is checkout, not a status claim. */
+export function isNotPaidFollowUp(normalized: string): boolean {
+  const padded = ` ${normalized} `;
+  return NORMALIZED_NEGATED_PAID.some((phrase) => padded.includes(` ${phrase} `));
+}
+
 const PLAN_PRICES: Record<string, string> = {
   "200": "starter",
   "350": "professional",
@@ -280,21 +310,27 @@ export function detectPlanReference(normalized: string): string | null {
 // ---------------------------------------------------------------------------
 
 /**
- * The most recent clearly-classified topic in the conversation. Assistant turns
- * count too: they name the topic the customer is likely referring to.
+ * The most recent clearly-classified topic in the conversation. Customer turns
+ * are preferred over assistant turns: the assistant's answer often mentions
+ * several topics, while the question that prompted it names the one in play.
+ * Assistant turns are the fallback when no customer turn is clear.
  */
 export function contextIntentFromHistory(history: ChatTurn[]): string | null {
-  for (let i = history.length - 1; i >= 0; i--) {
-    const ranked = rankEntries(history[i].content, KNOWLEDGE_INDEX);
-    const top = ranked[0];
-    if (!top || top.score < MIN_INTENT_SCORE) continue;
-    const second = ranked[1];
-    const ambiguous = second && top.score < HIGH_CONFIDENCE_SCORE &&
-      top.score - second.score < AMBIGUITY_MARGIN;
-    if (ambiguous) continue;
-    return top.id;
-  }
-  return null;
+  const byRole = (role: ChatTurn["role"]): string | null => {
+    for (let i = history.length - 1; i >= 0; i--) {
+      if (history[i].role !== role) continue;
+      const ranked = rankEntries(history[i].content, KNOWLEDGE_INDEX);
+      const top = ranked[0];
+      if (!top || top.score < MIN_INTENT_SCORE) continue;
+      const second = ranked[1];
+      const ambiguous = second && top.score < HIGH_CONFIDENCE_SCORE &&
+        top.score - second.score < AMBIGUITY_MARGIN;
+      if (ambiguous) continue;
+      return top.id;
+    }
+    return null;
+  };
+  return byRole("user") ?? byRole("assistant");
 }
 
 // ---------------------------------------------------------------------------
@@ -316,6 +352,8 @@ export function classifyIntent(
 
   const planId = detectPlanReference(normalized);
   const explain = isExplainRequest(message);
+  const paidFollowUp = isPaidFollowUp(normalized);
+  const notPaidFollowUp = isNotPaidFollowUp(normalized);
   const referential = isReferential(normalized);
   const topicless = isTopicless(normalized);
   const greeting = isGreeting(normalized) && !referential;
@@ -328,7 +366,18 @@ export function classifyIntent(
   let contextUsed = false;
   let clarifyTopics: string[] = [];
 
-  if (ranked.length > 0) {
+  // A short follow-up ("isso", "e agora?", "me explica melhor") is about the
+  // topic in play, not about whatever word the matcher happened to hit. A
+  // strong, explicit topic still wins.
+  const preferContext = Boolean(contextIntent) &&
+    (topicless || explain) &&
+    (ranked.length === 0 || ranked[0].score < HIGH_CONFIDENCE_SCORE);
+
+  if (preferContext) {
+    primary = contextIntent;
+    contextUsed = true;
+    confidence = 0.6;
+  } else if (ranked.length > 0) {
     primary = ranked[0].id;
     confidence = Math.min(0.95, ranked[0].score / 20);
     const second = ranked[1];
@@ -347,6 +396,22 @@ export function classifyIntent(
     confidence = 0.6;
   }
 
+  // "já paguei" is a next-step question, not a request to read a payment
+  // status. Steer it to onboarding when nothing stronger was detected.
+  if (paidFollowUp && (!primary || primary === "payment_status" || contextUsed)) {
+    primary = "onboarding";
+    confidence = Math.max(confidence, 0.7);
+    ambiguous = false;
+    contextUsed = false;
+    clarifyTopics = [];
+  }
+
+  // "ainda não paguei" points at the checkout step.
+  if (notPaidFollowUp && !primary) {
+    primary = "checkout";
+    confidence = 0.7;
+  }
+
   if (!primary && !greeting && !thanks && clarifyTopics.length === 0) {
     clarifyTopics = contextIntent ? [] : [...DEFAULT_CLARIFY_TOPICS];
   }
@@ -362,6 +427,7 @@ export function classifyIntent(
     contextIntent,
     planId,
     explain,
+    paidFollowUp,
     referential,
     greeting,
     thanks,

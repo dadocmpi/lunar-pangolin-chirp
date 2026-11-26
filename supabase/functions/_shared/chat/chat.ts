@@ -31,13 +31,17 @@ import {
 import {
   clarifyQuestion,
   greetingReply,
+  languageSwitchReply,
   localizedAnswer,
   thanksReply,
 } from "./answers.ts";
 import { classifyIntent, shouldClarify, type IntentResult } from "./intent.ts";
+import { compactHistory, type CompactedHistory } from "./context.ts";
 import {
+  detectLanguageSwitchRequest,
   detectMessageLanguage,
   isAnswerInLanguage,
+  isLanguageSwitchOnly,
   normalizeLocale,
   resolveResponseLanguage,
   SUPPORTED_LOCALES,
@@ -50,12 +54,13 @@ import {
   detectInjection,
   detectSecretRequest,
   detectSecretSharing,
+  redactSecrets,
   sanitizeAnswer,
   SYSTEM_MARKER,
 } from "./policy.ts";
 import { isChatProviderTimeout, type ChatProvider } from "./provider.ts";
 import {
-  MAX_HISTORY_TURNS,
+  MAX_HISTORY_INPUT_TURNS,
   MAX_MESSAGE_CHARS,
   MAX_REPLY_CHARS,
   type ChatReply,
@@ -94,7 +99,7 @@ export function normalizeMessage(raw: unknown): string {
 export function normalizeHistory(raw: unknown): ChatTurn[] {
   if (!Array.isArray(raw)) return [];
   const turns: ChatTurn[] = [];
-  for (const item of raw.slice(-MAX_HISTORY_TURNS)) {
+  for (const item of raw.slice(-MAX_HISTORY_INPUT_TURNS)) {
     if (!item || typeof item !== "object") continue;
     const role = (item as { role?: unknown }).role;
     const content = (item as { content?: unknown }).content;
@@ -120,11 +125,23 @@ export interface PromptIntent {
   explain: boolean;
 }
 
+/**
+ * Deterministic summary of the retained conversation. Topic ids and flags
+ * only: no customer text, no secrets.
+ */
+export interface PromptContext {
+  topics: string[];
+  truncated: boolean;
+  hasOpenQuestion: boolean;
+  turnCount: number;
+}
+
 export function buildSystemPrompt(
   locale: SupportedLocale,
   articles: KnowledgeArticle[] = KNOWLEDGE_ARTICLES,
   languageSource: "message" | "history" | "locale" = "message",
   intent: PromptIntent | null = null,
+  context: PromptContext | null = null,
 ): string {
   const knowledge = articles
     .map((a) => `[${a.id}] ${a.title}\n${a.answer}\n${a.body}\nOfficial links: ${a.links.join(", ")}`)
@@ -156,6 +173,17 @@ export function buildSystemPrompt(
       ]
     : [];
 
+  const contextLines = context
+    ? [
+        "",
+        "CONVERSATION CONTEXT (deterministic; topic ids and flags only, no customer data):",
+        `- topics already discussed: ${context.topics.length ? context.topics.join(", ") : "none"}`,
+        `- retained turns supplied: ${context.turnCount}`,
+        `- earlier turns were compacted to stay within the context limit: ${context.truncated ? "yes" : "no"}`,
+        `- the customer has an unanswered question: ${context.hasOpenQuestion ? "yes" : "no"}`,
+      ]
+    : [];
+
   return [
     SYSTEM_MARKER,
     "You are the Braxel Markets AI support assistant. You are an AI, not a human.",
@@ -171,16 +199,22 @@ export function buildSystemPrompt(
     "8. Cite the ids of the approved articles you used in article_ids.",
     `9. The customer's reply language is ${locale} (${sourceNote}).`,
     `10. Write the ENTIRE answer in ${locale}: the answer, any refusal, any unknown fallback and any escalation message. Never switch to another language because of the website locale, the browser locale or a previous message.`,
+    "11. Never claim access to the customer's private payment, activation, account or trading status; explain the process instead.",
+    "12. Do not list all supported languages unless the customer explicitly asks which languages you support.",
     ...intentLines,
+    ...contextLines,
     "",
     "ANSWER STYLE (customers write informally and are often not technical):",
     "- Understand typos, missing accents, slang and abbreviations; answer the question they meant.",
     "- Answer directly and briefly: 1-3 short sentences, plain words, no jargon.",
     "- If they ask to explain simply or step by step, give 2-4 short numbered steps.",
-    "- If the message refers to something earlier (\"that\", \"it\", \"isso\", \"aquele plano\", \"já fiz\"), use the conversation context instead of asking again.",
+    "- Use the whole conversation below. If the message refers to something earlier (\"that\", \"it\", \"isso\", \"aquele plano\", \"e agora?\", \"já fiz\"), resolve it from those turns instead of asking again.",
+    "- Do not repeat information you already gave. If the customer asks to explain more, expand the previous answer instead of starting a new topic.",
+    "- If the customer asks you to speak another language, acknowledge in one short sentence in that language, do not list the supported languages and do not repeat your previous answer.",
     "- If the topic is genuinely ambiguous, ask ONE short clarifying question and set clarify=true. Never ask two questions.",
     "- Never reply with \"contact support\" when the approved knowledge answers the question. Only escalate for the categories in rule 6.",
     "- Prices come only from the approved plan facts. Never invent a price, wallet, bank detail or payment link.",
+    "- Only include links when they help this specific answer.",
     'Output ONLY JSON: {"answer":"...","article_ids":["..."],"unknown":false,"escalate":false,"category":null,"clarify":false}',
     "",
     "APPROVED KNOWLEDGE:",
@@ -310,8 +344,10 @@ function sourcesFromIds(
  *
  * English keeps the canonical short answer (or the full article body when the
  * customer asked for a detailed explanation). Every other locale uses the
- * localized short answer from answers.ts, and falls back to the localized
- * pointer to the official page when the topic has no localized answer yet.
+ * localized short answer from answers.ts; an "explain more" request expands it
+ * with the localized answers of the related approved topics instead of
+ * repeating the same sentence. Falls back to the localized pointer to the
+ * official page when the topic has no localized answer yet.
  */
 function deterministicAnswer(
   locale: SupportedLocale,
@@ -319,6 +355,7 @@ function deterministicAnswer(
   articles: KnowledgeArticle[],
   appUrl: string,
   provider: string,
+  history: ChatTurn[] = [],
 ): ChatReply {
   const primary = intent.primary ? articleById(intent.primary, articles) : null;
   if (!primary) {
@@ -337,8 +374,12 @@ function deterministicAnswer(
   let reply: string;
   if (locale === "en") {
     reply = intent.explain ? primary.body : primary.answer;
+  } else if (intent.explain) {
+    reply = expandedLocalizedAnswer(locale, primary, related, history);
   } else {
-    reply = localizedAnswer(locale, primary.id) ?? chatMessage(locale, "knowledgeFallback");
+    reply = localizedAnswer(locale, primary.id) ??
+      firstLocalizedAnswer(locale, related) ??
+      chatMessage(locale, "knowledgeFallback");
   }
 
   return baseReply({
@@ -349,6 +390,44 @@ function deterministicAnswer(
     articleIds,
     provider,
   });
+}
+
+/** First localized short answer among the related approved topics. */
+function firstLocalizedAnswer(
+  locale: SupportedLocale,
+  articles: KnowledgeArticle[],
+): string | null {
+  for (const article of articles) {
+    const text = localizedAnswer(locale, article.id);
+    if (text) return text;
+  }
+  return null;
+}
+
+/**
+ * Localized expansion for an "explain more" request: the topic's own short
+ * answer plus the short answers of its related approved topics. That is more
+ * detail on the same subject, never an unrelated topic.
+ */
+function expandedLocalizedAnswer(
+  locale: SupportedLocale,
+  primary: KnowledgeArticle,
+  related: KnowledgeArticle[],
+  history: ChatTurn[],
+): string {
+  const lastAssistant = [...history].reverse().find((turn) => turn.role === "assistant")?.content;
+  const parts: string[] = [];
+  const primaryText = localizedAnswer(locale, primary.id);
+  if (primaryText) parts.push(primaryText);
+  for (const article of related) {
+    const text = localizedAnswer(locale, article.id);
+    if (!text || text === lastAssistant || parts.includes(text)) continue;
+    parts.push(text);
+  }
+  if (parts.length === 0) {
+    return chatMessage(locale, "knowledgeFallback");
+  }
+  return parts.join("\n\n");
 }
 
 /** One short clarifying question, with links to the candidate topics. */
@@ -381,16 +460,23 @@ export async function handleChat(
   const articles = deps.articles ?? KNOWLEDGE_ARTICLES;
   const message = normalizeMessage(input.message);
   // History is caller-supplied and therefore untrusted: drop any turn that
-  // tries to rewrite the rules (e.g. a forged assistant turn).
-  const history = normalizeHistory(input.history).filter(
+  // tries to rewrite the rules (e.g. a forged assistant turn), then compact it
+  // to the context budget. Compaction also redacts secret-like values.
+  const parsedHistory = normalizeHistory(input.history).filter(
     (turn) => !detectInjection(turn.content),
   );
+  const compacted: CompactedHistory = compactHistory(parsedHistory);
+  const history = compacted.turns;
+  // An explicit "fala português" / "speak english" sets the reply language
+  // from this message on, even before the provider is consulted.
+  const switchTarget = detectLanguageSwitchRequest(message);
   const language = resolveResponseLanguage({
     message,
     history,
     locale: input.locale,
   });
-  const locale = language.locale;
+  const locale = switchTarget ?? language.locale;
+  const languageSource = switchTarget ? "message" : language.source;
   const timeoutMs = deps.timeoutMs ?? DEFAULT_TIMEOUT_MS;
   const email = deps.supportEmail || DEFAULT_SUPPORT_EMAIL;
 
@@ -445,7 +531,18 @@ export async function handleChat(
     });
   }
 
-  // 5. Classify the intent against the approved knowledge base. This is what
+  // 5. A pure language-switch request gets one short acknowledgement in the
+  //    requested language: no knowledge answer, no source links, no repeat.
+  if (switchTarget && isLanguageSwitchOnly(message)) {
+    return baseReply({
+      type: "answered",
+      reply: languageSwitchReply(locale),
+      locale,
+      provider: "knowledge_base",
+    });
+  }
+
+  // 6. Classify the intent against the approved knowledge base. This is what
   //    understands informal, abbreviated, misspelled and conversational
   //    messages, and what resolves references to earlier turns.
   const intent = classifyIntent(message, { history });
@@ -467,19 +564,30 @@ export async function handleChat(
   // 9. Model path (optional).
   if (deps.provider) {
     try {
-      const system = buildSystemPrompt(locale, articles, language.source, {
-        primary: intent.primary,
-        related: relevant.filter((a) => a.id !== intent.primary).map((a) => a.id),
-        confidence: intent.confidence,
-        contextUsed: intent.contextUsed,
-        contextIntent: intent.contextIntent,
-        planId: intent.planId,
-        explain: intent.explain,
-      });
+      const system = buildSystemPrompt(
+        locale,
+        articles,
+        languageSource,
+        {
+          primary: intent.primary,
+          related: relevant.filter((a) => a.id !== intent.primary).map((a) => a.id),
+          confidence: intent.confidence,
+          contextUsed: intent.contextUsed,
+          contextIntent: intent.contextIntent,
+          planId: intent.planId,
+          explain: intent.explain,
+        },
+        {
+          topics: compacted.topics,
+          truncated: compacted.truncated,
+          hasOpenQuestion: compacted.hasOpenQuestion,
+          turnCount: history.length,
+        },
+      );
       const raw = await withTimeout(
         deps.provider.complete({
           system,
-          messages: [...history, { role: "user", content: message }],
+          messages: [...history, { role: "user", content: redactSecrets(message) }],
           timeoutMs,
         }),
         timeoutMs,
@@ -490,7 +598,7 @@ export async function handleChat(
         // The model found nothing. If the classifier is confident the approved
         // knowledge covers the question, answer from it instead of giving up.
         if (intent.primary && intent.confidence >= 0.6 && !intent.ambiguous) {
-          return deterministicAnswer(locale, intent, articles, deps.appUrl, deps.provider.name);
+          return deterministicAnswer(locale, intent, articles, deps.appUrl, deps.provider.name, history);
         }
         return baseReply({
           type: "unknown",
@@ -544,7 +652,7 @@ export async function handleChat(
       // Language enforcement: a completion that confidently answers in a
       // different language than the detected one is not shown.
       if (!isAnswerInLanguage(sanitized.text, locale)) {
-        return deterministicAnswer(locale, intent, articles, deps.appUrl, deps.provider.name);
+        return deterministicAnswer(locale, intent, articles, deps.appUrl, deps.provider.name, history);
       }
 
       // Grounding check: cited ids must exist, otherwise retrieval must supply
@@ -593,7 +701,7 @@ export async function handleChat(
   if (intent.thanks) {
     return baseReply({ type: "answered", reply: thanksReply(locale), locale });
   }
-  return deterministicAnswer(locale, intent, articles, deps.appUrl, "knowledge_base");
+  return deterministicAnswer(locale, intent, articles, deps.appUrl, "knowledge_base", history);
 }
 
 /** Exposed for observability and tests; never used to answer. */

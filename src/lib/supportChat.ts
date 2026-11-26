@@ -8,6 +8,11 @@
 // ============================================================================
 
 import { functionsUrl, isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
+import {
+  MAX_HISTORY_CHARS,
+  MAX_HISTORY_TURNS,
+  MAX_HISTORY_TURN_CHARS,
+} from "../../supabase/functions/_shared/chat/types.ts";
 
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
 const CLIENT_TIMEOUT_MS = 25_000;
@@ -150,6 +155,25 @@ export interface SendChatInput {
 }
 
 /**
+ * Bound the conversation before it leaves the browser. The whole visible
+ * conversation is sent (not just the last few turns), newest-first within the
+ * shared budget so a long chat never exceeds the request size. The server
+ * compacts it again and preserves the turns a follow-up depends on.
+ */
+export function transportHistory(history: ChatTurn[]): ChatTurn[] {
+  const out: ChatTurn[] = [];
+  let chars = 0;
+  for (let i = history.length - 1; i >= 0 && out.length < MAX_HISTORY_TURNS; i--) {
+    const content = (history[i].content ?? "").trim().slice(0, MAX_HISTORY_TURN_CHARS);
+    if (!content) continue;
+    if (chars + content.length > MAX_HISTORY_CHARS) break;
+    chars += content.length;
+    out.unshift({ role: history[i].role, content });
+  }
+  return out;
+}
+
+/**
  * Send one message. Resolves with a result the UI can render; it never throws.
  * The caller is responsible for keeping the conversation in memory only.
  */
@@ -174,7 +198,7 @@ export async function sendChatMessage(input: SendChatInput): Promise<ChatSendRes
       body: JSON.stringify({
         message: input.message,
         locale: input.locale,
-        history: input.history.slice(-8),
+        history: transportHistory(input.history),
       }),
     });
 

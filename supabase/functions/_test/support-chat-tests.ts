@@ -23,12 +23,22 @@ import {
 } from "../_shared/chat/chat.ts";
 import {
   detectMessageLanguage,
+  detectLanguageSwitchRequest,
   isAnswerInLanguage,
+  isLanguageSwitchOnly,
   isShortMessage,
   localeFromAcceptLanguage,
+  requestedLanguageFromHistory,
   resolveResponseLanguage,
   type SupportedLocale,
 } from "../_shared/chat/language.ts";
+import { compactHistory, contextTopicsLine } from "../_shared/chat/context.ts";
+import {
+  MAX_HISTORY_CHARS,
+  MAX_HISTORY_TURNS,
+  MAX_HISTORY_TURN_CHARS,
+  MAX_MESSAGE_CHARS,
+} from "../_shared/chat/types.ts";
 import { CHAT_MESSAGES, chatMessage, escalationMessage } from "../_shared/chat/messages.ts";
 import {
   classifyIntent,
@@ -37,6 +47,8 @@ import {
   detectPlanReference,
   isExplainRequest,
   isGreeting,
+  isNotPaidFollowUp,
+  isPaidFollowUp,
   isReferential,
   isThanks,
   isTopicless,
@@ -57,6 +69,7 @@ import {
   clarifyQuestion,
   fillPlaceholders,
   greetingReply,
+  languageSwitchReply,
   LOCALIZED_ANSWERS,
   localizedAnswer,
   planSummary,
@@ -108,6 +121,30 @@ const ROOT = new URL("../../../", import.meta.url);
 const read = (p: string) => Deno.readTextFileSync(new URL(p, ROOT));
 const stripComments = (s: string) =>
   s.replace(/\/\/[^\n]*/g, "").replace(/\/\*[\s\S]*?\*\//g, "");
+
+const I18N_LOCALES = ["en", "pt", "it", "es", "fr", "de", "ru", "zh", "ja", "ar", "he"];
+
+/** The `chatbot.greeting` string for one locale, read from src/i18n.ts. */
+function localeGreeting(locale: string): string {
+  const i18n = read("src/i18n.ts");
+  const start = i18n.indexOf(`const ${locale}Translation = `);
+  if (start < 0) return "";
+  const next = I18N_LOCALES
+    .map((l) => i18n.indexOf(`const ${l}Translation = `))
+    .filter((i) => i > start)
+    .sort((a, b) => a - b)[0] ?? i18n.indexOf("const resources =");
+  const segment = i18n.slice(start, next);
+  const chatbotStart = segment.indexOf("chatbot: {");
+  if (chatbotStart < 0) return "";
+  const match = /\n {4}greeting: "((?:[^"\\]|\\.)*)"/.exec(segment.slice(chatbotStart));
+  if (!match) return "";
+  return JSON.parse(`"${match[1]}"`);
+}
+
+type CapturedChatInput = {
+  system: string;
+  messages: Array<{ role: string; content: string }>;
+};
 
 let passed = 0;
 let failed = 0;
@@ -760,7 +797,10 @@ check("index checks the feature switch", /isSupportChatEnabled/.test(indexSrc) &
 
 // ---------------------------------------------------------------------------
 console.log("\n[14] Message/history bounds and parsing");
-check("history caps at 8 turns", normalizeHistory(Array.from({ length: 20 }, () => ({ role: "user", content: "x" }))).length === 8);
+check(
+  "history parses up to the hard input cap",
+  normalizeHistory(Array.from({ length: 400 }, () => ({ role: "user", content: "x" }))).length === 200,
+);
 check("history drops bad roles", normalizeHistory([{ role: "system", content: "x" }]).length === 0);
 check("empty message is an error", (await handleChat({ message: "   ", locale: "en", history: [] }, DEPS)).type === "error");
 const parsed = parseModelReply('```json\n{"answer":"hi","article_ids":["plans"],"unknown":false,"escalate":false}\n```');
@@ -1348,12 +1388,18 @@ check(
   simple.reply.slice(0, 60),
 );
 const simplePt = await handleChat({ message: "me explica de um jeito simples", locale: "en", history: simpleContext }, DEPS);
+const simplePtShort = localizedAnswer("pt", "activation") ?? "";
 check(
   "a Portuguese explain request answers in Portuguese from the same topic",
   simplePt.locale === "pt" &&
     simplePt.type === "answered" &&
-    simplePt.reply === localizedAnswer("pt", "activation"),
+    simplePt.reply.startsWith(simplePtShort),
   `${simplePt.locale}:${simplePt.reply.slice(0, 40)}`,
+);
+check(
+  "a Portuguese explain request expands with related approved detail",
+  simplePt.reply.length > simplePtShort.length,
+  `${simplePt.reply.length}/${simplePtShort.length}`,
 );
 check(
   "the detailed explanation is longer than the short answer",
@@ -1509,6 +1555,389 @@ for (const article of KNOWLEDGE_ARTICLES) {
 check("every related topic points at a real article", relatedResolve);
 const indexedIds = new Set(KNOWLEDGE_INDEX.map((e) => e.id));
 check("every article is indexed for matching", KNOWLEDGE_ARTICLES.every((a) => indexedIds.has(a.id)), String(indexedIds.size));
+
+// ---------------------------------------------------------------------------
+console.log("\n[28] Short localized greeting, shown once per chat session");
+const EXPECTED_GREETINGS: Record<string, string> = {
+  en: "Hi! I'm Braxel's virtual assistant. How can I help?",
+  pt: "Opa! Sou o assistente virtual da Braxel. Como posso ajudar?",
+  es: "¡Hola! Soy el asistente virtual de Braxel. ¿En qué puedo ayudarte?",
+};
+for (const locale of ALL_LOCALES) {
+  const greeting = localeGreeting(locale);
+  check(`${locale}: greeting exists`, greeting.trim().length > 0);
+  check(`${locale}: greeting is short`, greeting.length <= 80, `${greeting.length} chars`);
+  check(`${locale}: greeting has no link`, !/https?:|www\./i.test(greeting), greeting);
+  check(
+    `${locale}: greeting does not list languages`,
+    !/portugu|espa[nñ]|english|italian|french|german|russian|chinese|japanese|arabic|hebrew|русск|中文|日本語|العربية|עברית/i.test(greeting),
+    greeting,
+  );
+  check(
+    `${locale}: greeting has no long capability list`,
+    !/support procedures|checkout|onboarding|Tradovate/i.test(greeting),
+    greeting,
+  );
+}
+for (const [locale, expected] of Object.entries(EXPECTED_GREETINGS)) {
+  check(`${locale}: greeting matches the approved short copy`, localeGreeting(locale) === expected);
+}
+const widgetSrc = read("src/components/SupportChatbot.tsx");
+check(
+  "the greeting is gated on the once-per-session flag",
+  /greetingVisible && !hasConversation/.test(widgetSrc),
+);
+check(
+  "opening the chat sets the once-per-session flag",
+  /greetingShownRef\.current/.test(widgetSrc) && /openChat/.test(widgetSrc),
+);
+check("sending a message hides the greeting", /setGreetingVisible\(false\)/.test(widgetSrc));
+check("clearing resets the greeting session", /greetingShownRef\.current = false/.test(widgetSrc));
+check(
+  "the greeting is never re-shown by a reopen effect",
+  !/useEffect\([\s\S]{0,200}?setGreetingVisible\(true\)/.test(widgetSrc),
+);
+check(
+  "closing hides the greeting without clearing the once flag",
+  /const close = useCallback\([\s\S]*?setGreetingVisible\(false\)/.test(widgetSrc),
+);
+check("the AI disclosure stays visible", /chatbot\.aiDisclosure/.test(widgetSrc));
+check(
+  "the greeting is announced in the log region",
+  /role="log"/.test(widgetSrc) && /aria-live="polite"/.test(widgetSrc),
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[29] Language-switch requests");
+const SWITCH_CASES: Array<[string, SupportedLocale]> = [
+  ["Fala português", "pt"],
+  ["fala portugues", "pt"],
+  ["pode responder em português?", "pt"],
+  ["speak english", "en"],
+  ["habla español", "es"],
+  ["parle français", "fr"],
+  ["sprich deutsch", "de"],
+  ["日本語でお願いします", "ja"],
+  ["用中文回答", "zh"],
+  ["تحدث العربية", "ar"],
+  ["דבר עברית", "he"],
+];
+for (const [message, expected] of SWITCH_CASES) {
+  check(
+    `"${message}" is detected as a ${expected} language switch`,
+    detectLanguageSwitchRequest(message) === expected,
+    String(detectLanguageSwitchRequest(message)),
+  );
+}
+check("a negated language is not a switch", detectLanguageSwitchRequest("não falo português") === null);
+check("a switch-only message is recognised", isLanguageSwitchOnly("Fala português"));
+check("a switch plus a question is not switch-only", !isLanguageSwitchOnly("fala português, como pago?"));
+check(
+  "a switch is remembered from the conversation",
+  requestedLanguageFromHistory([{ role: "user", content: "Fala português" }]) === "pt",
+);
+
+const ptSwitch = await handleChat({ message: "Fala português", locale: "en", history: [] }, DEPS);
+check(
+  "Fala português gets a short Portuguese reply",
+  ptSwitch.type === "answered" && ptSwitch.locale === "pt" &&
+    ptSwitch.reply === languageSwitchReply("pt"),
+  `${ptSwitch.locale}:${ptSwitch.reply.slice(0, 50)}`,
+);
+check("the language-switch reply is short", ptSwitch.reply.length <= 80, String(ptSwitch.reply.length));
+check("the language-switch reply has no source links", ptSwitch.sources.length === 0);
+check(
+  "the language-switch reply does not list the supported languages",
+  !/ingl[eê]s|espanhol|italiano|franc[eê]s|alem[aã]o|english|spanish|italian|french|german/i.test(ptSwitch.reply),
+  ptSwitch.reply,
+);
+const enSwitch = await handleChat({ message: "speak english", locale: "pt", history: [] }, DEPS);
+check(
+  "speak english gets a short English reply",
+  enSwitch.locale === "en" && enSwitch.reply === languageSwitchReply("en"),
+  `${enSwitch.locale}:${enSwitch.reply.slice(0, 40)}`,
+);
+
+const esPayment = await handleChat({ message: "¿Cómo funciona el pago?", locale: "en", history: [] }, DEPS);
+check(
+  "a Spanish payment question is answered in Spanish",
+  esPayment.locale === "es" && esPayment.articleIds.includes("checkout"),
+  `${esPayment.locale}:${esPayment.articleIds.join(",")}`,
+);
+const switchAfterSpanish = await handleChat(
+  {
+    message: "Fala português",
+    locale: "es",
+    history: [
+      { role: "user", content: "¿Cómo funciona el pago?" },
+      { role: "assistant", content: esPayment.reply },
+    ],
+  },
+  DEPS,
+);
+check(
+  "a Portuguese switch after a Spanish question answers in Portuguese",
+  switchAfterSpanish.locale === "pt" && switchAfterSpanish.reply === languageSwitchReply("pt"),
+  `${switchAfterSpanish.locale}:${switchAfterSpanish.reply.slice(0, 40)}`,
+);
+check(
+  "the switch does not repeat the previous answer",
+  switchAfterSpanish.reply !== esPayment.reply && switchAfterSpanish.sources.length === 0,
+);
+const shortAfterSwitch = await handleChat(
+  {
+    message: "ok",
+    locale: "en",
+    history: [
+      { role: "user", content: "¿Cómo funciona el pago?" },
+      { role: "assistant", content: esPayment.reply },
+      { role: "user", content: "Fala português" },
+    ],
+  },
+  DEPS,
+);
+check(
+  "the switched language persists for a short follow-up",
+  shortAfterSwitch.locale === "pt",
+  shortAfterSwitch.locale,
+);
+const switchPlusQuestion = await handleChat(
+  { message: "fala português, como pago?", locale: "en", history: [] },
+  DEPS,
+);
+check(
+  "a switch plus a question is answered in the requested language",
+  switchPlusQuestion.locale === "pt" && switchPlusQuestion.articleIds.includes("checkout"),
+  `${switchPlusQuestion.locale}:${switchPlusQuestion.articleIds.join(",")}`,
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[30] Contextual answers");
+const contextActivation = [
+  { role: "user" as const, content: "minha ativação está em análise" },
+];
+const nowWhat = await handleChat({ message: "e agora?", locale: "pt", history: contextActivation }, DEPS);
+check(
+  '"e agora?" uses the immediately previous topic',
+  nowWhat.type === "answered" && nowWhat.articleIds.includes("activation"),
+  `${nowWhat.type}:${nowWhat.articleIds.join(",")}`,
+);
+const pronounInContext = await handleChat(
+  {
+    message: "isso",
+    locale: "pt",
+    history: [
+      { role: "user", content: "minha ativação está em análise" },
+      { role: "assistant", content: localizedAnswer("pt", "activation") ?? "" },
+    ],
+  },
+  DEPS,
+);
+check(
+  '"isso" resolves from the conversation context',
+  pronounInContext.type === "answered" &&
+    pronounInContext.reply === localizedAnswer("pt", "activation"),
+  `${pronounInContext.type}:${pronounInContext.reply.slice(0, 40)}`,
+);
+const explainMore = await handleChat(
+  {
+    message: "me explica melhor",
+    locale: "en",
+    history: [
+      { role: "user", content: "minha ativação está em análise" },
+      { role: "assistant", content: localizedAnswer("pt", "activation") ?? "" },
+    ],
+  },
+  DEPS,
+);
+const activationPtShort = localizedAnswer("pt", "activation") ?? "";
+check(
+  '"me explica melhor" expands the previous answer in Portuguese',
+  explainMore.locale === "pt" &&
+    explainMore.reply.startsWith(activationPtShort) &&
+    explainMore.reply.length > activationPtShort.length,
+  `${explainMore.locale}:${explainMore.reply.length}/${activationPtShort.length}`,
+);
+check(
+  '"me explica melhor" stays on the same topic',
+  explainMore.articleIds.includes("activation"),
+  explainMore.articleIds.join(","),
+);
+check("isPaidFollowUp recognises an already-paid follow-up", isPaidFollowUp("ja paguei"));
+check(
+  "a negation is not treated as an already-paid follow-up",
+  !isPaidFollowUp("nao paguei") && isNotPaidFollowUp("nao paguei"),
+);
+const paidReply = await handleChat({ message: "já paguei", locale: "pt", history: [] }, DEPS);
+check(
+  '"já paguei" explains the next onboarding steps',
+  paidReply.type === "answered" && paidReply.articleIds.includes("onboarding"),
+  `${paidReply.type}:${paidReply.articleIds.join(",")}`,
+);
+check(
+  '"já paguei" never claims to see the customer payment status',
+  !/i can see|consigo ver|vejo o seu|your payment is confirmed|seu pagamento está confirmado/i.test(paidReply.reply),
+  paidReply.reply.slice(0, 80),
+);
+const notPaidReply = await handleChat({ message: "ainda não paguei", locale: "pt", history: [] }, DEPS);
+check(
+  '"ainda não paguei" points at the checkout step',
+  notPaidReply.type === "answered" && notPaidReply.articleIds.includes("checkout"),
+  `${notPaidReply.type}:${notPaidReply.articleIds.join(",")}`,
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[31] Long conversations and safe context compaction");
+check("the context window is larger than the old 8-turn limit", MAX_HISTORY_TURNS >= 24, String(MAX_HISTORY_TURNS));
+check(
+  "the context has a bounded character budget",
+  MAX_HISTORY_CHARS >= 8_000 && MAX_HISTORY_CHARS <= 20_000,
+  String(MAX_HISTORY_CHARS),
+);
+check(
+  "a single retained turn is capped",
+  MAX_HISTORY_TURN_CHARS > 0 && MAX_HISTORY_TURN_CHARS <= 2_000,
+  String(MAX_HISTORY_TURN_CHARS),
+);
+
+const longHistory: Array<{ role: "user" | "assistant"; content: string }> = [];
+for (let i = 0; i < 40; i++) {
+  longHistory.push({
+    role: i % 2 === 0 ? "user" : "assistant",
+    content: `turn ${i} ` + "filler word ".repeat(50),
+  });
+}
+longHistory[0] = { role: "user", content: "quanto custa o plano de 350" };
+longHistory[1] = { role: "assistant", content: "Plans: starter, professional, business, enterprise." };
+longHistory.push({ role: "user", content: "isso" });
+longHistory.push({ role: "assistant", content: "Do you mean plans and prices?" });
+longHistory.push({ role: "user", content: "e agora?" });
+
+const compacted = compactHistory(longHistory);
+const retainedChars = compacted.turns.reduce((sum, turn) => sum + turn.content.length, 0);
+check("compaction respects the turn budget", compacted.turns.length <= MAX_HISTORY_TURNS, String(compacted.turns.length));
+check("compaction respects the character budget", retainedChars <= MAX_HISTORY_CHARS, String(retainedChars));
+check("compaction reports what it dropped", compacted.truncated && compacted.droppedTurns > 0);
+check(
+  "the latest user turn is kept",
+  compacted.turns.some((turn) => turn.role === "user" && turn.content === "e agora?"),
+);
+check(
+  "the previous assistant answer is kept",
+  compacted.turns.some((turn) => turn.role === "assistant" && turn.content.startsWith("Do you mean")),
+);
+check(
+  "the reference anchor is kept",
+  compacted.turns.some((turn) => turn.content === "isso"),
+);
+check(
+  "the turn before a reference is kept",
+  compacted.turns.some((turn) => turn.content.startsWith("turn 39 ")),
+);
+check("the retained topic list is available for the prompt", compacted.topics.length > 0, contextTopicsLine(compacted));
+check(
+  "retained turns keep their original order and role",
+  compacted.turns.map((turn) => longHistory.findIndex((t) => t.content.trim() === turn.content))
+    .every((index, i, arr) => index >= 0 && (i === 0 || index > arr[i - 1])),
+);
+check("compaction keeps the customer language", compacted.language === "pt");
+
+let capturedContext: CapturedChatInput | null = null;
+const contextProvider = fakeProvider(async (input) => {
+  capturedContext = input as CapturedChatInput;
+  return JSON.stringify({ answer: "Here are the plans.", article_ids: ["plans"] });
+});
+await handleChat(
+  { message: "e agora?", locale: "pt", history: longHistory },
+  { ...DEPS, provider: contextProvider },
+);
+const contextCapture = capturedContext as CapturedChatInput | null;
+const contextMessages = contextCapture?.messages ?? [];
+const contextChars = contextMessages.reduce((sum: number, turn: { content: string }) => sum + turn.content.length, 0);
+check(
+  "the provider receives the compacted conversation",
+  contextMessages.length <= MAX_HISTORY_TURNS + 1,
+  String(contextMessages.length),
+);
+check(
+  "the provider context stays within the character budget",
+  contextChars <= MAX_HISTORY_CHARS + MAX_MESSAGE_CHARS,
+  String(contextChars),
+);
+check(
+  "the latest message is the last provider turn",
+  contextMessages[contextMessages.length - 1]?.role === "user",
+);
+check(
+  "the system prompt carries the deterministic context summary",
+  /CONVERSATION CONTEXT/.test(contextCapture?.system ?? "") &&
+    /compacted to stay within the context limit: yes/.test(contextCapture?.system ?? ""),
+);
+const clientSource = read("src/lib/supportChat.ts");
+check(
+  "the client sends the whole bounded conversation",
+  /transportHistory\(input\.history\)/.test(clientSource) && !/slice\(-8\)/.test(clientSource),
+);
+check(
+  "the client uses the shared context bounds",
+  /MAX_HISTORY_TURNS/.test(clientSource) && /MAX_HISTORY_CHARS/.test(clientSource),
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[32] Secrets never reach the provider context");
+const secretHistory = [
+  { role: "user", content: "my api key is sk_live_ABCDEFGH12345678" },
+  { role: "assistant", content: "Please never share secrets here." },
+  { role: "user", content: "card 4111111111111111" },
+  { role: "assistant", content: "Never share card numbers." },
+  { role: "user", content: "token " + "A".repeat(60) },
+  { role: "assistant", content: "ok" },
+  { role: "user", content: "how do I pay?" },
+] as Array<{ role: "user" | "assistant"; content: string }>;
+let capturedSecrets: CapturedChatInput | null = null;
+const secretProvider = fakeProvider(async (input) => {
+  capturedSecrets = input as CapturedChatInput;
+  return JSON.stringify({ answer: "Use the checkout page.", article_ids: ["checkout"] });
+});
+await handleChat(
+  { message: "and the plans?", locale: "en", history: secretHistory },
+  { ...DEPS, provider: secretProvider },
+);
+const secretCapture = capturedSecrets as CapturedChatInput | null;
+const providerContext = JSON.stringify(secretCapture ?? {});
+check("the provider was called", Boolean(secretCapture));
+check("no API key reaches the provider", !providerContext.includes("sk_live_ABCDEFGH12345678"));
+check("no card number reaches the provider", !providerContext.includes("4111111111111111"));
+check("no long token reaches the provider", !providerContext.includes("A".repeat(60)));
+check("secret-like values are redacted, not just dropped", providerContext.includes("[redacted]"));
+
+// ---------------------------------------------------------------------------
+console.log("\n[33] No conversation persistence and no message logging");
+const chatSrcNoComments = stripComments(read("supabase/functions/_shared/chat/chat.ts"));
+const contextSrcNoComments = stripComments(read("supabase/functions/_shared/chat/context.ts"));
+const indexSrcNoComments = stripComments(read("supabase/functions/support-chat/index.ts"));
+const statelessSources = chatSrcNoComments + contextSrcNoComments + indexSrcNoComments;
+check(
+  "no browser or database persistence in the chat path",
+  !/localStorage|sessionStorage|document\.cookie|indexedDB/.test(statelessSources),
+);
+check(
+  "no message content is logged",
+  !/console\.(log|info|warn|error|debug)\([^)]*(message|content|reply\.reply)/s.test(statelessSources),
+);
+check(
+  "the log carries counts and approved article ids only",
+  /historyTurns: history\.length/.test(indexSrcNoComments) && /articleIds\[0\]/.test(indexSrcNoComments),
+);
+check(
+  "no user id or conversation id is read from the body",
+  !/body\.value\.(userId|user_id|conversationId|sessionId)/.test(indexSrcNoComments),
+);
+check("responses stay no-store", /no-store/.test(indexSrcNoComments));
+check(
+  "the browser client stores nothing",
+  !/localStorage|sessionStorage|document\.cookie|indexedDB/.test(stripComments(clientSource)),
+);
 
 // ---------------------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed`);
