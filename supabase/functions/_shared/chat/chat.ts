@@ -21,11 +21,20 @@
 // ============================================================================
 
 import {
+  articleById,
   KNOWLEDGE_ARTICLES,
   type KnowledgeArticle,
+  relatedArticles,
   selectRelevantArticles,
   sourcesFor,
 } from "./knowledge.ts";
+import {
+  clarifyQuestion,
+  greetingReply,
+  localizedAnswer,
+  thanksReply,
+} from "./answers.ts";
+import { classifyIntent, shouldClarify, type IntentResult } from "./intent.ts";
 import {
   detectMessageLanguage,
   isAnswerInLanguage,
@@ -101,13 +110,24 @@ export function normalizeHistory(raw: unknown): ChatTurn[] {
 // Prompt
 // ---------------------------------------------------------------------------
 
+export interface PromptIntent {
+  primary: string | null;
+  related: string[];
+  confidence: number;
+  contextUsed: boolean;
+  contextIntent: string | null;
+  planId: string | null;
+  explain: boolean;
+}
+
 export function buildSystemPrompt(
   locale: SupportedLocale,
   articles: KnowledgeArticle[] = KNOWLEDGE_ARTICLES,
   languageSource: "message" | "history" | "locale" = "message",
+  intent: PromptIntent | null = null,
 ): string {
   const knowledge = articles
-    .map((a) => `[${a.id}] ${a.title}\n${a.body}\nOfficial links: ${a.links.join(", ")}`)
+    .map((a) => `[${a.id}] ${a.title}\n${a.answer}\n${a.body}\nOfficial links: ${a.links.join(", ")}`)
     .join("\n\n");
 
   const sourceNote =
@@ -116,6 +136,25 @@ export function buildSystemPrompt(
       : languageSource === "history"
         ? "reused from the most recent clearly detected customer language because the latest message is short or ambiguous"
         : "website locale because no message language could be detected";
+
+  const intentLines = intent
+    ? [
+        "",
+        "CLASSIFIED INTENT (deterministic, from the approved knowledge above):",
+        `- primary topic: ${intent.primary ?? "none"}`,
+        `- related topics: ${intent.related.length ? intent.related.join(", ") : "none"}`,
+        `- classifier confidence: ${intent.confidence.toFixed(2)}`,
+        `- conversation context: ${
+          intent.contextUsed && intent.contextIntent
+            ? `the customer is referring back to ${intent.contextIntent}`
+            : intent.contextIntent
+              ? `previous topic was ${intent.contextIntent}`
+              : "none"
+        }`,
+        `- plan mentioned: ${intent.planId ?? "none"}`,
+        `- asked for a simple or step-by-step explanation: ${intent.explain ? "yes" : "no"}`,
+      ]
+    : [];
 
   return [
     SYSTEM_MARKER,
@@ -132,7 +171,17 @@ export function buildSystemPrompt(
     "8. Cite the ids of the approved articles you used in article_ids.",
     `9. The customer's reply language is ${locale} (${sourceNote}).`,
     `10. Write the ENTIRE answer in ${locale}: the answer, any refusal, any unknown fallback and any escalation message. Never switch to another language because of the website locale, the browser locale or a previous message.`,
-    'Output ONLY JSON: {"answer":"...","article_ids":["..."],"unknown":false,"escalate":false,"category":null}',
+    ...intentLines,
+    "",
+    "ANSWER STYLE (customers write informally and are often not technical):",
+    "- Understand typos, missing accents, slang and abbreviations; answer the question they meant.",
+    "- Answer directly and briefly: 1-3 short sentences, plain words, no jargon.",
+    "- If they ask to explain simply or step by step, give 2-4 short numbered steps.",
+    "- If the message refers to something earlier (\"that\", \"it\", \"isso\", \"aquele plano\", \"já fiz\"), use the conversation context instead of asking again.",
+    "- If the topic is genuinely ambiguous, ask ONE short clarifying question and set clarify=true. Never ask two questions.",
+    "- Never reply with \"contact support\" when the approved knowledge answers the question. Only escalate for the categories in rule 6.",
+    "- Prices come only from the approved plan facts. Never invent a price, wallet, bank detail or payment link.",
+    'Output ONLY JSON: {"answer":"...","article_ids":["..."],"unknown":false,"escalate":false,"category":null,"clarify":false}',
     "",
     "APPROVED KNOWLEDGE:",
     knowledge,
@@ -145,6 +194,8 @@ export interface ParsedModelReply {
   unknown: boolean;
   escalate: boolean;
   category: EscalationCategory | null;
+  /** The model decided one short clarifying question is the right answer. */
+  clarify: boolean;
   parsed: boolean;
 }
 
@@ -156,7 +207,8 @@ const CATEGORIES: EscalationCategory[] = [
 /** Parse the model's JSON contract. Non-JSON text is treated as ungrounded. */
 export function parseModelReply(raw: string): ParsedModelReply {
   const empty: ParsedModelReply = {
-    text: "", articleIds: [], unknown: true, escalate: false, category: null, parsed: false,
+    text: "", articleIds: [], unknown: true, escalate: false, category: null,
+    clarify: false, parsed: false,
   };
   const text = (raw ?? "").trim();
   if (!text) return empty;
@@ -191,6 +243,7 @@ export function parseModelReply(raw: string): ParsedModelReply {
     unknown: d.unknown === true,
     escalate: d.escalate === true,
     category,
+    clarify: d.clarify === true,
     parsed: true,
   };
 }
@@ -253,33 +306,68 @@ function sourcesFromIds(
 }
 
 /**
- * Deterministic, localized fallback. English keeps the full approved article
- * body; other locales get a localized pointer to the official page plus the
- * source links, so the customer never receives an English wall of text.
+ * Deterministic answer built from the approved knowledge base.
+ *
+ * English keeps the canonical short answer (or the full article body when the
+ * customer asked for a detailed explanation). Every other locale uses the
+ * localized short answer from answers.ts, and falls back to the localized
+ * pointer to the official page when the topic has no localized answer yet.
  */
-function groundedFallback(
+function deterministicAnswer(
   locale: SupportedLocale,
-  relevant: KnowledgeArticle[],
+  intent: IntentResult,
+  articles: KnowledgeArticle[],
   appUrl: string,
   provider: string,
 ): ChatReply {
-  if (relevant.length > 0) {
-    const primary = relevant[0];
+  const primary = intent.primary ? articleById(intent.primary, articles) : null;
+  if (!primary) {
     return baseReply({
-      type: "answered",
-      reply: locale === "en" ? primary.body : chatMessage(locale, "knowledgeFallback"),
+      type: "unknown",
+      reply: chatMessage(locale, "unknown"),
       locale,
-      sources: sourcesFor(relevant, appUrl),
-      articleIds: relevant.map((a) => a.id),
       provider,
     });
   }
 
+  const related = relatedArticles(primary.id, articles, 2);
+  const sources = sourcesFor([primary, ...related], appUrl);
+  const articleIds = [primary.id, ...related.map((a) => a.id)];
+
+  let reply: string;
+  if (locale === "en") {
+    reply = intent.explain ? primary.body : primary.answer;
+  } else {
+    reply = localizedAnswer(locale, primary.id) ?? chatMessage(locale, "knowledgeFallback");
+  }
+
   return baseReply({
-    type: "unknown",
-    reply: chatMessage(locale, "unknown"),
+    type: "answered",
+    reply,
     locale,
+    sources,
+    articleIds,
     provider,
+  });
+}
+
+/** One short clarifying question, with links to the candidate topics. */
+function clarifyReply(
+  locale: SupportedLocale,
+  intent: IntentResult,
+  articles: KnowledgeArticle[],
+  appUrl: string,
+): ChatReply {
+  const topicIds = intent.clarifyTopics.slice(0, 2);
+  const topics = topicIds
+    .map((id) => articleById(id, articles))
+    .filter((a): a is KnowledgeArticle => Boolean(a));
+  return baseReply({
+    type: "clarify",
+    reply: clarifyQuestion(locale, topicIds),
+    locale,
+    sources: sourcesFor(topics, appUrl),
+    articleIds: topics.map((a) => a.id),
   });
 }
 
@@ -357,13 +445,37 @@ export async function handleChat(
     });
   }
 
-  // 5. Grounding candidates for this message.
-  const relevant = selectRelevantArticles(message, articles);
+  // 5. Classify the intent against the approved knowledge base. This is what
+  //    understands informal, abbreviated, misspelled and conversational
+  //    messages, and what resolves references to earlier turns.
+  const intent = classifyIntent(message, { history });
 
-  // 6. Model path (optional).
+  // 7. Genuinely ambiguous and no context to fall back on: ask ONE short
+  //    clarifying question rather than guessing.
+  if (shouldClarify(intent)) {
+    return clarifyReply(locale, intent, articles, deps.appUrl);
+  }
+
+  // 8. Grounding candidates for this message.
+  const relevant = intent.primary
+    ? [
+      ...articles.filter((a) => a.id === intent.primary),
+      ...relatedArticles(intent.primary, articles, 2),
+    ]
+    : selectRelevantArticles(message, articles);
+
+  // 9. Model path (optional).
   if (deps.provider) {
     try {
-      const system = buildSystemPrompt(locale, articles, language.source);
+      const system = buildSystemPrompt(locale, articles, language.source, {
+        primary: intent.primary,
+        related: relevant.filter((a) => a.id !== intent.primary).map((a) => a.id),
+        confidence: intent.confidence,
+        contextUsed: intent.contextUsed,
+        contextIntent: intent.contextIntent,
+        planId: intent.planId,
+        explain: intent.explain,
+      });
       const raw = await withTimeout(
         deps.provider.complete({
           system,
@@ -375,6 +487,11 @@ export async function handleChat(
       const parsed = parseModelReply(raw);
 
       if (parsed.unknown || !parsed.text) {
+        // The model found nothing. If the classifier is confident the approved
+        // knowledge covers the question, answer from it instead of giving up.
+        if (intent.primary && intent.confidence >= 0.6 && !intent.ambiguous) {
+          return deterministicAnswer(locale, intent, articles, deps.appUrl, deps.provider.name);
+        }
         return baseReply({
           type: "unknown",
           reply: chatMessage(locale, "unknown"),
@@ -400,6 +517,18 @@ export async function handleChat(
         });
       }
 
+      // The model may itself ask one short clarifying question.
+      if (parsed.clarify) {
+        return baseReply({
+          type: "clarify",
+          reply: sanitized.text,
+          locale,
+          sources: sourcesFromIds(parsed.articleIds, articles, deps.appUrl),
+          articleIds: parsed.articleIds.filter((id) => articles.some((a) => a.id === id)),
+          provider: deps.provider.name,
+        });
+      }
+
       // The model may itself decide a request needs a human.
       if (parsed.escalate && parsed.category) {
         return baseReply({
@@ -415,7 +544,7 @@ export async function handleChat(
       // Language enforcement: a completion that confidently answers in a
       // different language than the detected one is not shown.
       if (!isAnswerInLanguage(sanitized.text, locale)) {
-        return groundedFallback(locale, relevant, deps.appUrl, deps.provider.name);
+        return deterministicAnswer(locale, intent, articles, deps.appUrl, deps.provider.name);
       }
 
       // Grounding check: cited ids must exist, otherwise retrieval must supply
@@ -456,8 +585,15 @@ export async function handleChat(
     }
   }
 
-  // 7. Deterministic fallback from the approved knowledge base.
-  return groundedFallback(locale, relevant, deps.appUrl, "knowledge_base");
+  // 10. Deterministic answer from the approved knowledge base. A greeting or a
+  //     thank-you gets a short localized line, not a "no answer" message.
+  if (intent.greeting) {
+    return baseReply({ type: "answered", reply: greetingReply(locale), locale });
+  }
+  if (intent.thanks) {
+    return baseReply({ type: "answered", reply: thanksReply(locale), locale });
+  }
+  return deterministicAnswer(locale, intent, articles, deps.appUrl, "knowledge_base");
 }
 
 /** Exposed for observability and tests; never used to answer. */

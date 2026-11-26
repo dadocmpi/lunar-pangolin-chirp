@@ -31,7 +31,43 @@ import {
 } from "../_shared/chat/language.ts";
 import { CHAT_MESSAGES, chatMessage, escalationMessage } from "../_shared/chat/messages.ts";
 import {
+  classifyIntent,
+  contentTokens,
+  contextIntentFromHistory,
+  detectPlanReference,
+  isExplainRequest,
+  isGreeting,
+  isReferential,
+  isThanks,
+  isTopicless,
+  shouldClarify,
+} from "../_shared/chat/intent.ts";
+import {
+  collapseRepeats,
+  editDistance,
+  expandAbbreviations,
+  fuzzyTokenMatch,
+  normalizeQuery,
+  normalizeText,
+  stripDiacritics,
+  tokenize,
+} from "../_shared/chat/normalize.ts";
+import {
+  ANSWER_KEYS,
+  clarifyQuestion,
+  fillPlaceholders,
+  greetingReply,
+  LOCALIZED_ANSWERS,
+  localizedAnswer,
+  planSummary,
+  thanksReply,
+  TOPIC_KEYS,
+  topicLabel,
+} from "../_shared/chat/answers.ts";
+import {
   KNOWLEDGE_ARTICLES,
+  KNOWLEDGE_CATEGORIES,
+  KNOWLEDGE_INDEX,
   officialUrl,
   selectRelevantArticles,
   sourcesFor,
@@ -831,7 +867,11 @@ const ptAnswer = await handleChat(
   { message: "Como redefinir a minha senha?", locale: "es", history: [] },
   DEPS,
 );
-check("portuguese input -> portuguese reply", ptAnswer.locale === "pt" && /senha|página oficial|suporte/i.test(ptAnswer.reply), ptAnswer.reply.slice(0, 60));
+check(
+  "portuguese input -> portuguese reply",
+  ptAnswer.locale === "pt" && /palavra-passe|senha|página oficial|suporte/i.test(ptAnswer.reply),
+  ptAnswer.reply.slice(0, 60),
+);
 const esAnswer = await handleChat(
   { message: "¿Cómo restablezco mi contraseña?", locale: "en", history: [] },
   DEPS,
@@ -943,7 +983,10 @@ const mismatched = await handleChat(
 );
 check(
   "a model answer in the wrong language is not shown",
-  mismatched.locale === "pt" && mismatched.reply === chatMessage("pt", "knowledgeFallback"),
+  mismatched.locale === "pt" &&
+    mismatched.type === "answered" &&
+    /palavra-passe|senha/i.test(mismatched.reply) &&
+    !/Forgot password/i.test(mismatched.reply),
   `${mismatched.locale}/${mismatched.reply.slice(0, 40)}`,
 );
 
@@ -1084,6 +1127,388 @@ check("escape closes the panel", /e\.key === "Escape"/.test(uiSrc));
 check("no emoji as the main icon", !/[\u{1F300}-\u{1FAFF}]/u.test(uiSrc));
 check("server-localized messages are rendered verbatim", /\{message\.content\}/.test(uiSrc) && !/REFUSAL_KEY/.test(uiSrc));
 
+
+// ---------------------------------------------------------------------------
+console.log("\n[20] Text normalisation and fuzzy matching");
+check("accents are stripped", stripDiacritics("não é ação") === "nao e acao");
+check("normalisation lower-cases and drops punctuation", normalizeText("Olá, TUDO bem?!") === "ola tudo bem");
+check("abbreviations expand (pt)", expandAbbreviations(normalizeText("vc pode me ajudar pfv")) === "voce pode me ajudar por favor");
+check("abbreviations expand (en)", expandAbbreviations(normalizeText("pls u wanna pay")) === "please you want to pay");
+check("filler words are dropped", expandAbbreviations(normalizeText("mano tipo isso")) === "isso");
+check("repeated letters collapse", collapseRepeats("ajudaaaa") === "ajudaa");
+check("edit distance is exact", editDistance("pagar", "pagar") === 0);
+check("edit distance counts one substitution", editDistance("pagar", "pagar") === 0 && editDistance("pago", "pagu") === 1);
+check("fuzzy match accepts a typo", fuzzyTokenMatch("pagamento", "pagamneto"));
+check("fuzzy match rejects a different word", !fuzzyTokenMatch("marte", "karte"));
+check("fuzzy match rejects very short words", !fuzzyTokenMatch("kyc", "kya"));
+check("tokenize keeps accents out", tokenize("AÇÃO Rápida").join(",") === "acao,rapida");
+check("query normalisation is stable", normalizeQuery("  Oi, TUDO bem?? ") === "oi tudo bem");
+
+// ---------------------------------------------------------------------------
+console.log("\n[21] Informal Portuguese");
+const ptInformal: Array<[string, string]> = [
+  ["quero saber como funciona isso", "how_it_works"],
+  ["mano como pago", "checkout"],
+  ["não consigo entrar", "password_recovery"],
+  ["nao consigo entrar", "password_recovery"],
+  ["ja paguei e agora?", "onboarding"],
+  ["já paguei e agora?", "onboarding"],
+  ["onde vejo minha conta?", "dashboard_usage"],
+  ["como começo?", "getting_started"],
+  ["quero aquele plano de 200", "plans"],
+  ["isso conecta na minha Tradeify?", "tradovate_connection"],
+  ["me explica de um jeito simples", "activation"],
+  ["vc pode ativar minha conta?", "account_actions"],
+  ["qdo chega meu acesso", "onboarding"],
+  ["qual o endereco de voces", "contact_and_company"],
+  ["como eu faco o saque", "withdrawal_kyc"],
+  ["nao recebi o email de confirmacao", "email_confirmation"],
+  ["quanto custa o plano de 350", "plans"],
+];
+for (const [message, expected] of ptInformal) {
+  const withContext = expected === "activation"
+    ? { history: [{ role: "user" as const, content: "minha ativação está em análise" }] }
+    : {};
+  const r = await handleChat({ message, locale: "en", history: withContext.history ?? [] }, DEPS);
+  check(
+    `pt informal "${message}" is understood as ${expected}`,
+    r.articleIds.includes(expected) && r.type === "answered",
+    `${r.type}:${r.articleIds.join(",")}`,
+  );
+  check(
+    `pt informal "${message}" answers in portuguese`,
+    r.locale === "pt",
+    String(r.locale),
+  );
+}
+const ptKyc = await handleChat({ message: "como funciona o kyc", locale: "en", history: [] }, DEPS);
+check(
+  "an explicit KYC question is still escalated to a person (pt)",
+  ptKyc.type === "escalated" && ptKyc.escalation?.category === "kyc",
+  `${ptKyc.type}/${ptKyc.escalation?.category}`,
+);
+
+const ptPlanAnswer = await handleChat({ message: "quero aquele plano de 200", locale: "en", history: [] }, DEPS);
+check("pt informal plan answer quotes the canonical price", ptPlanAnswer.reply.includes("$200.00"), ptPlanAnswer.reply.slice(0, 60));
+check("pt informal plan answer is not the english text", !ptPlanAnswer.reply.includes("We have four monthly plans"), ptPlanAnswer.reply.slice(0, 60));
+
+// ---------------------------------------------------------------------------
+console.log("\n[22] Informal English");
+const enInformal: Array<[string, string]> = [
+  ["hey how do i pay", "checkout"],
+  ["cant log in bro", "password_recovery"],
+  ["where do i see my account", "dashboard_usage"],
+  ["i already paid what now", "onboarding"],
+  ["how much is the 200 plan", "plans"],
+  ["what do i get for 350", "plans"],
+  ["is tradovate read only", "tradovate_connection"],
+  ["how do i start", "getting_started"],
+  ["pls explain how it works", "how_it_works"],
+  ["my payment is stuck", "payment_status"],
+  ["how do i contact support", "support_procedures"],
+  ["wanna pay how", "checkout"],
+  ["how does it work pls", "how_it_works"],
+];
+for (const [message, expected] of enInformal) {
+  const r = await handleChat({ message, locale: "pt", history: [] }, DEPS);
+  check(
+    `en informal "${message}" is understood as ${expected}`,
+    r.type === "answered" && r.articleIds.includes(expected),
+    `${r.type}:${r.articleIds.join(",")}`,
+  );
+  check(`en informal "${message}" answers in english`, r.locale === "en", String(r.locale));
+}
+
+// ---------------------------------------------------------------------------
+console.log("\n[23] Informal Spanish");
+const esInformal: Array<[string, string]> = [
+  ["no puedo entrar", "password_recovery"],
+  ["ya pagué y ahora", "onboarding"],
+  ["dónde veo mi cuenta", "dashboard_usage"],
+  ["cómo empiezo", "getting_started"],
+  ["cuanto cuesta el plan de 350", "plans"],
+  ["no recibí el correo", "email_confirmation"],
+  ["se conecta con mi cuenta", "tradovate_connection"],
+  ["qué documentos necesito para el retiro", "withdrawal_kyc"],
+];
+for (const [message, expected] of esInformal) {
+  const r = await handleChat({ message, locale: "en", history: [] }, DEPS);
+  check(
+    `es informal "${message}" is understood as ${expected}`,
+    r.type === "answered" && r.articleIds.includes(expected),
+    `${r.type}:${r.articleIds.join(",")}`,
+  );
+  check(`es informal "${message}" answers in spanish`, r.locale === "es", String(r.locale));
+}
+const esPlanAnswer = await handleChat({ message: "cuanto cuesta el plan de 350", locale: "en", history: [] }, DEPS);
+check(
+  "es informal plan answer quotes the canonical price",
+  esPlanAnswer.reply.includes("$350.00") && /planes mensuales/i.test(esPlanAnswer.reply),
+  esPlanAnswer.reply.slice(0, 60),
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[24] Typos, missing accents, abbreviations and slang");
+const messy: Array<[string, string, string]> = [
+  ["nao consigo entrar", "password_recovery", "pt"],
+  ["ja paguei e agora?", "onboarding", "pt"],
+  ["qto custa o plano", "plans", "pt"],
+  ["pq nao consigo entrar", "password_recovery", "pt"],
+  ["vlr do plano de 200", "plans", "pt"],
+  ["blz como faco o pagamento", "checkout", "pt"],
+  ["ajudaaaa como pago", "checkout", "pt"],
+  ["n consigo logar", "password_recovery", "pt"],
+  ["qdo chega meu acesso", "onboarding", "pt"],
+  ["nao recebi o email de confirmacao", "email_confirmation", "pt"],
+  ["how dos it work", "how_it_works", "en"],
+  ["i cant get in", "password_recovery", "en"],
+  ["no recibi el correo", "email_confirmation", "es"],
+  ["como empiezo", "getting_started", "es"],
+];
+for (const [message, expected, expectedLocale] of messy) {
+  const r = await handleChat({ message, locale: "en", history: [] }, DEPS);
+  check(
+    `messy "${message}" is understood as ${expected}`,
+    r.type === "answered" && r.articleIds.includes(expected),
+    `${r.type}:${r.articleIds.join(",")}`,
+  );
+  check(
+    `messy "${message}" replies in ${expectedLocale}`,
+    r.locale === expectedLocale,
+    String(r.locale),
+  );
+}
+const slang = await handleChat({ message: "mano, tipo assim, como q eu pago isso?", locale: "en", history: [] }, DEPS);
+check(
+  "slang-heavy pt sentence still reaches checkout",
+  slang.type === "answered" && slang.articleIds.includes("checkout") && slang.locale === "pt",
+  `${slang.type}:${slang.articleIds.join(",")}/${slang.locale}`,
+);
+
+
+// ---------------------------------------------------------------------------
+console.log("\n[25] Personalised questions and conversation context");
+const personalised: Array<[string, string]> = [
+  ["minha conta", "dashboard_usage"],
+  ["meu pagamento está pendente", "payment_status"],
+  ["meu email não chegou", "email_confirmation"],
+  ["minha ativação está em análise", "activation"],
+  ["meu perfil está incompleto", "profile_and_signup"],
+  ["minha senha não funciona", "password_recovery"],
+];
+for (const [message, expected] of personalised) {
+  const r = await handleChat({ message, locale: "en", history: [] }, DEPS);
+  check(
+    `personalised "${message}" is understood as ${expected}`,
+    r.type === "answered" && r.articleIds.includes(expected),
+    `${r.type}:${r.articleIds.join(",")}`,
+  );
+}
+
+const activationContext = [{ role: "user" as const, content: "minha ativação está em análise" }];
+const followUp = await handleChat({ message: "e agora?", locale: "en", history: activationContext }, DEPS);
+check(
+  "a follow-up question reuses the previous topic",
+  followUp.type === "answered" && followUp.articleIds.includes("activation"),
+  `${followUp.type}:${followUp.articleIds.join(",")}`,
+);
+
+const plansContext = [{ role: "user" as const, content: "quanto custa o plano de 350" }];
+const thatPlan = await handleChat({ message: "aquele plano", locale: "en", history: plansContext }, DEPS);
+check(
+  '"aquele plano" resolves to plans from the conversation',
+  thatPlan.type === "answered" && thatPlan.articleIds.includes("plans"),
+  `${thatPlan.type}:${thatPlan.articleIds.join(",")}`,
+);
+
+const paidContext = [{ role: "user" as const, content: "ja paguei e agora?" }];
+const alreadyDid = await handleChat({ message: "já fiz", locale: "en", history: paidContext }, DEPS);
+check(
+  '"já fiz" resolves to the previous topic',
+  alreadyDid.type === "answered" && alreadyDid.articleIds.includes("onboarding"),
+  `${alreadyDid.type}:${alreadyDid.articleIds.join(",")}`,
+);
+
+const pronoun = await handleChat({
+  message: "isso",
+  locale: "en",
+  history: [{ role: "assistant" as const, content: "You buy the account directly from the prop firm, then request activation in the dashboard." }],
+}, DEPS);
+check(
+  "a bare pronoun reuses the assistant's topic",
+  pronoun.type === "answered" && pronoun.articleIds.includes("activation"),
+  `${pronoun.type}:${pronoun.articleIds.join(",")}`,
+);
+const simpleContext = [{ role: "user" as const, content: "minha ativação está em análise" }];
+const simple = await handleChat({ message: "explain that simply", locale: "en", history: simpleContext }, DEPS);
+const activationArticle = KNOWLEDGE_ARTICLES.find((a) => a.id === "activation")!;
+check(
+  '"explain it simply" with context returns the detailed explanation',
+  simple.type === "answered" && simple.reply === activationArticle.body,
+  simple.reply.slice(0, 60),
+);
+const simplePt = await handleChat({ message: "me explica de um jeito simples", locale: "en", history: simpleContext }, DEPS);
+check(
+  "a Portuguese explain request answers in Portuguese from the same topic",
+  simplePt.locale === "pt" &&
+    simplePt.type === "answered" &&
+    simplePt.reply === localizedAnswer("pt", "activation"),
+  `${simplePt.locale}:${simplePt.reply.slice(0, 40)}`,
+);
+check(
+  "the detailed explanation is longer than the short answer",
+  simple.reply.length > activationArticle.answer.length,
+  `${simple.reply.length}/${activationArticle.answer.length}`,
+);
+const contextIntent = contextIntentFromHistory([{ role: "user", content: "quero aquele plano de 200" }]);
+check("the context resolver reads the last clear topic", contextIntent === "plans", String(contextIntent));
+
+// ---------------------------------------------------------------------------
+console.log("\n[26] Ambiguity asks exactly one short question");
+const vague: Array<[string, string]> = [
+  ["coisa", "pt"],
+  ["??", "en"],
+  ["não sei", "pt"],
+  ["isso", "pt"],
+  ["e agora?", "en"],
+];
+for (const [message, siteLocale] of vague) {
+  const r = await handleChat({ message, locale: siteLocale, history: [] }, DEPS);
+  check(
+    `vague "${message}" asks a clarifying question`,
+    r.type === "clarify" && r.reply.trim().length > 0,
+    `${r.type}:${r.reply.slice(0, 40)}`,
+  );
+  check(
+    `vague "${message}" asks exactly one question`,
+    (r.reply.match(/\?/g) ?? []).length === 1,
+    r.reply.slice(0, 80),
+  );
+  check(`vague "${message}" offers at most two topics`, r.sources.length <= 2, String(r.sources.length));
+}
+const ptClarify = await handleChat({ message: "não sei", locale: "en", history: [] }, DEPS);
+check(
+  "the clarifying question is localized to the detected language",
+  ptClarify.locale === "pt" && /confirmar/i.test(ptClarify.reply),
+  `${ptClarify.locale}:${ptClarify.reply.slice(0, 50)}`,
+);
+check(
+  "a two-topic clarification names both topics",
+  /começar/i.test(ptClarify.reply) && /planos e preços/i.test(ptClarify.reply),
+  ptClarify.reply.slice(0, 80),
+);
+const answerable = await handleChat({ message: "mano como pago", locale: "en", history: [] }, DEPS);
+check("an answerable message is answered, never clarified", answerable.type === "answered", answerable.type);
+const modelClarify = await handleChat(
+  { message: "hmm", locale: "en", history: [] },
+  {
+    ...DEPS,
+    provider: fakeProvider(async () =>
+      JSON.stringify({
+        answer: "Do you mean payment or activation?",
+        clarify: true,
+        article_ids: ["checkout", "activation"],
+      })
+    ),
+  },
+);
+check(
+  "the model may ask a clarifying question",
+  modelClarify.type === "clarify" && modelClarify.reply.includes("payment or activation"),
+  `${modelClarify.type}:${modelClarify.reply.slice(0, 40)}`,
+);
+
+// ---------------------------------------------------------------------------
+console.log("\n[27] Localized answers, topics and knowledge structure");
+const ALL_LOCALES: SupportedLocale[] = ["en", "pt", "it", "es", "fr", "de", "ru", "zh", "ja", "ar", "he"];
+for (const locale of ALL_LOCALES) {
+  const table = LOCALIZED_ANSWERS[locale];
+  check(`${locale}: has an answer table`, Boolean(table), locale);
+  for (const key of ANSWER_KEYS) {
+    const value = table?.answers[key];
+    check(
+      `${locale}: answer ${key} exists and is not empty`,
+      Boolean(value && value.trim().length > 20),
+      String(value?.slice(0, 30)),
+    );
+  }
+  for (const key of TOPIC_KEYS) {
+    check(`${locale}: topic ${key} exists`, Boolean(table?.topics[key]?.trim()), String(table?.topics[key]));
+  }
+  check(
+    `${locale}: the clarify template has both slots`,
+    Boolean(table?.clarifyPair.includes("{{a}}") && table?.clarifyPair.includes("{{b}}")),
+    String(table?.clarifyPair),
+  );
+  check(`${locale}: open clarification exists`, Boolean(table?.clarifyOpen.trim()), String(table?.clarifyOpen.slice(0, 30)));
+  check(`${locale}: greeting exists`, Boolean(table?.greeting.trim()), String(table?.greeting.slice(0, 30)));
+  check(`${locale}: thanks exists`, Boolean(table?.thanks.trim()), String(table?.thanks.slice(0, 30)));
+}
+let localizedDiffs = 0;
+for (const key of ANSWER_KEYS) {
+  if (localizedAnswer("pt", key) !== localizedAnswer("en", key)) localizedDiffs++;
+}
+check("every Portuguese answer is really translated", localizedDiffs === ANSWER_KEYS.length, String(localizedDiffs));
+for (const locale of ALL_LOCALES) {
+  const plans = localizedAnswer(locale, "plans") ?? "";
+  check(
+    `${locale}: the plan answer quotes every canonical price`,
+    ["$200.00", "$350.00", "$600.00", "$820.00"].every((price) => plans.includes(price)),
+    plans.slice(0, 60),
+  );
+  check(`${locale}: the plan answer has no unresolved placeholder`, !plans.includes("{{"), plans.slice(0, 60));
+}
+check("an unknown topic has no localized answer", localizedAnswer("pt", "refunds_cancellation") === null);
+check(
+  "the plan summary comes from the canonical table",
+  planSummary().includes("Starter") && planSummary().includes("$820.00"),
+  planSummary().slice(0, 80),
+);
+check("placeholders are filled", fillPlaceholders("a {{plans}} b").includes("$200.00"));
+const twoTopic = clarifyQuestion("pt", ["plans", "activation"]);
+check(
+  "clarifyQuestion names both candidate topics",
+  twoTopic.includes(topicLabel("pt", "plans")!) &&
+    twoTopic.includes(topicLabel("pt", "activation")!) &&
+    !twoTopic.includes("{{"),
+  twoTopic,
+);
+check("clarifyQuestion falls back to the open question", clarifyQuestion("pt", []) === LOCALIZED_ANSWERS.pt.clarifyOpen);
+check("greetingReply is localized", greetingReply("es") === LOCALIZED_ANSWERS.es.greeting);
+check("thanksReply is localized", thanksReply("de") === LOCALIZED_ANSWERS.de.thanks);
+for (const key of ANSWER_KEYS) {
+  check(`answer key ${key} maps to a knowledge article`, KNOWLEDGE_ARTICLES.some((a) => a.id === key), key);
+}
+const EXPECTED_CATEGORIES = ["start", "account", "plans", "payment", "product", "company", "support", "legal"];
+check(
+  "the knowledge base exposes the expected categories",
+  EXPECTED_CATEGORIES.every((c) => (KNOWLEDGE_CATEGORIES as readonly string[]).includes(c)),
+  KNOWLEDGE_CATEGORIES.join(","),
+);
+const seenIds = new Set<string>();
+let structured = true;
+for (const article of KNOWLEDGE_ARTICLES) {
+  if (seenIds.has(article.id)) structured = false;
+  seenIds.add(article.id);
+  if (!(KNOWLEDGE_CATEGORIES as readonly string[]).includes(article.category)) structured = false;
+  if (article.aliases.length === 0 || article.informalQuestions.length === 0) structured = false;
+  if (article.relatedTopics.length === 0 || article.links.length === 0) structured = false;
+  if (!article.title.trim() || !article.answer.trim() || !article.body.trim()) structured = false;
+}
+check(
+  "every article has a category, aliases, informal questions, related topics and links",
+  structured,
+  `${KNOWLEDGE_ARTICLES.length} articles`,
+);
+let relatedResolve = true;
+for (const article of KNOWLEDGE_ARTICLES) {
+  for (const related of article.relatedTopics) {
+    if (!KNOWLEDGE_ARTICLES.some((a) => a.id === related)) relatedResolve = false;
+  }
+}
+check("every related topic points at a real article", relatedResolve);
+const indexedIds = new Set(KNOWLEDGE_INDEX.map((e) => e.id));
+check("every article is indexed for matching", KNOWLEDGE_ARTICLES.every((a) => indexedIds.has(a.id)), String(indexedIds.size));
 
 // ---------------------------------------------------------------------------
 console.log(`\n${passed} passed, ${failed} failed`);

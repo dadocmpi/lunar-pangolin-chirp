@@ -18,6 +18,7 @@
 // Pure functions only: no I/O, no state, no model call.
 // ============================================================================
 
+import { collapseAllRepeats } from "./normalize.ts";
 import type { ChatTurn } from "./types.ts";
 
 export const SUPPORTED_LOCALES = [
@@ -91,6 +92,10 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "you", "we", "our", "they", "this", "that", "these", "those", "with",
     "from", "about", "into", "hello", "hi", "hey", "thanks", "thank", "yes",
     "not", "need", "want", "reset", "recover", "cancel", "buy", "signup",
+    "wanna", "gonna", "gotta", "kinda", "pls", "plz", "thx", "idk", "bro",
+    "dude", "cant", "dont", "doesnt", "whats", "ur", "yeah", "yep", "nope",
+    "sup", "help", "someone", "someone's", "account", "pay", "paid", "login",
+    "email", "dashboard", "trade", "trading", "prop", "firm", "broker",
   ],
   pt: [
     "não", "nao", "você", "voce", "vocês", "voces", "obrigado", "obrigada",
@@ -100,7 +105,18 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "quero", "redefinir", "recuperar", "cancelar", "comprar", "conta",
     "pagamento", "plano", "preço", "preco", "ajuda", "suporte", "palavra-passe",
     "palavra", "passe", "ativar", "ativação", "ativacao", "painel", "cadastro",
-    "cadastrar", "entrar",
+    "cadastrar", "entrar", "mano", "cara", "vou", "pra", "pro", "ta", "ne",
+    "bora", "valeu", "beleza", "tranquilo", "massa", "ce", "tipo", "poxa",
+    "nossa", "ja", "paguei", "consigo", "comeco", "funciona", "conecta",
+    "dinheiro", "grana", "saque", "documento", "tudo", "bom", "boa", "muito",
+    "tambem", "aqui", "tenho", "fazer", "ficou", "deu", "estou", "precisando",
+    "duvida", "como", "onde", "quando", "quanto", "qual", "porque", "sobre",
+    "pago", "começo", "tô", "tá", "né", "aí", "explica", "explicar", "jeito",
+    "simples", "também", "não", "você", "está", "recebi", "confirmacao",
+    "vc", "vcs", "pq", "oq", "qto", "qnd", "vlr", "pgto", "kd", "obg", "pfv",
+    "tbm", "msm", "dnv", "hj", "pra", "pro", "tô", "cê", "né",
+    "confirmacão", "ativacao", "pagamento", "documentos", "minha", "meu",
+    "planos", "ou", "pagar", "preços", "precos", "contas", "senhas", "e-mail",
   ],
   es: [
     "el", "los", "las", "del", "cómo", "como", "cuál", "cual", "cuáles",
@@ -109,7 +125,14 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "cuenta", "pago", "precio", "ayuda", "necesito", "quiero",
     "restablecer", "restablezco", "comprar", "cancelar", "activar",
     "activación", "activacion", "correo", "sesión", "sesion",
-    "tarjeta", "facturación", "facturacion",
+    "tarjeta", "facturación", "facturacion", "ya", "ahora", "y", "pero", "muy",
+    "esto", "eso", "es", "sin", "dinero", "plata", "puedo", "tengo", "hacer",
+    "empiezo", "pague", "recibi", "cuanto", "cuesta", "debo", "aqui", "asi",
+    "también", "tambien", "luego", "siempre", "nada", "todo", "bien", "mal",
+    "cuenta", "pago", "pagar", "comprar", "quiero", "necesito", "correo",
+    "compa", "hermano", "wey", "vale", "pues", "bueno", "no",
+    "simple", "sencillo", "explicas", "explícame", "explicame", "funciona",
+    "cuéntame", "cuentame", "señor", "senor", "mi",
   ],
   it: [
     "il", "gli", "della", "delle", "degli", "che", "come", "quale", "quali",
@@ -119,6 +142,9 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "annullare", "comprare", "attivare", "attivazione", "pannello",
     "fatturazione", "accesso", "questo", "nel", "quindi", "supporto", "umano",
     "risposta", "contenuto", "verificata", "indovinare", "rispondere",
+    "quanto", "costo", "pagare", "attivare", "problema", "funziona",
+    "collega", "soldi", "adesso", "allora", "anche", "molto", "niente",
+    "tutto", "bene", "male", "aiutare", "bisogno", "vorrei", "posso",
   ],
   fr: [
     "le", "les", "des", "du", "et", "est", "comment", "quel", "quelle",
@@ -128,7 +154,9 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "veux", "réinitialiser", "reinitialiser", "récupérer", "recuperer",
     "annuler", "acheter", "activer", "tableau", "bord", "facturation",
     "connexion", "courriel", "temps", "réessayez", "reessayez", "contactez",
-    "humain",
+    "humain", "combien", "payer", "activer", "probleme", "problème",
+    "fonctionne", "connecte", "argent", "maintenant", "donc", "aussi",
+    "beaucoup", "rien", "tout", "bien", "mal", "besoin", "veux", "peux",
   ],
   de: [
     "der", "die", "das", "den", "dem", "des", "ein", "eine", "einer", "und",
@@ -138,7 +166,9 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "preis", "hilfe", "brauche", "möchte", "mochte", "zurücksetzen",
     "zurucksetzen", "zurück", "zuruck", "wiederherstellen", "kündigen",
     "kundigen", "kaufen", "aktivieren", "aktivierung", "übersicht",
-    "ubersicht", "karte", "rechnung", "anmeldung",
+    "ubersicht", "karte", "rechnung", "anmeldung", "bezahlen", "zahlen",
+    "problem", "funktioniert", "verbinden", "geld", "jetzt", "also", "auch",
+    "viel", "nichts", "alles", "gut", "schlecht", "bitte", "soll", "will",
   ],
 };
 
@@ -194,8 +224,12 @@ function scoreLatin(text: string): Record<string, number> {
   const scores: Record<string, number> = {};
   for (const locale of LATIN_LOCALES) scores[locale] = 0;
   for (const token of tokenize(text)) {
+    // Match the token and its fully-collapsed form so "ajudaaaa" counts.
+    const collapsed = collapseAllRepeats(token);
     for (const locale of LATIN_LOCALES) {
-      if (WORD_SETS[locale].has(token)) scores[locale] += 3;
+      if (WORD_SETS[locale].has(token) || (collapsed !== token && WORD_SETS[locale].has(collapsed))) {
+        scores[locale] += 3;
+      }
     }
   }
   for (const [pattern, weights] of DIACRITIC_SIGNALS) {

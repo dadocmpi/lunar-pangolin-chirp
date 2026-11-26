@@ -140,12 +140,23 @@ const ptReply = await chat.handleChat(
   { message: 'Como redefinir a minha senha?', locale: 'es', history: [] },
   DEPS,
 );
-check('portuguese input produces a portuguese reply', ptReply.locale === 'pt' && ptReply.reply === messages.chatMessage('pt', 'knowledgeFallback'));
+check(
+  'portuguese input produces a portuguese reply',
+  ptReply.locale === 'pt' &&
+    ptReply.type === 'answered' &&
+    /palavra-passe|senha/i.test(ptReply.reply) &&
+    ptReply.reply !== messages.chatMessage('en', 'knowledgeFallback'),
+);
 const esReply = await chat.handleChat(
   { message: '¿Cómo restablezco mi contraseña?', locale: 'en', history: [] },
   DEPS,
 );
-check('spanish input produces a spanish reply', esReply.locale === 'es' && esReply.reply === messages.chatMessage('es', 'knowledgeFallback'));
+check(
+  'spanish input produces a spanish reply',
+  esReply.locale === 'es' &&
+    esReply.type === 'answered' &&
+    /contraseña/i.test(esReply.reply),
+);
 const enReply = await chat.handleChat({ message: 'hello', locale: 'es', history: [] }, DEPS);
 check('hello produces an english reply', enReply.locale === 'en');
 
@@ -268,6 +279,40 @@ check('widget is a desktop compact window', /sm:w-\[400px\]/.test(ui) && /sm:h-\
 check('widget respects reduced motion', /motion-reduce:/.test(ui));
 check('widget returns focus to the launcher', /launcherRef\.current\?\.focus\(\)/.test(ui));
 check('widget renders the server-localized reply verbatim', /\{message\.content\}/.test(ui));
+
+// ---------------------------------------------------------------------------
+console.log('\n[11] Informal intent understanding');
+const answersSrc = read('supabase/functions/_shared/chat/answers.ts');
+const intentSrc = read('supabase/functions/_shared/chat/intent.ts');
+const normalizeSrc = read('supabase/functions/_shared/chat/normalize.ts');
+const matchSrc = read('supabase/functions/_shared/chat/match.ts');
+const chatSrc = stripComments(read('supabase/functions/_shared/chat/chat.ts'));
+for (const file of ['normalize.ts', 'match.ts', 'intent.ts', 'answers.ts']) {
+  check(`${file} exists`, has(`supabase/functions/_shared/chat/${file}`));
+}
+check('chat.ts classifies the intent', /classifyIntent\(/.test(chatSrc));
+check('chat.ts asks a clarifying question when ambiguous', /shouldClarify\(/.test(chatSrc) && /clarifyReply\(/.test(chatSrc));
+check('chat.ts answers from the classified topic', /intent\.primary/.test(chatSrc));
+check('chat.ts uses conversation context', /contextIntent/.test(chatSrc));
+check('chat.ts answers without a provider', /deterministicAnswer\(/.test(chatSrc));
+check('the prompt carries the classified intent', /CLASSIFIED INTENT/.test(chatSrc));
+check('the prompt states the answer style', /ANSWER STYLE/.test(chatSrc));
+check('the model may set clarify', /clarify: d\.clarify === true/.test(chatSrc));
+check('clarify is a reply type', /"clarify"/.test(read('supabase/functions/_shared/chat/types.ts')));
+check('the client knows the clarify type', /"clarify"/.test(read('src/lib/supportChat.ts')));
+check('normalisation strips diacritics', /stripDiacritics/.test(normalizeSrc) && /NFD/.test(normalizeSrc));
+check('normalisation expands abbreviations', /ABBREVIATIONS/.test(normalizeSrc));
+check('normalisation tolerates typos', /fuzzyTokenMatch/.test(normalizeSrc) && /editDistance/.test(normalizeSrc));
+check('matching is weighted and ranked', /rankEntries/.test(matchSrc) && /weight/.test(matchSrc));
+check('intent detection reads informal Portuguese', /quero saber como funciona isso/.test(intentSrc + read('supabase/functions/_shared/chat/knowledge.ts')));
+check('answers.ts reads the canonical plan table', /PLANS\[id\]/.test(answersSrc) && /PLAN_IDS/.test(answersSrc));
+check('answers.ts has no hardcoded plan price', !/\$\s?200/.test(answersSrc) && !/\$\s?820/.test(answersSrc));
+check('answers.ts covers 11 locales', ['en', 'pt', 'it', 'es', 'fr', 'de', 'ru', 'zh', 'ja', 'ar', 'he'].every((l) => new RegExp(`^  ${l}: \\{`, 'm').test(answersSrc)));
+check('answers.ts has no wallet, IBAN or payment link', !/\b(0x[a-fA-F0-9]{20,}|bc1[a-z0-9]{20,})\b/.test(answersSrc) && !/\b[A-Z]{2}\d{2}[A-Z0-9]{10,}\b/.test(answersSrc) && !/https?:\/\//.test(answersSrc));
+check('answers.ts promises nothing', !/guaranteed profit|risk-free|garantia de lucro|sin riesgo/i.test(answersSrc));
+check('knowledge entries carry aliases, informal questions and related topics', /aliases:/.test(knowledgeSrc) && /informalQuestions:/.test(knowledgeSrc) && /relatedTopics:/.test(knowledgeSrc));
+check('knowledge is categorised', /KNOWLEDGE_CATEGORIES/.test(knowledgeSrc) && /CATEGORY_LABELS/.test(knowledgeSrc));
+check('new modules are stateless', !/localStorage|sessionStorage|document\.cookie/.test(normalizeSrc + matchSrc + intentSrc + answersSrc));
 
 // ---------------------------------------------------------------------------
 console.log('\n[10] Bundle + tests + docs');

@@ -16,6 +16,8 @@ export type ChatTurn = { role: "user" | "assistant"; content: string };
 
 export type ChatReplyType =
   | "answered"
+  /** The message was ambiguous: the assistant asked one short question. */
+  | "clarify"
   | "unknown"
   | "escalated"
   | "refused"
@@ -58,7 +60,7 @@ export type ChatSendResult =
   | { ok: false; error: ChatSendError; reply?: string };
 
 const TYPES: ChatReplyType[] = [
-  "answered", "unknown", "escalated", "refused", "timeout", "error",
+  "answered", "clarify", "unknown", "escalated", "refused", "timeout", "error",
 ];
 const REASONS: ChatRefusalReason[] = ["advice", "secret", "injection", "promise"];
 

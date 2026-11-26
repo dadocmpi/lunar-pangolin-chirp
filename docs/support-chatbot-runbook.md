@@ -119,8 +119,15 @@ guess.
    connection, order or withdrawal.
 10. Never claims a status changed unless the server verified it (it cannot
     verify or change anything).
-11. Conversations are per browser tab; there is no conversation id.
-12. Conversations are not stored.
+11. Understands informal, abbreviated, misspelled and conversational messages
+    (typos, missing accents, slang, short fragments) by classifying the intent
+    against the approved knowledge base before answering.
+12. Uses the supplied conversation history for references ("isso", "ele",
+    "aquele plano", "já fiz", "e agora?").
+13. Asks **one** short clarifying question when the message is genuinely
+    ambiguous, instead of guessing or saying "contact support".
+14. Conversations are per browser tab; there is no conversation id.
+15. Conversations are not stored.
 
 ## Language detection
 
@@ -142,6 +149,43 @@ disabled feature, refusals and every human-handoff category — exist in
 `supabase/functions/_shared/chat/messages.ts` for all 11 locales. The function
 also localizes its 429/503/504/400 bodies, so a Portuguese customer does not get
 an English error because the site locale is English.
+
+## Intent understanding
+
+The reply is chosen in this order (`supabase/functions/_shared/chat/chat.ts`):
+
+1. Safety gates first — secret request/sharing, advice request, prompt
+   injection, human escalation. Unchanged by the intent work.
+2. `classifyIntent(message, { history })` (`intent.ts`) normalises the text
+   (`normalize.ts`: lower-case, accents stripped, abbreviations expanded,
+   filler dropped, repeated letters collapsed) and scores it against the
+   knowledge index (`match.ts`: phrase containment, token order, weighted
+   aliases/keywords/informal questions, typo tolerance via bounded edit
+   distance, prefix matching for truncations).
+3. Greeting or thank-you -> one short localized line.
+4. Genuinely ambiguous (`AMBIGUITY_MARGIN`, `AMBIGUITY_TOP_MAX`) and no usable
+   context -> one short clarifying question naming at most two topics.
+5. Otherwise the top topic is used: with a provider, the model answers with the
+   classified intent, the related topics and the conversation context in the
+   prompt; without a provider, `answers.ts` returns the localized short answer
+   for that topic (English uses the canonical article answer, or the full body
+   when the customer asked for a simple/step-by-step explanation).
+
+Normalisation never rewrites the message that is sent to the model — it is used
+for matching only, so the model still sees exactly what the customer typed.
+
+`answers.ts` holds one short answer per core topic (15 topics) in all 11
+locales, plus the topic labels used by the clarifying question and the
+greeting/thanks lines. It never hard-codes a price: the plan sentence is built
+from the canonical server table (`_shared/plans.ts`) at runtime, so a price
+change cannot drift. It contains no wallet, bank detail, payment link or
+promise, and the contract gate enforces that.
+
+Known asymmetry: the localized short answers are used only when no model is
+configured or the model output is rejected. With a provider, the model writes
+the step-by-step explanation in the detected language; without one, a
+non-English "explain simply" request gets the localized short answer plus the
+official source links.
 
 ## Privacy and retention
 
@@ -205,7 +249,7 @@ deno run -A supabase/functions/_test/support-chat-tests.ts   # or: make test-sup
 npm run check:chatbot
 ```
 
-The suite (802 checks) covers grounded answers, unknown questions, prompt
+The suite (1314 checks) covers grounded answers, unknown questions, prompt
 injection, financial-advice requests, secret requests and sharing, cross-user
 access, timeouts, rate limiting, human escalation, the absence of any privileged
 payment/account action, and all 11 locales. Sections [15]–[17] cover
@@ -215,7 +259,16 @@ input, history fallback, website-locale last resort), localized fallbacks and
 provider failure in every language. Section [18] covers the expanded knowledge
 base and the public questions for every major site section. Section [19] covers
 the widget UI contract (headset icon, states, accessibility, mobile/desktop,
-reduced motion). The provider sections [12]–[12b] cover OpenRouter provider
+reduced motion).
+
+Sections [20]–[27] cover the informal-understanding work: normalisation and fuzzy
+matching unit tests, informal Portuguese/English/Spanish messages, typos and
+missing accents, abbreviations and slang, personalised questions, conversation
+references, the clarifying question (exactly one, localized, at most two
+topics, never a "contact support" brush-off), and the localized answer tables
+(all 11 locales, canonical prices, no placeholders, no invented data) plus the
+knowledge-base structure (category, aliases, informal questions, related topics,
+links for every article). The provider sections [12]–[12b] cover OpenRouter provider
 selection and the request shape (endpoint, bearer header,
 `HTTP-Referer`/`X-OpenRouter-Title`, model default and override) plus success,
 invalid key (401), rate limit (429), 5xx, network failure and timeout, asserting

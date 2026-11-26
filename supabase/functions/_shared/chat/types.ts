@@ -16,6 +16,8 @@ export interface ChatTurn {
 
 export type ChatReplyType =
   | "answered"
+  /** The message was genuinely ambiguous: one short question was asked. */
+  | "clarify"
   | "unknown"
   | "escalated"
   | "refused"
