@@ -63,6 +63,8 @@ export interface LocaleAnswers {
   clarifyOpen: string;
   greeting: string;
   thanks: string;
+  /** One short acknowledgement when the customer asks for another language. */
+  languageSwitch: string;
 }
 
 /** Canonical plan sentence built from the server plan table (never hard-coded). */
@@ -120,6 +122,11 @@ export function thanksReply(locale: SupportedLocale): string {
   return (LOCALIZED_ANSWERS[locale] ?? LOCALIZED_ANSWERS.en).thanks;
 }
 
+/** Short acknowledgement for an explicit language-switch request. */
+export function languageSwitchReply(locale: SupportedLocale): string {
+  return (LOCALIZED_ANSWERS[locale] ?? LOCALIZED_ANSWERS.en).languageSwitch;
+}
+
 export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
   en: {
     answers: {
@@ -170,6 +177,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "Hi! I'm the Braxel Markets assistant. I can explain the plans, checkout, payment status, activation, the dashboard and Tradovate. What would you like to know?",
     thanks: "You're welcome! Is there anything else about Braxel I can help you with?",
+    languageSwitch: "Sure! I can speak English. How can I help?",
   },
   pt: {
     answers: {
@@ -220,6 +228,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "Olá! Sou o assistente da Braxel Markets. Posso explicar os planos, o checkout, o estado do pagamento, a ativação, o painel e a Tradovate. O que quer saber?",
     thanks: "De nada! Posso ajudar com mais alguma coisa sobre a Braxel?",
+    languageSwitch: "Claro! Posso falar português. Como posso ajudar?",
   },
   es: {
     answers: {
@@ -270,6 +279,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "¡Hola! Soy el asistente de Braxel Markets. Puedo explicar los planes, el checkout, el estado del pago, la activación, el panel y Tradovate. ¿Qué quieres saber?",
     thanks: "¡De nada! ¿Puedo ayudarte con algo más sobre Braxel?",
+    languageSwitch: "¡Claro! Puedo hablar español. ¿En qué puedo ayudarte?",
   },
   it: {
     answers: {
@@ -320,6 +330,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "Ciao! Sono l'assistente di Braxel Markets. Posso spiegare i piani, il checkout, lo stato del pagamento, l'attivazione, il pannello e Tradovate. Cosa vuoi sapere?",
     thanks: "Prego! Posso aiutarti con altro su Braxel?",
+    languageSwitch: "Certo! Posso parlare italiano. Come posso aiutarti?",
   },
   fr: {
     answers: {
@@ -370,6 +381,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "Bonjour ! Je suis l'assistant de Braxel Markets. Je peux expliquer les forfaits, le paiement, le statut du paiement, l'activation, le tableau de bord et Tradovate. Que voulez-vous savoir ?",
     thanks: "Avec plaisir ! Puis-je vous aider sur autre chose concernant Braxel ?",
+    languageSwitch: "Bien sûr ! Je peux parler français. Comment puis-je vous aider ?",
   },
   de: {
     answers: {
@@ -420,6 +432,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "Hallo! Ich bin der Assistent von Braxel Markets. Ich kann Pläne, Checkout, Zahlungsstatus, Aktivierung, Dashboard und Tradovate erklären. Was möchten Sie wissen?",
     thanks: "Gern! Kann ich noch bei etwas anderem zu Braxel helfen?",
+    languageSwitch: "Klar! Ich kann Deutsch sprechen. Wie kann ich helfen?",
   },
   ru: {
     answers: {
@@ -470,6 +483,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "Здравствуйте! Я ассистент Braxel Markets. Могу объяснить тарифы, оплату, статус платежа, активацию, панель и Tradovate. Что вы хотите узнать?",
     thanks: "Пожалуйста! Могу помочь с чем-то ещё по Braxel?",
+    languageSwitch: "Конечно! Могу говорить по-русски. Чем помочь?",
   },
   zh: {
     answers: {
@@ -519,6 +533,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "你好！我是 Braxel Markets 助手。我可以说明套餐、结账、支付状态、账户激活、仪表盘和 Tradovate。你想了解什么？",
     thanks: "不客气！关于 Braxel 还有其他问题吗？",
+    languageSwitch: "当然！我可以说中文。有什么可以帮您？",
   },
   ja: {
     answers: {
@@ -569,6 +584,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "こんにちは。Braxel Markets のアシスタントです。プラン、チェックアウト、支払い状況、有効化、ダッシュボード、Tradovateについて説明できます。何を知りたいですか？",
     thanks: "どういたしまして。Braxel について他にご質問はありますか？",
+    languageSwitch: "もちろんです。日本語で話せます。どうお手伝いできますか？",
   },
   ar: {
     answers: {
@@ -619,6 +635,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "مرحبًا! أنا مساعد Braxel Markets. يمكنني شرح الخطط والدفع وحالة الدفع والتفعيل ولوحة التحكم وTradovate. ما الذي تريد معرفته؟",
     thanks: "على الرحب والسعة! هل أساعدك في شيء آخر عن Braxel؟",
+    languageSwitch: "بالتأكيد! أستطيع التحدث بالعربية. كيف يمكنني مساعدتك؟",
   },
   he: {
     answers: {
@@ -669,5 +686,6 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     greeting:
       "שלום! אני העוזר של Braxel Markets. אני יכול להסביר תוכניות, תשלום, סטטוס תשלום, הפעלה, לוח בקרה ו-Tradovate. מה תרצה לדעת?",
     thanks: "בשמחה! אפשר לעזור במשהו נוסף בנושא Braxel?",
+    languageSwitch: "בשמחה! אני יכול לדבר עברית. איך אפשר לעזור?",
   },
 };

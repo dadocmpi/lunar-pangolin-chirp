@@ -18,7 +18,7 @@
 // Pure functions only: no I/O, no state, no model call.
 // ============================================================================
 
-import { collapseAllRepeats } from "./normalize.ts";
+import { collapseAllRepeats, normalizeQuery } from "./normalize.ts";
 import type { ChatTurn } from "./types.ts";
 
 export const SUPPORTED_LOCALES = [
@@ -292,6 +292,122 @@ export function isAnswerInLanguage(text: string, target: SupportedLocale): boole
   return detection.locale === target;
 }
 
+// ---------------------------------------------------------------------------
+// Explicit language-switch requests ("fala português", "speak english")
+//
+// A customer asking the assistant to use another language is not a knowledge
+// question. It is answered with one short acknowledgement in the requested
+// language, and it sets the conversation language from that point on.
+// ---------------------------------------------------------------------------
+
+const LANGUAGE_NAMES: Array<[RegExp, SupportedLocale]> = [
+  [/\bportug(?:u[eê]s|ese)\b/i, "pt"],
+  [/\benglish\b|\bingl[eê]s\b/i, "en"],
+  [/\bespa[nñ]ol\b|\bspanish\b|\bcastellano\b/i, "es"],
+  [/\bitalian[oa]?\b|\bitaliano\b/i, "it"],
+  [/\bfran[cç](?:a|e)is\b|\bfrench\b/i, "fr"],
+  [/\bdeutsch\b|\bgerman\b|\balem[aã]o\b/i, "de"],
+  [/русск/i, "ru"],
+  [/中文|汉语|漢語|chinese|chin[eê]s/i, "zh"],
+  [/日本語|japanese|japon[eê]s/i, "ja"],
+  [/العربية|arabic|[aá]rabe/i, "ar"],
+  [/עברית|hebrew|hebraico/i, "he"],
+];
+
+/** A verb that turns a language name into a request. */
+const SWITCH_CUES = [
+  /\b(fala|falar|fale|falam|responda|responde|responder|consegue|consegues|pode|posso|quero)\b/,
+  /\b(speak|talk|answer|reply|respond|write|can you|do you)\b/,
+  /\b(habla|hablar|responde|responder|contesta|puedes)\b/,
+  /\b(parle|parler|r[ée]ponds|r[ée]pondre|peux)\b/,
+  /\b(sprich|sprechen|antworte|antworten|kannst)\b/,
+  /\b(говори|говорить|ответь|отвечай|скажи|можешь)\b/,
+  /说|回答|用|请/,
+  /話して|答えて|できます/,
+  /تحدث|أجب|تكلم|يمكنك/,
+  /דבר|ענה|אפשר/,
+];
+
+/** "in <language>" / "em <idioma>" / "по-русски" forms. */
+const SWITCH_PREPOSITIONS = [
+  /\bem\s+(portugu[eê]s|ingl[eê]s|espanhol|italiano|franc[eê]s|alem[aã]o|russo)\b/i,
+  /\bin\s+(english|portuguese|spanish|italian|french|german|russian|chinese|japanese|arabic|hebrew)\b/i,
+  /\ben\s+(espa[nñ]ol|ingl[eé]s|portugu[eé]s|italiano|franc[eé]s|alem[aá]n)\b/i,
+  /\bauf\s+deutsch\b/i,
+  /по-?русски/i,
+  /用中文|用汉语|中文回答/,
+  /日本語で/,
+  /بالعربية/,
+  /בעברית/,
+];
+
+const NEGATED_SWITCH =
+  /\b(n[aã]o falo|nao falo|don'?t speak|do not speak|no hablo|je ne parle pas|spreche kein|не говорю)\b/i;
+
+function languageNamed(text: string): SupportedLocale | null {
+  for (const [pattern, locale] of LANGUAGE_NAMES) {
+    if (pattern.test(text)) return locale;
+  }
+  return null;
+}
+
+/**
+ * Detect an explicit request to answer in another language. Returns the target
+ * locale, or null. A bare language name ("português?") also counts, because in
+ * a support chat there is nothing else it can mean.
+ */
+export function detectLanguageSwitchRequest(message: string): SupportedLocale | null {
+  const text = (message ?? "").normalize("NFC");
+  if (!text.trim() || NEGATED_SWITCH.test(text)) return null;
+  const target = languageNamed(text);
+  if (!target) return null;
+  if (SWITCH_CUES.some((p) => p.test(text))) return target;
+  if (SWITCH_PREPOSITIONS.some((p) => p.test(text))) return target;
+  return tokenize(text).length <= 2 ? target : null;
+}
+
+/** Words that only describe the language switch itself. */
+const SWITCH_FILLER = new Set([
+  "fala", "falar", "fale", "falam", "falo", "responde", "responda", "responder", "consegue",
+  "consegues", "conseguem", "pode", "posso", "podem", "quero", "por", "favor", "agora",
+  "ok", "sim", "voce", "voces", "tu", "usted", "ustedes",
+  "speak", "talk", "answer", "reply", "respond", "write", "can", "could", "would",
+  "do", "does", "did", "you", "please",
+  "habla", "hablar", "contesta", "puedes", "puede", "pueden", "puedo",
+  "parle", "parler", "reponds", "repondre", "peux", "pouvez",
+  "sprich", "sprechen", "antworte", "antworten", "kannst", "konnen", "bitte",
+  "говори", "говорить", "ответь", "отвечай", "скажи", "можешь", "пожалуйста",
+  "in", "em", "en", "auf", "no", "now", "just", "only", "aqui", "here", "use",
+  "usar", "utiliza", "conversar", "conversa",
+]);
+
+const LANGUAGE_WORDS = new Set([
+  "portugues", "portuguese", "ingles", "english", "espanol", "spanish", "castellano",
+  "italiano", "italian", "frances", "french", "alemao", "german", "deutsch", "russo",
+  "russian", "chines", "chinese", "japones", "japanese", "arabe", "arabic", "hebraico",
+  "hebrew", "中文", "汉语", "漢語", "日本語", "العربية", "עברית",
+]);
+
+/**
+ * True when the message only asks for a language switch and carries no other
+ * topic. "Fala português" is only a switch; "fala português, como pago?" is a
+ * switch plus a question and must be answered in Portuguese.
+ */
+export function isLanguageSwitchOnly(message: string): boolean {
+  const tokens = tokenize(normalizeQuery(message));
+  return tokens.length > 0 &&
+    tokens.every((token) => SWITCH_FILLER.has(token) || LANGUAGE_WORDS.has(token));
+}
+
+/** The most recent explicit language switch in the conversation, if any. */
+export function requestedLanguageFromHistory(history: ChatTurn[]): SupportedLocale | null {
+  for (let i = history.length - 1; i >= 0; i--) {
+    const target = detectLanguageSwitchRequest(history[i].content);
+    if (target) return target;
+  }
+  return null;
+}
+
 export interface ResolvedLanguage {
   locale: SupportedLocale;
   /** Where the decision came from, for observability (never user data). */
@@ -325,8 +441,15 @@ export function resolveResponseLanguage(input: {
   const website = normalizeLocale(input.locale);
   const current = detectMessageLanguage(input.message);
 
+  // The latest message's own language always wins when it is clear.
   if (current.locale && !current.short) {
     return { locale: current.locale, source: "message", detected: current.locale };
+  }
+
+  // An explicit switch ("fala português") persists for the rest of the chat.
+  const requested = requestedLanguageFromHistory(input.history);
+  if (requested) {
+    return { locale: requested, source: "history", detected: current.locale };
   }
 
   const recent = mostRecentHistoryLanguage(input.history);

@@ -72,5 +72,15 @@ export interface ChatRequestInput {
 }
 
 export const MAX_MESSAGE_CHARS = 2000;
-export const MAX_HISTORY_TURNS = 8;
+/**
+ * Context budget. The customer's browser sends the whole visible conversation
+ * (bounded by these constants) on every stateless request; the server keeps as
+ * much as fits and compacts the rest deterministically (see context.ts).
+ */
+export const MAX_HISTORY_TURNS = 30;
+export const MAX_HISTORY_CHARS = 16_000;
+/** A single retained turn is capped so one long message cannot eat the budget. */
+export const MAX_HISTORY_TURN_CHARS = 1_200;
+/** Hard parse cap before compaction: bounds work on an oversized payload. */
+export const MAX_HISTORY_INPUT_TURNS = 200;
 export const MAX_REPLY_CHARS = 4000;
