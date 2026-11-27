@@ -44,6 +44,8 @@ export const ANSWER_KEYS = [
   "company_overview",
   "how_it_works",
   "read_only_limits",
+  "tradovate_connection",
+  "dashboard_usage",
 ] as const;
 
 export type AnswerKey = (typeof ANSWER_KEYS)[number];

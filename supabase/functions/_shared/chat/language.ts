@@ -120,6 +120,7 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "cliente", "viro", "torno", "virar", "adesao", "aderir",
     "conhecer", "empresa", "interesse", "interessado", "interessada", "comecar",
     "participar", "investir", "essa", "esse", "prop", "perfil", "completo", "sinais", "hoje",
+    "quanto", "demora", "demoro",
   ],
   es: [
     "el", "los", "las", "del", "cómo", "como", "cuál", "cual", "cuáles",

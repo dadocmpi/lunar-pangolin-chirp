@@ -405,10 +405,18 @@ export function detectPlanReference(normalized: string): string | null {
  * several topics, while the question that prompted it names the one in play.
  * Assistant turns are the fallback when no customer turn is clear.
  */
+const REPEAT_TURN_RE = /\b(repeat|repete|repita|de novo|otra vez|again|encore|nochmal)\b/i;
+
 export function contextIntentFromHistory(history: ChatTurn[]): string | null {
   const byRole = (role: ChatTurn["role"]): string | null => {
     for (let i = history.length - 1; i >= 0; i--) {
       if (history[i].role !== role) continue;
+      // A "repeat that" or "ok" turn carries no topic of its own; it must not
+      // steal the context from the real question before it.
+      if (role === "user") {
+        const query = normalizeQuery(history[i].content);
+        if (REPEAT_TURN_RE.test(query) || isAcknowledgement(query)) continue;
+      }
       const ranked = rankEntries(history[i].content, KNOWLEDGE_INDEX);
       const top = ranked[0];
       if (!top || top.score < MIN_INTENT_SCORE) continue;
