@@ -46,25 +46,62 @@ import {
 import type { ChatTurn } from "./types.ts";
 
 export const CONVERSATIONAL_INTENTS = [
+  // Social / meta
   "greeting",
   "farewell",
   "thanks",
   "acknowledgement",
   "language_switch",
+  // Company and public information
   "company_overview",
+  "company_identity",
   "what_we_do",
   "how_it_works",
-  "customer_interest",
-  "plans",
-  "pricing",
   "benefits",
   "eligibility",
   "requirements",
+  // Customer journey
+  "customer_interest",
+  "becoming_customer",
+  "plans",
+  "pricing",
+  "plan_discovery",
+  "plan_comparison",
+  "cheapest_plan",
+  "plan_recommendation",
   "onboarding",
-  "payment_info",
+  "activation",
+  // Account and access
   "account_creation",
+  "profile_completion",
+  "email_confirmation",
+  "password_recovery",
+  "login_problem",
+  // Checkout and payments
+  "payment_info",
+  "checkout",
+  "card_payment",
+  "crypto_payment",
+  "bank_transfer",
+  "payment_pending",
+  "payment_processing",
+  "payment_failed",
+  "payment_confirmation",
+  // Product
+  "dashboard",
+  "tradovate",
+  "read_only_limits",
+  // Support and conversation shape
   "support",
   "complaint",
+  "frustration",
+  "confusion",
+  "simpler_explanation",
+  "more_detail",
+  "repeat",
+  "follow_up",
+  "contextual_reference",
+  "topic_change",
   "unclear",
   "off_topic",
   /** Internal: answer the matched approved article directly. */
@@ -78,7 +115,9 @@ export type FollowUpKind =
   | "next_step"
   | "which_plan"
   | "already_created"
-  | "already_paid";
+  | "already_paid"
+  | "reference"
+  | "repeat";
 
 export interface ConversationResult {
   intent: ConversationalIntent;
@@ -120,6 +159,339 @@ interface IntentRule {
 }
 
 const RULES: IntentRule[] = [
+  {
+    intent: "cheapest_plan",
+    topic: "plans",
+    phrases: [
+      "qual e o mais barato", "qual o mais barato", "plano mais barato", "mais barato",
+      "mais barata", "menor preco", "o mais em conta", "qual custa menos",
+      "cheapest plan", "cheapest", "least expensive", "which is the cheapest",
+      "which one is the cheapest", "which one is cheapest", "which plan is the cheapest",
+      "the cheapest one", "lowest price", "which plan is cheapest",
+      "cual es el mas barato", "el mas barato", "plan mas barato", "el mas economico",
+      "mas barato", "cual cuesta menos",
+      "il piu economico", "am gunstigsten", "le moins cher", "самый дешевый",
+      "最便宜的", "哪个最便宜", "一番安い", "الأرخص", "הזול ביותר",
+    ],
+  },
+  {
+    intent: "plan_comparison",
+    topic: "plans",
+    phrases: [
+      "diferenca entre os planos", "qual a diferenca entre os planos",
+      "diferenca dos planos", "comparar planos", "comparacao dos planos",
+      "difference between plans", "difference between the plans", "compare plans",
+      "plan comparison", "what is the difference between the plans",
+      "diferencia entre planes", "comparar planes", "cual es la diferencia entre los planes",
+      "unterschied zwischen den planen", "difference entre les forfaits",
+      "разница между тарифами", "套餐区别", "套餐的区别", "プランの違い", "الفرق بين الخطط",
+      "ההבדל בין התוכניות",
+    ],
+  },
+  {
+    intent: "plan_recommendation",
+    topic: "plans",
+    phrases: [
+      "qual plano devo escolher", "qual plano voce recomenda", "me recomenda um plano",
+      "qual plano e melhor para mim", "qual plano escolher", "que plano escolher",
+      "which plan should i choose", "which plan do you recommend", "recommend a plan",
+      "which plan is best for me", "help me choose a plan", "what plan should i pick",
+      "que plan deberia elegir", "que plan me recomiendas", "cual plan elijo",
+      "welchen plan empfehlen", "quel forfait recommandez", "какой тариф выбрать",
+      "哪个套餐适合我", "どのプランがおすすめ", "أي خطة تنصح", "איזו תוכנית מתאימה",
+    ],
+  },
+  {
+    intent: "plan_discovery",
+    topic: "plans",
+    phrases: [
+      "quais planos", "quais sao os planos", "quais os planos", "ver os planos",
+      "mostrar os planos", "me mostra os planos", "lista de planos", "os planos",
+      "what plans", "what plans do you have", "show me the plans", "see the plans",
+      "list the plans", "which plans do you offer", "plans and prices",
+      "que planes tienen", "cuales son los planes", "mostrar planes", "ver los planes",
+      "planes y precios", "welche plane", "quels forfaits", "какие тарифы",
+      "有哪些套餐", "プラン一覧", "ما هي الخطط", "אילו תוכניות",
+    ],
+  },
+  {
+    intent: "becoming_customer",
+    topic: "getting_started",
+    phrases: [
+      "como viro cliente", "como me torno cliente", "como ser cliente",
+      "como faco para ser cliente", "como me hago cliente",
+      "how do i become a customer", "how to become a customer", "how can i be a customer",
+      "quiero ser cliente", "como puedo ser cliente",
+    ],
+  },
+  {
+    intent: "company_identity",
+    topic: "company_overview",
+    phrases: [
+      "quem sao voces", "quem e a braxel", "quem e braxel", "o que e a braxel",
+      "o que e braxel", "quem esta por tras da braxel",
+      "who are you", "who is braxel", "what is braxel", "who is behind braxel",
+      "que es braxel", "quienes son", "quien es braxel",
+      "wer seid ihr", "qui etes vous", "кто вы", "что такое braxel",
+      "你们是谁", "braxel 是什么", "braxel とは", "من انتم", "מי אתם",
+    ],
+  },
+  {
+    intent: "login_problem",
+    topic: "login_problem",
+    phrases: [
+      "nao consigo entrar", "nao consigo acessar", "nao consigo fazer login",
+      "nao consigo logar", "erro ao entrar", "problema para entrar", "problema no login",
+      "can not log in", "cannot log in", "cant log in", "cant login", "can not login",
+      "login problem", "login not working", "unable to log in", "unable to login",
+      "no puedo entrar", "no puedo iniciar sesion", "no puedo acceder",
+      "problema al iniciar sesion",
+      "kann mich nicht anmelden", "impossible de me connecter",
+      "не могу войти", "登录不了", "无法登录", "ログインできない",
+      "لا أستطيع تسجيل الدخول", "לא מצליח להתחבר",
+    ],
+  },
+  {
+    intent: "email_confirmation",
+    topic: "email_confirmation",
+    phrases: [
+      "confirmar email", "confirmacao de email", "nao recebi o email",
+      "nao recebi o e mail", "email de confirmacao", "confirmar o email",
+      "confirm email", "email confirmation", "did not get the email",
+      "didnt get the email", "no confirmation email", "resend confirmation",
+      "confirmar correo", "confirmacion de correo", "no recibi el correo",
+      "bestatigungsemail", "email de confirmation", "подтвердить почту",
+      "确认邮箱", "邮箱确认", "メール確認", "تأكيد البريد", "אימות אימייל",
+    ],
+  },
+  {
+    intent: "password_recovery",
+    topic: "password_recovery",
+    phrases: [
+      "esqueci a senha", "esqueci minha senha", "redefinir senha", "recuperar senha",
+      "trocar a senha", "resetar a senha", "forgot password", "reset password",
+      "recover password", "change my password", "password reset",
+      "olvide mi contraseña", "recuperar contraseña", "restablecer contraseña",
+      "passwort vergessen", "mot de passe oublie", "забыл пароль", "сбросить пароль",
+      "忘记密码", "忘记密码了", "パスワードを忘れ", "パスワードをリセット",
+      "نسيت كلمة المرور", "שכחתי סיסמה",
+    ],
+  },
+  {
+    intent: "profile_completion",
+    topic: "profile_and_signup",
+    phrases: [
+      "completar perfil", "preencher perfil", "completar o perfil", "perfil incompleto",
+      "complete profile", "complete my profile", "finish my profile", "profile incomplete",
+      "completar mi perfil", "perfil incompleto", "profil vervollstandigen",
+      "completer mon profil", "заполнить профиль", "完善资料", "完善个人资料",
+      "プロフィールを完成", "أكمل ملفي", "להשלים פרופיל",
+    ],
+  },
+  {
+    intent: "checkout",
+    topic: "checkout",
+    phrases: [
+      "finalizar compra", "ir para o checkout", "como pago no checkout",
+      "pagina de pagamento", "fazer o pagamento", "go to checkout", "finish checkout",
+      "checkout page", "complete the purchase", "pay now", "pagar ahora",
+      "finalizar la compra", "ir al checkout", "zur kasse", "passer au paiement",
+      "перейти к оплате", "去结账", "支払いへ進む", "الانتقال للدفع", "למעבר לתשלום",
+    ],
+  },
+  {
+    intent: "card_payment",
+    topic: "card_payment",
+    phrases: [
+      "pagar com cartao", "cartao de credito", "cartao de debito", "pagamento com cartao",
+      "pay by card", "card payment", "credit card", "debit card", "pay with a card",
+      "pagar con tarjeta", "tarjeta de credito", "pago con tarjeta",
+      "mit karte zahlen", "payer par carte", "оплата картой", "信用卡付款",
+      "信用卡", "カード払い", "クレジットカード", "الدفع بالبطاقة", "כרטיס אשראי",
+    ],
+  },
+  {
+    intent: "crypto_payment",
+    topic: "crypto_payment",
+    phrases: [
+      "pagar com cripto", "pagamento com cripto", "pagar com crypto", "criptomoeda",
+      "bitcoin", "usdt", "pay with crypto", "crypto payment", "pay in bitcoin",
+      "pagar con cripto", "pago con cripto", "mit krypto zahlen",
+      "payer en crypto", "оплата криптой", "криптовалюта", "加密货币", "加密货币支付",
+      "仮想通貨", "ビットコイン", "الدفع بالعملات الرقمية", "קריפטו",
+    ],
+  },
+  {
+    intent: "bank_transfer",
+    topic: "bank_transfer",
+    phrases: [
+      "transferencia bancaria", "transferencia", "deposito bancario", "pagar por transferencia",
+      "bank transfer", "wire transfer", "wise", "bank deposit", "pay by bank",
+      "virement bancaire", "bankuberweisung",
+      "банковский перевод", "银行转账", "銀行振込", "تحويل بنكي", "העברה בנקאית",
+    ],
+  },
+  {
+    intent: "payment_pending",
+    topic: "payment_status",
+    phrases: [
+      "pagamento pendente", "pagamento esta pendente", "aguardando pagamento",
+      "payment pending", "pending payment", "payment is pending", "still pending",
+      "pago pendiente", "el pago esta pendiente", "zahlung ausstehend",
+      "paiement en attente", "платеж в обработке", "付款待处理", "支払い待ち",
+      "الدفع معلق", "תשלום ממתין",
+    ],
+  },
+  {
+    intent: "payment_processing",
+    topic: "payment_status",
+    phrases: [
+      "pagamento em processamento", "processando pagamento", "pagamento em analise",
+      "payment processing", "payment is processing", "processing payment",
+      "pago en proceso", "pago en procesamiento", "zahlung wird verarbeitet",
+      "paiement en cours", "платеж обрабатывается", "付款处理中", "処理中",
+      "قيد المعالجة", "בעיבוד",
+    ],
+  },
+  {
+    intent: "payment_failed",
+    topic: "payment_failures",
+    phrases: [
+      "pagamento falhou", "pagamento recusado", "cartao recusado", "pagamento nao passou",
+      "payment failed", "payment declined", "card declined", "payment did not go through",
+      "pago fallido", "pago rechazado", "tarjeta rechazada",
+      "zahlung fehlgeschlagen", "paiement echoue", "платеж отклонен", "оплата не прошла",
+      "付款失败", "支付失败", "支払い失敗", "فشل الدفع", "התשלום נכשל",
+    ],
+  },
+  {
+    intent: "payment_confirmation",
+    topic: "payment_status",
+    phrases: [
+      "pagamento confirmado", "confirmacao de pagamento", "meu pagamento foi aprovado",
+      "payment confirmed", "confirmation of payment", "did my payment go through",
+      "was my payment confirmed", "payment approved",
+      "pago confirmado", "confirmacion de pago", "zahlung bestatigt",
+      "paiement confirme", "платеж подтвержден", "付款成功", "付款确认",
+      "支払い確認", "تم الدفع", "התשלום אושר",
+    ],
+  },
+  {
+    intent: "activation",
+    topic: "activation",
+    phrases: [
+      "ativacao", "ativar conta", "ativar a conta", "minha ativacao", "pedido de ativacao",
+      "activation", "activate account", "account activation", "activation request",
+      "activacion", "activar cuenta", "aktivierung", "konto aktivieren",
+      "activation du compte", "активация", "активировать аккаунт", "激活", "账户激活",
+      "アクティベーション", "تفعيل", "הפעלת חשבון",
+    ],
+  },
+  {
+    intent: "dashboard",
+    topic: "dashboard_usage",
+    phrases: [
+      "painel", "meu painel", "area de membros", "dashboard", "my dashboard",
+      "painel do cliente", "panel", "mi panel", "tablero", "tableau de bord",
+      "armaturenbrett", "панель", "仪表盘", "ダッシュボード", "لوحة التحكم", "לוח בקרה",
+    ],
+  },
+  {
+    intent: "tradovate",
+    topic: "tradovate_connection",
+    phrases: [
+      "tradovate", "conectar tradovate", "integracao tradovate", "tradovate connection",
+      "tradovate integration", "подключить tradovate", "tradovate 連携",
+    ],
+  },
+  {
+    intent: "read_only_limits",
+    topic: "read_only_limits",
+    phrases: [
+      "voce opera minha conta", "voces operam minha conta", "pode operar por mim",
+      "operar por mim", "copy trade", "copytrading", "copy trading",
+      "faz trade por mim", "executa as ordens por mim", "voces fazem copy trading",
+      "do you trade for me", "can you trade for me", "trade on my behalf",
+      "do you copy trade", "execute trades for me",
+      "pueden operar por mi", "operan mi cuenta", "puedo copiar",
+      "konnen sie fur mich handeln", "pouvez vous trader pour moi",
+      "вы торгуете за меня", "копи трейдинг", "替我交易", "代我交易", "复制交易",
+      "代行", "コピートレード", "هل تتداولون", "نسخ التداول", "תסחרו בשבילי",
+    ],
+  },
+  {
+    intent: "frustration",
+    topic: "support_procedures",
+    phrases: [
+      "estou frustrado", "estou frustrada", "isso e frustrante", "que raiva",
+      "estou irritado", "estou irritada", "estou chateado", "estou chateada",
+      "i am frustrated", "im frustrated", "this is frustrating", "so frustrating",
+      "i am angry", "im angry", "i am upset", "this is annoying",
+      "estoy frustrado", "estoy frustrada", "esto es frustrante", "estoy molesto",
+      "ich bin frustriert", "je suis frustre", "я расстроен", "меня это злит",
+      "我很沮丧", "很烦", "イライラする", "محبط", "אני מתוסכל",
+    ],
+  },
+  {
+    intent: "confusion",
+    topic: null,
+    phrases: [
+      "nao entendi", "nao entendi nada", "nao entendi nada disso", "nao ficou claro",
+      "estou confuso", "estou confusa", "i dont understand", "i do not understand",
+      "i dont get it", "i did not get it", "confusing", "not clear",
+      "no entiendo", "no lo entiendo", "no me quedo claro", "estoy confundido",
+      "non ho capito", "ich verstehe nicht", "je ne comprends pas",
+      "не понимаю", "не понял", "没看懂", "不明白", "わからない",
+      "لا أفهم", "לא מבין", "לא הבנתי",
+    ],
+  },
+  {
+    intent: "simpler_explanation",
+    topic: null,
+    phrases: [
+      "explica de um jeito simples", "explica simples", "de forma simples",
+      "em palavras simples", "explica como se eu fosse leigo", "bem simples",
+      "explain simply", "in simple terms", "explain it simply", "simpler please",
+      "explain like i am a beginner",
+      "explicame facil", "explicame de forma simple", "en palabras simples",
+      "einfach erklaren", "explique simplement", "объясни проще", "简单解释",
+      "簡単に説明", "اشرح ببساطة", "תסביר בפשטות",
+    ],
+  },
+  {
+    intent: "more_detail",
+    topic: null,
+    phrases: [
+      "me explica melhor", "explica melhor", "explica mais", "quero mais detalhes",
+      "mais detalhes", "me conta mais", "quero saber mais", "continua explicando",
+      "explain more", "explain better", "tell me more", "more details",
+      "go deeper", "can you elaborate", "elaborate",
+      "explicame mejor", "explica mejor", "mas detalles", "quiero saber mas",
+      "erklare mir mehr", "explique mieux", "plus de details", "объясни подробнее",
+      "再详细一点", "多说一点", "もっと詳しく", "اشرح أكثر", "תסביר יותר",
+    ],
+  },
+  {
+    intent: "repeat",
+    topic: null,
+    phrases: [
+      "repete", "pode repetir", "repita", "repete isso", "repete por favor",
+      "repeat", "repeat that", "say that again", "can you repeat", "repeat please",
+      "repiteme", "otra vez", "repite", "wiederholen", "повтори",
+      "再说一遍", "もう一度", "أعد", "תחזור",
+    ],
+  },
+  {
+    intent: "topic_change",
+    topic: null,
+    phrases: [
+      "mudando de assunto", "outra pergunta", "nova pergunta", "outro assunto",
+      "changing topic", "different question", "another question", "new question",
+      "cambiando de tema", "otra pregunta", "otra cosa",
+      "andere frage", "autre question", "другой вопрос", "另一个问题",
+      "別の質問", "سؤال آخر", "שאלה אחרת",
+    ],
+  },
   {
     intent: "complaint",
     topic: "support_procedures",
@@ -236,7 +608,12 @@ const RULES: IntentRule[] = [
       "what is braxel", "what is the company", "who are you", "who is braxel",
       "tell me about your company", "tell me about the company", "tell me about braxel",
       "about your company", "about the company", "about braxel", "your company",
-      "is braxel a prop firm", "is braxel connected to tradovate",
+      "is braxel a prop firm", "are you a prop firm", "are you a prop",
+      "is braxel a prop", "braxel is a prop firm", "voces sao uma prop",
+      "voces sao uma prop firm", "voce e uma prop", "sao uma prop firm",
+      "son una prop firm", "son una prop", "ustedes son una prop firm",
+      "es braxel una prop", "braxel es una prop firm",
+      "is braxel connected to tradovate",
       "i want to learn more about the company", "learn more about the company",
       "que es braxel", "quienes son", "quien es braxel", "sobre la empresa", "sobre ustedes",
       "es braxel una prop firm", "conocer la empresa", "conoce la empresa",
@@ -266,6 +643,10 @@ const RULES: IntentRule[] = [
       "explica o processo", "explica o processo todo", "explica tudo",
       "how does your business work",
       "how does the service work", "explain the whole process", "what is the process",
+      "explain the whole thing", "explain everything", "explain it all",
+      "explain the whole thing simply", "explain the whole process simply",
+      "me explica tudo", "explica tudo", "explica tudo de forma simples",
+      "explicame todo", "explicame todo facil", "explicame todo de forma simple",
       "como funciona el proceso", "cual es el proceso", "en que consiste",
       "wie funktioniert das", "как это работает",
       "怎么运作", "これはどういう仕組み", "كيف يعمل", "איך זה עובד",
@@ -278,7 +659,10 @@ const RULES: IntentRule[] = [
       "o que acontece depois", "o que acontece depois de pagar", "depois de pagar",
       "e depois do pagamento", "depois do pagamento", "o que faco depois",
       "what happens after i join", "what happens after i pay", "what happens after i purchase",
+      "what happens after purchase", "after purchase", "what happens after buying",
       "after payment", "after i pay", "what happens next",
+      "o que acontece depois da compra", "depois da compra", "apos a compra",
+      "que pasa despues de la compra", "despues de la compra",
       "que pasa despues", "despues de pagar", "que pasa luego",
       "cosa succede dopo", "was passiert danach", "que se passe t il apres",
       "что происходит после", "之后会发生什么", "そのあとどうなりますか", "ماذا يحدث بعد", "מה קורה אחר כך",
@@ -289,6 +673,7 @@ const RULES: IntentRule[] = [
     topic: "payment_methods",
     phrases: [
       "como pago", "como eu pago", "como pagar", "como faco o pagamento", "como faco para pagar",
+      "كيف يعمل الدفع", "طرق الدفع", "كيف أدفع",
       "formas de pagamento", "metodos de pagamento", "meios de pagamento", "pagamento",
       "how do i pay", "how to pay", "how can i pay", "payment methods", "how does payment work",
       "como pagar", "como se paga", "metodos de pago", "formas de pago", "pago",
@@ -331,6 +716,9 @@ const RULES: IntentRule[] = [
       "como faco para entrar", "como faco pra entrar", "como funciona para participar",
       "como funciona para entrar", "como faco para participar",
       "como faco para comecar", "como faco pra comecar", "como participo", "como viro cliente",
+      "nao sei por onde comecar", "nao sei como comecar", "nao sei por onde comecar",
+      "no se como comenzar", "no se por donde empezar", "no se como empezar",
+      "no se por donde comenzar", "i dont know where to start", "i do not know where to start",
       "como me torno cliente", "como eu entro", "quero conhecer", "quero saber mais sobre a braxel",
       "i want to get started", "i want to start", "i want to join", "i want in",
       "i am interested", "im interested", "i am interested in joining",
@@ -389,23 +777,31 @@ const FOLLOW_UP_EXPLAIN = [
 
 const FOLLOW_UP_NEXT = [
   "e depois", "e agora", "o que faco agora", "o que fazer agora", "proximo passo",
-  "qual o proximo passo", "and now", "what now", "what next", "what is next",
-  "what is the next step", "next step", "y ahora", "y despues", "que hago ahora",
+  "qual o proximo passo", "e depois disso", "depois disso",
+  "and now", "what now", "what next", "what is next",
+  "what is the next step", "next step", "what happens after that", "and after that",
+  "after that", "what happens next", "and then", "then what", "and what next",
+  "y ahora", "y despues", "que hago ahora", "y despues de eso", "despues de eso",
   "que pasa ahora", "proximo paso", "und jetzt", "et maintenant", "что теперь",
   "然后呢", "次は", "وماذا بعد", "ומה עכשיו",
 ];
 
 const FOLLOW_UP_WHICH_PLAN = [
   "qual deles", "qual delas", "qual eu escolho", "qual devo escolher", "esse de",
-  "essa de", "o de", "aquele de", "which one", "which of them", "which should i choose",
-  "that one", "the one for", "cual de ellos", "cual de ellas", "cual elijo",
-  "ese de", "el de", "quale dei due", "welchen davon", "lequel",
+  "essa de", "o de", "aquele de", "o segundo", "a segunda", "o terceiro",
+  "which one", "which of them", "which should i choose",
+  "that one", "the one for", "the second one", "the second", "second one",
+  "number two", "the third one", "cual de ellos", "cual de ellas", "cual elijo",
+  "ese de", "el de", "el segundo", "la segunda", "quale dei due", "welchen davon",
+  "lequel", "le deuxieme",
 ];
 
 const FOLLOW_UP_ALREADY_CREATED = [
-  "ja criei", "ja criei a conta", "ja criei minha conta", "ja me cadastrei",
+  "ja criei", "ja criei a conta", "ja criei minha conta", "ja me cadastrei", "ja fiz isso",
   "i already created", "i already signed up", "i created my account", "account created",
-  "ya cree", "ya cree la cuenta", "ya me registre", "ho gia creato", "habe schon erstellt",
+  "i already did it", "already did it", "i did it already",
+  "ya cree", "ya cree la cuenta", "ya me registre", "ya lo hice", "ya hice eso",
+  "ho gia creato", "habe schon erstellt",
 ];
 
 const FOLLOW_UP_ALREADY_PAID = [
@@ -415,6 +811,20 @@ const FOLLOW_UP_ALREADY_PAID = [
 ];
 
 const CJK = CJK_RE;
+
+const ORDINAL_PLANS: Array<[RegExp, string]> = [
+  [/\b(second|segundo|segunda|deuxieme|zweite|segunda|второй|第二|2nd)\b/, "professional"],
+  [/\b(third|terceiro|terceira|troisieme|dritte|третий|第三|3rd)\b/, "business"],
+  [/\b(fourth|quarto|quarta|quatrieme|vierte|четвертый|第四|4th)\b/, "enterprise"],
+];
+
+/** "the second one" -> the second canonical plan, if the message names one. */
+function ordinalPlan(normalized: string): string | null {
+  for (const [pattern, plan] of ORDINAL_PLANS) {
+    if (pattern.test(normalized)) return plan;
+  }
+  return null;
+}
 
 function matches(normalized: string, phrase: string): boolean {
   if (!phrase) return false;
@@ -468,17 +878,39 @@ export function intentForTopic(topic: string | null): ConversationalIntent {
     case "how_it_works":
       return "how_it_works";
     case "onboarding":
-    case "activation":
       return "onboarding";
+    case "activation":
+      return "activation";
     case "payment_methods":
+      return "payment_info";
     case "checkout":
+      return "checkout";
+    case "card_payment":
+      return "card_payment";
+    case "crypto_payment":
+      return "crypto_payment";
+    case "bank_transfer":
+      return "bank_transfer";
     case "payment_status":
       return "payment_info";
+    case "payment_failures":
+      return "payment_failed";
     case "account_creation":
-    case "profile_and_signup":
-    case "email_confirmation":
-    case "password_recovery":
       return "account_creation";
+    case "profile_and_signup":
+      return "profile_completion";
+    case "email_confirmation":
+      return "email_confirmation";
+    case "password_recovery":
+      return "password_recovery";
+    case "login_problem":
+      return "login_problem";
+    case "dashboard_usage":
+      return "dashboard";
+    case "tradovate_connection":
+      return "tradovate";
+    case "read_only_limits":
+      return "read_only_limits";
     case "support_procedures":
     case "faq_help":
       return "support";
@@ -490,6 +922,17 @@ export function intentForTopic(topic: string | null): ConversationalIntent {
       return "knowledge_topic";
   }
 }
+
+/** Topics whose natural follow-up question is the next onboarding step. */
+const PAYMENT_TOPICS = new Set([
+  "checkout",
+  "payment_methods",
+  "card_payment",
+  "crypto_payment",
+  "bank_transfer",
+  "payment_status",
+  "payment_failures",
+]);
 
 export interface ConversationOptions {
   history?: ChatTurn[];
@@ -547,36 +990,55 @@ export function classifyConversation(
   // 2. An explicit intent phrase ("quero começar", "qual plano", ...).
   const rule = matchRule(normalized);
   if (rule) {
+    const intent = rule.rule.intent;
+    // Conversational follow-up intents have no topic of their own: they refer
+    // to the topic in play ("me explica melhor", "não entendi", "repete").
+    const followUpKind: FollowUpKind | null =
+      intent === "confusion" || intent === "simpler_explanation" || intent === "more_detail"
+        ? "explain"
+        : intent === "repeat"
+          ? "repeat"
+          : null;
+    if (intent === "topic_change" && knowledgeTopic) {
+      return {
+        ...base,
+        intent: intentForTopic(knowledgeTopic),
+        topic: knowledgeTopic,
+        confidence: 0.7,
+        matchedRule: true,
+        inDomain: true,
+      };
+    }
+    const topic = rule.rule.topic ??
+      (intent === "topic_change" ? null : contextTopic ?? knowledgeTopic);
     return {
       ...base,
-      intent: rule.rule.intent,
-      topic: rule.rule.topic,
+      intent,
+      topic,
       confidence: Math.min(0.95, 0.7 + rule.words * 0.03),
       matchedRule: true,
       inDomain: true,
+      followUp: followUpKind,
+      contextUsed: Boolean(!rule.rule.topic && topic),
+      explain: intent === "simpler_explanation" || intent === "more_detail" ||
+        intent === "confusion" || explain,
     };
   }
 
   // 3. An "explain it simply / step by step" request stays on the topic in
   //    play (or the article it already matched); it is never off-topic.
   if (explain) {
-    if (contextTopic) {
+    // "explain the checkout" names a topic; only a topicless "explain more"
+    // falls back to the topic already in play.
+    const topic = knowledgeTopic ?? contextTopic;
+    if (topic) {
       return {
         ...base,
-        intent: intentForTopic(contextTopic),
-        topic: contextTopic,
+        intent: intentForTopic(topic),
+        topic,
         followUp: "explain",
-        contextUsed: true,
+        contextUsed: topic === contextTopic,
         confidence: 0.7,
-      };
-    }
-    if (knowledgeTopic) {
-      return {
-        ...base,
-        intent: intentForTopic(knowledgeTopic),
-        topic: knowledgeTopic,
-        followUp: "explain",
-        confidence: 0.6,
       };
     }
   }
@@ -584,6 +1046,16 @@ export function classifyConversation(
   // 4. Follow-ups: resolve the shape, then the topic from the conversation.
   const explainPhrase = matchesAny(normalized, FOLLOW_UP_EXPLAIN);
   if (explainPhrase) {
+    if (knowledgeTopic && !contextTopic) {
+      return {
+        ...base,
+        intent: intentForTopic(knowledgeTopic),
+        topic: knowledgeTopic,
+        followUp: "explain",
+        explain: true,
+        confidence: 0.7,
+      };
+    }
     if (contextTopic) {
       return {
         ...base,
@@ -604,6 +1076,7 @@ export function classifyConversation(
       ...base,
       intent: "plans",
       topic: "plans",
+      planId: ordinalPlan(normalized) ?? planId,
       followUp: "which_plan",
       contextUsed: Boolean(contextTopic),
       confidence: 0.75,
@@ -639,10 +1112,13 @@ export function classifyConversation(
 
   const nextStep = matchesAny(normalized, FOLLOW_UP_NEXT);
   if (nextStep && contextTopic) {
+    // "And then?" after a payment answer is a question about the next step,
+    // which is onboarding — not a second payment explanation.
+    const topic = PAYMENT_TOPICS.has(contextTopic) ? "onboarding" : contextTopic;
     return {
       ...base,
-      intent: intentForTopic(contextTopic),
-      topic: contextTopic,
+      intent: "follow_up",
+      topic,
       followUp: "next_step",
       contextUsed: true,
       confidence: 0.7,
@@ -654,9 +1130,9 @@ export function classifyConversation(
   if (isReferential(query) && contextTopic) {
     return {
       ...base,
-      intent: intentForTopic(contextTopic),
+      intent: "contextual_reference",
       topic: contextTopic,
-      followUp: "next_step",
+      followUp: "reference",
       contextUsed: true,
       confidence: 0.65,
     };

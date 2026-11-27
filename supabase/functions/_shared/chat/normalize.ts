@@ -23,6 +23,7 @@ export function stripDiacritics(text: string): string {
 export function normalizeText(raw: unknown): string {
   const value = typeof raw === "string" ? raw : "";
   return stripDiacritics(value.toLowerCase())
+    .replace(/['’`´]/g, "")
     .replace(/[^\p{L}\p{N}]+/gu, " ")
     .replace(/\s+/g, " ")
     .trim();

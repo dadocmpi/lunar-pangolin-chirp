@@ -168,6 +168,8 @@ const INJECTION = [
   /\b(reveal|show|print|repeat|output) (me )?(your|the) (system )?(prompt|instructions|rules)\b/,
   /\bsystem prompt\b/, /\byour instructions\b/,
   /\bignora (todas )?(las )?(instrucciones|regras) (anteriores|previas)\b/,
+  /\bignore (todas )?(as )?(instruções|instrucoes|regras) (anteriores|previas)\b/,
+  /\b(mostre|revele|repita) (as |suas |seus )?(regras|instruções|instrucoes)\b/,
   /\bignore (toutes )?(les )?(instructions|règles) (précédentes|antérieures)\b/,
   /\bignoriere (alle )?(vorherigen )?(anweisungen|regeln)\b/,
   /\bигнорируй (все )?(предыдущие )?(инструкции|правила)\b/,

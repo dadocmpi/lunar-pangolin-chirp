@@ -180,6 +180,11 @@ const modules = [
   stripComments(read('supabase/functions/_shared/chat/language.ts')),
   stripComments(read('supabase/functions/_shared/chat/context.ts')),
   stripComments(read('supabase/functions/_shared/chat/messages.ts')),
+  stripComments(read('supabase/functions/_shared/chat/state.ts')),
+  stripComments(read('supabase/functions/_shared/chat/strategy.ts')),
+  stripComments(read('supabase/functions/_shared/chat/strategyReplies.ts')),
+  stripComments(read('supabase/functions/_shared/chat/conversation.ts')),
+  stripComments(read('supabase/functions/_shared/chat/responses.ts')),
 ].join('\n');
 
 check('support-chat function exists', has('supabase/functions/support-chat/index.ts'));
@@ -476,12 +481,166 @@ check(
     /\[41\] Conversation-layer contract and statelessness/.test(read('supabase/functions/_test/support-chat-tests.ts')),
 );
 
+
+// ---------------------------------------------------------------------------
+console.log('\n[14] Natural first-line conversation, state and evaluation');
+const stateSrc = read('supabase/functions/_shared/chat/state.ts');
+const strategySrc = read('supabase/functions/_shared/chat/strategy.ts');
+const strategyRepliesSrc = read('supabase/functions/_shared/chat/strategyReplies.ts');
+const conversationSrc2 = read('supabase/functions/_shared/chat/conversation.ts');
+const evalSrc = read('supabase/functions/_test/chatbot-eval-conversations.ts');
+const stateMod = await bundle('supabase/functions/_shared/chat/state.ts');
+const conversationMod2 = await bundle('supabase/functions/_shared/chat/conversation.ts');
+const strategyMod = await bundle('supabase/functions/_shared/chat/strategy.ts');
+const strategyRepliesMod = await bundle('supabase/functions/_shared/chat/strategyReplies.ts');
+
+check('state.ts exists', has('supabase/functions/_shared/chat/state.ts'));
+check('strategy.ts exists', has('supabase/functions/_shared/chat/strategy.ts'));
+check('strategyReplies.ts exists', has('supabase/functions/_shared/chat/strategyReplies.ts'));
+check('chat.ts builds the conversation state', /buildConversationState\(/.test(chatSrc));
+check('chat.ts answers a strategy before the model', /strategyAnswer\(/.test(chatSrc) && /strategyToReply\(/.test(chatSrc));
+check('the state carries language, topics, goal, stage and plan', [
+  'language', 'previousLanguage', 'activeTopic', 'previousTopic', 'goal', 'stage',
+  'planId', 'previousAssistantQuestion', 'unresolvedQuestion', 'lastAnswerTopic',
+  'interested', 'confused', 'frustrated', 'readyToStart', 'asksFact', 'asksAction',
+  'topicChanged',
+].every((field) => new RegExp(`\\b${field}:`).test(stateSrc)));
+check('the state is derived per request only', !/localStorage|sessionStorage|document\.cookie|indexedDB|fetch\(|Deno\.env|supabase/.test(stripComments(stateSrc)));
+check('the state is bounded by the compacted history', /turnCount: history\.length/.test(stateSrc));
+check('the state is summarised for the prompt', /CONVERSATION STATE/.test(chatSrc) && /statePromptLines/.test(chatSrc));
+check('the prompt forbids an early generic fallback', /generic .*no verified answer.* LAST resort|LAST resort/i.test(chatSrc));
+check('the model may propose intent, sentiment and urgency', /sentiment/.test(chatSrc) && /urgency/.test(chatSrc) && /MODEL_SENTIMENTS/.test(chatSrc));
+check('model sentiment only selects a fallback, never facts', /parsed\.sentiment === "frustrated"/.test(chatSrc));
+
+const requiredIntents = [
+  'greeting', 'farewell', 'thanks', 'acknowledgement', 'language_switch',
+  'company_overview', 'company_identity', 'what_we_do', 'how_it_works',
+  'customer_interest', 'becoming_customer', 'plans', 'pricing', 'plan_discovery',
+  'plan_comparison', 'cheapest_plan', 'plan_recommendation', 'benefits', 'eligibility',
+  'requirements', 'onboarding', 'activation', 'account_creation', 'profile_completion',
+  'email_confirmation', 'password_recovery', 'login_problem', 'checkout',
+  'card_payment', 'crypto_payment', 'bank_transfer', 'payment_pending',
+  'payment_processing', 'payment_failed', 'payment_confirmation', 'dashboard',
+  'tradovate', 'read_only_limits', 'support', 'complaint', 'frustration', 'confusion',
+  'simpler_explanation', 'more_detail', 'repeat', 'follow_up', 'contextual_reference',
+  'topic_change', 'unclear', 'off_topic',
+];
+const missingIntents = requiredIntents.filter((i) => !conversationMod2.CONVERSATIONAL_INTENTS.includes(i));
+check('the semantic intent taxonomy is complete', missingIntents.length === 0, missingIntents.join(','));
+
+const strategies = strategyMod.RESPONSE_STRATEGIES;
+for (const strategy of ['empathy', 'simplify', 'repeat', 'cheapest_plan', 'plan_detail', 'plan_comparison', 'plan_recommendation', 'follow_up', 'topic_change']) {
+  check(`strategy ${strategy} exists`, strategies.includes(strategy));
+}
+check('the cheapest plan comes from the canonical table', /PLANS\[/.test(strategySrc) && /PLAN_IDS/.test(strategySrc));
+check('the strategy layer is stateless', !/localStorage|sessionStorage|document\.cookie|indexedDB|fetch\(|Deno\.env|supabase/.test(stripComments(strategySrc + strategyRepliesSrc)));
+for (const locale of ['en', 'pt', 'it', 'es', 'fr', 'de', 'ru', 'zh', 'ja', 'ar', 'he']) {
+  const table = strategyRepliesMod.STRATEGY_REPLIES[locale];
+  check(`${locale}: strategy replies exist`, Boolean(table), locale);
+  for (const key of strategyRepliesMod.STRATEGY_REPLY_KEYS) {
+    const text = table?.[key] ?? '';
+    const minLength = key === 'simplifyPrefix' ? 3 : 10;
+    check(`${locale}: ${key} present`, text.trim().length > minLength, String(text.length));
+    check(`${locale}: ${key} asks at most one question`, (text.match(/\?/g) ?? []).length <= 1, String((text.match(/\?/g) ?? []).length));
+    check(`${locale}: ${key} has no hard-coded price`, !/\$\s?\d{2,4}/.test(text), text.slice(0, 40));
+    check(`${locale}: ${key} has no URL, wallet or promise`, !/https?:\/\/|0x[a-fA-F0-9]{20,}|guaranteed? (profit|return)|risk[- ]free/i.test(text), text.slice(0, 40));
+  }
+}
+
+// Behavioural: normal customer messages never get the generic fallback.
+const generic = (locale) => messagesMod.chatMessage(locale, 'unknown');
+const knowledgeFallback = (locale) => messagesMod.chatMessage(locale, 'knowledgeFallback');
+const naturalCases = [
+  ['Oiiiiiiiiii', 'pt'],
+  ['oi tudo bem', 'pt'],
+  ['Hellooooo', 'en'],
+  ['Holaaaaa', 'es'],
+  ['quero começar com vocês', 'pt'],
+  ['tenho interesse', 'pt'],
+  ["I'm interested in getting started", 'en'],
+  ['quiero entrar', 'es'],
+  ['vocês são uma prop?', 'pt'],
+  ['are you a prop firm?', 'en'],
+  ['what plans do you have?', 'en'],
+  ['qual é o mais barato?', 'pt'],
+  ['how does payment work?', 'en'],
+  ['não consigo entrar', 'pt'],
+  ['já paguei, e agora?', 'pt'],
+];
+for (const [message, locale] of naturalCases) {
+  const reply = await chat.handleChat({ message, locale: 'en', history: [] }, DEPS);
+  check(
+    `"${message}" is never the generic fallback`,
+    reply.type !== 'unknown' || reply.reply === messagesMod.chatMessage(reply.locale, 'offTopic'),
+    `${reply.type}:${reply.reply.slice(0, 40)}`,
+  );
+  check(
+    `"${message}" answers in ${locale}`,
+    reply.locale === locale,
+    String(reply.locale),
+  );
+  check(
+    `"${message}" is not the unknown/knowledge-fallback text`,
+    reply.reply !== generic(reply.locale ?? 'en') && reply.reply !== knowledgeFallback(reply.locale ?? 'en'),
+    reply.reply.slice(0, 40),
+  );
+}
+
+const greetingReply = await chat.handleChat({ message: 'Oiiiiiiiiii', locale: 'en', history: [] }, DEPS);
+check('a greeting has no sources', greetingReply.sources.length === 0);
+const interestReply = await chat.handleChat({ message: 'tenho interesse em começar', locale: 'en', history: [] }, DEPS);
+check('a customer-interest message is answered', interestReply.type === 'answered' && interestReply.articleIds.includes('getting_started'));
+const switchReply = await chat.handleChat({ message: 'fala português', locale: 'en', history: [] }, DEPS);
+check('a language switch does not list languages', switchReply.locale === 'pt' && !/português.*inglês.*espanhol|english.*spanish.*portuguese/i.test(switchReply.reply));
+const cheapest = await chat.handleChat({ message: 'which one is the cheapest?', locale: 'en', history: [] }, DEPS);
+check('the cheapest plan is the canonical Starter plan', /Starter/.test(cheapest.reply) && cheapest.reply.includes('$200.00'));
+const paymentThen = await chat.handleChat({
+  message: 'and then?',
+  locale: 'en',
+  history: [
+    { role: 'user', content: 'how does payment work?' },
+    { role: 'assistant', content: 'Card opens Stripe. Bank transfer is manual. Crypto needs the exact network.' },
+  ],
+}, DEPS);
+check('a contextual follow-up resolves to onboarding', paymentThen.articleIds.includes('onboarding'));
+const planThen = await chat.handleChat({
+  message: 'the second one',
+  locale: 'en',
+  history: [
+    { role: 'user', content: 'what plans do you have?' },
+    { role: 'assistant', content: 'Starter, Professional, Business and Enterprise.' },
+  ],
+}, DEPS);
+check('an ordinal follow-up resolves to the canonical second plan', /Professional/.test(planThen.reply) && planThen.reply.includes('$350.00'));
+
+// Knowledge coverage: every approved article carries a safety classification.
+const safetyMissing = chat.KNOWLEDGE_ARTICLES.filter((a) => !a.safety || typeof a.escalate !== 'boolean');
+check('every knowledge entry has a safety classification', safetyMissing.length === 0, safetyMissing.map((a) => a.id).join(','));
+for (const id of ['card_payment', 'crypto_payment', 'bank_transfer', 'payment_failures', 'read_only_limits', 'login_problem']) {
+  check(`knowledge covers ${id}`, new RegExp(`id: "${id}"`).test(knowledgeSrc2));
+}
+check('a KYC article escalates', chat.articleSafety('withdrawal_kyc').escalate === true);
+check('a plans article does not escalate', chat.articleSafety('plans').escalate === false);
+
+// Evaluation suite.
+check('the multi-turn evaluation suite exists', has('supabase/functions/_test/chatbot-eval-conversations.ts'));
+const evalConversationCount = (evalSrc.match(/\{ id: "/g) ?? []).length;
+check('the evaluation suite has at least 100 conversations', evalConversationCount >= 100, String(evalConversationCount));
+check('the evaluation suite measures language, topic, context and safety', /language accuracy/.test(evalSrc) && /contextual resolution/.test(evalSrc) && /safety accuracy/.test(evalSrc));
+check('the evaluation suite fails on a premature fallback', /premature generic fallback/.test(evalSrc));
+check('the Makefile runs the evaluation suite', /test-chatbot-eval:/.test(read('Makefile')));
+
+// Widget: topic-aware follow-up suggestions.
+check('the widget suggests follow-ups from the answer topic', /SUGGESTION_BY_TOPIC/.test(widget) && /data-chatbot-followups/.test(widget));
+check('the client receives the approved article ids', /articleIds/.test(clientSrc) && /articleIds/.test(read('src/lib/supportChat.ts')));
+
 // ---------------------------------------------------------------------------
 console.log('\n[10] Bundle + tests + docs');
 check('support-chat is in the bundle list', /'support-chat'/.test(read('scripts/bundle-edge-functions.mjs')));
 check('Deno test suite exists', has('supabase/functions/_test/support-chat-tests.ts'));
 check('Makefile target exists', /test-support-chat:/.test(read('Makefile')));
 check('runbook exists', has('docs/support-chatbot-runbook.md'));
+check('the evaluation suite is documented', /chatbot-eval-conversations/.test(read('docs/support-chatbot-runbook.md')));
 
 if (failures > 0) {
   console.error(`\ncheck-chatbot-contract FAILED (${failures})`);

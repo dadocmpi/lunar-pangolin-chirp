@@ -375,19 +375,20 @@ export function isExplainRequest(message: string): boolean {
  */
 export function detectPlanReference(normalized: string): string | null {
   const tokens = tokenize(normalized);
+  // A bare number or a plan NAME ("business") is only a plan reference when the
+  // message is actually about plans or money ("how does the business work?" is
+  // not the Business plan).
+  const aboutPlans = tokens.some((t) => [
+    "plan", "plano", "planos", "planes", "price", "preco", "precio", "valor",
+    "cost", "custa", "mes", "month", "mensal", "mensual", "dolar", "usd", "pagar",
+  ].includes(t));
   for (let i = 0; i < tokens.length; i++) {
     const token = tokens[i];
     if (PLAN_PRICES[token]) {
-      // A bare number is only a plan when the message is about plans or money,
-      // or when it is the only thing the customer said ("200?").
-      const aboutPlans = tokens.some((t) => [
-        "plan", "plano", "planos", "planes", "price", "preco", "precio", "valor",
-        "cost", "custa", "mes", "month", "mensal", "mensual", "dolar", "usd", "pagar",
-      ].includes(t));
       if (aboutPlans || tokens.length <= 4) return PLAN_PRICES[token];
     }
     if (PLAN_CAPITAL[token] && tokens[i + 1] === "k") return PLAN_CAPITAL[token];
-    if (PLAN_NAMES[token]) return PLAN_NAMES[token];
+    if (PLAN_NAMES[token] && (aboutPlans || tokens.length <= 3)) return PLAN_NAMES[token];
   }
   const capital = /(\d{2,3})\s*k\b/.exec(normalized);
   if (capital && PLAN_CAPITAL[capital[1]]) return PLAN_CAPITAL[capital[1]];

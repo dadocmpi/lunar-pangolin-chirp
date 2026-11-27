@@ -33,6 +33,7 @@ import {
   type SupportedLocale,
 } from "../_shared/chat/language.ts";
 import { compactHistory, contextTopicsLine } from "../_shared/chat/context.ts";
+import { strategyReplyText } from "../_shared/chat/strategyReplies.ts";
 import {
   MAX_HISTORY_CHARS,
   MAX_HISTORY_TURNS,
@@ -186,6 +187,8 @@ function check(name: string, ok: boolean, detail = "") {
 
 const APP_URL = "https://braxelmarkets.vercel.app";
 const DEPS = { provider: null, appUrl: APP_URL, supportEmail: DEFAULT_SUPPORT_EMAIL };
+const PAYMENT_TOPIC_IDS = ["checkout", "payment_methods", "card_payment", "crypto_payment", "bank_transfer"];
+const citesPaymentTopic = (ids: string[]) => ids.some((id) => PAYMENT_TOPIC_IDS.includes(id));
 
 function fakeProvider(handler: (input: unknown) => Promise<string>): ChatProvider {
   return { name: "fake", complete: handler };
@@ -1243,7 +1246,8 @@ for (const [message, expected] of ptInformal) {
   const r = await handleChat({ message, locale: "en", history: withContext.history ?? [] }, DEPS);
   check(
     `pt informal "${message}" is understood as ${expected}`,
-    r.articleIds.includes(expected) && r.type === "answered",
+    r.type === "answered" &&
+      (expected === "checkout" ? citesPaymentTopic(r.articleIds) : r.articleIds.includes(expected)),
     `${r.type}:${r.articleIds.join(",")}`,
   );
   check(
@@ -1284,7 +1288,8 @@ for (const [message, expected] of enInformal) {
   const r = await handleChat({ message, locale: "pt", history: [] }, DEPS);
   check(
     `en informal "${message}" is understood as ${expected}`,
-    r.type === "answered" && r.articleIds.includes(expected),
+    r.type === "answered" &&
+      (expected === "checkout" ? citesPaymentTopic(r.articleIds) : r.articleIds.includes(expected)),
     `${r.type}:${r.articleIds.join(",")}`,
   );
   check(`en informal "${message}" answers in english`, r.locale === "en", String(r.locale));
@@ -1306,7 +1311,8 @@ for (const [message, expected] of esInformal) {
   const r = await handleChat({ message, locale: "en", history: [] }, DEPS);
   check(
     `es informal "${message}" is understood as ${expected}`,
-    r.type === "answered" && r.articleIds.includes(expected),
+    r.type === "answered" &&
+      (expected === "checkout" ? citesPaymentTopic(r.articleIds) : r.articleIds.includes(expected)),
     `${r.type}:${r.articleIds.join(",")}`,
   );
   check(`es informal "${message}" answers in spanish`, r.locale === "es", String(r.locale));
@@ -1340,7 +1346,8 @@ for (const [message, expected, expectedLocale] of messy) {
   const r = await handleChat({ message, locale: "en", history: [] }, DEPS);
   check(
     `messy "${message}" is understood as ${expected}`,
-    r.type === "answered" && r.articleIds.includes(expected),
+    r.type === "answered" &&
+      (expected === "checkout" ? citesPaymentTopic(r.articleIds) : r.articleIds.includes(expected)),
     `${r.type}:${r.articleIds.join(",")}`,
   );
   check(
@@ -1352,7 +1359,7 @@ for (const [message, expected, expectedLocale] of messy) {
 const slang = await handleChat({ message: "mano, tipo assim, como q eu pago isso?", locale: "en", history: [] }, DEPS);
 check(
   "slang-heavy pt sentence still reaches checkout",
-  slang.type === "answered" && slang.articleIds.includes("checkout") && slang.locale === "pt",
+  slang.type === "answered" && citesPaymentTopic(slang.articleIds) && slang.locale === "pt",
   `${slang.type}:${slang.articleIds.join(",")}/${slang.locale}`,
 );
 
@@ -1371,7 +1378,8 @@ for (const [message, expected] of personalised) {
   const r = await handleChat({ message, locale: "en", history: [] }, DEPS);
   check(
     `personalised "${message}" is understood as ${expected}`,
-    r.type === "answered" && r.articleIds.includes(expected),
+    r.type === "answered" &&
+      (expected === "checkout" ? citesPaymentTopic(r.articleIds) : r.articleIds.includes(expected)),
     `${r.type}:${r.articleIds.join(",")}`,
   );
 }
@@ -1420,11 +1428,12 @@ check(
 );
 const simplePt = await handleChat({ message: "me explica de um jeito simples", locale: "en", history: simpleContext }, DEPS);
 const simplePtShort = localizedAnswer("pt", "activation") ?? "";
+const simplePtPrefix = strategyReplyText("pt", "simplifyPrefix");
 check(
   "a Portuguese explain request answers in Portuguese from the same topic",
   simplePt.locale === "pt" &&
     simplePt.type === "answered" &&
-    simplePt.reply.startsWith(simplePtShort),
+    simplePt.reply.startsWith(`${simplePtPrefix} ${simplePtShort}`),
   `${simplePt.locale}:${simplePt.reply.slice(0, 40)}`,
 );
 check(
@@ -1692,7 +1701,7 @@ check(
 const esPayment = await handleChat({ message: "¿Cómo funciona el pago?", locale: "en", history: [] }, DEPS);
 check(
   "a Spanish payment question is answered in Spanish",
-  esPayment.locale === "es" && esPayment.articleIds.includes("checkout"),
+  esPayment.locale === "es" && citesPaymentTopic(esPayment.articleIds),
   `${esPayment.locale}:${esPayment.articleIds.join(",")}`,
 );
 const switchAfterSpanish = await handleChat(
@@ -1738,7 +1747,7 @@ const switchPlusQuestion = await handleChat(
 );
 check(
   "a switch plus a question is answered in the requested language",
-  switchPlusQuestion.locale === "pt" && switchPlusQuestion.articleIds.includes("checkout"),
+  switchPlusQuestion.locale === "pt" && citesPaymentTopic(switchPlusQuestion.articleIds),
   `${switchPlusQuestion.locale}:${switchPlusQuestion.articleIds.join(",")}`,
 );
 
@@ -1767,7 +1776,7 @@ const pronounInContext = await handleChat(
 check(
   '"isso" resolves from the conversation context',
   pronounInContext.type === "answered" &&
-    pronounInContext.reply === localizedAnswer("pt", "activation"),
+    pronounInContext.reply.startsWith(localizedAnswer("pt", "activation") ?? ""),
   `${pronounInContext.type}:${pronounInContext.reply.slice(0, 40)}`,
 );
 const explainMore = await handleChat(
@@ -1782,10 +1791,11 @@ const explainMore = await handleChat(
   DEPS,
 );
 const activationPtShort = localizedAnswer("pt", "activation") ?? "";
+const explainMorePrefix = strategyReplyText("pt", "simplifyPrefix");
 check(
   '"me explica melhor" expands the previous answer in Portuguese',
   explainMore.locale === "pt" &&
-    explainMore.reply.startsWith(activationPtShort) &&
+    explainMore.reply.startsWith(`${explainMorePrefix} ${activationPtShort}`) &&
     explainMore.reply.length > activationPtShort.length,
   `${explainMore.locale}:${explainMore.reply.length}/${activationPtShort.length}`,
 );
@@ -1879,7 +1889,7 @@ const contextProvider = fakeProvider(async (input) => {
   return JSON.stringify({ answer: "Here are the plans.", article_ids: ["plans"] });
 });
 await handleChat(
-  { message: "e agora?", locale: "pt", history: longHistory },
+  { message: "como redefinir a minha senha?", locale: "pt", history: longHistory },
   { ...DEPS, provider: contextProvider },
 );
 const contextCapture = capturedContext as CapturedChatInput | null;

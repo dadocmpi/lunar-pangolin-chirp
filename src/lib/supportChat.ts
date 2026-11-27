@@ -50,6 +50,8 @@ export interface ChatReply {
   escalation: ChatEscalation | null;
   disclaimer?: string;
   locale?: string;
+  /** Approved topic ids used, for topic-aware follow-up suggestions only. */
+  articleIds: string[];
 }
 
 export type ChatSendError =
@@ -92,7 +94,7 @@ function safeEmail(raw: unknown): string | null {
  */
 export function resolveChatReply(data: unknown): ChatReply {
   if (!data || typeof data !== "object") {
-    return { type: "unknown", reply: "", sources: [], escalation: null };
+    return { type: "unknown", reply: "", sources: [], escalation: null, articleIds: [] };
   }
   const d = data as Record<string, unknown>;
   const type = TYPES.includes(d.type as ChatReplyType) ? (d.type as ChatReplyType) : "unknown";
@@ -125,6 +127,10 @@ export function resolveChatReply(data: unknown): ChatReply {
     }
   }
 
+  const articleIds = Array.isArray(d.articleIds)
+    ? d.articleIds.filter((id): id is string => typeof id === "string").slice(0, 5)
+    : [];
+
   return {
     type,
     reply,
@@ -133,6 +139,7 @@ export function resolveChatReply(data: unknown): ChatReply {
     escalation,
     disclaimer: typeof d.disclaimer === "string" ? d.disclaimer.slice(0, 500) : undefined,
     locale: typeof d.locale === "string" ? d.locale : undefined,
+    articleIds,
   };
 }
 
@@ -222,7 +229,7 @@ export async function sendChatMessage(input: SendChatInput): Promise<ChatSendRes
       if (serverReply) {
         return {
           ok: true,
-          reply: { type: "timeout", reply: serverReply, sources: [], escalation: null },
+          reply: { type: "timeout", reply: serverReply, sources: [], escalation: null, articleIds: [] },
         };
       }
       return { ok: false, error: "timeout" };
