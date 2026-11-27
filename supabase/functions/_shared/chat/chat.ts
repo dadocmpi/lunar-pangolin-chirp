@@ -29,6 +29,7 @@ import {
   selectRelevantArticles,
   sourcesFor,
 } from "./knowledge.ts";
+import { normalizeQuery } from "./normalize.ts";
 import {
   clarifyQuestion,
   greetingReply,
@@ -47,6 +48,7 @@ import { conversationalReply } from "./responses.ts";
 import { compactHistory, type CompactedHistory } from "./context.ts";
 import { buildConversationState, statePromptLines, type ConversationState } from "./state.ts";
 import { strategyAnswer, type StrategyAnswer } from "./strategy.ts";
+import { strategyReplyText } from "./strategyReplies.ts";
 import {
   detectLanguageSwitchRequest,
   detectMessageLanguage,
@@ -594,6 +596,7 @@ function fallbackAnswer(
   appUrl: string,
   provider: string,
   history: ChatTurn[],
+  message: string,
   state?: ConversationState,
 ): ChatReply {
   if (state) {
@@ -604,13 +607,55 @@ function fallbackAnswer(
     return conversationReply(locale, conv, articles, appUrl, provider);
   }
   if (intent.primary) {
-    return deterministicAnswer(locale, intent, articles, appUrl, provider, history);
+    return refineRepeatedAnswer(
+      deterministicAnswer(locale, intent, articles, appUrl, provider, history),
+      locale,
+      message,
+      history,
+    );
   }
   if (conv.intent === "off_topic") return offTopicReply(locale, provider);
   if (conv.intent === "unclear") {
     return clarifyReply(locale, intent, articles, appUrl);
   }
   return baseReply({ type: "unknown", reply: chatMessage(locale, "unknown"), locale, provider });
+}
+
+/**
+ * When a follow-up would repeat the previous answer word for word, answer the
+ * specific shape of the question instead (timing, retry, signals) with a short
+ * localized note. It never adds a fact: the note is approved, static copy.
+ */
+function refineRepeatedAnswer(
+  reply: ChatReply,
+  locale: SupportedLocale,
+  message: string,
+  history: ChatTurn[],
+): ChatReply {
+  if (reply.type !== "answered") return reply;
+  const previous = [...history].reverse().find((turn) => turn.role === "assistant");
+  if (!previous || previous.content.trim() !== reply.reply) return reply;
+  const normalized = normalizeQuery(message);
+  let key: "durationNote" | "retryNote" | "signalsNote" | null = null;
+  if (/\b(how long|quanto tempo|cuanto (tiempo|tarda)|wie lange|combien de temps)\b/.test(normalized)) {
+    key = "durationNote";
+  } else if (/\b(try again|retry|tentar de novo|tentar novamente|intentar de nuevo|reintentar)\b/.test(normalized)) {
+    key = "retryNote";
+  } else if (
+    reply.articleIds.includes("read_only_limits") &&
+    /\b(sinais|signals|senales|señales)\b/.test(normalized)
+  ) {
+    key = "signalsNote";
+  }
+  if (!key) return reply;
+  return baseReply({
+    type: "answered",
+    reply: strategyReplyText(locale, key),
+    locale,
+    sources: reply.sources,
+    articleIds: reply.articleIds,
+    provider: reply.provider,
+  });
 }
 
 /**
@@ -819,6 +864,7 @@ export async function handleChat(
           deps.appUrl,
           deps.provider.name,
           history,
+          message,
           state,
         );
       }
@@ -875,6 +921,7 @@ export async function handleChat(
           deps.appUrl,
           deps.provider.name,
           history,
+          message,
           state,
         );
       }
@@ -930,6 +977,7 @@ export async function handleChat(
     deps.appUrl,
     "knowledge_base",
     history,
+    message,
     state,
   );
 }
