@@ -71,6 +71,8 @@ const ABBREVIATIONS: Record<string, string> = {
   r: "are", hw: "how", bro: "", dude: "", bruh: "", man: "",
   yeah: "yes", yep: "yes", nope: "no", kk: "ok", ok: "ok", okk: "ok",
   asap: "as soon as possible", btw: "", imo: "", afaik: "",
+  // Greetings typed with a trailing vowel ("oiê", "oee")
+  oie: "oi", oe: "oi", oii: "oi", oiii: "oi", eiii: "oi",
   // Spanish
   xq: "porque", xk: "porque", porq: "porque", dnd: "donde", dnde: "donde",
   cm: "como", cmo: "como", tmbn: "tambien", grax: "gracias", graxias: "gracias",
@@ -116,6 +118,69 @@ export function collapseRepeats(token: string): string {
 /** Collapse every repeated letter ("ajudaaaa" -> "ajuda"). */
 export function collapseAllRepeats(token: string): string {
   return token.replace(/(.)\1+/g, "$1");
+}
+
+/**
+ * Collapse an elongated run of three or more identical letters to one:
+ * "hellooooo" -> "hello", "Holaaaaa" -> "hola", "Oiiiiiiiiii" -> "oi".
+ *
+ * Only runs of 3+ are touched, so meaningful double letters ("posso",
+ * "assim", "llamar") survive. Used for conversational matching (greetings,
+ * intents), never to rewrite a knowledge phrase.
+ */
+export function collapseElongations(text: string): string {
+  return (text ?? "").replace(/(\p{L})\1{2,}/gu, "$1");
+}
+
+/**
+ * Elongation-tolerant query form: lower-case, accent-free, punctuation-free,
+ * elongated letters collapsed, abbreviations expanded. This is what the
+ * conversational layer compares, so "Hellooooo" and "hello" are the same.
+ */
+export function normalizeElongated(raw: unknown): string {
+  const value = typeof raw === "string" ? raw : "";
+  return expandAbbreviations(collapseElongations(normalizeText(value)));
+}
+
+/** Emoji that clearly greet. A wave/smiley on its own means "hello". */
+const GREETING_EMOJI =
+  /[\u{1F44B}\u{1F64B}\u{1F91D}\u{1F44D}\u{1F60A}\u{1F600}-\u{1F604}\u{1F642}\u{1F609}\u{1F60D}\u{1F970}]/u;
+const PICTOGRAPHIC = /\p{Extended_Pictographic}/u;
+
+/**
+ * True when the message is emoji-only (or emoji plus punctuation) and at least
+ * one of the emoji clearly greets: "👋", "👋👋", "😊🙋". A message with real
+ * words is never an emoji greeting.
+ */
+export function isEmojiGreeting(raw: unknown): boolean {
+  const text = typeof raw === "string" ? raw : "";
+  if (!text.trim() || !PICTOGRAPHIC.test(text)) return false;
+  const letters = text
+    .replace(/\p{Extended_Pictographic}/gu, "")
+    .replace(/[\s\p{P}\p{S}\p{N}]/gu, "");
+  return letters.length === 0 && GREETING_EMOJI.test(text);
+}
+
+const KEYBOARD_ROWS = ["qwertyuiop", "asdfghjkl", "zxcvbnm", "1234567890"];
+
+/**
+ * True when a token looks like a keyboard mash rather than a word: a run of
+ * the same letter ("aaaa"), a token with no vowel, or a keyboard row sequence
+ * ("asdfg"). Used to treat the message as unclear instead of off-topic.
+ */
+export function isKeyboardMash(raw: unknown): boolean {
+  const tokens = tokenize(normalizeText(raw));
+  if (tokens.length === 0) return false;
+  return tokens.some((token) => {
+    if (token.length < 3) return false;
+    if (/(.)\1{3,}/.test(token)) return true;
+    // Vowel-less detection is Latin-only: Cyrillic, Arabic, Hebrew and CJK
+    // tokens have no Latin vowels and are real words, not mashing.
+    if (/^[a-z]+$/i.test(token) && !/[aeiouy]/i.test(token) && token.length >= 4) return true;
+    return KEYBOARD_ROWS.some(
+      (row) => token.length >= 4 && (row.includes(token) || token.includes(row.slice(0, 4))),
+    );
+  });
 }
 
 // ---------------------------------------------------------------------------

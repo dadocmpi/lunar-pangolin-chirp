@@ -36,6 +36,13 @@ import {
   thanksReply,
 } from "./answers.ts";
 import { classifyIntent, shouldClarify, type IntentResult } from "./intent.ts";
+import {
+  classifyConversation,
+  hasConversationalReply,
+  isSocialIntent,
+  type ConversationResult,
+} from "./conversation.ts";
+import { conversationalReply } from "./responses.ts";
 import { compactHistory, type CompactedHistory } from "./context.ts";
 import {
   detectLanguageSwitchRequest,
@@ -123,6 +130,12 @@ export interface PromptIntent {
   contextIntent: string | null;
   planId: string | null;
   explain: boolean;
+  /** High-level conversational intent ("customer_interest", "off_topic", ...). */
+  conversation?: string;
+  /** True when the message could reasonably be about Braxel. */
+  inDomain?: boolean;
+  /** Follow-up shape resolved from the conversation, when any. */
+  followUp?: string | null;
 }
 
 /**
@@ -170,6 +183,9 @@ export function buildSystemPrompt(
         }`,
         `- plan mentioned: ${intent.planId ?? "none"}`,
         `- asked for a simple or step-by-step explanation: ${intent.explain ? "yes" : "no"}`,
+        `- conversational intent: ${intent.conversation ?? "none"}`,
+        `- the message is about Braxel: ${intent.inDomain === false ? "no" : "yes"}`,
+        `- follow-up shape: ${intent.followUp ?? "none"}`,
       ]
     : [];
 
@@ -215,6 +231,11 @@ export function buildSystemPrompt(
     "- Never reply with \"contact support\" when the approved knowledge answers the question. Only escalate for the categories in rule 6.",
     "- Prices come only from the approved plan facts. Never invent a price, wallet, bank detail or payment link.",
     "- Only include links when they help this specific answer.",
+    "- A prospective customer (\"I want to get started\", \"quero começar\", \"quiero empezar\") gets a warm, short overview, the documented next steps, a mention of the plans and ONE useful question. Never promise profit, approval or results and never give personal financial, legal or trading advice.",
+    "- A broad company question (\"what is Braxel?\", \"who are you?\", \"is Braxel a prop firm?\") is answered with the documented public facts only. Do not invent facts, country availability, regulatory status or broker/prop-firm compatibility.",
+    "- If the message is clearly unrelated to Braxel, say you focus on Braxel Markets and offer help with its services. Never invent an answer to look helpful.",
+    "- A complaint gets empathy, the documented options and ONE short question about what happened. Do not promise a resolution.",
+    "- For a greeting, a thank-you, a farewell or an acknowledgement, reply in one short friendly sentence and at most one question.",
     'Output ONLY JSON: {"answer":"...","article_ids":["..."],"unknown":false,"escalate":false,"category":null,"clarify":false}',
     "",
     "APPROVED KNOWLEDGE:",
@@ -451,6 +472,94 @@ function clarifyReply(
 }
 
 /**
+ * A natural first-line answer for a conversational intent (prospective
+ * customer, requirements, eligibility, benefits, complaint, farewell,
+ * acknowledgement), grounded in the approved article that backs the intent.
+ */
+function conversationReply(
+  locale: SupportedLocale,
+  conv: ConversationResult,
+  articles: KnowledgeArticle[],
+  appUrl: string,
+  provider = "knowledge_base",
+): ChatReply {
+  const reply = conv.intent === "greeting"
+    ? greetingReply(locale)
+    : conv.intent === "thanks"
+      ? thanksReply(locale)
+      : hasConversationalReply(conv.intent)
+        ? conversationalReply(locale, conv.intent)
+        : null;
+  if (!reply) {
+    return baseReply({
+      type: "unknown",
+      reply: chatMessage(locale, "unknown"),
+      locale,
+      provider,
+    });
+  }
+  const primary = conv.topic ? articleById(conv.topic, articles) : null;
+  const related = conv.topic ? relatedArticles(conv.topic, articles, 3) : [];
+  const used = primary ? [primary, ...related] : related;
+  return baseReply({
+    type: "answered",
+    reply,
+    locale,
+    sources: sourcesFor(used, appUrl),
+    articleIds: used.map((a) => a.id),
+    provider,
+  });
+}
+
+/** Politely decline an unrelated question and offer the Braxel scope. */
+function offTopicReply(locale: SupportedLocale, provider = "knowledge_base"): ChatReply {
+  return baseReply({
+    type: "unknown",
+    reply: chatMessage(locale, "offTopic"),
+    locale,
+    provider,
+  });
+}
+
+/**
+ * True when the natural conversational answer should be preferred over the
+ * matched article. A specific article still wins when it is a different topic
+ * ("qué documentos necesito para el retiro" is a KYC question, not a general
+ * requirements question); a complaint and a prospective-customer message are
+ * always answered conversationally.
+ */
+function preferConversationReply(intent: IntentResult, conv: ConversationResult): boolean {
+  if (isSocialIntent(conv.intent)) return true;
+  if (!hasConversationalReply(conv.intent)) return false;
+  if (!intent.primary) return true;
+  if (intent.primary === conv.topic) return true;
+  return conv.intent === "complaint" || conv.intent === "customer_interest";
+}
+
+/** Deterministic fallback shared by the model-unknown and language paths. */
+function fallbackAnswer(
+  locale: SupportedLocale,
+  intent: IntentResult,
+  conv: ConversationResult,
+  articles: KnowledgeArticle[],
+  appUrl: string,
+  provider: string,
+  history: ChatTurn[],
+): ChatReply {
+  if (preferConversationReply(intent, conv)) {
+    return conversationReply(locale, conv, articles, appUrl, provider);
+  }
+  if (intent.primary) {
+    return deterministicAnswer(locale, intent, articles, appUrl, provider, history);
+  }
+  if (conv.intent === "off_topic") return offTopicReply(locale, provider);
+  if (conv.intent === "unclear") {
+    return clarifyReply(locale, intent, articles, appUrl);
+  }
+  return baseReply({ type: "unknown", reply: chatMessage(locale, "unknown"), locale, provider });
+}
+
+/**
  * The single entry point used by the Edge Function. Never throws.
  */
 export async function handleChat(
@@ -546,6 +655,29 @@ export async function handleChat(
   //    understands informal, abbreviated, misspelled and conversational
   //    messages, and what resolves references to earlier turns.
   const intent = classifyIntent(message, { history });
+  // The conversational layer classifies WHAT KIND of message this is (greeting,
+  // prospective customer, company question, complaint, off-topic, ...) before
+  // an article is chosen. It never answers and never calls a provider.
+  const conv = classifyConversation(message, { history });
+
+  // An explicit, curated conversational phrase ("what services do you offer",
+  // "can I use it from my country") is more precise than an accidental keyword
+  // hit, so it sets the topic. A confident, unambiguous article match still
+  // wins ("qué documentos necesito para el retiro" is a KYC question).
+  const knowledgeStrong = Boolean(intent.primary) && !intent.ambiguous &&
+    intent.confidence >= 0.7;
+  if (
+    conv.topic && conv.intent !== "off_topic" && conv.intent !== "unclear" &&
+    (conv.matchedRule || !knowledgeStrong)
+  ) {
+    intent.primary = conv.topic;
+    intent.confidence = Math.max(intent.confidence, conv.confidence);
+    intent.contextUsed = Boolean(conv.contextUsed);
+    intent.ambiguous = false;
+  }
+  if (conv.followUp === "explain") {
+    intent.explain = true;
+  }
 
   // 7. Genuinely ambiguous and no context to fall back on: ask ONE short
   //    clarifying question rather than guessing.
@@ -576,6 +708,9 @@ export async function handleChat(
           contextIntent: intent.contextIntent,
           planId: intent.planId,
           explain: intent.explain,
+          conversation: conv.intent,
+          inDomain: conv.inDomain,
+          followUp: conv.followUp,
         },
         {
           topics: compacted.topics,
@@ -595,17 +730,18 @@ export async function handleChat(
       const parsed = parseModelReply(raw);
 
       if (parsed.unknown || !parsed.text) {
-        // The model found nothing. If the classifier is confident the approved
-        // knowledge covers the question, answer from it instead of giving up.
-        if (intent.primary && intent.confidence >= 0.6 && !intent.ambiguous) {
-          return deterministicAnswer(locale, intent, articles, deps.appUrl, deps.provider.name, history);
-        }
-        return baseReply({
-          type: "unknown",
-          reply: chatMessage(locale, "unknown"),
+        // The model found nothing. Answer from the approved knowledge or the
+        // conversational layer, and decline an unrelated question politely
+        // instead of repeating "unknown".
+        return fallbackAnswer(
           locale,
-          provider: deps.provider.name,
-        });
+          intent,
+          conv,
+          articles,
+          deps.appUrl,
+          deps.provider.name,
+          history,
+        );
       }
 
       const sanitized = sanitizeAnswer(parsed.text);
@@ -652,7 +788,15 @@ export async function handleChat(
       // Language enforcement: a completion that confidently answers in a
       // different language than the detected one is not shown.
       if (!isAnswerInLanguage(sanitized.text, locale)) {
-        return deterministicAnswer(locale, intent, articles, deps.appUrl, deps.provider.name, history);
+        return fallbackAnswer(
+          locale,
+          intent,
+          conv,
+          articles,
+          deps.appUrl,
+          deps.provider.name,
+          history,
+        );
       }
 
       // Grounding check: cited ids must exist, otherwise retrieval must supply
@@ -693,15 +837,12 @@ export async function handleChat(
     }
   }
 
-  // 10. Deterministic answer from the approved knowledge base. A greeting or a
-  //     thank-you gets a short localized line, not a "no answer" message.
-  if (intent.greeting) {
-    return baseReply({ type: "answered", reply: greetingReply(locale), locale });
-  }
-  if (intent.thanks) {
-    return baseReply({ type: "answered", reply: thanksReply(locale), locale });
-  }
-  return deterministicAnswer(locale, intent, articles, deps.appUrl, "knowledge_base", history);
+  // 10. Deterministic answer from the approved knowledge base or the
+  //     conversational layer. A greeting, farewell, thank-you or
+  //     acknowledgement gets a short localized line, never an article dump; a
+  //     prospective customer gets the natural getting-started answer; an
+  //     unrelated question gets the polite Braxel scope message.
+  return fallbackAnswer(locale, intent, conv, articles, deps.appUrl, "knowledge_base", history);
 }
 
 /** Exposed for observability and tests; never used to answer. */
