@@ -388,6 +388,95 @@ check('the log carries counts and article ids only', /historyTurns: history\.len
 check('the new tests cover the conversation improvements', /\[28\] Short localized greeting/.test(read('supabase/functions/_test/support-chat-tests.ts')) && /\[33\] No conversation persistence/.test(read('supabase/functions/_test/support-chat-tests.ts')));
 
 // ---------------------------------------------------------------------------
+console.log('\n[13] Conversational first-line behaviour');
+const conversationSrc = read('supabase/functions/_shared/chat/conversation.ts');
+const responsesSrc = read('supabase/functions/_shared/chat/responses.ts');
+const normalizeSrc2 = read('supabase/functions/_shared/chat/normalize.ts');
+const messagesSrc = read('supabase/functions/_shared/chat/messages.ts');
+const knowledgeSrc2 = read('supabase/functions/_shared/chat/knowledge.ts');
+const conversationMod = await bundle('supabase/functions/_shared/chat/conversation.ts');
+const responsesMod = await bundle('supabase/functions/_shared/chat/responses.ts');
+const normalizeMod = await bundle('supabase/functions/_shared/chat/normalize.ts');
+const messagesMod = await bundle('supabase/functions/_shared/chat/messages.ts');
+
+check('conversation.ts exists', has('supabase/functions/_shared/chat/conversation.ts'));
+check('responses.ts exists', has('supabase/functions/_shared/chat/responses.ts'));
+check('chat.ts classifies the conversation', /classifyConversation\(/.test(chatSrc));
+check('chat.ts answers conversationally when the model is unknown', /fallbackAnswer\(/.test(chatSrc));
+check('chat.ts declines off-topic questions politely', /offTopicReply\(/.test(chatSrc));
+check('the prompt carries the conversational intent', /conversational intent/.test(chatSrc) && /follow-up shape/.test(chatSrc));
+check('the prompt handles prospective customers', /prospective customer/i.test(chatSrc));
+check('the prompt handles unrelated questions', /clearly unrelated to Braxel/i.test(chatSrc));
+check(
+  'every required conversational intent exists',
+  [
+    'greeting', 'farewell', 'thanks', 'acknowledgement', 'language_switch',
+    'company_overview', 'what_we_do', 'how_it_works', 'customer_interest',
+    'plans', 'pricing', 'benefits', 'eligibility', 'requirements', 'onboarding',
+    'payment_info', 'account_creation', 'support', 'complaint', 'unclear', 'off_topic',
+  ].every((i) => conversationMod.CONVERSATIONAL_INTENTS.includes(i)),
+);
+const conversationCode = (conversationSrc + responsesSrc)
+  .replace(/\/\*[\s\S]*?\*\//g, '')
+  .replace(/\/\/.*$/gm, '');
+check(
+  'the conversation layer is stateless and tool-free',
+  !/localStorage|sessionStorage|document\.cookie|indexedDB|fetch\(|Deno\.env|supabase|provider/.test(conversationCode),
+);
+check(
+  'normalisation collapses elongations, emoji and keyboard mash',
+  /collapseElongations/.test(normalizeSrc2) && /isEmojiGreeting/.test(normalizeSrc2) && /isKeyboardMash/.test(normalizeSrc2),
+);
+check(
+  'elongated greetings normalise',
+  normalizeMod.normalizeElongated('Oiiiiiiiiii') === 'oi' &&
+    normalizeMod.normalizeElongated('Hellooooo') === 'hello' &&
+    normalizeMod.normalizeElongated('Holaaaaa') === 'hola',
+);
+check('an emoji greeting is recognised', normalizeMod.isEmojiGreeting('👋👋'));
+
+const contractGreeting = await chat.handleChat({ message: 'Oiiiiiiiiii', locale: 'en', history: [] }, DEPS);
+check('an elongated greeting is answered as a greeting', contractGreeting.type === 'answered' && contractGreeting.sources.length === 0);
+const contractInterest = await chat.handleChat({ message: 'quero começar', locale: 'en', history: [] }, DEPS);
+check(
+  'a prospective customer gets the natural getting-started answer',
+  contractInterest.type === 'answered' &&
+    contractInterest.reply === responsesMod.conversationalReply('pt', 'customer_interest') &&
+    contractInterest.articleIds.includes('getting_started'),
+);
+const contractCompany = await chat.handleChat({ message: 'is Braxel a prop firm?', locale: 'en', history: [] }, DEPS);
+check('a broad company question is answered from the approved article', contractCompany.type === 'answered' && contractCompany.articleIds.includes('company_overview'));
+const contractOffTopic = await chat.handleChat({ message: 'What is the weather on Mars tomorrow?', locale: 'en', history: [] }, DEPS);
+check(
+  'an unrelated question is declined politely, not answered',
+  contractOffTopic.type === 'unknown' && contractOffTopic.reply === messagesMod.chatMessage('en', 'offTopic') && contractOffTopic.sources.length === 0,
+);
+const contractUnclear = await chat.handleChat({ message: 'asdfgh', locale: 'en', history: [] }, DEPS);
+check('keyboard mash asks one clarifying question', contractUnclear.type === 'clarify' && (contractUnclear.reply.match(/\?/g) ?? []).length === 1);
+
+for (const locale of ['en', 'pt', 'it', 'es', 'fr', 'de', 'ru', 'zh', 'ja', 'ar', 'he']) {
+  const table = responsesMod.CONVERSATIONAL_REPLIES[locale];
+  check(`${locale}: conversational replies exist`, Boolean(table), locale);
+  for (const key of responsesMod.CONVERSATIONAL_REPLY_KEYS) {
+    const text = table?.[key] ?? '';
+    check(`${locale}: ${key} is present`, text.trim().length > 10, String(text.length));
+    check(`${locale}: ${key} asks at most one question`, (text.match(/\?/g) ?? []).length <= 1, String((text.match(/\?/g) ?? []).length));
+    check(`${locale}: ${key} has no price, URL, wallet or promise`, !/\$\s?\d{2,4}|https?:\/\/|0x[a-fA-F0-9]{20,}|guaranteed? (profit|return)|risk[- ]free/i.test(text), text.slice(0, 40));
+  }
+  check(`${locale}: the off-topic message exists`, (messagesMod.chatMessage(locale, 'offTopic') ?? '').length > 20);
+}
+check('the off-topic message is localized in 11 locales', (messagesSrc.match(/\n    offTopic:/g) ?? []).length === 11);
+check(
+  'the new approved articles exist',
+  /id: "benefits_and_features"/.test(knowledgeSrc2) && /id: "requirements_and_eligibility"/.test(knowledgeSrc2),
+);
+check(
+  'the conversation tests are present',
+  /\[34\] Elongated and casual greeting normalisation/.test(read('supabase/functions/_test/support-chat-tests.ts')) &&
+    /\[41\] Conversation-layer contract and statelessness/.test(read('supabase/functions/_test/support-chat-tests.ts')),
+);
+
+// ---------------------------------------------------------------------------
 console.log('\n[10] Bundle + tests + docs');
 check('support-chat is in the bundle list', /'support-chat'/.test(read('scripts/bundle-edge-functions.mjs')));
 check('Deno test suite exists', has('supabase/functions/_test/support-chat-tests.ts'));

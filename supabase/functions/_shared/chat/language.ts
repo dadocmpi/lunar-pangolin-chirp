@@ -18,7 +18,7 @@
 // Pure functions only: no I/O, no state, no model call.
 // ============================================================================
 
-import { collapseAllRepeats, normalizeQuery } from "./normalize.ts";
+import { collapseAllRepeats, collapseElongations, normalizeQuery } from "./normalize.ts";
 import type { ChatTurn } from "./types.ts";
 
 export const SUPPORTED_LOCALES = [
@@ -117,6 +117,9 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "tbm", "msm", "dnv", "hj", "pra", "pro", "tô", "cê", "né",
     "confirmacão", "ativacao", "pagamento", "documentos", "minha", "meu",
     "planos", "ou", "pagar", "preços", "precos", "contas", "senhas", "e-mail",
+    "cliente", "viro", "torno", "virar", "adesao", "aderir",
+    "conhecer", "empresa", "interesse", "interessado", "interessada", "comecar",
+    "participar", "investir",
   ],
   es: [
     "el", "los", "las", "del", "cómo", "como", "cuál", "cual", "cuáles",
@@ -133,6 +136,10 @@ const STRONG_WORDS: Record<Exclude<SupportedLocale, "ru" | "zh" | "ja" | "ar" | 
     "compa", "hermano", "wey", "vale", "pues", "bueno", "no",
     "simple", "sencillo", "explicas", "explícame", "explicame", "funciona",
     "cuéntame", "cuentame", "señor", "senor", "mi",
+    "estoy", "interesado", "interesada", "comenzar", "comienzo", "hago",
+    "unirme", "debería", "deberia", "elegir", "planes", "cliente", "conocer",
+    "empresa", "plataforma", "país", "paises", "requisitos", "beneficios",
+    "ventajas", "empezar", "comprar", "necesito", "quiero", "cuenta", "pago",
   ],
   it: [
     "il", "gli", "della", "delle", "degli", "che", "come", "quale", "quali",
@@ -189,7 +196,7 @@ const DIACRITIC_SIGNALS: Array<[RegExp, Partial<Record<SupportedLocale, number>>
 
 const GREETINGS: Record<string, SupportedLocale> = {
   hello: "en", hi: "en", hey: "en",
-  "olá": "pt", ola: "pt", oi: "pt", obrigado: "pt", obrigada: "pt", sim: "pt",
+  "olá": "pt", ola: "pt", oi: "pt", "oiê": "pt", oie: "pt", obrigado: "pt", obrigada: "pt", sim: "pt",
   hola: "es", gracias: "es", "sí": "es",
   ciao: "it", buongiorno: "it", grazie: "it", "sì": "it",
   bonjour: "fr", salut: "fr", merci: "fr", oui: "fr",
@@ -263,7 +270,11 @@ export function detectMessageLanguage(message: string): LanguageDetection {
 
   const tokens = tokenize(text);
   if (tokens.length === 1) {
-    const greeting = GREETINGS[tokens[0]];
+    const token = tokens[0];
+    // "Hellooooo", "Holaaaaa", "Oiiiiiiiiii" are greetings too: match the
+    // elongated and fully-collapsed forms, not just the exact spelling.
+    const greeting = GREETINGS[token] ?? GREETINGS[collapseElongations(token)] ??
+      GREETINGS[collapseAllRepeats(token)];
     if (greeting) {
       return { locale: greeting, confidence: 0.8, reason: "greeting", short };
     }

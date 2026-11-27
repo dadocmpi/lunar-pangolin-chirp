@@ -16,6 +16,7 @@ import type { EscalationCategory } from "./types.ts";
 
 export type ChatMessageKey =
   | "unknown"
+  | "offTopic"
   | "timeout"
   | "providerError"
   | "rateLimited"
@@ -29,6 +30,7 @@ export type ChatMessageKey =
 
 interface LocaleMessages {
   unknown: string;
+  offTopic: string;
   timeout: string;
   providerError: string;
   rateLimited: string;
@@ -46,6 +48,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   en: {
     unknown:
       "I don't have a verified answer to that in the approved Braxel content, so I won't guess. Please contact human support.",
+    offTopic:
+      "I don't have a verified answer for that. I can help with Braxel Markets: our plans, account creation, checkout, onboarding, the dashboard and support. What would you like to know?",
     timeout:
       "The assistant took too long to respond. Please try again, or contact human support.",
     providerError:
@@ -86,6 +90,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   pt: {
     unknown:
       "Não tenho uma resposta verificada sobre isso no conteúdo aprovado da Braxel, por isso não vou adivinhar. Contacte o suporte humano.",
+    offTopic:
+      "Não tenho uma resposta verificada sobre isso. Posso ajudar com a Braxel: planos, criação de conta, checkout, integração, painel e suporte. O que gostaria de saber?",
     timeout:
       "O assistente demorou demasiado a responder. Tente novamente ou contacte o suporte humano.",
     providerError:
@@ -126,6 +132,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   es: {
     unknown:
       "No tengo una respuesta verificada sobre esto en el contenido aprobado de Braxel, así que no voy a adivinar. Contacta con el soporte humano.",
+    offTopic:
+      "No tengo una respuesta verificada sobre eso. Puedo ayudar con Braxel: planes, creación de cuenta, pago, onboarding, panel y soporte. ¿Qué te gustaría saber?",
     timeout:
       "El asistente tardó demasiado en responder. Inténtalo de nuevo o contacta con el soporte humano.",
     providerError:
@@ -166,6 +174,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   it: {
     unknown:
       "Non ho una risposta verificata su questo nel contenuto approvato di Braxel, quindi non tirerò a indovinare. Contatta il supporto umano.",
+    offTopic:
+      "Non ho una risposta verificata su questo. Posso aiutarti con Braxel: piani, creazione dell'account, checkout, onboarding, dashboard e supporto. Cosa vorresti sapere?",
     timeout:
       "L'assistente ha impiegato troppo tempo a rispondere. Riprova o contatta il supporto umano.",
     providerError:
@@ -206,6 +216,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   fr: {
     unknown:
       "Je n'ai pas de réponse vérifiée à ce sujet dans le contenu approuvé de Braxel, je ne vais donc pas deviner. Contactez le support humain.",
+    offTopic:
+      "Je n'ai pas de réponse vérifiée à ce sujet. Je peux aider sur Braxel : forfaits, création de compte, paiement, onboarding, tableau de bord et support. Que voulez-vous savoir ?",
     timeout:
       "L'assistant a mis trop de temps à répondre. Réessayez ou contactez le support humain.",
     providerError:
@@ -246,6 +258,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   de: {
     unknown:
       "Ich habe dazu keine verifizierte Antwort in den freigegebenen Braxel-Inhalten und rate deshalb nicht. Bitte kontaktieren Sie den menschlichen Support.",
+    offTopic:
+      "Dazu habe ich keine geprüfte Antwort. Ich kann bei Braxel helfen: Pakete, Kontoerstellung, Checkout, Onboarding, Dashboard und Support. Was möchten Sie wissen?",
     timeout:
       "Der Assistent hat zu lange für die Antwort gebraucht. Bitte versuchen Sie es erneut oder kontaktieren Sie den menschlichen Support.",
     providerError:
@@ -286,6 +300,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   ru: {
     unknown:
       "У меня нет проверенного ответа на это в одобренных материалах Braxel, поэтому я не буду угадывать. Обратитесь в поддержку с человеком.",
+    offTopic:
+      "У меня нет проверенного ответа на это. Я могу помочь по Braxel: тарифы, создание аккаунта, оплата, онбординг, панель и поддержка. Что вы хотите узнать?",
     timeout:
       "Ассистент отвечал слишком долго. Попробуйте снова или обратитесь в поддержку с человеком.",
     providerError:
@@ -326,6 +342,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   zh: {
     unknown:
       "我在 Braxel 已批准的内容中没有找到经过核实的答案，因此不会猜测。请联系人工客服。",
+    offTopic:
+      "对此我没有经过核实的答案。我可以帮助处理 Braxel 的套餐、账户创建、结账、入门流程、仪表盘和支持。您想了解什么？",
     timeout: "助手响应时间过长。请重试或联系人工客服。",
     providerError: "助手目前不可用。请稍后重试或联系人工客服。",
     rateLimited: "消息过多。请稍等片刻再试，或联系人工客服。",
@@ -354,6 +372,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   ja: {
     unknown:
       "承認済みの Braxel コンテンツに確認できる回答がないため、推測はしません。有人サポートにお問い合わせください。",
+    offTopic:
+      "それについて確認済みの回答はありません。Braxel のプラン、アカウント作成、決済、オンボーディング、ダッシュボード、サポートについてお手伝いできます。何を知りたいですか？",
     timeout:
       "アシスタントの応答に時間がかかりすぎました。もう一度お試しいただくか、有人サポートにお問い合わせください。",
     providerError:
@@ -394,6 +414,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   ar: {
     unknown:
       "ليس لدي إجابة موثّقة عن ذلك في محتوى Braxel المعتمد، لذلك لن أخمّن. يرجى التواصل مع الدعم البشري.",
+    offTopic:
+      "ليس لدي إجابة موثقة عن ذلك. يمكنني المساعدة في Braxel: الخطط وإنشاء الحساب والدفع والتهيئة ولوحة التحكم والدعم. ماذا تريد أن تعرف؟",
     timeout:
       "استغرق المساعد وقتًا طويلاً للرد. يرجى المحاولة مرة أخرى أو التواصل مع الدعم البشري.",
     providerError:
@@ -434,6 +456,8 @@ export const CHAT_MESSAGES: Record<SupportedLocale, LocaleMessages> = {
   he: {
     unknown:
       "אין לי תשובה מאומתת לכך בתוכן המאושר של Braxel, ולכן לא אשער. אנא פנה לתמיכה אנושית.",
+    offTopic:
+      "אין לי תשובה מאומתת לכך. אני יכול לעזור בנושא Braxel: תוכניות, פתיחת חשבון, תשלום, קליטה, לוח בקרה ותמיכה. מה תרצה לדעת?",
     timeout: "העוזר לקח יותר מדי זמן להשיב. נסה שוב או פנה לתמיכה אנושית.",
     providerError: "העוזר אינו זמין כעת. נסה שוב מאוחר יותר או פנה לתמיכה אנושית.",
     rateLimited: "יותר מדי הודעות. המתן רגע ונסה שוב, או פנה לתמיכה אנושית.",

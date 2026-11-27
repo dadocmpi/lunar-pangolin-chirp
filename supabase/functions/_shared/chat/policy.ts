@@ -90,6 +90,12 @@ const ADVICE = [
   /\b(tax|taxes|taxable)\b/, /\binvestment advice\b/, /\bfinancial advice\b/,
   /\bwhich (stock|crypto|asset|coin) (should|to)\b/,
   /\b(devo|posso) (comprar|vender|investir)\b/, /\bqué (debo|puedo) (comprar|vender|invertir)\b/,
+  /\b(melhor|mejor|best)\s+(investimento|inversi[oó]n|investment)\b/,
+  /\bonde (investir|invertir)\b/, /\bwhere (should i|can i|to) invest\b/,
+  /\b(me )?(passa|passe|manda|mande|envia|envie|send|give me)\b.{0,30}\b(sinais|signals|señales|senales)\b/,
+  /\b(sinais|signals|señales|senales)\b.{0,20}\b(hoje|today|hoy|agora|now)\b/,
+  /\b(garantir|garantem|garantia de|guarantee|guaranteed)\b.{0,20}\b(lucro|lucros|retorno|retornos|profit|profits|returns?)\b/,
+  /\b(vou|posso) (lucrar|ganhar dinheiro)\b/, /\bvoy a (ganar|ganar dinero)\b/,
   /\bdois-je (acheter|vendre|investir)\b/, /\bsollte ich (kaufen|verkaufen|investieren)\b/,
   /\bстоит ли (покупать|продавать|инвестировать)\b/, /\b我(应该|该)(买|卖|投资)\b/, /\b買うべき\b/, /\bهل (يجب|يمكنني) (الشراء|البيع|الاستثمار)\b/, /\bכדאי לי (לקנות|למכור|להשקיע)\b/,
 ];
@@ -103,10 +109,10 @@ export function detectAdviceRequest(message: string): boolean {
 // ---------------------------------------------------------------------------
 
 const SECRET_TERMS =
-  "(password|passcode|api[ _-]?key|secret|private[ _-]?key|seed phrase|recovery phrase|mnemonic|card number|credit card|cvv|cvc|mfa|otp|2fa|one[ -]?time code|tradovate (password|credentials?)|broker (password|credentials?))";
+  "(password|passcode|api[ _-]?key|secret|private[ _-]?key|seed phrase|recovery phrase|mnemonic|card number|credit card|cvv|cvc|mfa|otp|2fa|one[ -]?time code|tradovate (password|credentials?)|broker (password|credentials?)|senha|contraseña|contrasena|palavra-passe)";
 
 const SECRET_REQUEST = [
-  new RegExp(`\\b(what|whats|what's|tell|give|send|show|share|provide|confirm|enter|type|paste)\\b.{0,40}\\b(my |the |your )?${SECRET_TERMS}\\b`, "i"),
+  new RegExp(`\\b(what|whats|what's|tell|give|send|show|share|provide|confirm|enter|type|paste|manda|mande|envia|envie|passa|passe|dime|diga)\\b.{0,40}\\b(my |the |your |sua |seu |tu |tuya )?${SECRET_TERMS}\\b`, "i"),
   new RegExp(`\\b${SECRET_TERMS}\\b.{0,40}\\b(please|now|here|to me)\\b`, "i"),
   /\b(senha|contraseña|mot de passe|passwort|пароль|密码|パスワード|كلمة المرور|סיסמה)\b.{0,30}\b(qual|cuál|quel|welche|какой|是什么|何|ما|מה)\b/,
 ];

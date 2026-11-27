@@ -326,6 +326,33 @@ paguei`), long-conversation compaction (turn/character budgets, pinned turns,
 order, provider context), secrets removed from the provider context, and the
 no-persistence / no-message-logging checks.
 
+## Conversational first-line layer
+
+- `_shared/chat/conversation.ts` classifies the message shape before an article
+  is chosen: greeting, farewell, thanks, acknowledgement, language switch,
+  company overview, what we do, how it works, customer interest, plans, pricing,
+  benefits, eligibility, requirements, onboarding, payment info, account
+  creation, support, complaint, unclear and off-topic. `responses.ts` holds the
+  localized conversational answers for all 11 locales.
+- Prospective customers get one short, friendly answer that names the plans,
+  the checkout/onboarding next steps and the risk disclaimer, then asks a single
+  follow-up question. It never promises results and never gives financial,
+  legal, tax or trading advice.
+- A clearly unrelated question is declined with the localized scope line
+  ("I can help with Braxel Markets… what would you like to know?"), not with the
+  generic unknown text. A short, vague or keyboard-mash message gets one
+  clarifying question. An in-domain question we do not cover keeps the
+  "verified answer" line and offers human support.
+- Follow-ups ("qual deles?", "esse de 200", "me explica melhor", "já criei",
+  "já paguei", "não entendi", "pode continuar?") resolve to the topic in play.
+  The assistant never claims to read a private payment, activation, account or
+  trading status.
+- Normalisation collapses elongated letters ("Oiiiiiiiiii", "Hellooooo",
+  "Holaaaaa"), repeated punctuation and emoji-only greetings; keyboard mash is
+  detected Latin-only, so other scripts are never treated as noise.
+- The layer is stateless: no provider, no DB, no storage, no message logging.
+  The safety gates (advice, secrets, injection, escalation) still run first.
+
 ## Known limitations
 
 - Without `CHAT_AI_API_KEY` / `KYC_AI_API_KEY` the deterministic answer is the
@@ -346,3 +373,8 @@ no-persistence / no-message-logging checks.
 - The assistant cannot look up an individual payment, account or activation
   status. It explains the process and directs status questions to the dashboard
   and human support.
+- An unaccented Spanish/Portuguese tie in a short phrase can still fall back to
+  the most recent clear language or the website locale. Explicit requests
+  ("fala português", "speak English", "habla español") always switch.
+- `make test-support-chat` is 2455 checks; `npm run check:chatbot` includes
+  section [13] for the conversational layer.

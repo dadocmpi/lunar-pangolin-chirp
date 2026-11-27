@@ -21,7 +21,13 @@
 
 import { KNOWLEDGE_INDEX } from "./knowledge.ts";
 import { rankEntries } from "./match.ts";
-import { normalizeQuery, tokenize } from "./normalize.ts";
+import {
+  collapseAllRepeats,
+  isEmojiGreeting,
+  isKeyboardMash,
+  normalizeQuery,
+  tokenize,
+} from "./normalize.ts";
 import type { ChatTurn } from "./types.ts";
 
 /** A match below this score is noise, not a topic. */
@@ -123,11 +129,56 @@ const GENERIC_WORDS = new Set([
 
 const GREETING_TOKENS = new Set([
   "hello", "hi", "hey", "yo", "sup", "morning", "evening", "afternoon",
-  "ola", "oi", "eai", "eae", "opa", "salve", "bom", "boa", "dia", "tarde", "noite",
+  "ola", "oi", "oie", "eai", "eae", "ai", "opa", "salve", "bom", "boa", "dia", "tarde", "noite",
   "hola", "buenas", "buenos", "dias", "días", "tardes", "noches", "ciao", "buongiorno",
   "buonasera", "bonjour", "salut", "bonsoir", "hallo", "guten", "tag", "morgen", "abend",
   "привет", "здравствуйте", "добрый", "день", "你好", "您好", "こんにちは", "おはよう",
   "مرحبا", "السلام", "عليكم", "שלום", "בוקר", "טוב",
+]);
+
+/**
+ * Collapsed forms of the greeting tokens. "Hellooooo" collapses to "helo",
+ * which is the collapsed form of "hello", so elongated greetings match without
+ * loosening ordinary word matching.
+ */
+const COLLAPSED_GREETINGS = new Set(
+  [...GREETING_TOKENS].map((token) => collapseAllRepeats(token)),
+);
+
+/** Words that only decorate a greeting ("olá, tudo bem, pessoal?"). */
+const GREETING_FILLER = new Set([
+  "tudo", "bem", "todos", "todas", "pessoal", "galera", "gente", "turma",
+  "there", "everyone", "everybody", "all", "folks", "guys", "team",
+  "todo", "mundo", "chicos", "amigos", "amigas", "tutti", "tout", "leute",
+]);
+
+/**
+ * Words that only a farewell uses. "you", "see", "mais" and "logo" are NOT
+ * here: they appear in ordinary questions ("who are you?", "quero saber mais").
+ */
+const STRONG_FAREWELL = new Set([
+  "tchau", "xau", "adeus", "falou", "fui",
+  "bye", "goodbye", "adios", "chao",
+  "revoir", "tschuss", "tschues", "wiedersehen",
+  "пока", "свидания", "再见", "拜拜", "さようなら",
+  "السلامة", "وداعا", "להתראות", "ביי",
+]);
+
+/** Multi-word farewells, matched as a phrase before the token check. */
+const FAREWELL_PHRASES = [
+  "ate logo", "ate mais", "ate breve", "see you", "take care", "see ya",
+  "hasta luego", "hasta pronto", "nos vemos", "au revoir", "bis bald",
+  "do svidaniya", "じゃあね", "またね", "الى اللقاء", "נתראה",
+];
+
+const ACK_TOKENS = new Set([
+  "ok", "okay", "okey", "blz", "beleza", "certo", "claro", "entendi",
+  "entendido", "combinado", "sim", "perfeito", "legal", "massa",
+  "tranquilo", "yes", "yeah", "yep", "sure", "perfect", "great", "nice",
+  "cool", "agreed", "noted", "understood", "got", "oui", "vale", "bueno", "listo",
+  "capito", "daccord", "klar", "alles", "verstanden", "хорошо", "понял",
+  "ладно", "好的", "了解", "明白", "わかりました", "حسنا", "موافق", "تمام",
+  "בסדר", "אוקיי", "מסכים", "ta", "va", "bene",
 ]);
 
 const THANKS_TOKENS = new Set([
@@ -250,11 +301,49 @@ export function isTopicless(normalized: string): boolean {
   return tokens.length <= 2 && content.length <= 1;
 }
 
-export function isGreeting(normalized: string): boolean {
+function isGreetingToken(token: string): boolean {
+  if (GREETING_TOKENS.has(token)) return true;
+  return COLLAPSED_GREETINGS.has(collapseAllRepeats(token));
+}
+
+/**
+ * True for a greeting, including elongated ("Oiiiiiiiiii", "Hellooooo"),
+ * decorated ("olá tudo bem, pessoal") and emoji-only ("👋") greetings. `raw`
+ * is the original message, needed because emoji are stripped by normalisation.
+ */
+export function isGreeting(normalized: string, raw?: string): boolean {
+  if (raw && isEmojiGreeting(raw)) return true;
+  const tokens = tokenize(normalized);
+  if (tokens.length === 0 || tokens.length > 5) return false;
+  if (!tokens.some(isGreetingToken)) return false;
+  return tokens.every(
+    (t) => isGreetingToken(t) || GREETING_FILLER.has(t) || GENERIC_WORDS.has(t),
+  );
+}
+
+/** True for a short closing ("tchau", "bye", "até logo", "hasta luego"). */
+export function isFarewell(normalized: string): boolean {
+  const padded = ` ${normalized} `;
+  if (FAREWELL_PHRASES.some((phrase) => padded.includes(` ${phrase} `))) return true;
+  const tokens = tokenize(normalized);
+  if (tokens.length === 0 || tokens.length > 3) return false;
+  if (!tokens.some((t) => STRONG_FAREWELL.has(t))) return false;
+  return tokens.every(
+    (t) => STRONG_FAREWELL.has(t) || GREETING_FILLER.has(t) || GENERIC_WORDS.has(t),
+  );
+}
+
+const ACK_NEGATIONS = new Set(["nao", "no", "not", "nunca", "jamais", "nope", "nein"]);
+
+/** True for a short acknowledgement ("ok", "beleza", "got it", "vale"). */
+export function isAcknowledgement(normalized: string): boolean {
   const tokens = tokenize(normalized);
   if (tokens.length === 0 || tokens.length > 4) return false;
-  if (!tokens.some((t) => GREETING_TOKENS.has(t))) return false;
-  return tokens.every((t) => GREETING_TOKENS.has(t) || GENERIC_WORDS.has(t));
+  if (tokens.some((t) => ACK_NEGATIONS.has(t))) return false;
+  if (!tokens.some((t) => ACK_TOKENS.has(t))) return false;
+  return tokens.every(
+    (t) => ACK_TOKENS.has(t) || GENERIC_WORDS.has(t) || GREETING_FILLER.has(t),
+  );
 }
 
 export function isThanks(normalized: string): boolean {
@@ -356,7 +445,7 @@ export function classifyIntent(
   const notPaidFollowUp = isNotPaidFollowUp(normalized);
   const referential = isReferential(normalized);
   const topicless = isTopicless(normalized);
-  const greeting = isGreeting(normalized) && !referential;
+  const greeting = isGreeting(normalized, message) && !referential;
   const thanks = isThanks(normalized);
   const contextIntent = contextIntentFromHistory(history);
 

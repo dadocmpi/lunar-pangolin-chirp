@@ -877,6 +877,76 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     relatedTopics: ["security_privacy", "faq_help", "refunds_cancellation"],
     links: ["/terms", "/privacy", "/disclaimer"],
   },
+  {
+    id: "requirements_and_eligibility",
+    category: "start",
+    title: "Requirements and eligibility",
+    aliases: [
+      "requirements", "what do i need", "what is required", "eligibility", "who can join",
+      "requisitos", "o que preciso", "o que e necessario", "elegibilidade", "quem pode participar",
+      "requisitos", "que necesito", "elegibilidad", "quien puede participar",
+      "requisiti", "voraussetzungen", "exigences", "требования", "要求", "要件", "المتطلبات", "דרישות",
+    ],
+    keywords: [
+      "requirement", "requirements", "need", "needed", "required", "document", "documents",
+      "eligible", "eligibility", "country", "countries", "region", "where",
+      "requisito", "requisitos", "preciso", "necessario", "documento", "documentos", "pais", "paises",
+      "necesito", "necesario", "documento", "documentos", "pais", "paises", "elegible",
+      "requisiti", "documenti", "voraussetzungen", "dokumente", "exigences", "documents",
+      "требования", "документы", "要求", "要件", "المتطلبات", "דרישות",
+    ],
+    informalQuestions: [
+      "what do i need to get started", "what do i need to start", "what are the requirements",
+      "what documents do i need", "do i need an account", "can i use it from my country",
+      "is it available in my country", "which countries do you support", "who can join",
+      "o que preciso para comecar", "o que preciso para comecar", "o que e necessario para comecar",
+      "quais documentos preciso", "posso usar do meu pais", "voces atendem o meu pais",
+      "quais paises voces atendem", "quem pode participar", "preciso de conta",
+      "que necesito para empezar", "que necesito para comenzar", "que documentos necesito",
+      "puedo usarlo desde mi pais", "que paises atienden", "quien puede participar",
+      "cosa serve per iniziare", "was brauche ich", "que faut il pour commencer",
+      "что нужно чтобы начать", "какие документы нужны", "开始需要什么", "始めるには何が必要",
+      "ماذا احتاج للبدء", "מה צריך כדי להתחיל",
+    ],
+    answer:
+      "The documented requirements are an email address, a Braxel account, one of the four monthly plans and completion of checkout and onboarding. Activation also needs your own external prop-firm account (Tradeify or Lucid) and a third-party tool to execute the signals yourself. No country-by-country eligibility list is published; contact human support for a specific country.",
+    body:
+      "To start: an email address, a Braxel account created on /register, one of the four monthly plans on /pricing, and completion of /checkout and the onboarding disclosures. To request activation you also need your own external prop-firm account bought directly from the firm (Tradeify or Lucid) and a third-party tool to execute the signals yourself; an operator reviews the activation manually. Braxel never asks for a broker password, card number, API key or identity document in this chat. The app does not publish a country-by-country eligibility list, so country availability cannot be confirmed here: contact human support with your country. Identity verification (KYC) is required only when a withdrawal is requested.",
+    relatedTopics: ["getting_started", "account_creation", "activation", "accounts_prop_firms"],
+    links: ["/register", "/pricing", "/accounts", "/contact"],
+  },
+  {
+    id: "benefits_and_features",
+    category: "product",
+    title: "Benefits and features",
+    aliases: [
+      "benefits", "advantages", "features", "what do i get", "what is included",
+      "why braxel", "why choose braxel",
+      "vantagens", "beneficios", "o que eu recebo", "o que recebo", "por que braxel",
+      "por que escolher a braxel", "ventajas", "beneficios", "que obtengo", "que recibo",
+      "vantaggi", "vorteile", "avantages", "преимущества", "好处", "メリット", "المزايا", "יתרונות",
+    ],
+    keywords: [
+      "benefit", "benefits", "feature", "features", "include", "included", "receive", "get",
+      "advantage", "vantagem", "vantagens", "beneficio", "beneficios", "recebo", "incluido",
+      "ventaja", "ventajas", "recibo", "incluido", "vantaggio", "vorteil", "avantage",
+      "преимущество", "好处", "メリット", "ميزة", "יתרון",
+    ],
+    informalQuestions: [
+      "what do i get", "what do i receive", "what is included", "why should i use braxel",
+      "why choose braxel", "what are the benefits", "o que eu recebo", "o que recebo",
+      "o que tenho direito", "quais as vantagens", "por que usar a braxel", "por que escolher a braxel",
+      "que obtengo", "que recibo", "cuales son los beneficios", "por que elegir braxel",
+      "cosa ottengo", "was bekomme ich", "qu est ce que je recois", "что я получаю",
+      "我能得到什么", "何が得られますか", "ماذا احصل", "מה מקבלים",
+    ],
+    answer:
+      "The documented offering is a fixed monthly signals plan with four tiers, a dashboard that shows only your own data, an optional read-only Tradovate integration, manual activation review and support in 11 languages. Braxel does not operate your account, does not custody funds and does not promise returns.",
+    body:
+      "The documented features are: four monthly signals plans (see /pricing for the canonical prices), a dashboard that computes performance only from your own closed trades and shows explicit empty states, an optional read-only Tradovate integration that Braxel cannot use to place, modify or liquidate orders, a manual operator review of account activation, a profile and billing prefill, and support in 11 languages. Braxel does not operate your trading account, does not custody customer funds, does not process prop-firm payouts and does not promise profits or returns. Trading involves a substantial risk of loss; read the Financial Disclaimer on /disclaimer.",
+    relatedTopics: ["plans", "dashboard_usage", "tradovate_connection", "legal_documents"],
+    links: ["/pricing", "/how-it-works", "/dashboard"],
+  },
 ];
 /** Lookup table. Built once; entries are immutable data. */
 export const KNOWLEDGE_BY_ID: Record<string, KnowledgeArticle> = Object.fromEntries(
