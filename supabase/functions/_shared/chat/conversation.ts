@@ -34,7 +34,7 @@ import {
   isTopicless,
   MIN_INTENT_SCORE,
 } from "./intent.ts";
-import { KNOWLEDGE_INDEX } from "./knowledge.ts";
+import { articleById, KNOWLEDGE_INDEX } from "./knowledge.ts";
 import { rankEntries } from "./match.ts";
 import {
   CJK_RE,
@@ -117,7 +117,8 @@ export type FollowUpKind =
   | "already_created"
   | "already_paid"
   | "reference"
-  | "repeat";
+  | "repeat"
+  | "duration";
 
 export interface ConversationResult {
   intent: ConversationalIntent;
@@ -786,6 +787,14 @@ const FOLLOW_UP_NEXT = [
   "然后呢", "次は", "وماذا بعد", "ומה עכשיו",
 ];
 
+const FOLLOW_UP_DURATION = [
+  "how long does it take", "how long does it takes", "how long will it take",
+  "how long does that take", "how long does this take", "how long",
+  "quanto tempo demora", "quanto tempo leva", "quanto demora",
+  "cuanto tarda", "cuanto tiempo tarda", "cuanto demora",
+  "wie lange dauert", "combien de temps", "quanto tempo",
+];
+
 const FOLLOW_UP_WHICH_PLAN = [
   "qual deles", "qual delas", "qual eu escolho", "qual devo escolher", "esse de",
   "essa de", "o de", "aquele de", "o segundo", "a segunda", "o terceiro",
@@ -824,6 +833,19 @@ function ordinalPlan(normalized: string): string | null {
     if (pattern.test(normalized)) return plan;
   }
   return null;
+}
+
+/** True when the message itself names the topic (not just "explain more"). */
+function namesTopic(normalized: string, topic: string | null): boolean {
+  if (!topic) return false;
+  const entry = articleById(topic);
+  if (!entry) return false;
+  const words = new Set<string>([
+    ...tokenize(entry.title),
+    ...entry.aliases.flatMap((a) => tokenize(a)),
+    ...entry.keywords.flatMap((k) => tokenize(k)),
+  ]);
+  return tokenize(normalized).some((t) => t.length > 2 && words.has(t));
 }
 
 function matches(normalized: string, phrase: string): boolean {
@@ -1030,7 +1052,9 @@ export function classifyConversation(
   if (explain) {
     // "explain the checkout" names a topic; only a topicless "explain more"
     // falls back to the topic already in play.
-    const topic = knowledgeTopic ?? contextTopic;
+    const topic = namesTopic(normalized, knowledgeTopic)
+      ? knowledgeTopic
+      : contextTopic ?? knowledgeTopic;
     if (topic) {
       return {
         ...base,
@@ -1046,6 +1070,16 @@ export function classifyConversation(
   // 4. Follow-ups: resolve the shape, then the topic from the conversation.
   const explainPhrase = matchesAny(normalized, FOLLOW_UP_EXPLAIN);
   if (explainPhrase) {
+    if (namesTopic(normalized, knowledgeTopic) && knowledgeTopic) {
+      return {
+        ...base,
+        intent: intentForTopic(knowledgeTopic),
+        topic: knowledgeTopic,
+        followUp: "explain",
+        explain: true,
+        confidence: 0.7,
+      };
+    }
     if (knowledgeTopic && !contextTopic) {
       return {
         ...base,
@@ -1068,6 +1102,19 @@ export function classifyConversation(
       };
     }
     return { ...base, intent: "unclear", unclear: true, explain: true, confidence: 0.5 };
+  }
+
+  const duration = matchesAny(normalized, FOLLOW_UP_DURATION);
+  if (duration && contextTopic) {
+    const topic = PAYMENT_TOPICS.has(contextTopic) ? "payment_status" : contextTopic;
+    return {
+      ...base,
+      intent: intentForTopic(topic),
+      topic,
+      followUp: "duration",
+      contextUsed: true,
+      confidence: 0.7,
+    };
   }
 
   const whichPlan = matchesAny(normalized, FOLLOW_UP_WHICH_PLAN);
@@ -1114,7 +1161,14 @@ export function classifyConversation(
   if (nextStep && contextTopic) {
     // "And then?" after a payment answer is a question about the next step,
     // which is onboarding — not a second payment explanation.
-    const topic = PAYMENT_TOPICS.has(contextTopic) ? "onboarding" : contextTopic;
+    const NEXT_STEP_TOPIC: Record<string, string> = {
+      account_creation: "checkout",
+      profile_and_signup: "checkout",
+      email_confirmation: "checkout",
+    };
+    const topic = PAYMENT_TOPICS.has(contextTopic)
+      ? "onboarding"
+      : NEXT_STEP_TOPIC[contextTopic] ?? contextTopic;
     return {
       ...base,
       intent: "follow_up",

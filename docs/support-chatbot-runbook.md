@@ -384,7 +384,10 @@ no-persistence / no-message-logging checks.
   language switching, off-topic, unclear and all 11 locales. It fails on a
   premature generic fallback, a wrong reply language, an unresolved contextual
   reference, an unnecessary repeated answer, an ungrounded price or a safety
-  regression. `npm run check:chatbot` includes section [14] for the state,
+  regression. The suite currently has 222 conversations (109 multi-turn, 344
+  turns, 2109 checks). A follow-up that would repeat the previous answer is
+  replaced by a short localized note for timing, retry or signals questions.
+  `npm run check:chatbot` includes section [14] for the state,
   strategy, knowledge safety classification and evaluation suite.
 
 ## Conversation state and response strategies

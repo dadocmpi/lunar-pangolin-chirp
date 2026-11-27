@@ -456,6 +456,7 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     ],
     informalQuestions: [
       "how do i pay", "how do i pay for a plan", "where do i pay", "how does checkout work", "how do i buy the plan",
+      "como funciona o checkout", "como funciona o checkout do pagamento", "como faco o checkout",
       "mano como pago", "como pago", "como eu pago", "onde eu pago", "como faço o pagamento", "como compro o plano",
       "quero pagar", "como finalizo a compra", "como pago o plano",
       "cómo pago", "dónde pago", "cómo compro el plan", "quiero pagar", "cómo finalizo la compra",
@@ -584,6 +585,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     ],
     informalQuestions: [
       "what happens after payment", "what do i do after paying", "i already paid what now", "what is the next step",
+      "what happens after it confirms", "once it confirms", "when the payment confirms",
+      "o que acontece depois de confirmar", "quando o pagamento confirmar",
       "já paguei e agora", "ja paguei e agora", "paguei o que faço agora", "qual o próximo passo", "depois de pagar o que faço",
       "o que acontece depois do pagamento", "já fiz o pagamento e agora",
       "quando chega meu acesso", "quando recebo o acesso", "quando liberam o acesso",
@@ -986,6 +989,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     informalQuestions: [
       "what do i need to get started", "what do i need to start", "what are the requirements",
       "what documents do i need", "do i need an account", "can i use it from my country",
+      "do i need a prop firm account", "do i need a prop account", "do i need my own account",
+      "preciso de uma conta prop", "preciso de conta prop", "necesito una cuenta prop",
       "is it available in my country", "which countries do you support", "who can join",
       "o que preciso para comecar", "o que preciso para comecar", "o que e necessario para comecar",
       "quais documentos preciso", "posso usar do meu pais", "voces atendem o meu pais",
@@ -1158,6 +1163,9 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     ],
     informalQuestions: [
       "my payment failed what do i do", "my card was declined", "payment still pending",
+      "can i try again", "can i retry the payment", "try the payment again",
+      "posso tentar de novo", "posso tentar novamente", "tentar o pagamento de novo",
+      "puedo intentar de nuevo", "puedo reintentar el pago",
       "meu pagamento falhou o que faço", "meu cartão foi recusado", "pagamento ainda pendente",
       "mi pago falló qué hago", "mi tarjeta fue rechazada", "el pago sigue pendiente",
       "meine zahlung ist fehlgeschlagen", "mon paiement a échoué",
@@ -1198,6 +1206,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     ],
     informalQuestions: [
       "do you trade for me", "can you copy trade for me", "can braxel operate my account",
+      "can it trade for me", "does it trade for me", "how do the signals work",
+      "como funcionam os sinais", "como funcionam os sinais na pratica", "do you send signals",
       "vocês operam minha conta", "fazem copy trading", "vocês colocam ordens por mim",
       "ustedes operan mi cuenta", "hacen copy trading", "colocan órdenes por mí",
       "handeln sie für mich", "pouvez vous trader pour moi",

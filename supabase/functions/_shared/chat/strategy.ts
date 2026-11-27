@@ -217,6 +217,9 @@ export function strategyAnswer(input: StrategyInput): StrategyAnswer | null {
         topicIds: ["plans"],
       };
     case "follow_up": {
+      // A duration question is answered with the localized timing note when
+      // the topic answer would otherwise repeat the previous turn.
+      if (conv.followUp === "duration") return null;
       // A bare reference or "and then?" answers the topic in play directly.
       // Only an explicit "explain more" expands it with related detail.
       const text = localizedAnswer(locale, topic ?? "");
