@@ -376,5 +376,36 @@ no-persistence / no-message-logging checks.
 - An unaccented Spanish/Portuguese tie in a short phrase can still fall back to
   the most recent clear language or the website locale. Explicit requests
   ("fala português", "speak English", "habla español") always switch.
-- `make test-support-chat` is 2455 checks; `npm run check:chatbot` includes
-  section [13] for the conversational layer.
+- `make test-support-chat` covers the unit and pipeline behaviour;
+  `make test-chatbot-eval` runs the deterministic multi-turn evaluation suite
+  (`supabase/functions/_test/chatbot-eval-conversations.ts`): 100+ realistic
+  conversations covering greetings, customer interest, company questions,
+  plans, context/follow-ups, account, payments, product, robustness, safety,
+  language switching, off-topic, unclear and all 11 locales. It fails on a
+  premature generic fallback, a wrong reply language, an unresolved contextual
+  reference, an unnecessary repeated answer, an ungrounded price or a safety
+  regression. `npm run check:chatbot` includes section [14] for the state,
+  strategy, knowledge safety classification and evaluation suite.
+
+## Conversation state and response strategies
+
+- `_shared/chat/state.ts` derives a bounded, per-request state: reply and
+  previous language, active and previous topic, last-answer topic, goal,
+  journey stage, referenced plan, the last assistant question, the unresolved
+  customer question and the interest/confusion/frustration/ready/factual/
+  action/topic-change flags. It is derived only from the request message and
+  the bounded history; nothing is stored, logged or sent to a database.
+- `_shared/chat/strategy.ts` chooses HOW to answer before the model runs:
+  empathy, a simpler explanation, a repeat, the cheapest canonical plan, a
+  specific plan, a plan comparison, a plan recommendation, a contextual
+  follow-up or a topic change. Prices and plan names come only from the
+  canonical server plan table, so a strategy can never invent a price.
+- The strategy layer runs before the provider, so a normal customer message
+  (greeting, interest, company, plan, payment, onboarding, follow-up) is
+  answered deterministically and never reaches the generic fallback. The
+  provider still drafts article answers and proposes an advisory intent,
+  sentiment and urgency; those signals never become facts.
+- Every approved knowledge article now carries a `safety` classification and an
+  `escalate` flag (`articleSafety(id)`), and the knowledge base adds card, crypto
+  and bank-transfer articles, payment failures, read-only/copy-trading limits
+  and a login-problem article.

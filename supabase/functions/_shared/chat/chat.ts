@@ -22,6 +22,7 @@
 
 import {
   articleById,
+  articlesForIds,
   KNOWLEDGE_ARTICLES,
   type KnowledgeArticle,
   relatedArticles,
@@ -44,6 +45,8 @@ import {
 } from "./conversation.ts";
 import { conversationalReply } from "./responses.ts";
 import { compactHistory, type CompactedHistory } from "./context.ts";
+import { buildConversationState, statePromptLines, type ConversationState } from "./state.ts";
+import { strategyAnswer, type StrategyAnswer } from "./strategy.ts";
 import {
   detectLanguageSwitchRequest,
   detectMessageLanguage,
@@ -77,6 +80,7 @@ import {
 } from "./types.ts";
 
 export { SUPPORTED_LOCALES, normalizeLocale };
+export { KNOWLEDGE_ARTICLES, articleSafety } from "./knowledge.ts";
 export type { SupportedLocale };
 
 export const DEFAULT_TIMEOUT_MS = 20_000;
@@ -155,6 +159,7 @@ export function buildSystemPrompt(
   languageSource: "message" | "history" | "locale" = "message",
   intent: PromptIntent | null = null,
   context: PromptContext | null = null,
+  state: ConversationState | null = null,
 ): string {
   const knowledge = articles
     .map((a) => `[${a.id}] ${a.title}\n${a.answer}\n${a.body}\nOfficial links: ${a.links.join(", ")}`)
@@ -219,6 +224,7 @@ export function buildSystemPrompt(
     "12. Do not list all supported languages unless the customer explicitly asks which languages you support.",
     ...intentLines,
     ...contextLines,
+    ...(state ? statePromptLines(state) : []),
     "",
     "ANSWER STYLE (customers write informally and are often not technical):",
     "- Understand typos, missing accents, slang and abbreviations; answer the question they meant.",
@@ -236,7 +242,12 @@ export function buildSystemPrompt(
     "- If the message is clearly unrelated to Braxel, say you focus on Braxel Markets and offer help with its services. Never invent an answer to look helpful.",
     "- A complaint gets empathy, the documented options and ONE short question about what happened. Do not promise a resolution.",
     "- For a greeting, a thank-you, a farewell or an acknowledgement, reply in one short friendly sentence and at most one question.",
-    'Output ONLY JSON: {"answer":"...","article_ids":["..."],"unknown":false,"escalate":false,"category":null,"clarify":false}',
+    "- Use the CONVERSATION STATE above. If the customer is interested in starting, be warm and give the documented next step plus ONE question. If they are confused or ask for a simpler explanation, simplify the topic in play instead of changing subject. If they are frustrated, acknowledge it, stay calm and offer the next practical step.",
+    "- If the customer changes topic, follow the new topic. If they reference something earlier (\"that\", \"isso\", \"and then?\"), resolve it from the conversation state instead of asking again.",
+    "- The generic \"no verified answer\" text is the LAST resort. Never use it for a greeting, a thank-you, a farewell, a language switch, a company question, a plan question, an onboarding question or a follow-up that the conversation explains.",
+    "- Never list every supported language, never repeat your previous answer verbatim unless the customer asks you to repeat, and never ask for information the customer already gave.",
+    'Output ONLY JSON: {"answer":"...","article_ids":["..."],"unknown":false,"escalate":false,"category":null,"clarify":false,"intent":"<short_intent>","sentiment":"positive|neutral|confused|frustrated","urgency":"low|normal|high"}',
+    "The intent, sentiment and urgency fields are advisory signals for logging and for choosing a conversational fallback. They are NEVER a source of facts: facts come only from the approved knowledge.",
     "",
     "APPROVED KNOWLEDGE:",
     knowledge,
@@ -252,7 +263,16 @@ export interface ParsedModelReply {
   /** The model decided one short clarifying question is the right answer. */
   clarify: boolean;
   parsed: boolean;
+  /** Semantic intent proposed by the model. Advisory only, never the source of facts. */
+  intent: string | null;
+  /** Sentiment proposed by the model. Advisory only. */
+  sentiment: "positive" | "neutral" | "confused" | "frustrated" | null;
+  /** Urgency proposed by the model. Advisory only. */
+  urgency: "low" | "normal" | "high" | null;
 }
+
+export const MODEL_SENTIMENTS = ["positive", "neutral", "confused", "frustrated"] as const;
+export const MODEL_URGENCIES = ["low", "normal", "high"] as const;
 
 const CATEGORIES: EscalationCategory[] = [
   "payment_dispute", "kyc", "account_suspension", "legal",
@@ -263,7 +283,7 @@ const CATEGORIES: EscalationCategory[] = [
 export function parseModelReply(raw: string): ParsedModelReply {
   const empty: ParsedModelReply = {
     text: "", articleIds: [], unknown: true, escalate: false, category: null,
-    clarify: false, parsed: false,
+    clarify: false, parsed: false, intent: null, sentiment: null, urgency: null,
   };
   const text = (raw ?? "").trim();
   if (!text) return empty;
@@ -300,6 +320,13 @@ export function parseModelReply(raw: string): ParsedModelReply {
     category,
     clarify: d.clarify === true,
     parsed: true,
+    intent: typeof d.intent === "string" ? d.intent.slice(0, 40) : null,
+    sentiment: MODEL_SENTIMENTS.includes(d.sentiment as never)
+      ? (d.sentiment as ParsedModelReply["sentiment"])
+      : null,
+    urgency: MODEL_URGENCIES.includes(d.urgency as never)
+      ? (d.urgency as ParsedModelReply["urgency"])
+      : null,
   };
 }
 
@@ -511,6 +538,28 @@ function conversationReply(
   });
 }
 
+/**
+ * Turn a strategy answer into a ChatReply. Sources come only from the approved
+ * articles the strategy cited; a topic change is a clarifying question.
+ */
+function strategyToReply(
+  answer: StrategyAnswer,
+  articles: KnowledgeArticle[],
+  appUrl: string,
+  provider: string,
+  locale: SupportedLocale,
+): ChatReply {
+  const used = articlesForIds(answer.topicIds, articles);
+  return baseReply({
+    type: answer.strategy === "topic_change" ? "clarify" : "answered",
+    reply: answer.text,
+    locale,
+    sources: sourcesFor(used, appUrl),
+    articleIds: used.map((a) => a.id),
+    provider,
+  });
+}
+
 /** Politely decline an unrelated question and offer the Braxel scope. */
 function offTopicReply(locale: SupportedLocale, provider = "knowledge_base"): ChatReply {
   return baseReply({
@@ -545,7 +594,12 @@ function fallbackAnswer(
   appUrl: string,
   provider: string,
   history: ChatTurn[],
+  state?: ConversationState,
 ): ChatReply {
+  if (state) {
+    const strategy = strategyAnswer({ locale, state, intent, conv, history });
+    if (strategy) return strategyToReply(strategy, articles, appUrl, provider, locale);
+  }
   if (preferConversationReply(intent, conv)) {
     return conversationReply(locale, conv, articles, appUrl, provider);
   }
@@ -679,13 +733,34 @@ export async function handleChat(
     intent.explain = true;
   }
 
-  // 7. Genuinely ambiguous and no context to fall back on: ask ONE short
+  // The bounded, in-memory state for THIS request: language, topics, goal,
+  // journey stage, open question and sentiment flags. Never stored or logged.
+  const state = buildConversationState({
+    message,
+    history,
+    locale,
+    intent,
+    conv,
+  });
+
+  // 7. A conversational strategy (empathy, simpler explanation, repeat, the
+  //    cheapest plan, a plan comparison, a contextual follow-up) is answered
+  //    deterministically and grounded: no provider can invent a price and no
+  //    normal customer message reaches the generic fallback.
+  const strategy = strategyAnswer({ locale, state, intent, conv, history });
+  if (strategy) {
+    return strategyToReply(strategy, articles, deps.appUrl, "knowledge_base", locale);
+  }
+
+  // 8. Genuinely ambiguous and no context to fall back on: ask ONE short
   //    clarifying question rather than guessing.
-  if (shouldClarify(intent)) {
+  const social = conv.intent === "greeting" || conv.intent === "farewell" ||
+    conv.intent === "thanks" || conv.intent === "acknowledgement";
+  if (!social && shouldClarify(intent)) {
     return clarifyReply(locale, intent, articles, deps.appUrl);
   }
 
-  // 8. Grounding candidates for this message.
+  // 9. Grounding candidates for this message.
   const relevant = intent.primary
     ? [
       ...articles.filter((a) => a.id === intent.primary),
@@ -693,7 +768,7 @@ export async function handleChat(
     ]
     : selectRelevantArticles(message, articles);
 
-  // 9. Model path (optional).
+  // 10. Model path (optional).
   if (deps.provider) {
     try {
       const system = buildSystemPrompt(
@@ -718,6 +793,7 @@ export async function handleChat(
           hasOpenQuestion: compacted.hasOpenQuestion,
           turnCount: history.length,
         },
+        state,
       );
       const raw = await withTimeout(
         deps.provider.complete({
@@ -730,9 +806,11 @@ export async function handleChat(
       const parsed = parseModelReply(raw);
 
       if (parsed.unknown || !parsed.text) {
-        // The model found nothing. Answer from the approved knowledge or the
-        // conversational layer, and decline an unrelated question politely
-        // instead of repeating "unknown".
+        // The model found nothing. Answer from the approved knowledge, the
+        // conversational layer or a strategy, and decline an unrelated
+        // question politely instead of repeating "unknown".
+        if (parsed.sentiment === "frustrated") state.frustrated = true;
+        if (parsed.sentiment === "confused") state.confused = true;
         return fallbackAnswer(
           locale,
           intent,
@@ -741,6 +819,7 @@ export async function handleChat(
           deps.appUrl,
           deps.provider.name,
           history,
+          state,
         );
       }
 
@@ -796,6 +875,7 @@ export async function handleChat(
           deps.appUrl,
           deps.provider.name,
           history,
+          state,
         );
       }
 
@@ -842,7 +922,16 @@ export async function handleChat(
   //     acknowledgement gets a short localized line, never an article dump; a
   //     prospective customer gets the natural getting-started answer; an
   //     unrelated question gets the polite Braxel scope message.
-  return fallbackAnswer(locale, intent, conv, articles, deps.appUrl, "knowledge_base", history);
+  return fallbackAnswer(
+    locale,
+    intent,
+    conv,
+    articles,
+    deps.appUrl,
+    "knowledge_base",
+    history,
+    state,
+  );
 }
 
 /** Exposed for observability and tests; never used to answer. */

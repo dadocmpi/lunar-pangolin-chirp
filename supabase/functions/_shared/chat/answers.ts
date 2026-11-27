@@ -23,12 +23,18 @@ import { PLANS, PLAN_IDS } from "../plans.ts";
 export const ANSWER_KEYS = [
   "getting_started",
   "account_creation",
+  "profile_and_signup",
+  "login_problem",
   "email_confirmation",
   "password_recovery",
   "plans",
   "checkout",
   "payment_methods",
+  "card_payment",
+  "crypto_payment",
+  "bank_transfer",
   "payment_status",
+  "payment_failures",
   "onboarding",
   "activation",
   "dashboard_usage",
@@ -36,6 +42,8 @@ export const ANSWER_KEYS = [
   "withdrawal_kyc",
   "support_procedures",
   "company_overview",
+  "how_it_works",
+  "read_only_limits",
 ] as const;
 
 export type AnswerKey = (typeof ANSWER_KEYS)[number];
@@ -160,6 +168,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "Human support is the Contact page or marketsbraxel@ouvidor.net. Include your account email, the plan or order reference and a short description, and never include passwords, card numbers or API keys.",
       company_overview:
         "Braxel Markets is a trading-technology and managed-service brand, not a prop firm: it does not custody customer funds or process prop-firm payouts, and it does not guarantee returns. The address in the footer is Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain.",
+      profile_and_signup:
+        "After signup, step 2 asks for your phone number, country and address, and you can edit everything later under My profile in the dashboard. You can also open the dashboard before completing it.",
+      login_problem:
+        "If you can't sign in, use 'Forgot password?' on the Login page to set a new password, and check that your email is confirmed. If the confirmation email is missing, resend it from the Login page.",
+      card_payment:
+        "Card payments open Stripe's hosted checkout, so our app never sees or stores your card number. The server fixes the plan, amount and USD currency before the redirect.",
+      crypto_payment:
+        "Crypto is available only on the networks configured on the server. Checkout shows the address, amount and network returned by the server, and the network must match exactly — a wrong network can lose the funds.",
+      bank_transfer:
+        "Bank transfer shows the configured bank details and a reference and is reviewed manually. The instructions are not a payment confirmation; only a verified settlement confirms it.",
+      payment_failures:
+        "A failed or declined payment is not a confirmation. Do not pay twice: retry from checkout or contact support with your account email and the order reference.",
+      how_it_works:
+        "The documented path is: create an account, confirm the email, choose one of the four monthly plans, pay at checkout, wait for the server-verified confirmation, complete onboarding and request activation of your own prop-firm account. You execute the signals yourself; Braxel never operates the account.",
+      read_only_limits:
+        "Braxel is read-only with respect to trading: it cannot place, modify or liquidate orders, cannot withdraw or transfer funds, and there is no copy-trading engine. You execute the signals yourself in your own account.",
     },
     topics: {
       getting_started: "getting started",
@@ -175,7 +199,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "I want to make sure I answer the right thing. Is your question about plans and prices, payment, account activation, or the dashboard?",
     greeting:
-      "Hi! I'm the Braxel Markets assistant. I can explain the plans, checkout, payment status, activation, the dashboard and Tradovate. What would you like to know?",
+      "Hi! I'm the Braxel assistant. How can I help?",
     thanks: "You're welcome! Is there anything else about Braxel I can help you with?",
     languageSwitch: "Sure! I can speak English. How can I help?",
   },
@@ -211,6 +235,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "O suporte humano é a página de contacto ou marketsbraxel@ouvidor.net. Indique o email da conta, a referência do plano ou da encomenda e uma descrição curta, e nunca inclua palavras-passe, números de cartão ou chaves de API.",
       company_overview:
         "A Braxel Markets é uma marca de tecnologia e serviços de negociação, não é uma prop firm: não guarda fundos de clientes nem processa pagamentos de prop firms, e não garante retornos. A morada no rodapé é Calle de la Haya, 28935, Parque Coimbra, Madrid, Espanha.",
+      profile_and_signup:
+        "Depois do cadastro, o passo 2 pede telefone, país e endereço, e pode editar tudo mais tarde em Meu perfil no painel. Também pode abrir o painel antes de completar.",
+      login_problem:
+        "Se não consegue entrar, use 'Esqueceu a palavra-passe?' na página de login para definir uma nova palavra-passe e confirme se o email está confirmado. Se o email de confirmação não chegou, reenvie-o na página de login.",
+      card_payment:
+        "O pagamento com cartão abre o checkout alojado da Stripe, por isso a aplicação nunca vê nem guarda o número do cartão. O servidor fixa o plano, o valor e a moeda USD antes do redirecionamento.",
+      crypto_payment:
+        "A cripto só está disponível nas redes configuradas no servidor. O checkout mostra o endereço, o valor e a rede devolvidos pelo servidor, e a rede tem de coincidir exatamente — uma rede errada pode perder os fundos.",
+      bank_transfer:
+        "A transferência bancária mostra os dados bancários configurados e uma referência e é revista manualmente. As instruções não são uma confirmação de pagamento; só uma liquidação verificada confirma.",
+      payment_failures:
+        "Um pagamento falhado ou recusado não é uma confirmação. Não pague duas vezes: tente novamente no checkout ou contacte o suporte com o email da conta e a referência do pedido.",
+      how_it_works:
+        "O caminho documentado é: criar a conta, confirmar o email, escolher um dos quatro planos mensais, pagar no checkout, aguardar a confirmação verificada no servidor, completar a integração e pedir a ativação da sua própria conta de prop firm. É você que executa os sinais; a Braxel nunca opera a conta.",
+      read_only_limits:
+        "A Braxel é só de leitura em relação à negociação: não coloca, altera nem liquida ordens, não levanta nem transfere fundos e não existe motor de copy trading. É você que executa os sinais na sua própria conta.",
     },
     topics: {
       getting_started: "começar",
@@ -226,7 +266,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "Quero responder à pergunta certa. A sua dúvida é sobre planos e preços, pagamento, ativação da conta ou o painel?",
     greeting:
-      "Olá! Sou o assistente da Braxel Markets. Posso explicar os planos, o checkout, o estado do pagamento, a ativação, o painel e a Tradovate. O que quer saber?",
+      "Olá! Sou o assistente da Braxel. Como posso ajudar?",
     thanks: "De nada! Posso ajudar com mais alguma coisa sobre a Braxel?",
     languageSwitch: "Claro! Posso falar português. Como posso ajudar?",
   },
@@ -262,6 +302,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "El soporte humano es la página de contacto o marketsbraxel@ouvidor.net. Incluye el correo de tu cuenta, la referencia del plan o del pedido y una descripción corta, y nunca incluyas contraseñas, números de tarjeta ni claves de API.",
       company_overview:
         "Braxel Markets es una marca de tecnología y servicios de trading, no es una prop firm: no custodia fondos de clientes ni procesa pagos de prop firms, y no garantiza rentabilidades. La dirección del pie de página es Calle de la Haya, 28935, Parque Coimbra, Madrid, España.",
+      profile_and_signup:
+        "Después del registro, el paso 2 pide teléfono, país y dirección, y puedes editar todo más tarde en Mi perfil en el panel. También puedes abrir el panel antes de completarlo.",
+      login_problem:
+        "Si no puedes entrar, usa '¿Olvidaste tu contraseña?' en la página de inicio de sesión para crear una nueva y comprueba que tu correo esté confirmado. Si falta el correo de confirmación, reenvíalo desde la página de inicio de sesión.",
+      card_payment:
+        "El pago con tarjeta abre el checkout alojado de Stripe, así que la aplicación nunca ve ni guarda el número de tarjeta. El servidor fija el plan, el importe y la moneda USD antes de la redirección.",
+      crypto_payment:
+        "La cripto solo está disponible en las redes configuradas en el servidor. El checkout muestra la dirección, el importe y la red devueltos por el servidor, y la red debe coincidir exactamente: una red incorrecta puede perder los fondos.",
+      bank_transfer:
+        "La transferencia bancaria muestra los datos bancarios configurados y una referencia y se revisa manualmente. Las instrucciones no son una confirmación de pago; solo una liquidación verificada lo confirma.",
+      payment_failures:
+        "Un pago fallido o rechazado no es una confirmación. No pagues dos veces: reintenta en el checkout o contacta con soporte con el correo de tu cuenta y la referencia del pedido.",
+      how_it_works:
+        "El camino documentado es: crear una cuenta, confirmar el correo, elegir uno de los cuatro planes mensuales, pagar en el checkout, esperar la confirmación verificada en el servidor, completar el onboarding y solicitar la activación de tu propia cuenta de prop firm. Tú ejecutas las señales; Braxel nunca opera la cuenta.",
+      read_only_limits:
+        "Braxel es de solo lectura respecto a la operativa: no coloca, modifica ni liquida órdenes, no retira ni transfiere fondos y no existe un motor de copy trading. Tú ejecutas las señales en tu propia cuenta.",
     },
     topics: {
       getting_started: "empezar",
@@ -277,7 +333,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "Quiero responder a la pregunta correcta. ¿Tu duda es sobre planes y precios, pago, activación de la cuenta o el panel?",
     greeting:
-      "¡Hola! Soy el asistente de Braxel Markets. Puedo explicar los planes, el checkout, el estado del pago, la activación, el panel y Tradovate. ¿Qué quieres saber?",
+      "¡Hola! Soy el asistente de Braxel. ¿En qué puedo ayudarte?",
     thanks: "¡De nada! ¿Puedo ayudarte con algo más sobre Braxel?",
     languageSwitch: "¡Claro! Puedo hablar español. ¿En qué puedo ayudarte?",
   },
@@ -313,6 +369,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "Il supporto umano è la pagina dei contatti o marketsbraxel@ouvidor.net. Indica l'email dell'account, il riferimento del piano o dell'ordine e una breve descrizione, e non includere mai password, numeri di carta o chiavi API.",
       company_overview:
         "Braxel Markets è un marchio di tecnologia e servizi di trading, non è una prop firm: non custodisce fondi dei clienti, non gestisce pagamenti di prop firm e non garantisce rendimenti. L'indirizzo nel footer è Calle de la Haya, 28935, Parque Coimbra, Madrid, Spagna.",
+      profile_and_signup:
+        "Dopo la registrazione, il passo 2 chiede telefono, paese e indirizzo, e puoi modificare tutto in seguito in Il mio profilo nella dashboard. Puoi anche aprire la dashboard prima di completarlo.",
+      login_problem:
+        "Se non riesci ad accedere, usa 'Password dimenticata?' nella pagina di login per impostarne una nuova e verifica che l'email sia confermata. Se manca l'email di conferma, inviala di nuovo dalla pagina di login.",
+      card_payment:
+        "Il pagamento con carta apre il checkout ospitato di Stripe, quindi l'app non vede né salva il numero della carta. Il server fissa piano, importo e valuta USD prima del reindirizzamento.",
+      crypto_payment:
+        "Le cripto sono disponibili solo sulle reti configurate sul server. Il checkout mostra indirizzo, importo e rete restituiti dal server e la rete deve corrispondere esattamente: una rete errata può far perdere i fondi.",
+      bank_transfer:
+        "Il bonifico mostra i dati bancari configurati e un riferimento ed è verificato manualmente. Le istruzioni non sono una conferma di pagamento; solo un regolamento verificato lo conferma.",
+      payment_failures:
+        "Un pagamento non riuscito o rifiutato non è una conferma. Non pagare due volte: riprova dal checkout o contatta il supporto con l'email dell'account e il riferimento dell'ordine.",
+      how_it_works:
+        "Il percorso documentato è: creare un account, confermare l'email, scegliere uno dei quattro piani mensili, pagare al checkout, attendere la conferma verificata sul server, completare l'onboarding e richiedere l'attivazione del tuo account prop firm. Sei tu a eseguire i segnali; Braxel non opera mai l'account.",
+      read_only_limits:
+        "Braxel è in sola lettura rispetto al trading: non inserisce, modifica o liquida ordini, non preleva né trasferisce fondi e non esiste un motore di copy trading. Sei tu a eseguire i segnali nel tuo account.",
     },
     topics: {
       getting_started: "iniziare",
@@ -328,7 +400,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "Voglio rispondere alla domanda giusta. La tua domanda riguarda piani e prezzi, pagamento, attivazione del conto o il pannello?",
     greeting:
-      "Ciao! Sono l'assistente di Braxel Markets. Posso spiegare i piani, il checkout, lo stato del pagamento, l'attivazione, il pannello e Tradovate. Cosa vuoi sapere?",
+      "Ciao! Sono l'assistente di Braxel. Come posso aiutarti?",
     thanks: "Prego! Posso aiutarti con altro su Braxel?",
     languageSwitch: "Certo! Posso parlare italiano. Come posso aiutarti?",
   },
@@ -364,6 +436,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "Le support humain est la page de contact ou marketsbraxel@ouvidor.net. Indiquez l'e-mail du compte, la référence du forfait ou de la commande et une courte description, et n'incluez jamais de mot de passe, de numéro de carte ou de clé API.",
       company_overview:
         "Braxel Markets est une marque de technologie et de services de trading, pas une prop firm : elle ne détient pas les fonds des clients, ne traite pas les paiements des prop firms et ne garantit aucun rendement. L'adresse du pied de page est Calle de la Haya, 28935, Parque Coimbra, Madrid, Espagne.",
+      profile_and_signup:
+        "Après l'inscription, l'étape 2 demande le téléphone, le pays et l'adresse, et vous pouvez tout modifier plus tard dans Mon profil du tableau de bord. Vous pouvez aussi ouvrir le tableau de bord avant de le compléter.",
+      login_problem:
+        "Si vous ne pouvez pas vous connecter, utilisez « Mot de passe oublié ? » sur la page de connexion pour en définir un nouveau et vérifiez que votre e-mail est confirmé. Si l'e-mail de confirmation manque, renvoyez-le depuis la page de connexion.",
+      card_payment:
+        "Le paiement par carte ouvre le paiement hébergé de Stripe : l'application ne voit ni ne stocke jamais le numéro de carte. Le serveur fixe le forfait, le montant et la devise USD avant la redirection.",
+      crypto_payment:
+        "La crypto n'est disponible que sur les réseaux configurés sur le serveur. Le paiement affiche l'adresse, le montant et le réseau renvoyés par le serveur, et le réseau doit correspondre exactement : un mauvais réseau peut faire perdre les fonds.",
+      bank_transfer:
+        "Le virement bancaire affiche les coordonnées bancaires configurées et une référence et est vérifié manuellement. Les instructions ne sont pas une confirmation de paiement ; seul un règlement vérifié le confirme.",
+      payment_failures:
+        "Un paiement échoué ou refusé n'est pas une confirmation. Ne payez pas deux fois : réessayez depuis le paiement ou contactez le support avec l'e-mail du compte et la référence de la commande.",
+      how_it_works:
+        "Le parcours documenté est : créer un compte, confirmer l'e-mail, choisir l'un des quatre forfaits mensuels, payer au checkout, attendre la confirmation vérifiée côté serveur, compléter l'onboarding et demander l'activation de votre propre compte prop firm. C'est vous qui exécutez les signaux ; Braxel n'opère jamais le compte.",
+      read_only_limits:
+        "Braxel est en lecture seule pour le trading : il ne place, ne modifie ni ne liquide d'ordres, ne retire ni ne transfère de fonds et il n'existe pas de moteur de copy trading. C'est vous qui exécutez les signaux sur votre propre compte.",
     },
     topics: {
       getting_started: "commencer",
@@ -379,7 +467,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "Je veux répondre à la bonne question. Votre question porte-t-elle sur les forfaits et les prix, le paiement, l'activation du compte ou le tableau de bord ?",
     greeting:
-      "Bonjour ! Je suis l'assistant de Braxel Markets. Je peux expliquer les forfaits, le paiement, le statut du paiement, l'activation, le tableau de bord et Tradovate. Que voulez-vous savoir ?",
+      "Bonjour ! Je suis l'assistant Braxel. Comment puis-je vous aider ?",
     thanks: "Avec plaisir ! Puis-je vous aider sur autre chose concernant Braxel ?",
     languageSwitch: "Bien sûr ! Je peux parler français. Comment puis-je vous aider ?",
   },
@@ -415,6 +503,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "Der menschliche Support ist die Kontaktseite oder marketsbraxel@ouvidor.net. Nennen Sie die Konto-E-Mail, die Plan- oder Bestellreferenz und eine kurze Beschreibung und niemals Passwörter, Kartennummern oder API-Schlüssel.",
       company_overview:
         "Braxel Markets ist eine Marke für Trading-Technologie und -Dienstleistungen, keine Prop-Firm: Sie verwahrt keine Kundengelder, verarbeitet keine Prop-Firm-Auszahlungen und garantiert keine Renditen. Die Adresse in der Fußzeile ist Calle de la Haya, 28935, Parque Coimbra, Madrid, Spanien.",
+      profile_and_signup:
+        "Nach der Registrierung fragt Schritt 2 nach Telefon, Land und Adresse; alles lässt sich später unter Mein Profil im Dashboard ändern. Sie können das Dashboard auch vorher öffnen.",
+      login_problem:
+        "Wenn Sie sich nicht anmelden können, nutzen Sie „Passwort vergessen?“ auf der Login-Seite, um ein neues festzulegen, und prüfen Sie, ob Ihre E-Mail bestätigt ist. Fehlt die Bestätigungs-E-Mail, senden Sie sie von der Login-Seite erneut.",
+      card_payment:
+        "Die Kartenzahlung öffnet die gehostete Stripe-Kasse, daher sieht und speichert die App Ihre Kartennummer nie. Der Server legt Plan, Betrag und USD-Währung vor der Weiterleitung fest.",
+      crypto_payment:
+        "Krypto ist nur auf den serverseitig konfigurierten Netzwerken verfügbar. Die Kasse zeigt Adresse, Betrag und Netzwerk aus der Serverantwort, und das Netzwerk muss exakt passen — ein falsches Netzwerk kann die Mittel verlieren.",
+      bank_transfer:
+        "Die Banküberweisung zeigt die konfigurierten Bankdaten und eine Referenz und wird manuell geprüft. Die Angaben sind keine Zahlungsbestätigung; nur eine geprüfte Gutschrift bestätigt sie.",
+      payment_failures:
+        "Eine fehlgeschlagene oder abgelehnte Zahlung ist keine Bestätigung. Zahlen Sie nicht doppelt: Versuchen Sie es erneut an der Kasse oder kontaktieren Sie den Support mit Konto-E-Mail und Bestellreferenz.",
+      how_it_works:
+        "Der dokumentierte Weg ist: Konto erstellen, E-Mail bestätigen, einen der vier Monatspläne wählen, an der Kasse zahlen, die serverseitig verifizierte Bestätigung abwarten, das Onboarding abschließen und die Aktivierung Ihres eigenen Prop-Firm-Kontos beantragen. Sie führen die Signale selbst aus; Braxel bedient das Konto nie.",
+      read_only_limits:
+        "Braxel ist beim Handel nur lesend: Es platziert, ändert oder liquidiert keine Orders, hebt kein Geld ab und überträgt keine Mittel, und es gibt keine Copy-Trading-Engine. Sie führen die Signale selbst in Ihrem eigenen Konto aus.",
     },
     topics: {
       getting_started: "der Einstieg",
@@ -430,7 +534,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "Ich möchte die richtige Frage beantworten. Geht es um Pläne und Preise, die Zahlung, die Kontoaktivierung oder das Dashboard?",
     greeting:
-      "Hallo! Ich bin der Assistent von Braxel Markets. Ich kann Pläne, Checkout, Zahlungsstatus, Aktivierung, Dashboard und Tradovate erklären. Was möchten Sie wissen?",
+      "Hallo! Ich bin der Braxel-Assistent. Wie kann ich helfen?",
     thanks: "Gern! Kann ich noch bei etwas anderem zu Braxel helfen?",
     languageSwitch: "Klar! Ich kann Deutsch sprechen. Wie kann ich helfen?",
   },
@@ -466,6 +570,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "Поддержка — страница контактов или marketsbraxel@ouvidor.net. Укажите почту аккаунта, номер тарифа или заказа и короткое описание, и никогда не присылайте пароли, номера карт или ключи API.",
       company_overview:
         "Braxel Markets — бренд технологий и услуг для трейдинга, а не проп-фирма: он не хранит средства клиентов, не обрабатывает выплаты проп-фирм и не гарантирует доходность. Адрес в подвале сайта: Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain.",
+      profile_and_signup:
+        "После регистрации шаг 2 просит телефон, страну и адрес; всё можно изменить позже в разделе «Мой профиль» на панели. Панель можно открыть и до заполнения.",
+      login_problem:
+        "Если не удаётся войти, используйте «Забыли пароль?» на странице входа, чтобы задать новый, и проверьте, что почта подтверждена. Если письмо с подтверждением не пришло, отправьте его повторно со страницы входа.",
+      card_payment:
+        "Оплата картой открывает размещённую страницу Stripe, поэтому приложение никогда не видит и не хранит номер карты. Сервер фиксирует тариф, сумму и валюту USD до перенаправления.",
+      crypto_payment:
+        "Криптовалюта доступна только в сетях, настроенных на сервере. Страница оплаты показывает адрес, сумму и сеть из ответа сервера, и сеть должна совпадать точно — неверная сеть может привести к потере средств.",
+      bank_transfer:
+        "Банковский перевод показывает настроенные банковские реквизиты и назначение платежа и проверяется вручную. Инструкции не являются подтверждением оплаты; подтверждает только проверенное зачисление.",
+      payment_failures:
+        "Неудавшийся или отклонённый платёж не является подтверждением. Не платите дважды: повторите попытку на странице оплаты или напишите в поддержку, указав почту аккаунта и номер заказа.",
+      how_it_works:
+        "Документированный путь: создать аккаунт, подтвердить почту, выбрать один из четырёх месячных тарифов, оплатить на странице оплаты, дождаться подтверждения на сервере, пройти онбординг и запросить активацию собственного счёта prop firm. Сигналы вы исполняете сами; Braxel никогда не управляет счётом.",
+      read_only_limits:
+        "Braxel работает только на чтение: не размещает, не изменяет и не закрывает ордера, не выводит и не переводит средства, и движка копи-трейдинга нет. Сигналы вы исполняете сами в своём счёте.",
     },
     topics: {
       getting_started: "с чего начать",
@@ -481,7 +601,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "Хочу ответить на правильный вопрос. Речь о тарифах и ценах, оплате, активации аккаунта или панели?",
     greeting:
-      "Здравствуйте! Я ассистент Braxel Markets. Могу объяснить тарифы, оплату, статус платежа, активацию, панель и Tradovate. Что вы хотите узнать?",
+      "Здравствуйте! Я ассистент Braxel. Чем могу помочь?",
     thanks: "Пожалуйста! Могу помочь с чем-то ещё по Braxel?",
     languageSwitch: "Конечно! Могу говорить по-русски. Чем помочь?",
   },
@@ -517,6 +637,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "人工支持请使用联系页面或 marketsbraxel@ouvidor.net。请提供账户邮箱、套餐或订单编号和简短说明，切勿包含密码、卡号或 API 密钥。",
       company_overview:
         "Braxel Markets 是交易技术与服务品牌，不是自营交易公司：它不保管客户资金、不处理自营交易公司的出金，也不保证收益。页脚地址为 Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain。",
+      profile_and_signup:
+        "注册后的第 2 步会要求填写电话、国家和地址，之后可以在仪表盘的“我的资料”中修改。也可以在完成前先打开仪表盘。",
+      login_problem:
+        "如果无法登录，请在登录页使用“忘记密码？”设置新密码，并确认邮箱已验证。如果没收到验证邮件，可在登录页重新发送。",
+      card_payment:
+        "银行卡付款会打开 Stripe 托管的结账页面，因此应用不会看到或保存卡号。服务器会在跳转前确定套餐、金额和美元币种。",
+      crypto_payment:
+        "加密货币仅在服务器配置的网络上可用。结账页面显示服务器返回的地址、金额和网络，网络必须完全一致——网络错误可能导致资金丢失。",
+      bank_transfer:
+        "银行转账会显示已配置的银行信息和参考号，并需要人工审核。说明本身不是付款确认；只有经过验证的到账才算确认。",
+      payment_failures:
+        "付款失败或被拒绝并不代表已确认。不要重复付款：请在结账页面重试，或携带账户邮箱和订单参考号联系支持。",
+      how_it_works:
+        "已记录的流程是：创建账户、验证邮箱、选择四个按月套餐之一、在结账页面付款、等待服务器验证的确认、完成引导并申请激活你自己的 prop firm 账户。信号由你自己执行；Braxel 从不操作账户。",
+      read_only_limits:
+        "Braxel 在交易方面是只读的：不能下单、修改或平仓，不能提现或转账，也没有复制交易引擎。信号由你在自己的账户中自行执行。",
     },
     topics: {
       getting_started: "如何开始",
@@ -531,7 +667,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyPair: "确认一下：你是指{{a}}还是{{b}}？",
     clarifyOpen: "我想回答正确的问题。你是想了解套餐和价格、付款、账户激活，还是仪表盘？",
     greeting:
-      "你好！我是 Braxel Markets 助手。我可以说明套餐、结账、支付状态、账户激活、仪表盘和 Tradovate。你想了解什么？",
+      "你好！我是 Braxel 助手。有什么可以帮您？",
     thanks: "不客气！关于 Braxel 还有其他问题吗？",
     languageSwitch: "当然！我可以说中文。有什么可以帮您？",
   },
@@ -567,6 +703,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "有人サポートはお問い合わせページまたは marketsbraxel@ouvidor.net です。アカウントのメール、プランまたは注文番号、簡単な説明を添えてください。パスワード、カード番号、APIキーは記載しないでください。",
       company_overview:
         "Braxel Markets はトレーディング技術とサービスのブランドで、プロップファームではありません。顧客資金を保管せず、プロップファームの出金処理も行わず、利益を保証しません。フッターの住所は Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain です。",
+      profile_and_signup:
+        "登録後のステップ2では電話番号、国、住所を入力します。後からダッシュボードの「マイプロフィール」で変更できます。完了前にダッシュボードを開くこともできます。",
+      login_problem:
+        "ログインできない場合は、ログインページの「パスワードをお忘れですか？」で新しいパスワードを設定し、メールが確認済みかご確認ください。確認メールが届かない場合はログインページから再送できます。",
+      card_payment:
+        "カード決済はStripeのホスト型チェックアウトを開くため、アプリがカード番号を見たり保存したりすることはありません。サーバーがリダイレクト前にプラン、金額、USD通貨を確定します。",
+      crypto_payment:
+        "暗号資産はサーバーで設定されたネットワークでのみ利用できます。チェックアウトにはサーバーが返したアドレス、金額、ネットワークが表示され、ネットワークは完全に一致する必要があります。誤ったネットワークでは資金を失う可能性があります。",
+      bank_transfer:
+        "銀行振込では設定された銀行情報と参照番号が表示され、手動で確認されます。表示は支払い確認ではなく、確認された入金のみが確定となります。",
+      payment_failures:
+        "失敗または拒否された支払いは確認ではありません。二重に支払わず、チェックアウトから再試行するか、アカウントのメールと注文参照番号を添えてサポートにご連絡ください。",
+      how_it_works:
+        "記録されている流れは、アカウント作成、メール確認、4つの月額プランから選択、チェックアウトで支払い、サーバーで確認された承認を待つ、オンボーディングを完了、ご自身のprop firm口座のアクティベーションを申請、です。シグナルはご自身で執行し、Braxelが口座を運用することはありません。",
+      read_only_limits:
+        "Braxelは取引について読み取り専用です。注文の新規・変更・決済はできず、出金や送金もできず、コピートレードの仕組みもありません。シグナルはご自身の口座で執行します。",
     },
     topics: {
       getting_started: "始め方",
@@ -582,7 +734,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "正しい質問に答えたいので確認します。プランと料金、支払い、口座の有効化、ダッシュボードのどれについてですか？",
     greeting:
-      "こんにちは。Braxel Markets のアシスタントです。プラン、チェックアウト、支払い状況、有効化、ダッシュボード、Tradovateについて説明できます。何を知りたいですか？",
+      "こんにちは！Braxel のアシスタントです。どのようにお手伝いできますか？",
     thanks: "どういたしまして。Braxel について他にご質問はありますか？",
     languageSwitch: "もちろんです。日本語で話せます。どうお手伝いできますか？",
   },
@@ -618,6 +770,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "الدعم البشري عبر صفحة الاتصال أو marketsbraxel@ouvidor.net. اذكر بريد الحساب ومرجع الخطة أو الطلب ووصفًا قصيرًا، ولا تُدرج كلمات المرور أو أرقام البطاقات أو مفاتيح API.",
       company_overview:
         "Braxel Markets علامة لتقنية وخدمات التداول وليست شركة تداول: لا تحتفظ بأموال العملاء ولا تعالج مدفوعات شركات التداول ولا تضمن أي عوائد. العنوان في التذييل هو Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain.",
+      profile_and_signup:
+        "بعد التسجيل، تطلب الخطوة 2 الهاتف والدولة والعنوان، ويمكنك تعديل كل شيء لاحقًا من «ملفي» في لوحة التحكم. يمكنك أيضًا فتح لوحة التحكم قبل إكماله.",
+      login_problem:
+        "إذا لم تتمكن من تسجيل الدخول، استخدم «هل نسيت كلمة المرور؟» في صفحة الدخول لتعيين كلمة جديدة وتأكد من تأكيد بريدك. إذا لم يصلك بريد التأكيد، أعد إرساله من صفحة الدخول.",
+      card_payment:
+        "يفتح الدفع بالبطاقة صفحة Stripe المستضافة، لذلك لا يرى التطبيق رقم البطاقة ولا يخزنه. يحدد الخادم الخطة والمبلغ وعملة الدولار قبل إعادة التوجيه.",
+      crypto_payment:
+        "العملات الرقمية متاحة فقط على الشبكات المهيأة على الخادم. تعرض صفحة الدفع العنوان والمبلغ والشبكة كما يعيدها الخادم، ويجب أن تطابق الشبكة تمامًا — الشبكة الخاطئة قد تُفقد الأموال.",
+      bank_transfer:
+        "يعرض التحويل البنكي بيانات البنك المهيأة ومرجعًا، ويُراجع يدويًا. التعليمات ليست تأكيد دفع؛ فقط التسوية المتحقق منها تؤكد الدفع.",
+      payment_failures:
+        "الدفع الفاشل أو المرفوض ليس تأكيدًا. لا تدفع مرتين: أعد المحاولة من صفحة الدفع أو تواصل مع الدعم مع بريد الحساب ومرجع الطلب.",
+      how_it_works:
+        "المسار الموثق هو: إنشاء حساب، تأكيد البريد، اختيار واحدة من الخطط الشهرية الأربع، الدفع عند الخروج، انتظار التأكيد المتحقق منه على الخادم، إكمال الإعداد وطلب تفعيل حساب prop firm الخاص بك. أنت تنفذ الإشارات بنفسك؛ ولا تدير Braxel الحساب أبدًا.",
+      read_only_limits:
+        "Braxel للقراءة فقط فيما يتعلق بالتداول: لا تضع أو تعدل أو تصفي الأوامر، ولا تسحب أو تحول الأموال، ولا يوجد محرك نسخ تداول. أنت تنفذ الإشارات في حسابك الخاص.",
     },
     topics: {
       getting_started: "كيف تبدأ",
@@ -633,7 +801,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "أريد الإجابة عن السؤال الصحيح. هل سؤالك عن الخطط والأسعار أم الدفع أم تفعيل الحساب أم لوحة التحكم؟",
     greeting:
-      "مرحبًا! أنا مساعد Braxel Markets. يمكنني شرح الخطط والدفع وحالة الدفع والتفعيل ولوحة التحكم وTradovate. ما الذي تريد معرفته؟",
+      "مرحبًا! أنا مساعد Braxel. كيف يمكنني مساعدتك؟",
     thanks: "على الرحب والسعة! هل أساعدك في شيء آخر عن Braxel؟",
     languageSwitch: "بالتأكيد! أستطيع التحدث بالعربية. كيف يمكنني مساعدتك؟",
   },
@@ -669,6 +837,22 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
         "תמיכה אנושית היא עמוד יצירת הקשר או marketsbraxel@ouvidor.net. ציין את דוא״ל החשבון, מספר התוכנית או ההזמנה ותיאור קצר, ואל תכלול סיסמאות, מספרי כרטיס או מפתחות API.",
       company_overview:
         "Braxel Markets הוא מותג של טכנולוגיה ושירותי מסחר, לא חברת נכסים: היא לא מחזיקה כספי לקוחות, לא מעבדת תשלומים של חברות נכסים ולא מבטיחה תשואות. הכתובת בתחתית האתר היא Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain.",
+      profile_and_signup:
+        "אחרי ההרשמה, שלב 2 מבקש טלפון, מדינה וכתובת, ואפשר לערוך הכול מאוחר יותר ב\"הפרופיל שלי\" בלוח הבקרה. אפשר גם לפתוח את לוח הבקרה לפני ההשלמה.",
+      login_problem:
+        "אם אינך מצליח להתחבר, השתמש ב\"שכחת סיסמה?\" בעמוד ההתחברות כדי לקבוע סיסמה חדשה, ובדוק שהאימייל מאומת. אם הודעת האימות לא הגיעה, שלח אותה שוב מעמוד ההתחברות.",
+      card_payment:
+        "תשלום בכרטיס פותח את עמוד התשלום המאוחסן של Stripe, כך שהאפליקציה לא רואה ולא שומרת את מספר הכרטיס. השרת קובע את התוכנית, הסכום ומטבע הדולר לפני ההפניה.",
+      crypto_payment:
+        "קריפטו זמין רק ברשתות שהוגדרו בשרת. עמוד התשלום מציג את הכתובת, הסכום והרשת שהשרת מחזיר, והרשת חייבת להתאים בדיוק — רשת שגויה עלולה לגרום לאובדן הכספים.",
+      bank_transfer:
+        "העברה בנקאית מציגה את פרטי הבנק שהוגדרו ומספר אסמכתא, ונבדקת ידנית. ההוראות אינן אישור תשלום; רק סליקה מאומתת מאשרת אותו.",
+      payment_failures:
+        "תשלום שנכשל או נדחה אינו אישור. אל תשלם פעמיים: נסה שוב מעמוד התשלום או פנה לתמיכה עם אימייל החשבון ומספר ההזמנה.",
+      how_it_works:
+        "המסלול המתועד הוא: פתיחת חשבון, אימות אימייל, בחירת אחת מארבע התוכניות החודשיות, תשלום בקופה, המתנה לאישור המאומת בשרת, השלמת ההכשרה ובקשת הפעלה של חשבון ה-prop firm שלך. אתה מבצע את האיתותים בעצמך; Braxel לא מפעילה את החשבון.",
+      read_only_limits:
+        "Braxel היא לקריאה בלבד בכל הקשור למסחר: היא לא מבצעת, משנה או סוגרת פקודות, לא מושכת או מעבירה כספים, ואין מנוע העתקת מסחר. אתה מבצע את האיתותים בחשבון שלך.",
     },
     topics: {
       getting_started: "איך מתחילים",
@@ -684,7 +868,7 @@ export const LOCALIZED_ANSWERS: Record<SupportedLocale, LocaleAnswers> = {
     clarifyOpen:
       "אני רוצה לענות על השאלה הנכונה. השאלה שלך על תוכניות ומחירים, תשלום, הפעלת חשבון או לוח הבקרה?",
     greeting:
-      "שלום! אני העוזר של Braxel Markets. אני יכול להסביר תוכניות, תשלום, סטטוס תשלום, הפעלה, לוח בקרה ו-Tradovate. מה תרצה לדעת?",
+      "שלום! אני העוזר של Braxel. איך אפשר לעזור?",
     thanks: "בשמחה! אפשר לעזור במשהו נוסף בנושא Braxel?",
     languageSwitch: "בשמחה! אני יכול לדבר עברית. איך אפשר לעזור?",
   },

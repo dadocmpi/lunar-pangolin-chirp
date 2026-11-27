@@ -70,6 +70,26 @@ export const CATEGORY_LABELS: Record<KnowledgeCategory, string> = {
   legal: "Legal and risk",
 };
 
+/** Safety classification of one approved topic. */
+export type KnowledgeSafety =
+  | "general"
+  | "account"
+  | "payment"
+  | "provider"
+  | "kyc"
+  | "legal";
+
+const CATEGORY_SAFETY: Record<KnowledgeCategory, KnowledgeSafety> = {
+  start: "general",
+  account: "account",
+  plans: "general",
+  payment: "payment",
+  product: "provider",
+  company: "general",
+  support: "general",
+  legal: "legal",
+};
+
 export interface KnowledgeArticle {
   id: string;
   category: KnowledgeCategory;
@@ -85,7 +105,12 @@ export interface KnowledgeArticle {
   /** Detailed English answer. */
   body: string;
   /** Ids of adjacent approved topics. */
+  /** Approved neighbours of this topic. */
   relatedTopics: string[];
+  /** Safety classification used by the assistant and the tests. */
+  safety: KnowledgeSafety;
+  /** True when this topic normally needs a human for a specific case. */
+  escalate: boolean;
   /** Relative paths to official Braxel pages. */
   links: string[];
 }
@@ -121,6 +146,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "Public pages: / (home), /pricing (plans), /how-it-works (infrastructure overview), /about (company and leadership), /accounts (buy a prop-firm account and activate the signals plan), /contact (support form and email), /login, /register, /complete-profile, /reset-password, /auth-callback, /terms, /privacy and /disclaimer. The /checkout and /checkout/success pages handle payment. /dashboard requires a signed-in account. /register-application is a legacy link that redirects to /checkout?plan=<key>. Operator pages are internal and not customer pages. A missing page shows the 404 page.",
     relatedTopics: ["getting_started", "how_it_works", "plans"],
+    safety: "general",
+    escalate: false,
     links: ["/", "/pricing", "/about", "/contact"],
   },
   {
@@ -151,6 +178,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The documented order is: create an account on /register, confirm the email, choose one of the four monthly plans on /pricing, pay on /checkout, wait for the server-verified confirmation, complete the onboarding disclosures, then submit an account-link (activation) request for the external prop-firm account you will use. An operator reviews the activation manually. Finally you execute the signals yourself in your own account with a third-party tool. Braxel never operates the account, never stores broker credentials and never places orders. You can open /dashboard without a Tradovate connection and without identity verification.",
     relatedTopics: ["account_creation", "plans", "checkout", "onboarding", "activation"],
+    safety: "general",
+    escalate: false,
     links: ["/register", "/pricing", "/checkout", "/dashboard"],
   },
   {
@@ -180,6 +209,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The documented customer flow is: create an account, choose a plan, complete checkout, wait for the server-verified payment, complete onboarding and the required disclosures, submit an account-link (activation) request for your external prop-firm account, wait for manual operator review, then execute the signals yourself in your own account with a third-party tool. Braxel never operates your trading account, never stores broker credentials and never places orders. The public /how-it-works page is an infrastructure overview; some statements there are marked illustrative or unverified and are not a guarantee of performance.",
     relatedTopics: ["getting_started", "plans", "activation", "dashboard_usage"],
+    safety: "general",
+    escalate: false,
     links: ["/how-it-works", "/accounts", "/dashboard"],
   },
   {
@@ -206,6 +237,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "Braxel Markets is a trading-technology and managed-service brand. The About page describes its mission, history and leadership; the public leadership page names Bernardo Campi as Founder & CEO. The business address shown in the site footer is Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain. Braxel is not a prop firm, does not custody customer funds and does not process prop-firm payouts. It does not guarantee returns. The marketing pages contain illustrative and unverified performance statements; treat them as marketing, not as a promise.",
     relatedTopics: ["contact_and_company", "how_it_works", "legal_documents"],
+    safety: "general",
+    escalate: false,
     links: ["/about", "/contact"],
   },
   {
@@ -235,6 +268,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "Create an account on the Register page. Step 1 asks for your full name, email, password (minimum 6 characters, entered twice) and acceptance of the Terms and Privacy Policy. Step 2 asks for phone, country and address. The email address must be confirmed before you can sign in. Braxel never asks for a broker password, card number, API key or any secret during signup. A signed-in customer whose profile is incomplete is sent to /complete-profile, and a profile read error never blocks the dashboard.",
     relatedTopics: ["email_confirmation", "profile_and_signup", "password_recovery", "getting_started"],
+    safety: "account",
+    escalate: false,
     links: ["/register", "/complete-profile"],
   },
   {
@@ -266,6 +301,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "After signup Supabase Auth sends a confirmation email. Open the link in that email to activate sign-in; the link returns to /auth-callback. If the email did not arrive, check the spam folder, then use the resend action on the Login page. For privacy, the signup screen shows the same neutral message whether or not an address is already registered. Support can help with delivery problems but will never ask for your password or confirmation code. If the link is expired or already used, request a new one.",
     relatedTopics: ["account_creation", "password_recovery", "support_procedures"],
+    safety: "account",
+    escalate: false,
     links: ["/login", "/register", "/auth-callback"],
   },
   {
@@ -300,6 +337,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "Use 'Forgot password?' on the Login page. We email a recovery link that opens the Reset Password page, where you set a new password. The link expires and can only be used once; if it is expired or already used, request a new one. A recovery link never grants dashboard access without setting a new password. Braxel support will never ask you to send your password. A normal signed-in session on /reset-password is treated as an invalid reset link. If the sign-in fails because the email is not confirmed yet, resend the confirmation email from the Login page.",
     relatedTopics: ["email_confirmation", "account_creation", "support_procedures"],
+    safety: "account",
+    escalate: false,
     links: ["/login", "/reset-password"],
   },
   {
@@ -323,12 +362,17 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       "come modifico il profilo", "comment modifier mon profil", "wie ändere ich mein profil",
       "как изменить профиль", "怎么修改资料", "プロフィールを変更するには", "كيف أعدل ملفي", "איך לעדכן פרופיל",
       "why do you need my address", "por que pedem meu endereço", "por qué piden mi dirección",
+      "what is step 2", "what is the second step", "what is the second part", "what happens in step 2",
+      "qual é o passo 2", "qual o passo 2", "o que é o passo 2", "o que acontece no passo 2",
+      "que es el paso 2", "cuál es el paso 2", "qué pasa en el paso 2",
     ],
     answer:
       "Your profile holds your name, email, phone (dial code + number), country and address, and you can edit it in 'My profile' in the dashboard. Braxel never stores a password or a card number there.",
     body:
       "Your profile stores your name, email, phone (country dial code plus national number), country and address. You can review and edit it in the 'My profile' view of the dashboard. Profile writes go through the authenticated profile-submit function, which re-validates every field server-side. Checkout can pre-fill these details from your profile and lets you update the profile from the billing form. Braxel never stores a password or a card number in your profile.",
     relatedTopics: ["account_creation", "checkout", "dashboard_usage"],
+    safety: "account",
+    escalate: false,
     links: ["/complete-profile", "/dashboard"],
   },
   {
@@ -360,6 +404,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       `Braxel offers four monthly plans. ${planFacts()} All amounts are charged in USD. The plan summary at checkout is the authoritative amount; the server derives the plan, amount and currency and the browser never declares a price. The Pricing page shows the current plan cards. Local currency, where shown, is presentation only; Managed Capital is always quoted in USD.`,
     relatedTopics: ["checkout", "payment_methods", "accounts_prop_firms"],
+    safety: "general",
+    escalate: false,
     links: ["/pricing", "/checkout"],
   },
   {
@@ -390,6 +436,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The /accounts page lets you buy an evaluation or funded account directly from a prop firm (Tradeify or Lucid) through a real affiliate link. Braxel receives an affiliate commission, which does not change the price you pay to the firm. You buy and own the account directly from the firm; Braxel does not operate it and never has access to it. After buying, return to the panel and request activation of the signals plan, attaching your purchase receipt. The signals plan is a fixed monthly fee, and you execute the signals yourself in your own account with a third-party tool. Trading involves a substantial risk of loss; the page includes a risk warning. A firm without a configured affiliate link is not offered anywhere.",
     relatedTopics: ["activation", "plans", "tradovate_connection", "legal_documents"],
+    safety: "general",
+    escalate: false,
     links: ["/accounts", "/pricing"],
   },
   {
@@ -418,6 +466,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "Checkout is a single page: plan summary, your billing details and the payment method selector. Terms and Privacy must be accepted before paying. The server re-derives the plan, amount, currency and interval; a ?plan= query only selects the plan and never sets a price. Card payments open Stripe's hosted Checkout; our app has no card fields and never sees your card number. Bank transfer shows the configured bank details and a reference and is settled manually. Crypto is available only for networks the server has configured, and you must send the exact asset on the exact network shown. A repeated checkout can answer duplicate_checkout instead of charging twice.",
     relatedTopics: ["payment_methods", "payment_status", "plans"],
+    safety: "payment",
+    escalate: false,
     links: ["/checkout", "/pricing"],
   },
   {
@@ -441,12 +491,20 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       "hay pix", "puedo pagar con paypal", "cobran en dólares",
       "posso pagare con cripto", "je peux payer par carte", "kann ich mit krypto zahlen",
       "можно оплатить картой", "можно криптой", "可以刷卡吗", "能用加密货币吗", "カードで払えますか", "هل أدفع ببطاقة", "אפשר לשלם בכרטיס",
+      "how does payment work", "how does paying work", "how do payments work", "how can i pay",
+      "como funciona o pagamento", "como funciona o pagamento do plano", "como eu pago", "como pagar",
+      "cómo funciona el pago", "como funciona el pago", "cómo puedo pagar", "como puedo pagar",
+      "wie funktioniert die zahlung", "comment fonctionne le paiement", "come funziona il pagamento",
+      "как работает оплата", "как оплатить", "付款如何运作", "付款方式", "支払いはどう機能しますか", "支払い方法",
+      "كيف يعمل الدفع", "طرق الدفع", "איך עובד התשלום", "אמצעי תשלום",
     ],
     answer:
       "Card opens Stripe's hosted checkout (our app has no card fields), bank transfer shows the configured bank details and a reference and is reviewed manually, and crypto works only on the networks the server has configured. Everything is charged in USD.",
     body:
       "Card: 'Continue to secure card payment' redirects to Stripe's hosted Checkout. Our app has no card fields; the server keeps the USD Price ID, the canonical amount and the application ownership. Confirmation comes only from the Stripe webhook or the server reconciliation, never from a browser redirect. Bank transfer (Wise): the server returns the configured bank details and a reference and records the payment as pending manual review; the instructions are not proof of payment and there is no client-side success. Crypto: only networks configured on the server are selectable; you must send the exact asset on the exact network shown, and sending on the wrong network can lose the funds. Confirmation is on-chain and server-side. All charges are in USD. PayPal and direct card endpoints are disabled; do not promise them.",
-    relatedTopics: ["checkout", "payment_status", "security_privacy"],
+    relatedTopics: ["card_payment", "crypto_payment", "bank_transfer", "checkout", "payment_status"],
+    safety: "payment",
+    escalate: false,
     links: ["/checkout", "/checkout/success"],
   },
   {
@@ -477,6 +535,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The dashboard payment card and the checkout success page show the server-side status. Only a server-verified confirmation marks a payment as confirmed and unlocks onboarding; a browser redirect or a URL parameter never confirms a payment. The states the dashboard can show are created, pending, processing, manual review, confirmed, activation pending, active, failed, expired, cancelled, refunded, disputed, past due, suspended and disconnected. Card confirmations normally arrive through the payment provider webhook and can take a short time; bank transfers are reviewed manually. A lost card event can be recovered by the server reconciliation endpoint. If a payment looks wrong, do not pay twice. Contact human support with your order reference; the assistant cannot read or change your payment status.",
     relatedTopics: ["checkout", "payment_methods", "onboarding", "refunds_cancellation"],
+    safety: "payment",
+    escalate: true,
     links: ["/checkout/success", "/dashboard"],
   },
   {
@@ -505,6 +565,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The public pages do not publish a refund schedule or a self-service cancellation button. Refund and cancellation requests are reviewed by a person. Contact human support by email with your account email and order reference. Do not open a chargeback or pay twice while a request is being reviewed. The assistant cannot approve a refund, cancel a plan or change a payment status.",
     relatedTopics: ["payment_status", "support_procedures", "legal_documents"],
+    safety: "legal",
+    escalate: true,
     links: ["/contact", "/terms"],
   },
   {
@@ -537,6 +599,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "After a confirmed payment, the dashboard shows the onboarding steps and the required disclosures: your package, the payment status and the account-link request. Complete the disclosures, then submit an account-link request for the external prop-firm account you intend to use. An operator reviews the request manually. The dashboard shows pending, in review, information requested, approved, rejected, suspended or disconnected. Braxel does not receive your provider password, API key or token, never operates your trading account and never stores broker credentials.",
     relatedTopics: ["activation", "payment_status", "dashboard_usage"],
+    safety: "account",
+    escalate: false,
     links: ["/dashboard", "/checkout/success"],
   },
   {
@@ -562,12 +626,16 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
       "come attivo", "comment activer", "wie aktiviere ich", "как активировать", "как активировать аккаунт",
       "怎么激活", "激活要多久", "どうやって有効化する", "كيف أفعل الحساب", "איך מפעילים",
       "my activation is still in review", "minha ativação está em análise", "mi activación está en revisión",
+      "como funciona a ativacao", "como funciona a ativação", "como faco a ativacao",
+      "how does activation work", "how do i activate", "how does the activation work",
     ],
     answer:
       "Request activation in the dashboard with the firm, the plan you bought, your account login/ID at the firm, the purchase email, a receipt (image or PDF up to 10 MB) and four confirmations. An operator reviews it manually; never enter your broker password.",
     body:
       "You buy an evaluation or funded account directly from the prop firm through our affiliate link, then request activation in the dashboard. The activation form asks for the firm, the plan you bought, your account login/ID at the firm, the purchase email, a receipt (image or PDF, up to 10 MB) and four mandatory confirmations. Never enter your broker password: Braxel only needs the account login/ID and the receipt. Activation is reviewed manually by an operator; approval is not automatic and is not guaranteed. Braxel does not operate your account, does not place orders and does not process prop-firm payouts. You execute the signals yourself in your own account.",
     relatedTopics: ["onboarding", "accounts_prop_firms", "dashboard_usage"],
+    safety: "account",
+    escalate: false,
     links: ["/accounts", "/dashboard"],
   },
   {
@@ -599,6 +667,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The dashboard has a services overview, a payments card, an optional Tradovate view, account activation, your profile, performance and an audit log. Performance is computed only from your own closed trades; with no closed trades you see an explicit empty state rather than a fabricated number. Every figure is real account data. The dashboard is reachable without a Tradovate connection and without KYC; identity verification is only required to request a withdrawal.",
     relatedTopics: ["activation", "tradovate_connection", "profile_and_signup", "withdrawal_kyc"],
+    safety: "account",
+    escalate: false,
     links: ["/dashboard"],
   },
   {
@@ -630,6 +700,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "Tradovate is an optional, read-only integration. When the feature is enabled, the dashboard shows a connection card and the current status; the connect flow runs inside the dashboard and defaults to the demo environment. Credentials are encrypted server-side and never returned to the browser. The user never types an account id: the server lists the accounts on the Tradovate login and auto-selects or preselects an active account. Data is collected by incremental polling, not a WebSocket. The integration is read-only: Braxel cannot place, modify or liquidate orders, withdraw funds or transfer money, and there is no copy-trading engine. It does not connect to a prop-firm account such as Tradeify or Lucid: those accounts are bought and operated by you. The support assistant cannot connect, disconnect or change your Tradovate status and will never ask for your Tradovate username, password, CID or secret. For connection errors or provider problems, contact human support.",
     relatedTopics: ["accounts_prop_firms", "dashboard_usage", "account_actions"],
+    safety: "provider",
+    escalate: false,
     links: ["/dashboard", "/how-it-works"],
   },
   {
@@ -660,6 +732,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The terminal is usable without identity verification. KYC is required only when you request a withdrawal. Withdrawal requests are gated server-side: without an approved submission the server refuses the request, and a status sent from the browser is ignored. Documents are uploaded through an authenticated function into a private bucket; only object paths are stored, never public URLs. An AI consistency check is advisory and fails closed to human review. Never send identity documents through this chat. For a withdrawal or KYC problem, contact human support.",
     relatedTopics: ["dashboard_usage", "support_procedures", "security_privacy"],
+    safety: "kyc",
+    escalate: true,
     links: ["/dashboard", "/contact"],
   },
   {
@@ -691,6 +765,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "Human support is reached through the Contact page or the support email marketsbraxel@ouvidor.net. Include your account email, the plan or order reference and a short description. Never include passwords, card numbers, API keys, MFA codes or private keys in a support message. The AI assistant can explain the product and the official procedures, but it cannot change your account, payment or activation status. Payment disputes, KYC, account suspension, legal questions, provider problems, refunds and explicit human requests are always handed to a person.",
     relatedTopics: ["contact_and_company", "account_actions", "faq_help"],
+    safety: "general",
+    escalate: true,
     links: ["/contact"],
   },
   {
@@ -724,6 +800,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The public contact email is marketsbraxel@ouvidor.net, shown on the Contact page and in the footer. The business address shown in the footer is Calle de la Haya, 28935, Parque Coimbra, Madrid, Spain. The Contact page also has a message form with a security challenge. Do not send passwords or identity documents through the form. The site does not publish a telephone number or a guaranteed response time; response times vary.",
     relatedTopics: ["support_procedures", "company_overview"],
+    safety: "general",
+    escalate: false,
     links: ["/contact"],
   },
   {
@@ -754,6 +832,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The home page FAQ covers four topics. Prior experience: the public FAQ says prior experience is not required to use the panel, but you must understand the risks. Risk: trading involves a substantial risk of loss and Braxel does not guarantee results. How it works: see the documented customer flow (account, plan, payment, onboarding, activation, self-execution of signals); the marketing pages contain illustrative and unverified statements. Cancellation: the FAQ mentions requesting cancellation; in practice refund and cancellation requests are reviewed by a person through human support, and there is no self-service cancellation button.",
     relatedTopics: ["how_it_works", "legal_documents", "support_procedures"],
+    safety: "general",
+    escalate: false,
     links: ["/", "/how-it-works", "/contact"],
   },
   {
@@ -785,6 +865,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The assistant is informational only. It cannot execute a payment, approve or reject a payment, activate or suspend an account, connect or disconnect a provider, place or modify a trade, request a withdrawal, change customer data or read an individual customer's payment, activation, account or trading status. It has no tools and no database access. If you ask it to perform one of these actions, it will explain the official procedure and hand you to human support where needed.",
     relatedTopics: ["support_procedures", "tradovate_connection", "payment_status"],
+    safety: "account",
+    escalate: true,
     links: ["/contact", "/dashboard"],
   },
   {
@@ -816,6 +898,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The AI chat is stateless: the browser sends the recent turns with each request, the server stores nothing, logs no message content and returns Cache-Control: no-store. The conversation stays in browser memory only; there is no conversation table, so one customer cannot read another customer's chat. The assistant never asks for passwords, card numbers, Tradovate credentials, API keys, MFA codes or private keys. Customer sessions use bearer tokens, KYC documents live in a private bucket, and provider credentials are encrypted server-side. The published Privacy Policy is a DRAFT pending legal review; data-rights requests go to human support.",
     relatedTopics: ["legal_documents", "support_procedures", "withdrawal_kyc"],
+    safety: "legal",
+    escalate: true,
     links: ["/privacy", "/contact"],
   },
   {
@@ -844,6 +928,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The website and the support assistant support 11 locales: English, Portuguese, Italian, Spanish, French, German, Russian, Chinese, Japanese, Arabic and Hebrew. The assistant answers in the language of your latest message, not the website locale. Right-to-left layouts are supported for Arabic and Hebrew.",
     relatedTopics: ["public_routes", "support_procedures"],
+    safety: "general",
+    escalate: false,
     links: ["/", "/contact"],
   },
   {
@@ -875,6 +961,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The published Terms, Privacy Policy and Financial Disclaimer pages are DRAFTS pending legal review. Trading in financial markets involves a substantial risk of loss and is not suitable for every investor. Past performance is not indicative of future results. Braxel does not guarantee returns, payouts, approval or safety. The assistant does not provide legal advice; legal questions and data-rights requests go to human support. Do not treat marketing statements on the site as contractual promises.",
     relatedTopics: ["security_privacy", "faq_help", "refunds_cancellation"],
+    safety: "legal",
+    escalate: true,
     links: ["/terms", "/privacy", "/disclaimer"],
   },
   {
@@ -913,6 +1001,8 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "To start: an email address, a Braxel account created on /register, one of the four monthly plans on /pricing, and completion of /checkout and the onboarding disclosures. To request activation you also need your own external prop-firm account bought directly from the firm (Tradeify or Lucid) and a third-party tool to execute the signals yourself; an operator reviews the activation manually. Braxel never asks for a broker password, card number, API key or identity document in this chat. The app does not publish a country-by-country eligibility list, so country availability cannot be confirmed here: contact human support with your country. Identity verification (KYC) is required only when a withdrawal is requested.",
     relatedTopics: ["getting_started", "account_creation", "activation", "accounts_prop_firms"],
+    safety: "general",
+    escalate: false,
     links: ["/register", "/pricing", "/accounts", "/contact"],
   },
   {
@@ -945,13 +1035,237 @@ export const KNOWLEDGE_ARTICLES: KnowledgeArticle[] = [
     body:
       "The documented features are: four monthly signals plans (see /pricing for the canonical prices), a dashboard that computes performance only from your own closed trades and shows explicit empty states, an optional read-only Tradovate integration that Braxel cannot use to place, modify or liquidate orders, a manual operator review of account activation, a profile and billing prefill, and support in 11 languages. Braxel does not operate your trading account, does not custody customer funds, does not process prop-firm payouts and does not promise profits or returns. Trading involves a substantial risk of loss; read the Financial Disclaimer on /disclaimer.",
     relatedTopics: ["plans", "dashboard_usage", "tradovate_connection", "legal_documents"],
+    safety: "general",
+    escalate: false,
     links: ["/pricing", "/how-it-works", "/dashboard"],
+  },
+  {
+    id: "card_payment",
+    category: "payment",
+    title: "Card payment",
+    aliases: [
+      "card", "credit card", "debit card", "pay by card", "card payment", "stripe",
+      "cartão", "cartao", "cartão de crédito", "cartao de credito", "pagar com cartão",
+      "tarjeta", "tarjeta de crédito", "pagar con tarjeta", "carta di credito",
+      "carte bancaire", "karte", "kreditkarte", "карта", "оплата картой",
+      "信用卡", "银行卡", "カード", "クレジットカード", "بطاقة", "כרטיס אשראי",
+    ],
+    keywords: [
+      "card", "credit", "debit", "stripe", "visa", "mastercard", "checkout",
+      "cartão", "cartao", "tarjeta", "carte", "karte", "карта", "信用卡", "カード", "بطاقة", "כרטיס",
+    ],
+    informalQuestions: [
+      "can i pay by card", "do you accept credit cards", "pay with visa",
+      "posso pagar com cartão", "posso pagar com cartao", "aceita cartão de crédito",
+      "puedo pagar con tarjeta", "aceptan tarjetas", "kann ich mit karte zahlen",
+      "puis je payer par carte", "можно оплатить картой", "可以用信用卡吗",
+      "カードで支払えますか", "هل يمكنني الدفع بالبطاقة", "אפשר לשלם בכרטיס",
+    ],
+    answer:
+      "Card payments open Stripe's hosted checkout, so the app never sees or stores your card number. The server fixes the plan, the amount and the USD currency before the redirect.",
+    body:
+      "Choosing card payment calls the server, which creates a Stripe Checkout session with the canonical plan, the canonical USD amount and the verified application. You are redirected to Stripe's hosted page and the card data stays entirely with Stripe. Confirmation is server-side through the Stripe webhook (with a reconciliation fallback), never from the browser redirect. Our code contains no card number, CVV or expiry field, and support will never ask for card data.",
+    relatedTopics: ["payment_methods", "checkout", "payment_status"],
+    safety: "payment",
+    escalate: false,
+    links: ["/checkout", "/pricing"],
+  },
+  {
+    id: "crypto_payment",
+    category: "payment",
+    title: "Crypto payment",
+    aliases: [
+      "crypto", "cryptocurrency", "bitcoin", "usdt", "usdc", "network", "on-chain",
+      "cripto", "criptomoeda", "bitcoin", "rede", "criptomoneda", "red",
+      "krypto", "kryptowährung", "crypto-monnaie", "криптовалюта", "сеть",
+      "加密货币", "网络", "暗号資産", "ネットワーク", "عملة رقمية", "شبكة", "קריפטו", "רשת",
+    ],
+    keywords: [
+      "crypto", "bitcoin", "usdt", "usdc", "network", "chain", "wallet", "address",
+      "cripto", "bitcoin", "rede", "carteira", "endereço", "cripto", "red", "cartera",
+      "krypto", "netzwerk", "crypto", "réseau", "крипта", "сеть", "кошелек",
+      "加密", "钱包", "暗号資産", "ウォレット", "عملة", "محفظة", "קריפטו", "ארנק",
+    ],
+    informalQuestions: [
+      "can i pay with crypto", "do you accept bitcoin", "which network do i use",
+      "posso pagar com cripto", "aceita bitcoin", "qual rede uso",
+      "puedo pagar con cripto", "aceptan bitcoin", "qué red uso",
+      "kann ich mit krypto zahlen", "quelle réseau utiliser", "можно оплатить криптой",
+      "可以用加密货币吗", "どのネットワークを使いますか", "هل يمكنني الدفع بالعملات الرقمية",
+      "אפשר לשלם בקריפטו",
+    ],
+    answer:
+      "Crypto is available only on the networks configured on the server. Checkout shows the address, amount and network returned by the server, and the network must match exactly.",
+    body:
+      "Only networks with a server-side destination secret are offered. The server returns the deposit address, the amount, the asset and the network; the browser displays exactly that and never invents an address, a rate or an expiry. Sending on a different network can lose the funds permanently, so the wrong-network warning stays visible. Confirmation is on-chain and server-side; the chat cannot confirm a specific transaction and will not ask for a wallet private key or seed phrase.",
+    relatedTopics: ["payment_methods", "checkout", "payment_status"],
+    safety: "payment",
+    escalate: false,
+    links: ["/checkout"],
+  },
+  {
+    id: "bank_transfer",
+    category: "payment",
+    title: "Bank transfer (Wise)",
+    aliases: [
+      "bank transfer", "wire", "wise", "bank details", "reference",
+      "transferência", "transferencia", "banco", "referência", "referencia",
+      "überweisung", "virement", "перевод", "банк", "银行转账", "汇款", "銀行振込",
+      "تحويل بنكي", "העברה בנקאית",
+    ],
+    keywords: [
+      "bank", "transfer", "wire", "wise", "iban", "reference", "deposit",
+      "banco", "transferência", "transferencia", "referência", "banco", "transferencia",
+      "bank", "überweisung", "banque", "virement", "банк", "перевод", "银行", "转账",
+      "銀行", "振込", "بنك", "تحويل", "בנק", "העברה",
+    ],
+    informalQuestions: [
+      "can i pay by bank transfer", "do you accept wise", "where are the bank details",
+      "posso pagar por transferência", "aceita wise", "quais os dados bancários",
+      "puedo pagar por transferencia", "aceptan wise", "cuáles son los datos bancarios",
+      "kann ich per überweisung zahlen", "puis je payer par virement",
+      "можно оплатить переводом", "可以银行转账吗", "銀行振込はできますか",
+      "هل يمكنني الدفع بتحويل بنكي", "אפשר לשלם בהעברה בנקאית",
+    ],
+    answer:
+      "Bank transfer shows the configured bank details and a reference and is reviewed manually. The instructions are not a payment confirmation; only a verified settlement confirms it.",
+    body:
+      "The Wise/bank method returns the configured account details and a payment reference and records the payment as pending manual review. Copy the details exactly and include the reference. Nothing on the screen is a success state: settlement is verified manually or by a trusted provider event, and the dashboard then shows the verified status. If a transfer is taking long, do not send a second one — contact support with the reference.",
+    relatedTopics: ["payment_methods", "checkout", "payment_status"],
+    safety: "payment",
+    escalate: false,
+    links: ["/checkout", "/contact"],
+  },
+  {
+    id: "payment_failures",
+    category: "payment",
+    title: "Failed, declined or pending payments",
+    aliases: [
+      "payment failed", "declined", "pending payment", "processing", "not confirmed",
+      "pagamento falhou", "pagamento recusado", "pagamento pendente", "em processamento",
+      "pago fallido", "pago rechazado", "pago pendiente", "en proceso",
+      "zahlung fehlgeschlagen", "zahlung ausstehend", "paiement échoué", "en attente",
+      "платеж отклонен", "платеж в обработке", "付款失败", "付款待处理",
+      "支払い失敗", "支払い待ち", "فشل الدفع", "الدفع معلق", "התשלום נכשל", "תשלום ממתין",
+    ],
+    keywords: [
+      "failed", "declined", "pending", "processing", "error", "retry", "not confirmed",
+      "falhou", "recusado", "pendente", "processando", "erro", "repetir",
+      "fallido", "rechazado", "pendiente", "error", "reintentar",
+      "fehlgeschlagen", "ausstehend", "fehler", "échoué", "en attente", "erreur",
+      "отклонен", "в обработке", "ошибка", "失败", "待处理", "错误",
+      "失敗", "処理中", "エラー", "فشل", "معلق", "خطأ", "נכשל", "ממתין", "שגיאה",
+    ],
+    informalQuestions: [
+      "my payment failed what do i do", "my card was declined", "payment still pending",
+      "meu pagamento falhou o que faço", "meu cartão foi recusado", "pagamento ainda pendente",
+      "mi pago falló qué hago", "mi tarjeta fue rechazada", "el pago sigue pendiente",
+      "meine zahlung ist fehlgeschlagen", "mon paiement a échoué",
+      "платеж не прошел что делать", "付款失败怎么办", "支払いが失敗しました",
+      "فشل الدفع ماذا أفعل", "התשלום נכשל מה לעשות",
+    ],
+    answer:
+      "A failed, declined or pending payment is not a confirmation. Do not pay twice: retry from checkout or contact support with your account email and the order reference.",
+    body:
+      "The lifecycle states include pending, processing, manual review, confirmed, failed, expired, cancelled, refunded and disputed. Only a server-verified confirmation activates the plan. A declined card can be retried at checkout with another method; a bank transfer stays pending until it is verified manually; a crypto transfer needs the exact network and enough confirmations. If a payment looks wrong, do not send a second one — contact human support, which can inspect the specific order.",
+    relatedTopics: ["payment_status", "checkout", "payment_methods", "support_procedures"],
+    safety: "payment",
+    escalate: true,
+    links: ["/checkout/success", "/dashboard", "/contact"],
+  },
+  {
+    id: "read_only_limits",
+    category: "product",
+    title: "Read-only limits and no copy trading",
+    aliases: [
+      "read only", "read-only", "copy trading", "copytrading", "trade for me",
+      "operate my account", "place orders",
+      "somente leitura", "copy trade", "operar por mim", "opera minha conta",
+      "solo lectura", "operar por mí", "opera mi cuenta",
+      "schreibgeschützt", "für mich handeln", "lecture seule", "trader pour moi",
+      "только чтение", "копи-трейдинг", "只读", "复制交易", "読み取り専用", "コピートレード",
+      "للقراءة فقط", "نسخ التداول", "קריאה בלבד", "מסחר בשבילי",
+    ],
+    keywords: [
+      "read", "only", "copy", "trading", "operate", "orders", "execute", "account",
+      "leitura", "copiar", "operar", "ordens", "conta",
+      "lectura", "copiar", "operar", "órdenes", "cuenta",
+      "lesen", "kopieren", "handeln", "aufträge", "konto",
+      "lecture", "copier", "trader", "ordres", "compte",
+      "чтение", "копировать", "торговать", "ордера", "счет",
+      "只读", "复制", "交易", "订单", "账户", "読み取り", "コピー", "注文", "口座",
+      "قراءة", "نسخ", "تداول", "أوامر", "حساب", "קריאה", "העתקה", "מסחר", "פקודות", "חשבון",
+    ],
+    informalQuestions: [
+      "do you trade for me", "can you copy trade for me", "can braxel operate my account",
+      "vocês operam minha conta", "fazem copy trading", "vocês colocam ordens por mim",
+      "ustedes operan mi cuenta", "hacen copy trading", "colocan órdenes por mí",
+      "handeln sie für mich", "pouvez vous trader pour moi",
+      "вы торгуете за меня", "你们替我交易吗", "代わりに取引してくれますか",
+      "هل تتداولون نيابة عني", "אתם סוחרים בשבילי",
+    ],
+    answer:
+      "Braxel is read-only with respect to trading: it cannot place, modify or liquidate orders, cannot withdraw or transfer funds, and there is no copy-trading engine. You execute the signals yourself in your own account.",
+    body:
+      "The Tradovate integration is optional and read-only: it shows data, never orders. The activation flow links an external prop-firm account you bought and operate yourself; Braxel never stores broker credentials and never operates the account. There is no order placement, modification, liquidation, payout, withdrawal, ACH, wire or transfer operation in the product, and the execution capability switch is documented as not implemented. The chat cannot perform or authorize any of those actions.",
+    relatedTopics: ["tradovate_connection", "dashboard_usage", "activation"],
+    safety: "provider",
+    escalate: false,
+    links: ["/dashboard", "/how-it-works"],
+  },
+  {
+    id: "login_problem",
+    category: "account",
+    title: "Cannot sign in",
+    aliases: [
+      "cannot log in", "can't log in", "login problem", "sign in problem",
+      "não consigo entrar", "nao consigo entrar", "problema para entrar", "erro ao entrar",
+      "no puedo entrar", "problema para iniciar sesión", "error al entrar",
+      "kann mich nicht anmelden", "impossible de me connecter",
+      "не могу войти", "登录不了", "ログインできない", "لا أستطيع تسجيل الدخول", "לא מצליח להתחבר",
+    ],
+    keywords: [
+      "login", "signin", "sign", "access", "cannot", "problem", "error", "blocked",
+      "entrar", "login", "acesso", "problema", "erro",
+      "entrar", "acceso", "problema", "error",
+      "anmelden", "zugang", "problem", "fehler",
+      "connexion", "accès", "problème", "erreur",
+      "вход", "доступ", "проблема", "ошибка",
+      "登录", "访问", "问题", "错误", "ログイン", "アクセス", "問題", "エラー",
+      "دخول", "وصول", "مشكلة", "خطأ", "התחברות", "גישה", "בעיה", "שגיאה",
+    ],
+    informalQuestions: [
+      "i cant log in", "i cannot sign in to my account", "login is not working",
+      "não consigo entrar na minha conta", "nao consigo logar", "o login não funciona",
+      "no puedo entrar a mi cuenta", "no puedo iniciar sesión", "el login no funciona",
+      "ich kann mich nicht anmelden", "je n'arrive pas à me connecter",
+      "не могу войти в аккаунт", "登录不了账户", "ログインできません",
+      "لا أستطيع الدخول إلى حسابي", "לא מצליח להתחבר לחשבון",
+    ],
+    answer:
+      "If you can't sign in, use 'Forgot password?' on the Login page to set a new password, and check that your email is confirmed. If the confirmation email is missing, resend it from the Login page.",
+    body:
+      "The Login page has a 'Forgot password?' link that emails a single-use recovery link to /reset-password, where a new password is set. A sign-in can also fail because the email was never confirmed: the Login page then offers to resend the confirmation email. Recovery links expire and can be used once. If none of that works, contact human support with the account email; never send a password in the chat.",
+    relatedTopics: ["password_recovery", "email_confirmation", "support_procedures"],
+    safety: "account",
+    escalate: false,
+    links: ["/login", "/reset-password", "/contact"],
   },
 ];
 /** Lookup table. Built once; entries are immutable data. */
 export const KNOWLEDGE_BY_ID: Record<string, KnowledgeArticle> = Object.fromEntries(
   KNOWLEDGE_ARTICLES.map((a) => [a.id, a]),
 );
+
+/** Safety classification + escalation flag for one approved topic. */
+export function articleSafety(id: string): { safety: KnowledgeSafety; escalate: boolean } {
+  const article = KNOWLEDGE_BY_ID[id];
+  if (!article) return { safety: "general", escalate: false };
+  return {
+    safety: article.safety ?? CATEGORY_SAFETY[article.category] ?? "general",
+    escalate: article.escalate ?? false,
+  };
+}
 
 /** Weighted phrase index for one entry: informal phrasings weigh the most. */
 export function indexArticle(article: KnowledgeArticle): IndexedEntry {

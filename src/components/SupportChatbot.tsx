@@ -32,6 +32,8 @@ interface ChatMessage extends ChatTurn {
   reason?: ChatRefusalReason;
   sources?: ChatSource[];
   escalation?: ChatEscalation | null;
+  /** Approved topic ids from the server, used for follow-up suggestions. */
+  articleIds?: string[];
 }
 
 const MAX_INPUT = 2000;
@@ -64,6 +66,45 @@ const SUGGESTION_KEYS = [
   "chatbot.suggestions.payment",
   "chatbot.suggestions.activation",
 ];
+
+const SUGGESTION_BY_TOPIC: Record<string, string[]> = {
+  getting_started: ["plans", "payment", "activation"],
+  how_it_works: ["plans", "payment", "activation"],
+  plans: ["plans", "payment", "activation"],
+  checkout: ["payment", "plans", "activation"],
+  payment_methods: ["payment", "plans", "activation"],
+  card_payment: ["payment", "plans", "activation"],
+  crypto_payment: ["payment", "plans", "activation"],
+  bank_transfer: ["payment", "plans", "activation"],
+  payment_status: ["payment", "activation"],
+  payment_failures: ["payment", "activation"],
+  onboarding: ["activation", "payment", "plans"],
+  activation: ["activation", "payment", "plans"],
+  account_creation: ["password", "plans", "payment"],
+  profile_and_signup: ["plans", "payment"],
+  email_confirmation: ["password", "plans"],
+  password_recovery: ["password", "plans"],
+  login_problem: ["password", "plans"],
+  dashboard_usage: ["activation", "payment", "plans"],
+  tradovate_connection: ["activation", "payment"],
+  read_only_limits: ["activation", "plans"],
+  support_procedures: ["plans", "payment", "activation"],
+  company_overview: ["plans", "payment"],
+  benefits_and_features: ["plans", "payment"],
+  requirements_and_eligibility: ["plans", "activation"],
+};
+
+/** Follow-up questions for the topic of the latest answer. */
+function followUpSuggestionKeys(articleIds: string[] | undefined): string[] {
+  if (!articleIds || articleIds.length === 0) return [];
+  const keys: string[] = [];
+  for (const id of articleIds) {
+    for (const key of SUGGESTION_BY_TOPIC[id] ?? []) {
+      if (!keys.includes(key)) keys.push(key);
+    }
+  }
+  return keys.slice(0, 3).map((key) => `chatbot.suggestions.${key}`);
+}
 
 const SupportChatbot = () => {
   const { t, i18n } = useTranslation();
@@ -156,6 +197,7 @@ const SupportChatbot = () => {
           reason: reply.reason,
           sources: reply.sources,
           escalation: reply.escalation,
+          articleIds: reply.articleIds,
         },
       ]);
     },
@@ -184,6 +226,15 @@ const SupportChatbot = () => {
   };
 
   const hasConversation = messages.length > 0;
+
+  const followUpKeys = useMemo(() => {
+    if (isLoading || error) return [];
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role !== "assistant") continue;
+      return followUpSuggestionKeys(messages[i].articleIds);
+    }
+    return [];
+  }, [messages, isLoading, error]);
 
   return (
     <>
@@ -441,6 +492,26 @@ const SupportChatbot = () => {
                     </div>
                   </div>
                 ))}
+
+                {followUpKeys.length > 0 && (
+                  <div data-chatbot-followups="visible">
+                    <p className="text-[8px] font-bold uppercase tracking-[0.2em] text-slate-600">
+                      {t("chatbot.suggestionsTitle")}
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {followUpKeys.map((key) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => send(t(key))}
+                          className="border border-white/10 bg-white/[0.03] px-3 py-2 text-start text-[10px] leading-snug text-slate-300 transition-colors hover:border-[#D4AF37]/50 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37] motion-reduce:transition-none"
+                        >
+                          {t(key)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {isLoading && (
                   <div className="flex items-center gap-2.5" role="status" aria-live="polite">
